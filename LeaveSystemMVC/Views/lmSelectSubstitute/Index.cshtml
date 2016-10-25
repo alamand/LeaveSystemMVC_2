@@ -6,12 +6,23 @@
     @Html.AntiForgeryToken()
     
     <div class="form-horizontal">
-        <h4>selectSubstitute</h4>
+        <h4>Substitute Line Manager Page</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <div class="form-group">
+            <select>
+                <option>
+                    Select Substitute Staff Name
+                </option>
+            </select>
+            <hr/>
+            <label for="radio">Transfer Back to me &nbsp; </label><input id="radio" name="radio" type="radio" disabled="disabled" />
+            <div style="border: 1px solid black;">
+                Note: Option only availabe when authority previously transferred
+            </div>
+            <hr/>
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
+                <input type="submit" value="Save" class="btn btn-default" />
             </div>
         </div>
     </div>
