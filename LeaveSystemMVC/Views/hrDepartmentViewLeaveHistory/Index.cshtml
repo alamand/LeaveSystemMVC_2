@@ -1,64 +1,67 @@
 ﻿@model LeaveSystemMVC.Models.sLeaveModel
+@Html.Partial("_LeftMenu")
+<div class="col-md-6">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
 
+        <div class="form-horizontal">
+            <h4>Department View Leave History</h4>
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="form-group">
+                <label>Select Department:  </label>
+                <select id="department" name="department">
+                    <option>Staff</option>
+                    <option>Admin</option>
+                    <option>HR</option>
+                    <option>LM</option>
+                </select>
+            </div>
+            <hr />
+            @*
+                The table would retrieve data from db and show the staff name
+                the view button would take them to their detailed history.
+                When the view link would be clicked it would also send the staffid to the page
+                staffid would be used to query and display the details**@
+            <div id="form-group">
+                <table style=" border 1px black solid;text-align:center;">
+                    @{  var dept = "Staff";
+                        if (dept == "Staff")
+                        {
 
-@using (Html.BeginForm())
-{
-    @Html.AntiForgeryToken()
+                            <tr style=" border 1px black solid;">
+                                <th>Staff Name</th>
+                                <th>View History</th>
+                            </tr>
+                            <tr style="border: 1px black solid;">
+                                <td>Sukhi</td>
+                                <td><a href="#">View</a></td>
+                            </tr>
+                            <tr style="border: 1px black solid;">
+                                <td>Jasim</td>
+                                <td><a href="#">View</a></td>
+                            </tr>
+                            <tr style="border: 1px black solid;">
+                                <td>Kunal</td>
+                                <td><a href="#">View</a></td>
+                            </tr>
 
-    <div class="form-horizontal">
-        <h4>Department View Leave History</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-       <div class="form-group">
-           <label>Select Department:  </label>
-           <select id="department" name="department">
-               <option>Staff</option>
-               <option>Admin</option>
-               <option>HR</option>
-               <option>LM</option>
-           </select>
-       </div>
-        <hr/>
-        @*
-        The table would retrieve data from db and show the staff name
-        the view button would take them to their detailed history.
-        When the view link would be clicked it would also send the staffid to the page
-        staffid would be used to query and display the details**@
-        <div id="form-group">
-            <table style=" border: 1px black solid;text-align:center;">
-                @{  var dept = "Staff";
-                    if (dept == "Staff") {
-                   
-                    <tr style=" border: 1px black solid;">
-                        <th>Staff Name</th>
-                        <th>View History</th>
-                    </tr>
-                    <tr style="border: 1px black solid;">
-                        <td>Sukhi</td>
-                        <td><a href="#">View</a></td>
-                    </tr>
-                    <tr style="border: 1px black solid;">
-                        <td>Jasim</td>
-                        <td><a href="#">View</a></td>
-                    </tr>
-                    <tr style="border: 1px black solid;">
-                        <td>Kunal</td>
-                        <td><a href="#">View</a></td>
-                    </tr>
-
-                    }
-                    else if (dept == "Admin")
-                    {
+                        }
+                        else if (dept == "Admin")
+                        {
                     < tr > Department: Admin </ tr >
-                     } else if (dept == "HR") {
+                        }
+                        else if (dept == "HR")
+                        {
                     < tr > Department: HR </ tr >
-                                                } }
-            </table>
-        </div>
-     
-    </div>
-}
+                        } }
+                </table>
+            </div>
 
+        </div>
+    }
+</div>
 <div>
     @Html.ActionLink("Back to List", "Index")
 </div>

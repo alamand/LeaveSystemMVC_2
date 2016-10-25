@@ -1,4 +1,9 @@
 ﻿@model LeaveSystemMVC.Models.sLeaveModel
+@Html.Partial("_LeftMenu")
+<div class="col-md-6">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
 
 
 @using (Html.BeginForm()) 
@@ -58,10 +63,12 @@
                     <label for="tArea">Comment</label><br /><textarea id="tArea"></textarea>
                 </div>
             </div>
+        </div>
 
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Save" class="btn btn-default" />
             </div>
+        </div>
     </div>
 }
 

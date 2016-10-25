@@ -12,61 +12,66 @@
     @Html.AntiForgeryToken()
     
     <div class="form-horizontal">
-        <h4>Department Leave Balance</h4>
+        <h4>Subordinate Leave Balance</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        
         <div class="form-group">
-            <div class="form-group">
-                <table style="border: 1.5px solid black; margin:15px;">
-                    <tr style="border: 1px solid black; text-align:center">
-                        <th style="border: 1px solid black;"> No </th>
-                        <th style="border: 1px solid black;"> Staff Name </th>
-                        <th style="border: 1px solid black;"> Annual Leave </th>
-                        <th style="border: 1px solid black;"> Sick Leave </th>
-                        <th style="border: 1px solid black;"> Compassionate Leave </th>
-                        <th style="border: 1px solid black;"> Short Leave </th>
-                        <th style="border: 1px solid black;"> Maternity Leave </th>
-                        <th style="border: 1px solid black;"> Days in Lieu </th>
-                        <th style="border: 1px solid black;"> View History </th>
-                    </tr>
-                    <tr style="border: 1.5px solid black;">
-                        <td style="border: 1px solid black;"> 1 </td>
-                        <td style="border: 1px solid black;"> Junaid </td>
-                        <td style="border: 1px solid black;"> 1 </td>
-                        <td style="border: 1px solid black;"> 0 </td> 
-                        <td style="border: 1px solid black;"> 0 </td>
-                        <td style="border: 1px solid black;"> 1 </td>
-                        <td style="border: 1px solid black;"> 0 </td>
-                        <td style="border: 1px solid black;"> 0 </td>
-                        <td style="border: 1px solid black;"> <a href="#">View</a> </td>
-                    </tr>
-                    <tr style="border: 1.5px solid black;">
-                        <td style="border: 1px solid black;"> 2 </td>
-                        <td style="border: 1px solid black;"> Jared </td>
-                        <td style="border: 1px solid black;"> 1 </td>
-                        <td style="border: 1px solid black;"> 3 </td>
-                        <td style="border: 1px solid black;"> 0 </td>
-                        <td style="border: 1px solid black;"> 1 </td>
-                        <td style="border: 1px solid black;"> 0 </td>
-                        <td style="border: 1px solid black;"> 0 </td>
-                        <td style="border: 1px solid black;"> <a href="#">View</a> </td>
-                    </tr>
-                    <tr style="border: 1.5px solid black;">
-                        <td style="border: 1px solid black;"> 3 </td>
-                        <td style="border: 1px solid black;"> Sam</td>
-                        <td style="border: 1px solid black;"> 2 </td>
-                        <td style="border: 1px solid black;"> 1 </td>
-                        <td style="border: 1px solid black;"> 0 </td>
-                        <td style="border: 1px solid black;"> 1 </td>
-                        <td style="border: 1px solid black;"> 1 </td>
-                        <td style="border: 1px solid black;"> 1 </td>
-                        <td style="border: 1px solid black;"> <a href="#">View</a> </td>
-                    </tr>
-                </table>
+            @Html.LabelFor(model => model.annual, htmlAttributes: new { @class = "control-label col-md-2" })
+            <hr/>
+            <table style="border: 1.5px solid black; margin:15px;">
+                <tr style="border: 1px solid black; text-align:center">
+                    <th style="border: 1px solid black;"> No </th>
+                    <th style="border: 1px solid black;"> Staff Name </th>
+                    <th style="border: 1px solid black;"> Annual Leave </th>
+                    <th style="border: 1px solid black;"> Sick Leave </th>
+                    <th style="border: 1px solid black;"> Compassionate Leave </th>
+                    <th style="border: 1px solid black;"> Short Leave </th>
+                    <th style="border: 1px solid black;"> Maternity Leave </th>
+                    <th style="border: 1px solid black;"> Days in Lieu </th>
+                    <th style="border: 1px solid black;"> View History </th>
+                </tr>
+                <tr style="border: 1.5px solid black;">
+                    <td style="border: 1px solid black;"> 1 </td>
+                    <td style="border: 1px solid black;"> Junaid </td>
+                    <td style="border: 1px solid black;"> 1 </td>
+                    <td style="border: 1px solid black;"> 0 </td>
+                    <td style="border: 1px solid black;"> 0 </td>
+                    <td style="border: 1px solid black;"> 1 </td>
+                    <td style="border: 1px solid black;"> 0 </td>
+                    <td style="border: 1px solid black;"> 0 </td>
+                    <td style="border: 1px solid black;"> <a href="../lmSubordinateViewHistory/Index">View</a> </td>
+                </tr>
+                <tr style="border: 1.5px solid black;">
+                    <td style="border: 1px solid black;"> 2 </td>
+                    <td style="border: 1px solid black;"> Jared </td>
+                    <td style="border: 1px solid black;"> 1 </td>
+                    <td style="border: 1px solid black;"> 3 </td>
+                    <td style="border: 1px solid black;"> 0 </td>
+                    <td style="border: 1px solid black;"> 1 </td>
+                    <td style="border: 1px solid black;"> 0 </td>
+                    <td style="border: 1px solid black;"> 0 </td>
+                    <td style="border: 1px solid black;"> <a href="../lmSubordinateViewHistory/Index">View</a> </td>
+                </tr>
+                <tr style="border: 1.5px solid black;">
+                    <td style="border: 1px solid black;"> 3 </td>
+                    <td style="border: 1px solid black;"> Sam</td>
+                    <td style="border: 1px solid black;"> 2 </td>
+                    <td style="border: 1px solid black;"> 1 </td>
+                    <td style="border: 1px solid black;"> 0 </td>
+                    <td style="border: 1px solid black;"> 1 </td>
+                    <td style="border: 1px solid black;"> 1 </td>
+                    <td style="border: 1px solid black;"> 1 </td>
+                    <td style="border: 1px solid black;"> <a href="../lmSubordinateViewHistory/Index">View</a> </td>
+                </tr>
+            </table>
+        </div>
+                
+    </div>
+}
+
 =======
         <div class="form-horizontal">
-            <h4>Leave Balance</h4>
+            <h4>sleaveBalanceModel</h4>
             <hr />
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             <div class="form-group">
@@ -129,12 +134,11 @@
                 <div class="col-md-offset-2 col-md-10">
                     <input type="submit" value="Create" class="btn btn-default" />
                 </div>
->>>>>>> 54b2ad5e4b77fa5b271eca8d8c9bec4ec46aec51
             </div>
-            
         </div>
     }
 </div>
+>>>>>>> 54b2ad5e4b77fa5b271eca8d8c9bec4ec46aec51
 <div>
     @Html.ActionLink("Back to List", "Index")
 </div>
