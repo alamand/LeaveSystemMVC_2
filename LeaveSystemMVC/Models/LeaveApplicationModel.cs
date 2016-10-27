@@ -7,7 +7,8 @@ namespace LeaveSystemMVC.Models
 {
     public class LeaveApplicationModel
     {
-        public string leaveType { get; set; }
+        public String leaves { get; set; }
+
         public DateTime date { get; set; }
         public DateTime endDate { get; set; }
         public DateTime returnDate { get; set; }
