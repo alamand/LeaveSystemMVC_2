@@ -182,7 +182,6 @@
     <Compile Include="Controllers\loginController.cs" />
     <Compile Include="Controllers\CreateNewLeaveTypeController.cs" />
     <Compile Include="Controllers\HolidaysCalendarController.cs" />
-    <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LApplicationController.cs" />
     <Compile Include="Controllers\LStatusController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
@@ -195,6 +194,7 @@
     <Compile Include="Models\addStaff.cs" />
     <Compile Include="Models\changePasswordModel.cs" />
     <Compile Include="Models\createStaffRole.cs" />
+    <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\leaveHistory.cs" />
     <Compile Include="Models\leaveBalanceModel.cs" />
     <Compile Include="Models\lmChangeApplicationStatus.cs" />
@@ -207,7 +207,6 @@
     <Compile Include="Models\CreateLeaveTypeModel.cs" />
     <Compile Include="Models\CreditAllBalancesModel.cs" />
     <Compile Include="Models\HolidaysCalendar.cs" />
-    <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\LeaveApplicationModel.cs" />
     <Compile Include="Models\LeaveStatus.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
