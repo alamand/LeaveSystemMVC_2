@@ -1,0 +1,90 @@
+﻿@model LeaveSystemMVC.Models.leaveHistory
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<div>
+    <h4>LeaveHistory</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.startDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.startDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.endDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.endDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.applicationDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.applicationDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.leaveDuration)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.leaveDuration)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.leaveType)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.leaveType)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.leaveStatus)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.leaveStatus)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.supportingDoc)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.supportingDoc)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.form)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.form)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.unpaidLeave)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.unpaidLeave)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
