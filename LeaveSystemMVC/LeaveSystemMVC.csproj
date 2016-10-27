@@ -180,7 +180,14 @@
     <Compile Include="Controllers\lmSubordinateLeaveBalanceController.cs" />
     <Compile Include="Controllers\lmSubstituteController.cs" />
     <Compile Include="Controllers\loginController.cs" />
+    <Compile Include="Controllers\CreateNewLeaveTypeController.cs" />
+    <Compile Include="Controllers\HolidaysCalendarController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\LApplicationController.cs" />
+    <Compile Include="Controllers\LStatusController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\UpdateApplicationController.cs" />
+    <Compile Include="Controllers\UpdateStatusSelectionController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -197,7 +204,16 @@
     <Compile Include="Models\lmSubordinateLeaveBalance.cs" />
     <Compile Include="Models\lmSubstitute.cs" />
     <Compile Include="Models\loginmodel.cs" />
+    <Compile Include="Models\BalancesModel.cs" />
+    <Compile Include="Models\CreateLeaveTypeModel.cs" />
+    <Compile Include="Models\CreditAllBalancesModel.cs" />
+    <Compile Include="Models\HolidaysCalendar.cs" />
+    <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\LeaveApplicationModel.cs" />
+    <Compile Include="Models\LeaveStatus.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\UpdateApplicationModel.cs" />
+    <Compile Include="Models\UpdateStatusSelectionModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -256,6 +272,7 @@
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
+<<<<<<< HEAD
     <Content Include="Views\Login\Index.cshtml" />
     <Content Include="Views\ChangePassword\Index.cshtml" />
     <Content Include="Views\LeaveHistory\Index.cshtml" />
@@ -270,9 +287,16 @@
     <Content Include="Views\lmSubordinateLeaveBalance\Index.cshtml" />
     <Content Include="Views\lmSubordinateHistory\Index.cshtml" />
     <Content Include="Views\lmSubstitute\Index.cshtml" />
+    <Content Include="Views\LApplication\Index.cshtml" />
+    <Content Include="Views\LStatus\Index.cshtml" />
+    <Content Include="Views\UpdateApplication\Index.cshtml" />
+    <Content Include="Views\UpdateStatusSelection\Index.cshtml" />
+    <Content Include="Views\CreateNewLeaveType\Index.cshtml" />
+    <Content Include="Views\HolidaysCalendar\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\AddNewLeaveType\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
