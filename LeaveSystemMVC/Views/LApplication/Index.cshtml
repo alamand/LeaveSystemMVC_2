@@ -16,17 +16,17 @@
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <div class="form-group">
-            @Html.LabelFor(model => model.leaveType, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.leaves, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.leaveType, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.leaveType, "", new { @class = "text-danger" })
+                @Html.DropDownListFor(model => model.leaves, new SelectList(ViewBag.leave)  ,"Select Leave Type: ") <!--  viewBag.leave (leave is a list) is created in the controller -->
+                @Html.ValidationMessageFor(model => model.leaves, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
             @Html.LabelFor(model => model.date, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.date, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.TextBoxFor(model => model.date, new { type = "date" } ) <!--  just use type = "date" to get a date field -->
                 @Html.ValidationMessageFor(model => model.date, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -34,7 +34,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.endDate, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.endDate, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.TextBoxFor(model => model.endDate, new { type = "date" })
                 @Html.ValidationMessageFor(model => model.endDate, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -42,7 +42,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.returnDate, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.returnDate, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.TextBoxFor(model => model.returnDate, new { type = "date" })
                 @Html.ValidationMessageFor(model => model.returnDate, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -90,8 +90,9 @@
         <div class="form-group">
             @Html.LabelFor(model => model.supportingDocs, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.supportingDocs, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.EditorFor(model => model.supportingDocs, new { type = "file" })
                 @Html.ValidationMessageFor(model => model.supportingDocs, "", new { @class = "text-danger" })
+                <input type="submit" value="Upload" name=" = "upload" />
             </div>
         </div>
 
