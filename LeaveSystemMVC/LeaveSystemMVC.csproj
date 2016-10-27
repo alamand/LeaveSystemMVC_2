@@ -168,13 +168,35 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\addDeparmentController.cs" />
+    <Compile Include="Controllers\addStaffController.cs" />
+    <Compile Include="Controllers\changePasswordController.cs" />
+    <Compile Include="Controllers\createStaffRoleController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\leaveHistoryController.cs" />
+    <Compile Include="Controllers\lmchangeApplicationStatusController.cs" />
+    <Compile Include="Controllers\lmPendingApplicationsController.cs" />
+    <Compile Include="Controllers\lmSubordinateHistoryController.cs" />
+    <Compile Include="Controllers\lmSubordinateLeaveBalanceController.cs" />
+    <Compile Include="Controllers\lmSubstituteController.cs" />
+    <Compile Include="Controllers\loginController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
-    <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\addDepartment.cs" />
+    <Compile Include="Models\addStaff.cs" />
+    <Compile Include="Models\changePasswordModel.cs" />
+    <Compile Include="Models\createStaffRole.cs" />
+    <Compile Include="Models\leaveHistory.cs" />
+    <Compile Include="Models\leaveBalanceModel.cs" />
+    <Compile Include="Models\lmChangeApplicationStatus.cs" />
+    <Compile Include="Models\lmPendingApplications.cs" />
+    <Compile Include="Models\lmSubordinateHistory.cs" />
+    <Compile Include="Models\lmSubordinateLeaveBalance.cs" />
+    <Compile Include="Models\lmSubstitute.cs" />
+    <Compile Include="Models\loginmodel.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
@@ -234,6 +256,20 @@
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\Login\Index.cshtml" />
+    <Content Include="Views\ChangePassword\Index.cshtml" />
+    <Content Include="Views\LeaveHistory\Index.cshtml" />
+    <Content Include="Views\LeaveBalance\Index.cshtml" />
+    <Content Include="Views\addStaff\createNewStaff.cshtml" />
+    <Content Include="Views\addStaff\editStaff.cshtml" />
+    <Content Include="Views\addDeparment\addDepartment.cshtml" />
+    <Content Include="Views\addDeparment\editDeparment.cshtml" />
+    <Content Include="Views\createStaffRole\Index.cshtml" />
+    <Content Include="Views\lmPendingApplications\Index.cshtml" />
+    <Content Include="Views\lmchangeApplicationStatus\lmchangeApplicationStatus.cshtml" />
+    <Content Include="Views\lmSubordinateLeaveBalance\Index.cshtml" />
+    <Content Include="Views\lmSubordinateHistory\Index.cshtml" />
+    <Content Include="Views\lmSubstitute\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
