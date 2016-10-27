@@ -1,0 +1,82 @@
+﻿@model LeaveSystemMVC.Models.leaveBalanceModel
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<div>
+    <h4>LeaveBalanceModel</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.annual)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.annual)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.sick)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.sick)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.compassionate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.compassionate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.maternity)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.maternity)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.daysInLieue)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.daysInLieue)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.unpaidTotal)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.unpaidTotal)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.shortLeaveHours)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.shortLeaveHours)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.shortLeaveMinutes)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.shortLeaveMinutes)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
