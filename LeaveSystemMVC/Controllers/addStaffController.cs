@@ -11,7 +11,7 @@ namespace LeaveSystemMVC.Controllers
         // GET: addStaff
         public ActionResult Index()
         {
-            return View();
+            return View("createNewStaff");
         }
     }
 }
