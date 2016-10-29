@@ -6,9 +6,9 @@ using System.Web.Mvc;
 
 namespace LeaveSystemMVC.Controllers
 {
-    public class lmChangeApplicationStatusController : Controller
+    public class hrDepartmentViewLeaveBalanceController : Controller
     {
-        // GET: lmChangeApplicationStatus
+        // GET: hrViewLeaveBalance
         public ActionResult Index()
         {
             return View();
