@@ -1,0 +1,250 @@
+<<<<<<< HEAD
+﻿@model LeaveSystemMVC.Models.LeaveApplicationModel
+
+@{
+    ViewBag.Title = "Index";
+}
+@Html.Partial("_LeftMenu")
+
+<h2>Index</h2>
+
+<div class="col-md-6">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            <h4>LeaveApplicationModel</h4>
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="form-group">
+                @Html.LabelFor(model => model.leaves, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.DropDownListFor(model => model.leaves, new SelectList(ViewBag.leave), "Select Leave Type: ") <!--  viewBag.leave (leave is a list) is created in the controller -->
+                    @Html.ValidationMessageFor(model => model.leaves, "", new { @class = "text-danger" })
+                </div>
+=======
+﻿@model LeaveSystemMVC.Models.sLeaveModel
+
+
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <h4>sLeaveModel</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.staffName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.staffName, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.staffName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.leaveType, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.leaveType, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.leaveType, "", new { @class = "text-danger" })
+>>>>>>> 02c67fb45de63c8007d268bf6c39727bda65605f
+            </div>
+
+<<<<<<< HEAD
+            <div class="form-group">
+                @Html.LabelFor(model => model.date, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.date, new { type = "date" }) <!--  just use type = "date" to get a date field -->
+                    @Html.ValidationMessageFor(model => model.date, "", new { @class = "text-danger" })
+                </div>
+=======
+        <div class="form-group">
+            @Html.LabelFor(model => model.applicationDate, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.applicationDate, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.applicationDate, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.startDate, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.startDate, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.startDate, "", new { @class = "text-danger" })
+>>>>>>> 02c67fb45de63c8007d268bf6c39727bda65605f
+            </div>
+
+<<<<<<< HEAD
+            <div class="form-group">
+                @Html.LabelFor(model => model.endDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.endDate, new { type = "date" })
+                    @Html.ValidationMessageFor(model => model.endDate, "", new { @class = "text-danger" })
+                </div>
+=======
+        <div class="form-group">
+            @Html.LabelFor(model => model.endDate, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.endDate, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.endDate, "", new { @class = "text-danger" })
+>>>>>>> 02c67fb45de63c8007d268bf6c39727bda65605f
+            </div>
+
+<<<<<<< HEAD
+            <div class="form-group">
+                @Html.LabelFor(model => model.returnDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.returnDate, new { type = "date" })
+                    @Html.ValidationMessageFor(model => model.returnDate, "", new { @class = "text-danger" })
+                </div>
+=======
+        <div class="form-group">
+            @Html.LabelFor(model => model.returnDate, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.returnDate, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.returnDate, "", new { @class = "text-danger" })
+>>>>>>> 02c67fb45de63c8007d268bf6c39727bda65605f
+            </div>
+
+<<<<<<< HEAD
+            <div class="form-group">
+                @Html.LabelFor(model => model.lShortStartHour, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.lShortStartHour, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.lShortStartHour, "", new { @class = "text-danger" })
+                </div>
+=======
+        <div class="form-group">
+            @Html.LabelFor(model => model.leaveDuration, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.leaveDuration, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.leaveDuration, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.shortStartTime, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.shortStartTime, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.shortStartTime, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.shortEndTime, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.shortEndTime, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.shortEndTime, "", new { @class = "text-danger" })
+>>>>>>> 02c67fb45de63c8007d268bf6c39727bda65605f
+            </div>
+
+<<<<<<< HEAD
+            <div class="form-group">
+                @Html.LabelFor(model => model.lShortStartMinute, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.lShortStartMinute, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.lShortStartMinute, "", new { @class = "text-danger" })
+                </div>
+=======
+        <div class="form-group">
+            @Html.LabelFor(model => model.lmComment, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.lmComment, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.lmComment, "", new { @class = "text-danger" })
+>>>>>>> 02c67fb45de63c8007d268bf6c39727bda65605f
+            </div>
+
+<<<<<<< HEAD
+            <div class="form-group">
+                @Html.LabelFor(model => model.lShortEndHour, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.lShortEndHour, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.lShortEndHour, "", new { @class = "text-danger" })
+                </div>
+=======
+        <div class="form-group">
+            @Html.LabelFor(model => model.hrComment, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.hrComment, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.hrComment, "", new { @class = "text-danger" })
+>>>>>>> 02c67fb45de63c8007d268bf6c39727bda65605f
+            </div>
+
+<<<<<<< HEAD
+            <div class="form-group">
+                @Html.LabelFor(model => model.lShortEndMinute, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.lShortEndMinute, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.lShortEndMinute, "", new { @class = "text-danger" })
+                </div>
+=======
+        <div class="form-group">
+            @Html.LabelFor(model => model.leaveStatus, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.leaveStatus, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.leaveStatus, "", new { @class = "text-danger" })
+>>>>>>> 02c67fb45de63c8007d268bf6c39727bda65605f
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.comments, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.comments, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.comments, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+<<<<<<< HEAD
+            <div class="form-group">
+                @Html.LabelFor(model => model.supportingDocs, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.supportingDocs, new { type = "file" })
+                    @Html.ValidationMessageFor(model => model.supportingDocs, "", new { @class = "text-danger" })
+                    <input type="submit" value="Upload" name=" ="upload" />
+                </div>
+=======
+        <div class="form-group">
+            @Html.LabelFor(model => model.supportingDocs, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.supportingDocs, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.supportingDocs, "", new { @class = "text-danger" })
+>>>>>>> 02c67fb45de63c8007d268bf6c39727bda65605f
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.bookAirTicket, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    <div class="checkbox">
+                        @Html.EditorFor(model => model.bookAirTicket)
+                        @Html.ValidationMessageFor(model => model.bookAirTicket, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+
+<<<<<<< HEAD
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Create" class="btn btn-default" />
+                </div>
+=======
+        <div class="form-group">
+            @Html.LabelFor(model => model.contactDetails, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.contactDetails, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.contactDetails, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-default" />
+>>>>>>> 02c67fb45de63c8007d268bf6c39727bda65605f
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
