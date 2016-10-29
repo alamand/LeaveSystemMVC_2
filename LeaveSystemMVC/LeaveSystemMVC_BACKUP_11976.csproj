@@ -191,10 +191,7 @@
     <Compile Include="Controllers\lmSubordinateViewHistoryController.cs" />
     <Compile Include="Controllers\lmSelectSubstituteController.cs" />
     <Compile Include="Controllers\loginController.cs" />
-    <Compile Include="Controllers\CreateNewLeaveTypeController.cs" />
-    <Compile Include="Controllers\HolidaysCalendarController.cs" />
     <Compile Include="Controllers\LApplicationController.cs" />
-    <Compile Include="Controllers\LStatusController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\sChangePasswordController.cs" />
     <Compile Include="Controllers\sLeaveBalanceController.cs" />
@@ -1767,6 +1764,7 @@
     <Content Include="Views\sLeaveHistory\Index.cshtml" />
     <Content Include="Views\sLeaveStatus\Index.cshtml" />
     <Content Include="Views\LApplication\Index.cshtml" />
+<<<<<<< HEAD
     <Content Include="Views\LStatus\Index.cshtml" />
     <Content Include="Views\UpdateStatusSelection\Index.cshtml" />
     <Content Include="Views\CreateNewLeaveType\Index.cshtml" />
@@ -1775,7 +1773,14 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="bin\" />
+    <Folder Include="Views\AddNewLeaveType\" />
+=======
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
     <Folder Include="Views\lmSubordinateView\" />
+>>>>>>> 02c67fb45de63c8007d268bf6c39727bda65605f
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

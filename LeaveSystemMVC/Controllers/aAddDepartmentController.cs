@@ -6,9 +6,9 @@ using System.Web.Mvc;
 
 namespace LeaveSystemMVC.Controllers
 {
-    public class lmChangeApplicationStatusController : Controller
+    public class aAddDepartmentController : Controller
     {
-        // GET: lmChangeApplicationStatus
+        // GET: aAddDepartment
         public ActionResult Index()
         {
             return View();
