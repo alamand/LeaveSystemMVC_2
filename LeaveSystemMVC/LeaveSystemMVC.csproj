@@ -191,10 +191,7 @@
     <Compile Include="Controllers\lmSubordinateViewHistoryController.cs" />
     <Compile Include="Controllers\lmSelectSubstituteController.cs" />
     <Compile Include="Controllers\loginController.cs" />
-    <Compile Include="Controllers\CreateNewLeaveTypeController.cs" />
-    <Compile Include="Controllers\HolidaysCalendarController.cs" />
     <Compile Include="Controllers\LApplicationController.cs" />
-    <Compile Include="Controllers\LStatusController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\sChangePasswordController.cs" />
     <Compile Include="Controllers\sLeaveBalanceController.cs" />
@@ -1767,10 +1764,6 @@
     <Content Include="Views\sLeaveHistory\Index.cshtml" />
     <Content Include="Views\sLeaveStatus\Index.cshtml" />
     <Content Include="Views\LApplication\Index.cshtml" />
-    <Content Include="Views\LStatus\Index.cshtml" />
-    <Content Include="Views\UpdateStatusSelection\Index.cshtml" />
-    <Content Include="Views\CreateNewLeaveType\Index.cshtml" />
-    <Content Include="Views\HolidaysCalendar\Index.cshtml" />
     <Content Include="Views\Shared\_LeftMenu.cshtml" />
   </ItemGroup>
   <ItemGroup>
