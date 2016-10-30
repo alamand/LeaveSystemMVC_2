@@ -1,0 +1,61 @@
+﻿@model LeaveSystemMVC.Models.hrCreateLeave
+
+
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+<<<<<<< HEAD
+        <h4>Create Leave Type</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        
+=======
+        <h4>This Page is for HR to create a new Leave Type</h4>
+        <hr />
+        @Html.ValidationSummary(true, " ", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.newLeaveType, "New Leave Type Name", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.newLeaveType, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.newLeaveType, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.holidayDuration, "Holiday Duration", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.holidayDuration, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.holidayDuration, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+>>>>>>> 70a9e48a7e7ebeed2b1c3d2f8f96b4af12553c21
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <label for="existLeave"> Existing Leave Type</label>
+                <select id="#existLeave">
+                    <option>Annual Leave</option>
+                    <option>Maternity Leave</option>
+                    <option>Compassionate Leave</option>
+                    <option>Short Leave</option>
+                    <option>Unpaid Leave</option>
+                </select>
+                <hr/>
+                <label for="newLeave">New Leave Type</label>
+                <input type="text" id="#newLeave" />
+                <hr/>
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
