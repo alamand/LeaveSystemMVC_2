@@ -61,65 +61,8 @@
                 <hr/>
                 <label for="tArea">Comment</label><br/><textarea id="tArea">
 
-        <div class="form-group">
-            
-            <div class="col-md-10">
-                <table style="border:2px solid black; text-align:center ;">
-                    <tr style="border:0.5px solid black;">
-                        <th>Staff Name</th>
-                        <th>Start Date</th>
-                        <th>End Date</th>
-                        <th>Duration Days</th>
-                        <th>Status</th>
-                        <th>View Application</th>
-                    </tr>
-                    <tr style="border:0.5px solid black;">
-                        <td>Sukhpreet Singh</td>
-                        <td>10/10/2016</td>
-                        <td>20/10/2016</td>
-                        <td>10</td>
-                        <td>Pending</td>
-                        <td>View</td>
-                    </tr>
-                    <tr>
-                        <td>Sukhpreet Singh</td>
-                        <td>10/10/2016</td>
-                        <td>20/10/2016</td>
-                        <td>10</td>
-                        <td>Pending</td>
-                        <td>View</td>
-                    </tr>
-                @**Html.EditorFor(model => model.staffName, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.staffName, "", new { @class = "text-danger" })**@
-                </table>
-                <hr/>
-                    <label for= combobox>Previous Status: </label>
-                    <select id="combobox">
-                        <option>Pending</option>
-                        <option>Acknowlegded</option>
-                        <option>Decline</option>
-                        <option>Approved</option>
-                        <option>Reject</option>
-                    </select>
-                <hr/>
-                <label for=combobox2>New Status: </label>
-                <select id="combobox2">
-                    <option>Pending</option>
-                    <option>Acknowlegded</option>
-                    <option>Decline</option>
-                    <option>Approved</option>
-                    <option>Reject</option>
-                </select>
-                <hr/>
-                <label for="tArea">Comment</label><br/><textarea id="tArea">
-
                 </textarea>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.endDate, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.endDate, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.endDate, "", new { @class = "text-danger" })
             </div>
         </div>            
         <div class="form-group">
