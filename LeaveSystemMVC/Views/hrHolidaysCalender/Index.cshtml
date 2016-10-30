@@ -12,10 +12,15 @@
             Note: To create a new holiday just select the starting date in Start Date
             and selsect the end date for the holidays and click Save button.
         </section>
-        <>
+        
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-       <div class="form-group">
-            <label>Start Date </label>
+        <hr/>
+        <div class="form-group">
+            <label for="hName"> Holiday Name</label>
+            <input type="text" name="hName" id="hName" />
+        </div> 
+        <div class="form-group">
+           <label>Start Date </label>
             <input type="date" />
            
         </div>
