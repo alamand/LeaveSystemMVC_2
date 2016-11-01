@@ -6,11 +6,11 @@
 @Html.Partial("_LeftMenu")
 
 <h2>Index</h2>
-
+<h2>@User.Identity.Name</h2>
 <div class="col-md-6">
     @using (Html.BeginForm()) 
     {
-        @Html.AntiForgeryToken()
+        
     
         <div class="form-horizontal">
             <h4>sLeaveModel</h4>

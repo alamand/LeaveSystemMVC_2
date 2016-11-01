@@ -1,0 +1,18 @@
+﻿@model LeaveSystemMVC.Models.Users
+@{
+    ViewBag.Title = "Login";
+}
+
+<h2>Log In</h2>
+@Html.ValidationSummary(true)
+
+@using (Html.BeginForm())
+{
+    @Html.LabelFor(u => u.UserID)<br />
+    @Html.TextBoxFor(u => u.UserID)<br />
+    @Html.LabelFor(u => u.Password)<br />
+    @Html.TextBoxFor(u => u.Password)<br />
+    <p>
+        <button type="submit">Log In</button>
+    </p>
+}
