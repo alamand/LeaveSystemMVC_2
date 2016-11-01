@@ -11,6 +11,13 @@ namespace LeaveSystemMVC.Controllers
         // GET: sLeaveStatus
         public ActionResult Index()
         {
+            List<string> leaves = new List<string>();
+            leaves.Add("Annual");
+            leaves.Add("Sick");
+            leaves.Add("Compassionate");
+            leaves.Add("Maternity");
+            leaves.Add("Short");
+            ViewBag.leave = leaves;
             return View();
         }
     }
