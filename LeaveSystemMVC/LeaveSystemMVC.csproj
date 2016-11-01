@@ -1747,9 +1747,6 @@
     <Content Include="Views\LApplication\Index.cshtml" />
     <Content Include="Views\sLeaveBalance\Index.cshtml" />
     <Content Include="Views\sLeaveHistory\Index.cshtml" />
-    <Content Include="Views\sLeaveStatus\Index.cshtml" />
-    <Content Include="Views\LApplication\Index.cshtml" />
-    <Content Include="Views\Shared\_LeftMenu.cshtml" />
     <Content Include="Views\Auth\Login.cshtml" />
   </ItemGroup>
   <ItemGroup>

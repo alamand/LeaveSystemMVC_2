@@ -68,14 +68,16 @@ namespace LeaveSystemMVC.Controllers
 
                 if (model.UserID == empID && model.Password == password)
                 {
-                    string idString = "";
-                    int.TryParse(idString, out empID);
-                    var identity = new ClaimsIdentity(new[]
+                    string idString = empID.ToString();
+                    string fullNameString = firstName + " " + lastName;
+            
+                    var claims = new List<Claim>
                     {
-                    new Claim(ClaimTypes.Name, (string)firstName + " " + lastName),
-                    //new Claim(ClaimTypes.NameIdentifier,  idString),
-                    new Claim(ClaimTypes.Role, empRole)
-                }, "ApplicationCookie");
+                        new Claim(ClaimTypes.Name, fullNameString),
+                        new Claim(ClaimTypes.NameIdentifier,  idString),
+                        new Claim(ClaimTypes.Role, empRole)
+                    };
+                    var identity = new ClaimsIdentity(claims, "ApplicationCookie");
 
                     var ctx = Request.GetOwinContext();
                     var authManager = ctx.Authentication;
