@@ -169,6 +169,7 @@
     <Compile Include="Controllers\aAddDepartmentController.cs" />
     <Compile Include="Controllers\aAddStaffController.cs" />
     <Compile Include="Controllers\aAddStaffRoleController.cs" />
+    <Compile Include="Controllers\aBulkAddStaffController.cs" />
     <Compile Include="Controllers\aEditDepartmentController.cs" />
     <Compile Include="Controllers\aEditStaffController.cs" />
     <Compile Include="Controllers\AuthController.cs" />
@@ -1748,6 +1749,7 @@
     <Content Include="Views\sLeaveBalance\Index.cshtml" />
     <Content Include="Views\sLeaveHistory\Index.cshtml" />
     <Content Include="Views\Auth\Login.cshtml" />
+    <Content Include="Views\aBulkAddStaff\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
