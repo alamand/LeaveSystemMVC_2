@@ -1,13 +1,8 @@
 ﻿@model LeaveSystemMVC.Models.sLeaveModel
 @Html.Partial("_LeftMenu")
 <div class="col-md-6">
-    @using (Html.BeginForm())
+    @using (Html.BeginForm()) 
     {
-        @Html.AntiForgeryToken()
-
-
-@using (Html.BeginForm()) 
-{
     @Html.AntiForgeryToken()
     
     <div class="form-horizontal">
@@ -31,6 +26,7 @@
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="View History" class="btn btn-default" />
             </div>
+        </div>
         </div>
     }
 </div>
