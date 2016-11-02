@@ -220,7 +220,6 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
-    <Content Include="Content\GIMEL_logo.jpg" />
     <Content Include="Content\Theme\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\Theme\base\images\ui-bg_flat_75_ffffff_40x100.png" />
     <Content Include="Content\Theme\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
@@ -283,7 +282,6 @@
     <Content Include="Content\Theme\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\Theme\images\bg-input-focus.png" />
     <Content Include="Content\Theme\images\bg-input.png" />
-    <Content Include="Content\Theme\images\GIMEL_logo.jpg" />
     <Content Include="Content\Theme\images\sprite.png" />
     <Content Include="Content\Theme\vendors\boostrap3-typeahead\bootstrap3-typeahead.js" />
     <Content Include="Content\Theme\vendors\boostrap3-typeahead\bootstrap3-typeahead.min.js" />
@@ -1723,7 +1721,19 @@
     <Content Include="Views\Account\ResetPasswordConfirmation.cshtml" />
     <Content Include="Views\Account\SendCode.cshtml" />
     <Content Include="Views\Account\VerifyCode.cshtml" />
+<<<<<<< HEAD
     <Content Include="Views\LApplication\IndexOld.cshtml" />
+=======
+    <Content Include="Views\Manage\AddPhoneNumber.cshtml" />
+    <Content Include="Views\Manage\ChangePassword.cshtml" />
+    <Content Include="Views\Manage\Index.cshtml" />
+    <Content Include="Views\Manage\ManageLogins.cshtml" />
+    <Content Include="Views\Manage\SetPassword.cshtml" />
+    <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
+    <Content Include="Views\Shared\Lockout.cshtml" />
+    <Content Include="Views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\Login\Index.cshtml" />
+>>>>>>> modelsFeature
     <Content Include="Views\aAddDepartment\Index.cshtml" />
     <Content Include="Views\aEditDepartment\Index.cshtml" />
     <Content Include="Views\hrChangeApplicationStatus\Index.cshtml" />
@@ -1746,10 +1756,13 @@
     <Content Include="Views\sChangePassword\Index.cshtml" />
     <Content Include="Views\sLeaveStatus\Index.cshtml" />
     <Content Include="Views\Shared\_LeftMenu.cshtml" />
+<<<<<<< HEAD
+    <Content Include="Views\Auth\Login.cshtml" />
+=======
     <Content Include="Views\LApplication\Index.cshtml" />
     <Content Include="Views\sLeaveBalance\Index.cshtml" />
     <Content Include="Views\sLeaveHistory\Index.cshtml" />
-    <Content Include="Views\Auth\Login.cshtml" />
+>>>>>>> modelsFeature
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
