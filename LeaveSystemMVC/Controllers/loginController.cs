@@ -6,9 +6,9 @@ using System.Web.Mvc;
 
 namespace LeaveSystemMVC.Controllers
 {
-    public class sLeaveStatusController : Controller
+    public class loginController : Controller
     {
-        // GET: sLeaveStatus
+        // GET: login
         public ActionResult Index()
         {
             return View();
