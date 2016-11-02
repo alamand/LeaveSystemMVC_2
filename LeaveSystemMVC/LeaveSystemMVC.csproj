@@ -221,6 +221,7 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\GIMEL_logo.jpg" />
     <Content Include="Content\Theme\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\Theme\base\images\ui-bg_flat_75_ffffff_40x100.png" />
     <Content Include="Content\Theme\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
@@ -283,6 +284,7 @@
     <Content Include="Content\Theme\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\Theme\images\bg-input-focus.png" />
     <Content Include="Content\Theme\images\bg-input.png" />
+    <Content Include="Content\Theme\images\GIMEL_logo.jpg" />
     <Content Include="Content\Theme\images\sprite.png" />
     <Content Include="Content\Theme\vendors\boostrap3-typeahead\bootstrap3-typeahead.js" />
     <Content Include="Content\Theme\vendors\boostrap3-typeahead\bootstrap3-typeahead.min.js" />
