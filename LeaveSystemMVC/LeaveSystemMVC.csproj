@@ -170,6 +170,7 @@
     <Compile Include="Controllers\aAddDepartmentController.cs" />
     <Compile Include="Controllers\aAddStaffController.cs" />
     <Compile Include="Controllers\aAddStaffRoleController.cs" />
+    <Compile Include="Controllers\aBulkAddStaffController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\aEditDepartmentController.cs" />
     <Compile Include="Controllers\aEditStaffController.cs" />
@@ -1762,6 +1763,8 @@
     <Content Include="Views\sChangePassword\Index.cshtml" />
     <Content Include="Views\sLeaveBalance\Index.cshtml" />
     <Content Include="Views\sLeaveHistory\Index.cshtml" />
+    <Content Include="Views\Auth\Login.cshtml" />
+    <Content Include="Views\aBulkAddStaff\Index.cshtml" />
     <Content Include="Views\sLeaveStatus\Index.cshtml" />
     <Content Include="Views\LApplication\Index.cshtml" />
     <Content Include="Views\Shared\_LeftMenu.cshtml" />
