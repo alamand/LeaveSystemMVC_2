@@ -164,9 +164,8 @@
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
-    <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="App_Start\Startup.cs" />
     <Compile Include="Controllers\aAddDepartmentController.cs" />
     <Compile Include="Controllers\aAddStaffController.cs" />
     <Compile Include="Controllers\aAddStaffRoleController.cs" />
@@ -218,7 +217,6 @@
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\sEmployeeModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />
@@ -1771,6 +1769,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="CustomLibraries\" />
     <Folder Include="Views\lmSubordinateView\" />
   </ItemGroup>
   <ItemGroup>
@@ -1795,7 +1794,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
+          <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>50683</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
