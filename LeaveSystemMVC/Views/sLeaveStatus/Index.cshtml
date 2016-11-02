@@ -1,33 +1,45 @@
 ﻿@model LeaveSystemMVC.Models.sLeaveModel
-
-@{
-    ViewBag.Title = "Leave Status";
-}
 @Html.Partial("_LeftMenu")
+
 <div class="col-md-6">
-    @using (Html.BeginForm())
-    {
-        @Html.AntiForgeryToken()
+    <h2>Leave Status</h2>
+	@using (Html.BeginForm()) 
+	{
+		@Html.AntiForgeryToken()
+		
+		<div class="form-horizontal">
+			<h4>sLeaveModel</h4>
+			<hr />
+			@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+			
+			<div class="form-group">
+				@Html.LabelFor(model => model.leaveType, htmlAttributes: new { @class = "control-label col-md-2" })
+				<div class="col-md-10">
+					@Html.EditorFor(model => model.leaveType, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.leaveType, "", new { @class = "text-danger" })
+                </div>
+            </div>
 
-        <div class="form-horizontal">
-            <h4>Leave Status</h4>
-            <hr />
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             <div class="form-group">
-
                 @Html.LabelFor(model => model.leaveType, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.TextBoxFor(model => model.leaveType,  new { @readonly = "readonly" })
+                    @Html.EditorFor(model => model.leaveType, new { htmlAttributes = new { @class = "form-control" } })
                     @Html.ValidationMessageFor(model => model.leaveType, "", new { @class = "text-danger" })
                 </div>
             </div>
 
-
+            <div class="form-group">
+                @Html.LabelFor(model => model.applicationDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.applicationDate, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.applicationDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
 
             <div class="form-group">
                 @Html.LabelFor(model => model.startDate, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.TextBoxFor(model => model.startDate, new { @readonly = "readonly" })
+                    @Html.EditorFor(model => model.startDate, new { htmlAttributes = new { @class = "form-control" } })
                     @Html.ValidationMessageFor(model => model.startDate, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -35,33 +47,71 @@
             <div class="form-group">
                 @Html.LabelFor(model => model.endDate, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.TextBoxFor(model => model.endDate, new { @readonly = "readonly" })
+                    @Html.EditorFor(model => model.endDate, new { htmlAttributes = new { @class = "form-control" } })
                     @Html.ValidationMessageFor(model => model.endDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.returnDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.returnDate, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.returnDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.leaveDuration, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.leaveDuration, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.leaveDuration, "", new { @class = "text-danger" })
                 </div>
             </div>
 
             <div class="form-group">
                 @Html.LabelFor(model => model.shortStartTime, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.TextBoxFor(model => model.shortStartTime, new { @readonly = "readonly" })
-                    <!--  @Html.ValidationMessageFor(model => model.shortStartTime, "", new { @class = "text-danger" })
-                    -->
+                    @Html.EditorFor(model => model.shortStartTime, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.shortStartTime, "", new { @class = "text-danger" })
                 </div>
             </div>
 
             <div class="form-group">
                 @Html.LabelFor(model => model.shortEndTime, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.TextBoxFor(model => model.shortEndTime, new { @readonly = "readonly" })
-                    <!--  @Html.ValidationMessageFor(model => model.shortEndTime, "", new { @class = "text-danger" })
-                    -->
+                    @Html.EditorFor(model => model.shortEndTime, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.shortEndTime, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.lmComment, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.lmComment, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.lmComment, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.hrComment, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.hrComment, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.hrComment, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.leaveStatus, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.leaveStatus, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.leaveStatus, "", new { @class = "text-danger" })
                 </div>
             </div>
 
             <div class="form-group">
                 @Html.LabelFor(model => model.comments, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.TextAreaFor(model => model.comments, new { @readonly = "readonly" })
+                    @Html.EditorFor(model => model.comments, new { htmlAttributes = new { @class = "form-control" } })
                     @Html.ValidationMessageFor(model => model.comments, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -69,11 +119,8 @@
             <div class="form-group">
                 @Html.LabelFor(model => model.supportingDocs, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.TextBoxFor(model => model.supportingDocs, new { @readonly = "readonly" })
+                    @Html.EditorFor(model => model.supportingDocs, new { htmlAttributes = new { @class = "form-control" } })
                     @Html.ValidationMessageFor(model => model.supportingDocs, "", new { @class = "text-danger" })
-                    <br />
-                    <!-- <input type="submit" value="Upload" name=" = " upload" />
-                    -->
                 </div>
             </div>
 
@@ -81,7 +128,7 @@
                 @Html.LabelFor(model => model.bookAirTicket, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
                     <div class="checkbox">
-                        @Html.EditorFor(model => model.bookAirTicket, new { @readonly = "readonly" })
+                        @Html.EditorFor(model => model.bookAirTicket)
                         @Html.ValidationMessageFor(model => model.bookAirTicket, "", new { @class = "text-danger" })
                     </div>
                 </div>
@@ -90,20 +137,19 @@
             <div class="form-group">
                 @Html.LabelFor(model => model.contactDetails, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.TextBoxFor(model => model.contactDetails, new { @readonly = "readonly" })
+                    @Html.EditorFor(model => model.contactDetails, new { htmlAttributes = new { @class = "form-control" } })
                     @Html.ValidationMessageFor(model => model.contactDetails, "", new { @class = "text-danger" })
                 </div>
             </div>
 
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="Submit" class="btn btn-default" />
+                    <input type="submit" value="Create" class="btn btn-default" />
                 </div>
             </div>
         </div>
     }
 </div>
-
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")

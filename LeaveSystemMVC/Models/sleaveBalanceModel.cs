@@ -9,12 +9,12 @@ namespace LeaveSystemMVC.Models
     {
 
 
-        public int annual { get; set; } = 0;
-        public int sick { get; set; } = 0;
-        public int compassionate { get; set; } = 0;
-        public int maternity { get; set; } = 0;
-        public int daysInLieue { get; set; } = 0;
-        public int unpaidTotal { get; set; } = 0;
-        public double shortLeaveHours { get; set; } = 0;
+        public int annual { get; set; }
+        public int sick { get; set; }
+        public int compassionate { get; set; }
+        public int maternity { get; set; }
+        public int daysInLieue { get; set; }
+        public int unpaidTotal { get; set; }
+        public double shortLeaveHours { get; set; }
     }
 }
