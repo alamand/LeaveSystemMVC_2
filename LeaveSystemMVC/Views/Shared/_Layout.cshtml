@@ -4,7 +4,6 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - My ASP.NET Application</title>
-    @Styles.Render("~/Content")
     @Styles.Render("~/Content/Theme")
     @Scripts.Render("~/bundles/modernizr")
 
@@ -28,13 +27,13 @@
                     <div class="collapse navbar-collapse bootstrap-admin-navbar-sm">
                         <ul class="nav navbar-nav navbar-right ">
                             <li class="dropdown">
-                                <a href="@Url.Action("Logout", "Auth")" class="dropdown-toggle" data-hover="dropdown">Account<b class="caret"></b></a>
+                                <a href="#" class="dropdown-toggle" data-hover="dropdown">Account<b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     <li role="presentation" class="dropdown-header">Dropdown header</li>
-                                    <li><a href="/sChangePassword/Index">Change Password</a></li>
+                                    <li><a href="/PassChange/Index">Change Password</a></li>
                                     <li role="presentation" class="divider"></li>
                                     <li role="presentation" class="dropdown-header">Dropdown header</li>
-                                    <li><a href="/Auth/Login">Log Out</a></li>
+                                    <li><a href="/User/Login">Log Out</a></li>
                                 </ul>
                             </li>
                         </ul>
