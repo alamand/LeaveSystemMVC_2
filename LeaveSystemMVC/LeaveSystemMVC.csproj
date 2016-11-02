@@ -164,17 +164,15 @@
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
-    <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="App_Start\Startup.cs" />
     <Compile Include="Controllers\aAddDepartmentController.cs" />
     <Compile Include="Controllers\aAddStaffController.cs" />
     <Compile Include="Controllers\aAddStaffRoleController.cs" />
     <Compile Include="Controllers\aBulkAddStaffController.cs" />
-    <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\aEditDepartmentController.cs" />
     <Compile Include="Controllers\aEditStaffController.cs" />
-    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="Controllers\hrChangeApplicationStatusController.cs" />
     <Compile Include="Controllers\hrCreateLeaveTypeController.cs" />
     <Compile Include="Controllers\hrCreditLeaveBalanceController.cs" />
@@ -191,34 +189,30 @@
     <Compile Include="Controllers\lmSubordinateViewController.cs" />
     <Compile Include="Controllers\lmSubordinateViewHistoryController.cs" />
     <Compile Include="Controllers\lmSelectSubstituteController.cs" />
-    <Compile Include="Controllers\loginController.cs" />
     <Compile Include="Controllers\LApplicationController.cs" />
-    <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\sChangePasswordController.cs" />
     <Compile Include="Controllers\sLeaveBalanceController.cs" />
     <Compile Include="Controllers\sLeaveHistoryController.cs" />
     <Compile Include="Controllers\sLeaveStatusController.cs" />
+    <Compile Include="CustomLibraries\CustomDecrypt.cs" />
+    <Compile Include="CustomLibraries\CustomEncrypt.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="HtmlHelperExtensions\MenuExtensions.cs" />
-    <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\aDepartment.cs" />
     <Compile Include="Models\hrCreateLeave.cs" />
     <Compile Include="Models\hrDaysInLieu.cs" />
     <Compile Include="Models\hrHolidaysCalender.cs" />
     <Compile Include="Models\sChangePasswordModel.cs" />
     <Compile Include="Models\aStaffRole.cs" />
-    <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\sleaveBalanceModel.cs" />
     <Compile Include="Models\hrLmApplications.cs" />
     <Compile Include="Models\selectSubstitute.cs" />
-    <Compile Include="Models\loginmodel.cs" />
     <Compile Include="Models\sLeaveModel.cs" />
-    <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\sEmployeeModel.cs" />
+    <Compile Include="Models\Users.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />
@@ -1713,32 +1707,7 @@
     </Content>
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Home\About.cshtml" />
-    <Content Include="Views\Home\Contact.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
-    <Content Include="Views\Account\ConfirmEmail.cshtml" />
-    <Content Include="Views\Account\ExternalLoginConfirmation.cshtml" />
-    <Content Include="Views\Account\ExternalLoginFailure.cshtml" />
-    <Content Include="Views\Account\ForgotPassword.cshtml" />
-    <Content Include="Views\Account\ForgotPasswordConfirmation.cshtml" />
-    <Content Include="Views\Account\Login.cshtml" />
-    <Content Include="Views\Account\Register.cshtml" />
-    <Content Include="Views\Account\ResetPassword.cshtml" />
-    <Content Include="Views\Account\ResetPasswordConfirmation.cshtml" />
-    <Content Include="Views\Account\SendCode.cshtml" />
-    <Content Include="Views\Account\VerifyCode.cshtml" />
-    <Content Include="Views\Manage\AddPhoneNumber.cshtml" />
-    <Content Include="Views\Manage\ChangePassword.cshtml" />
-    <Content Include="Views\Manage\Index.cshtml" />
-    <Content Include="Views\Manage\ManageLogins.cshtml" />
-    <Content Include="Views\Manage\SetPassword.cshtml" />
-    <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
-    <Content Include="Views\Shared\Lockout.cshtml" />
-    <Content Include="Views\Shared\_LoginPartial.cshtml" />
-    <Content Include="Views\Login\Index.cshtml" />
     <Content Include="Views\LApplication\IndexOld.cshtml" />
     <Content Include="Views\aAddDepartment\Index.cshtml" />
     <Content Include="Views\aEditDepartment\Index.cshtml" />
@@ -1759,15 +1728,14 @@
     <Content Include="Views\lmSelectSubstitute\Index.cshtml" />
     <Content Include="Views\lmSubordinateViewBalance\Index.cshtml" />
     <Content Include="Views\lmSubordinateViewHistory\Index.cshtml" />
-    <Content Include="Views\Login\Indexnew.cshtml" />
     <Content Include="Views\sChangePassword\Index.cshtml" />
     <Content Include="Views\sLeaveBalance\Index.cshtml" />
     <Content Include="Views\sLeaveHistory\Index.cshtml" />
-    <Content Include="Views\Auth\Login.cshtml" />
     <Content Include="Views\aBulkAddStaff\Index.cshtml" />
     <Content Include="Views\sLeaveStatus\Index.cshtml" />
     <Content Include="Views\LApplication\Index.cshtml" />
     <Content Include="Views\Shared\_LeftMenu.cshtml" />
+    <Content Include="Views\Auth\Login.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1795,7 +1763,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
+          <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>50683</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
