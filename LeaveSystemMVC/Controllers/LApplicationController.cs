@@ -11,7 +11,6 @@ namespace LeaveSystemMVC.Controllers
         // GET: LApplication
         public ActionResult Index()
         {
-
             List<string> leaves =new List<string>() ;
             leaves.Add("Sick");
             leaves.Add("Compassionate");
