@@ -11,10 +11,13 @@ namespace LeaveSystemMVC.Controllers
         // GET: LApplication
         public ActionResult Index()
         {
-            List<string> leaves =new List<string>() ;
+
+            List<string> leaves = new List<string>() ;
+            leaves.Add("Annual");
             leaves.Add("Sick");
             leaves.Add("Compassionate");
-            leaves.Add("Unpaid");
+            leaves.Add("Maternity");
+            leaves.Add("Short");
             ViewBag.leave = leaves;
             return View();
         }
