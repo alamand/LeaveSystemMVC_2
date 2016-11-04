@@ -204,6 +204,7 @@
     <Compile Include="Models\hrCreateLeave.cs" />
     <Compile Include="Models\hrDaysInLieu.cs" />
     <Compile Include="Models\hrHolidaysCalender.cs" />
+    <Compile Include="Models\miniLeaveListModel.cs" />
     <Compile Include="Models\sChangePasswordModel.cs" />
     <Compile Include="Models\aStaffRole.cs" />
     <Compile Include="Models\sleaveBalanceModel.cs" />
@@ -211,6 +212,7 @@
     <Compile Include="Models\selectSubstitute.cs" />
     <Compile Include="Models\sLeaveModel.cs" />
     <Compile Include="Models\sEmployeeModel.cs" />
+    <Compile Include="Models\subordinateListModel.cs" />
     <Compile Include="Models\Users.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -1736,6 +1738,7 @@
     <Content Include="Views\LApplication\Index.cshtml" />
     <Content Include="Views\Shared\_LeftMenu.cshtml" />
     <Content Include="Views\Auth\Login.cshtml" />
+    <Content Include="Views\lmSubordinateViewHistory\_EmployeeList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

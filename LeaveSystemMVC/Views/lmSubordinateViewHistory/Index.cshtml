@@ -1,10 +1,15 @@
 ﻿@model LeaveSystemMVC.Models.sLeaveModel
 @Html.Partial("_LeftMenu")
-<div class="col-md-6">
+<div class="col-md-4">
+    <div class="form-horizontal">
+        <h4>Subordinates</h4>
+        <hr />
+    </div>
+</div>
+<div class="col-md-4">
     @using (Html.BeginForm()) 
     {
     @Html.AntiForgeryToken()
-    
     <div class="form-horizontal">
         <h4>Line Manager Subordinate History Page</h4>
         <hr />
@@ -30,10 +35,6 @@
         </div>
     }
 </div>
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>
-
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }
