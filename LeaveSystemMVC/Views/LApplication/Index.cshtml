@@ -15,7 +15,7 @@
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             <div class="form-group">
 
-                @Html.LabelFor(model => model.leaveType, htmlAttributes: new { @class = "control-label col-md-2" })
+                @Html.LabelFor(model => model.leaveType,"Leave Type", htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
                     @Html.DropDownListFor(model => model.leaveType, new SelectList(ViewBag.leave))
                     @Html.ValidationMessageFor(model => model.leaveType, "", new { @class = "text-danger" })
@@ -25,7 +25,7 @@
 
 
             <div class="form-group">
-                @Html.LabelFor(model => model.startDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                @Html.LabelFor(model => model.startDate,"Start Date", htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
                     @Html.TextBoxFor(model => model.startDate, new { type = "date" })
                     @Html.ValidationMessageFor(model => model.startDate, "", new { @class = "text-danger" })
@@ -33,7 +33,7 @@
             </div>
 
             <div class="form-group">
-                @Html.LabelFor(model => model.endDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                @Html.LabelFor(model => model.endDate, "End Date",htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
                     @Html.TextBoxFor(model => model.endDate, new { type = "date" })
                     @Html.ValidationMessageFor(model => model.endDate, "", new { @class = "text-danger" })
@@ -41,7 +41,7 @@
             </div>
 
             <div class="form-group">
-                @Html.LabelFor(model => model.shortStartTime, htmlAttributes: new { @class = "control-label col-md-2" })
+                @Html.LabelFor(model => model.shortStartTime, "Start Time",htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
                     @Html.TextBoxFor(model => model.shortStartTime, new { type = "time" })
                     <!--  @Html.ValidationMessageFor(model => model.shortStartTime, "", new { @class = "text-danger" })
@@ -50,7 +50,7 @@
             </div>
 
             <div class="form-group">
-                @Html.LabelFor(model => model.shortEndTime, htmlAttributes: new { @class = "control-label col-md-2" })
+                @Html.LabelFor(model => model.shortEndTime, "End Time",htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
                     @Html.TextBoxFor(model => model.shortEndTime, new { type = "time" })
                     <!--  @Html.ValidationMessageFor(model => model.shortEndTime, "", new { @class = "text-danger" })
@@ -59,7 +59,7 @@
             </div>
 
             <div class="form-group">
-                @Html.LabelFor(model => model.comments, htmlAttributes: new { @class = "control-label col-md-2" })
+                @Html.LabelFor(model => model.comments,"Comments" ,htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
                     @Html.TextAreaFor(model => model.comments, new { htmlAttributes = new { @class = "form-control" } })
                     @Html.ValidationMessageFor(model => model.comments, "", new { @class = "text-danger" })
@@ -67,7 +67,7 @@
             </div>
 
             <div class="form-group">
-                @Html.LabelFor(model => model.supportingDocs, htmlAttributes: new { @class = "control-label col-md-2" })
+                @Html.LabelFor(model => model.supportingDocs, "Supporting Docs",htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
                     @Html.TextBoxFor(model => model.supportingDocs, new {type = "file" })
                     @Html.ValidationMessageFor(model => model.supportingDocs, "", new { @class = "text-danger" })
@@ -77,7 +77,7 @@
             </div>
 
             <div class="form-group">
-                @Html.LabelFor(model => model.bookAirTicket, htmlAttributes: new { @class = "control-label col-md-2" })
+                @Html.LabelFor(model => model.bookAirTicket, "Book Air Ticket",htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
                     <div class="checkbox">
                         @Html.EditorFor(model => model.bookAirTicket)
@@ -87,7 +87,7 @@
             </div>
 
             <div class="form-group">
-                @Html.LabelFor(model => model.contactDetails, htmlAttributes: new { @class = "control-label col-md-2" })
+                @Html.LabelFor(model => model.contactDetails, "Contact Details",htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
                     @Html.EditorFor(model => model.contactDetails, new { htmlAttributes = new { @class = "form-control" } })
                     @Html.ValidationMessageFor(model => model.contactDetails, "", new { @class = "text-danger" })
