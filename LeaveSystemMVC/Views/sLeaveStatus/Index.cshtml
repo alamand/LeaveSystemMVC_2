@@ -16,9 +16,9 @@
 
             <div class="form-group ">
 
-                @Html.LabelFor(model => model.leaveType, "Leave Type",htmlAttributes: new { @class = "control-label col-md-1" })
+                @Html.LabelFor(model => model.leaveType, "Leave Type", htmlAttributes: new { @class = "control-label col-md-1" })
                 <div class="col-md-4">
-                    @Html.TextBoxFor(model => model.leaveType,  new { @readonly = "readonly" })
+                    @Html.TextBoxFor(model => model.leaveType, new { @readonly = "readonly" })
                     @Html.ValidationMessageFor(model => model.leaveType, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -40,7 +40,7 @@
                         @Html.ValidationMessageFor(model => model.endDate, "", new { @class = "text-danger" })
                     </div>
                 </div>
-                </div>
+            </div>
             <hr />
 
             <div class="row">
@@ -49,7 +49,7 @@
                     <div class="col-md-8">
                         @Html.TextBoxFor(model => model.shortStartTime, new { @readonly = "readonly" })
                         <!--  @Html.ValidationMessageFor(model => model.shortStartTime, "", new { @class = "text-danger" })
-                -->
+                        -->
                     </div>
                 </div>
 
@@ -58,12 +58,12 @@
                     <div class="col-md-8">
                         @Html.TextBoxFor(model => model.shortEndTime, new { @readonly = "readonly" })
                         <!--  @Html.ValidationMessageFor(model => model.shortEndTime, "", new { @class = "text-danger" })
-                -->
+                        -->
                     </div>
                 </div>
-                </div>
+            </div>
             <hr />
-                
+
             <div class="row">
                 <div class="form-group col-xs-4">
                     @Html.LabelFor(model => model.supportingDocs, "Supporting Docs", htmlAttributes: new { @class = "control-label col-md-4" })
@@ -72,10 +72,9 @@
                         @Html.ValidationMessageFor(model => model.supportingDocs, "", new { @class = "text-danger" })
                         <br />
                         <!-- <input type="submit" value="Upload" name=" = " upload" />
-                -->
+                        -->
                     </div>
                 </div>
-
                 <div class="form-group col-xs-4">
                     @Html.LabelFor(model => model.comments, "Comments", htmlAttributes: new { @class = "control-label col-md-4" })
                     <div class="col-md-8">
@@ -83,7 +82,7 @@
                         @Html.ValidationMessageFor(model => model.comments, "", new { @class = "text-danger" })
                     </div>
                 </div>
-                </div>
+            </div>
             <hr />
             <div class="row">
                 <div class="form-group col-xs-4">
@@ -103,13 +102,10 @@
                     </div>
                 </div>
 
-                
             </div>
-            </div>
+        </div>
     }
 </div>
-
-
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }
