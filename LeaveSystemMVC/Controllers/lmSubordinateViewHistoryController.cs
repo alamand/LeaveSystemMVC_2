@@ -12,7 +12,7 @@ namespace LeaveSystemMVC.Controllers
     public class lmSubordinateViewHistoryController : Controller
     {
         // GET: lmSubordinateViewHistory
-        public ActionResult Index()
+        public ActionResult Index(subordinateListModel model)
         {
             /*
             subordinateListModel model = new subordinateListModel();
@@ -36,6 +36,10 @@ namespace LeaveSystemMVC.Controllers
                 }
             }
             */
+            minEmployee tempEmp = new minEmployee();
+            tempEmp.empID = 32160627;
+            tempEmp.empName = "hamza";
+
             return View(/*model*/);
         }
         

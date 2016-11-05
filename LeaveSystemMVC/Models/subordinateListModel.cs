@@ -7,12 +7,12 @@ namespace LeaveSystemMVC.Models
 {
     public class subordinateListModel
     {
-        public List<minEmployee> employeeList;
+        public List<minEmployee> employeeList { get; set; }
     }
 
-    public struct minEmployee
+    public class minEmployee
     {
-        public int empID { get; set; }
-        public string empName { get; set; }
+        public int empID;
+        public string empName;
     }
 }
