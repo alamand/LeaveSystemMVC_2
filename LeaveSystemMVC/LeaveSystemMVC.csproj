@@ -1734,7 +1734,6 @@
     <Content Include="Views\sLeaveBalance\Index.cshtml" />
     <Content Include="Views\sLeaveHistory\Index.cshtml" />
     <Content Include="Views\aBulkAddStaff\Index.cshtml" />
-    <Content Include="Views\sLeaveStatus\Index.cshtml" />
     <Content Include="Views\LApplication\Index.cshtml" />
     <Content Include="Views\Shared\_LeftMenu.cshtml" />
     <Content Include="Views\Auth\Login.cshtml" />
@@ -1742,6 +1741,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\lmSubordinateView\" />
+    <Folder Include="Views\sLeaveStatus\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

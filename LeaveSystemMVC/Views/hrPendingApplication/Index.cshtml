@@ -1,6 +1,6 @@
 ﻿@model LeaveSystemMVC.Models.sLeaveModel
 @Html.Partial("_LeftMenu")
-<div class="col-md-6">
+<div class="col-md-10">
 	@using (Html.BeginForm()) 
 	{
 		@Html.AntiForgeryToken()
@@ -10,7 +10,7 @@
 			<hr />
 			@Html.ValidationSummary(true, "", new { @class = "text-danger" })
 			<div class="form-group">
-				<table style="border:2px solid black; text-align:center ;">
+				<table style="border:2px solid black; text-align:center; margin:15px;">
 					<tr style="border:0.5px solid black;">
 						<th>Staff Name</th>
 						<th>Start Date</th>
@@ -34,9 +34,8 @@
 					</tr>
 				</table>
 			</div>
-
 			<div class="form-group">
-				<table style="border:2px solid black; text-align:center ;">
+				<table style="border:2px solid black; text-align:center; margin:15px;">
 					<tr style="border:0.5px solid black;">
 						<th>  Leave Type  </th>
 						<th>  Days        </th>>
@@ -80,9 +79,7 @@
 		</div>
 	}
 </div>
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>
+
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
