@@ -70,11 +70,10 @@ namespace LeaveSystemMVC.Controllers
                 {
                     string idString = empID.ToString();
                     string fullNameString = firstName + " " + lastName;
-            
                     var claims = new List<Claim>
                     {
                         new Claim(ClaimTypes.Name, fullNameString),
-                        new Claim(ClaimTypes.NameIdentifier,  idString),
+                        new Claim(ClaimTypes.NameIdentifier, idString),
                         new Claim(ClaimTypes.Role, empRole)
                     };
                     var identity = new ClaimsIdentity(claims, "ApplicationCookie");

@@ -169,10 +169,10 @@
     <Compile Include="Controllers\aAddDepartmentController.cs" />
     <Compile Include="Controllers\aAddStaffController.cs" />
     <Compile Include="Controllers\aAddStaffRoleController.cs" />
+    <Compile Include="Controllers\aBulkAddStaffController.cs" />
     <Compile Include="Controllers\aEditDepartmentController.cs" />
     <Compile Include="Controllers\aEditStaffController.cs" />
     <Compile Include="Controllers\AuthController.cs" />
-    <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\hrChangeApplicationStatusController.cs" />
     <Compile Include="Controllers\hrCreateLeaveTypeController.cs" />
     <Compile Include="Controllers\hrCreditLeaveBalanceController.cs" />
@@ -204,15 +204,14 @@
     <Compile Include="Models\hrCreateLeave.cs" />
     <Compile Include="Models\hrDaysInLieu.cs" />
     <Compile Include="Models\hrHolidaysCalender.cs" />
-    <Compile Include="Models\Users.cs" />
     <Compile Include="Models\sChangePasswordModel.cs" />
     <Compile Include="Models\aStaffRole.cs" />
     <Compile Include="Models\sleaveBalanceModel.cs" />
     <Compile Include="Models\hrLmApplications.cs" />
     <Compile Include="Models\selectSubstitute.cs" />
     <Compile Include="Models\sLeaveModel.cs" />
-    <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\sEmployeeModel.cs" />
+    <Compile Include="Models\Users.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -220,7 +219,6 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
-    <Content Include="Content\GIMEL_logo.jpg" />
     <Content Include="Content\Theme\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\Theme\base\images\ui-bg_flat_75_ffffff_40x100.png" />
     <Content Include="Content\Theme\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
@@ -283,7 +281,6 @@
     <Content Include="Content\Theme\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\Theme\images\bg-input-focus.png" />
     <Content Include="Content\Theme\images\bg-input.png" />
-    <Content Include="Content\Theme\images\GIMEL_logo.jpg" />
     <Content Include="Content\Theme\images\sprite.png" />
     <Content Include="Content\Theme\vendors\boostrap3-typeahead\bootstrap3-typeahead.js" />
     <Content Include="Content\Theme\vendors\boostrap3-typeahead\bootstrap3-typeahead.min.js" />
@@ -1711,18 +1708,6 @@
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
-    <Content Include="Views\Account\ConfirmEmail.cshtml" />
-    <Content Include="Views\Account\ExternalLoginConfirmation.cshtml" />
-    <Content Include="Views\Account\ExternalLoginFailure.cshtml" />
-    <Content Include="Views\Account\ForgotPassword.cshtml" />
-    <Content Include="Views\Account\ForgotPasswordConfirmation.cshtml" />
-    <Content Include="Views\Account\Login.cshtml" />
-    <Content Include="Views\Account\Register.cshtml" />
-    <Content Include="Views\Account\ResetPassword.cshtml" />
-    <Content Include="Views\Account\ResetPasswordConfirmation.cshtml" />
-    <Content Include="Views\Account\SendCode.cshtml" />
-    <Content Include="Views\Account\VerifyCode.cshtml" />
     <Content Include="Views\LApplication\IndexOld.cshtml" />
     <Content Include="Views\aAddDepartment\Index.cshtml" />
     <Content Include="Views\aEditDepartment\Index.cshtml" />
@@ -1744,11 +1729,12 @@
     <Content Include="Views\lmSubordinateViewBalance\Index.cshtml" />
     <Content Include="Views\lmSubordinateViewHistory\Index.cshtml" />
     <Content Include="Views\sChangePassword\Index.cshtml" />
-    <Content Include="Views\sLeaveStatus\Index.cshtml" />
-    <Content Include="Views\Shared\_LeftMenu.cshtml" />
-    <Content Include="Views\LApplication\Index.cshtml" />
     <Content Include="Views\sLeaveBalance\Index.cshtml" />
     <Content Include="Views\sLeaveHistory\Index.cshtml" />
+    <Content Include="Views\aBulkAddStaff\Index.cshtml" />
+    <Content Include="Views\sLeaveStatus\Index.cshtml" />
+    <Content Include="Views\LApplication\Index.cshtml" />
+    <Content Include="Views\Shared\_LeftMenu.cshtml" />
     <Content Include="Views\Auth\Login.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -1777,7 +1763,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
+          <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>50683</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
