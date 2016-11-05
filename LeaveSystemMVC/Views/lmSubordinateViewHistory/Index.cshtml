@@ -1,4 +1,4 @@
-﻿@model LeaveSystemMVC.Models.sLeaveModel
+﻿@model LeaveSystemMVC.Models.subordinateListModel
 @Html.Partial("_LeftMenu")
 @using (Html.BeginForm())
 {
@@ -10,7 +10,7 @@
                 <ul class="nav navbar-collapse collapse bootstrap-admin-navbar-side">
                     <li role="presentation" class="dropdown-header">List</li>
                     <li>
-                        <a href="/"><i class="glyphicon glyphicon-chevron-right"></i>Test List Item</a>
+                        <a href="Index"><i class="glyphicon glyphicon-chevron-right"></i>@Model.employeeList.ElementAt(0).empName</a>
                     </li>
                 </ul>
             </div>

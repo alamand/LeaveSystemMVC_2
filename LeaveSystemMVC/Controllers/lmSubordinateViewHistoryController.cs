@@ -12,8 +12,9 @@ namespace LeaveSystemMVC.Controllers
     public class lmSubordinateViewHistoryController : Controller
     {
         // GET: lmSubordinateViewHistory
-        public ActionResult Index(subordinateListModel model)
+        public ActionResult Index()
         {
+            subordinateListModel model = new subordinateListModel();
             /*
             subordinateListModel model = new subordinateListModel();
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
@@ -39,8 +40,15 @@ namespace LeaveSystemMVC.Controllers
             minEmployee tempEmp = new minEmployee();
             tempEmp.empID = 32160627;
             tempEmp.empName = "hamza";
+            model.employeeList = new List<minEmployee>();
+            model.employeeList.Add(tempEmp);
+            return View(model);
+        }
 
-            return View(/*model*/);
+        [HttpPost]
+        public ActionResult Index(string empID)
+        {
+            return View();
         }
         
     }
