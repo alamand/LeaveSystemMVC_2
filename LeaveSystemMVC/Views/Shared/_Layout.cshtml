@@ -56,16 +56,19 @@
             @RenderBody()
         </div>
         <div class="row">
-            <hr>
-            <footer>
-                <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
-            </footer>
+            <div class="col-md-6">
+                <hr>
+                <footer>
+                    <p>&copy; @DateTime.Now.Year - Leave Management System</p>
+                </footer>
+            </div>
         </div>
     </div>
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
+    
 </body>
 </html>
 
