@@ -14,6 +14,7 @@ namespace LeaveSystemMVC.Controllers
         // GET: lmSubordinateViewHistory
         public ActionResult Index()
         {
+            /*
             subordinateListModel model = new subordinateListModel();
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
             string queryString = "Select Employee_ID, First_Name, Last_Name FROM dbo.Employee";
@@ -34,7 +35,8 @@ namespace LeaveSystemMVC.Controllers
                     }
                 }
             }
-            return View(model);
+            */
+            return View(/*model*/);
         }
         
     }
