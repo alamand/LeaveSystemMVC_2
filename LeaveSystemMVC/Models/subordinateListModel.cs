@@ -14,4 +14,5 @@ namespace LeaveSystemMVC.Models
     {
         public int empID { get; set; }
         public string empName { get; set; }
+    }
 }

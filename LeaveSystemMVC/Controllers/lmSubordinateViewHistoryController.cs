@@ -14,12 +14,7 @@ namespace LeaveSystemMVC.Controllers
         // GET: lmSubordinateViewHistory
         public ActionResult Index()
         {
-            return View();
-        }
-
-        [HttpGet]
-        public ActionResult GenerateSubordinateList(subordinateListModel model)
-        {
+            subordinateListModel model = new subordinateListModel();
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
             string queryString = "Select Employee_ID, First_Name, Last_Name FROM dbo.Employee";
             using (var connection = new SqlConnection(connectionString))
@@ -29,7 +24,7 @@ namespace LeaveSystemMVC.Controllers
                 using (var reader = command.ExecuteReader())
                 {
                     int iter = 0;
-                    while(reader.Read())
+                    while (reader.Read())
                     {
                         minEmployee tempEmp = new minEmployee();
                         tempEmp.empID = (int)reader[0];
@@ -39,7 +34,8 @@ namespace LeaveSystemMVC.Controllers
                     }
                 }
             }
-            return PartialView(model);
+            return View(model);
         }
+        
     }
 }

@@ -1738,7 +1738,6 @@
     <Content Include="Views\LApplication\Index.cshtml" />
     <Content Include="Views\Shared\_LeftMenu.cshtml" />
     <Content Include="Views\Auth\Login.cshtml" />
-    <Content Include="Views\lmSubordinateViewHistory\_EmployeeList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
