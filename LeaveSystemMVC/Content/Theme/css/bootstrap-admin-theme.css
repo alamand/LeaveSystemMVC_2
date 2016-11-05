@@ -32,7 +32,7 @@ html.bootstrap-admin-vertical-centered .container .row{
 /** Body **/
 body{
     background-color: rgba(245, 245, 245, 0.5);
-    padding-top: 70px; /* Required, because main menu / navbar has "navbar-fixed-top" class and is sticked to the top */
+    padding-top: 70px; /* Required, because main menu / navbar has "navbar-fixed-top" class and is sticked to the top */ 
 }
 body.bootstrap-admin-with-small-navbar{
     padding-top: 95px;
@@ -227,9 +227,9 @@ body.bootstrap-admin-with-small-navbar{
 }
 
 /** Footer **/
-footer p{
+footer p {
     text-align: right;
-}
+    
 
 /** Bootstrap 3 Typeahead plugin **/
 .typeahead{

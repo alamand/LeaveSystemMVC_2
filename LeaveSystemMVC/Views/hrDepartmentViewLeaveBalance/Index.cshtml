@@ -1,6 +1,6 @@
 ﻿@model LeaveSystemMVC.Models.sleaveBalanceModel
 @Html.Partial("_LeftMenu")
-<div class="col-md-6">
+<div class="col-md-10">
     @using (Html.BeginForm()) 
     {
         @Html.AntiForgeryToken()
@@ -12,54 +12,56 @@
         
             <div class="form-group">
                 <div class="form-group">
-                    <table style="border: 1.5px solid black; margin:15px;">
-                        <tr style="border: 1px solid black; text-align:center">
-                            <th style="border: 1px solid black;"> No </th>
-                            <th style="border: 1px solid black;"> Staff Name </th>
-                            <th style="border: 1px solid black;"> Annual Leave </th>
-                            <th style="border: 1px solid black;"> Sick Leave </th>
-                            <th style="border: 1px solid black;"> Compassionate Leave </th>
-                            <th style="border: 1px solid black;"> Short Leave </th>
-                            <th style="border: 1px solid black;"> Maternity Leave </th>
-                            <th style="border: 1px solid black;"> Days in Lieu </th>
-                            <th style="border: 1px solid black;"> View History </th>
-                        </tr>
-                        <tr style="border: 1.5px solid black;">
-                            <td style="border: 1px solid black;"> 1 </td>
-                            <td style="border: 1px solid black;"> Junaid </td>
-                            <td style="border: 1px solid black;"> 1 </td>
-                            <td style="border: 1px solid black;"> 0 </td> 
-                            <td style="border: 1px solid black;"> 0 </td>
-                            <td style="border: 1px solid black;"> 1 </td>
-                            <td style="border: 1px solid black;"> 0 </td>
-                            <td style="border: 1px solid black;"> 0 </td>
-                            <td style="border: 1px solid black;"> <a href="#">View</a> </td>
-                        </tr>
-                        <tr style="border: 1.5px solid black;">
-                            <td style="border: 1px solid black;"> 2 </td>
-                            <td style="border: 1px solid black;"> Jared </td>
-                            <td style="border: 1px solid black;"> 1 </td>
-                            <td style="border: 1px solid black;"> 3 </td>
-                            <td style="border: 1px solid black;"> 0 </td>
-                            <td style="border: 1px solid black;"> 1 </td>
-                            <td style="border: 1px solid black;"> 0 </td>
-                            <td style="border: 1px solid black;"> 0 </td>
-                            <td style="border: 1px solid black;"> <a href="#">View</a> </td>
-                        </tr>
-                        <tr style="border: 1.5px solid black;">
-                            <td style="border: 1px solid black;"> 3 </td>
-                            <td style="border: 1px solid black;"> Sam</td>
-                            <td style="border: 1px solid black;"> 2 </td>
-                            <td style="border: 1px solid black;"> 1 </td>
-                            <td style="border: 1px solid black;"> 0 </td>
-                            <td style="border: 1px solid black;"> 1 </td>
-                            <td style="border: 1px solid black;"> 1 </td>
-                            <td style="border: 1px solid black;"> 1 </td>
-                            <td style="border: 1px solid black;"> <a href="#">View</a> </td>
-                        </tr>
-                    </table>
-                </div>
-            
+    
+        <table style="border: 1.5px solid black; margin:15px;">
+            <tr style="border: 1px solid black; text-align:center;">
+                <th style="border: 1px solid black;"> No </th>
+                <th style="border: 1px solid black;"> Staff Name </th>
+                <th style="border: 1px solid black;"> Annual Leave </th>
+                <th style="border: 1px solid black;"> Sick Leave </th>
+                <th style="border: 1px solid black;"> Compassionate Leave </th>
+                <th style="border: 1px solid black;"> Short Leave </th>
+                <th style="border: 1px solid black;"> Maternity Leave </th>
+                <th style="border: 1px solid black;"> Days in Lieu </th>
+                <th style="border: 1px solid black;"> View History </th>
+            </tr>
+   
+    <tr style="border: 1.5px solid black;">
+        <td style="border: 1px solid black;"> 1 </td>
+        <td style="border: 1px solid black;"> Junaid </td>
+        <td style="border: 1px solid black;"> 1 </td>
+        <td style="border: 1px solid black;"> 0 </td>
+        <td style="border: 1px solid black;"> 0 </td>
+        <td style="border: 1px solid black;"> 1 </td>
+        <td style="border: 1px solid black;"> 0 </td>
+        <td style="border: 1px solid black;"> 0 </td>
+        <td style="border: 1px solid black;"> <a href="#">View</a> </td>
+    </tr>
+    <tr style="border: 1.5px solid black;">
+        <td style="border: 1px solid black;"> 2 </td>
+        <td style="border: 1px solid black;"> Jared </td>
+        <td style="border: 1px solid black;"> 1 </td>
+        <td style="border: 1px solid black;"> 3 </td>
+        <td style="border: 1px solid black;"> 0 </td>
+        <td style="border: 1px solid black;"> 1 </td>
+        <td style="border: 1px solid black;"> 0 </td>
+        <td style="border: 1px solid black;"> 0 </td>
+        <td style="border: 1px solid black;"> <a href="#">View</a> </td>
+    </tr>
+    <tr style="border: 1.5px solid black;">
+        <td style="border: 1px solid black;"> 3 </td>
+        <td style="border: 1px solid black;"> Sam</td>
+        <td style="border: 1px solid black;"> 2 </td>
+        <td style="border: 1px solid black;"> 1 </td>
+        <td style="border: 1px solid black;"> 0 </td>
+        <td style="border: 1px solid black;"> 1 </td>
+        <td style="border: 1px solid black;"> 1 </td>
+        <td style="border: 1px solid black;"> 1 </td>
+        <td style="border: 1px solid black;"> <a href="#">View</a> </td>
+    </tr>
+    </table>
+            </div>
+
             </div>
         </div>
     }

@@ -219,6 +219,7 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\GIMEL_logo.jpg" />
     <Content Include="Content\Theme\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\Theme\base\images\ui-bg_flat_75_ffffff_40x100.png" />
     <Content Include="Content\Theme\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
@@ -277,7 +278,8 @@
     <Content Include="Content\Theme\css\datepicker.fixes.css" />
     <Content Include="Content\Theme\css\DT_bootstrap.css" />
     <Content Include="Content\Theme\css\site.css" />
-    <Content Include="Content\Theme\css\uniform.default.fixes.css" />
+    <Content Include="Content\Theme\images\GIMEL_logo.jpg" />
+    <Content Include="Content\uniform.default.fixes.css" />
     <Content Include="Content\Theme\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\Theme\images\bg-input-focus.png" />
     <Content Include="Content\Theme\images\bg-input.png" />
@@ -1732,10 +1734,10 @@
     <Content Include="Views\sLeaveBalance\Index.cshtml" />
     <Content Include="Views\sLeaveHistory\Index.cshtml" />
     <Content Include="Views\aBulkAddStaff\Index.cshtml" />
-    <Content Include="Views\sLeaveStatus\Index.cshtml" />
     <Content Include="Views\LApplication\Index.cshtml" />
     <Content Include="Views\Shared\_LeftMenu.cshtml" />
     <Content Include="Views\Auth\Login.cshtml" />
+    <Content Include="Views\sLeaveStatus\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

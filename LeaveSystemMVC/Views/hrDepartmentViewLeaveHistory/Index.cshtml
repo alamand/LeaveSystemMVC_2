@@ -1,6 +1,6 @@
 ﻿@model LeaveSystemMVC.Models.sLeaveModel
 @Html.Partial("_LeftMenu")
-<div class="col-md-6">
+<div class="col-md-10">
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
@@ -19,12 +19,14 @@
                 </select>
             </div>
             <hr />
+            <br /> <br />
             @*
                 The table would retrieve data from db and show the staff name
                 the view button would take them to their detailed history.
                 When the view link would be clicked it would also send the staffid to the page
                 staffid would be used to query and display the details**@
             <div id="form-group">
+               
                 <table style=" border 1px black solid;text-align:center;">
                     @{  var dept = "Staff";
                         if (dept == "Staff")
@@ -62,9 +64,7 @@
         </div>
     }
 </div>
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>
+
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
