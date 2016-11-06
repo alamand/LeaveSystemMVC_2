@@ -17,7 +17,7 @@
 
                 @Html.LabelFor(model => model.leaveType,"Leave Type", htmlAttributes: new { @class = "control-label col-md-1" })
                 <div class="col-md-4">
-                    @Html.DropDownListFor(model => model.leaveType, new SelectList(ViewBag.leave))
+                    @Html.DropDownListFor(model => model.leaveType, new SelectList(ViewBag.leave)) <!--  viewBag.leave (leave is a list) is created in the controller -->
                     @Html.ValidationMessageFor(model => model.leaveType, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -27,7 +27,7 @@
                 <div class="form-group col-xs-4">
                     @Html.LabelFor(model => model.startDate, "Start Date", htmlAttributes: new { @class = "control-label col-md-3" })
                     <div class="col-md-8">
-                        @Html.TextBoxFor(model => model.startDate, new { type = "date" })
+                        @Html.TextBoxFor(model => model.startDate, new { type = "date" })<!--  just use type = "date" to get a date field and make it a textBoxFor -->
                         @Html.ValidationMessageFor(model => model.startDate, "", new { @class = "text-danger" })
                     </div>
                 </div>
