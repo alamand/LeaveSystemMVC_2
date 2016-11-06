@@ -8,6 +8,14 @@
         <div class="form-horizontal">
             
                 <h4>Adding a Department Page</h4>
+                <label for="existLeave"> Check Existing Departments</label>
+                <select id="#existLeave">
+                    <option>IT </option>
+                    <option>Academic Services</option>
+                    <option>Student Services</option>
+                    <option>HR</option>
+                    <option>Finance</option>
+                 </select>
                 <hr />
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                 <div class="form-group">
@@ -21,7 +29,7 @@
                 <div class="form-group">
                     @Html.LabelFor(model => model.primaryLMID, "Primary Line Manager ID", htmlAttributes: new { @class = "control-label col-md-2" })
                     <div class="col-md-4">
-                        @Html.EditorFor(model => model.primaryLMID, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.DropDownListFor(model => model.primaryLMID, new SelectList(ViewBag.plm))
                         @Html.ValidationMessageFor(model => model.primaryLMID, "", new { @class = "text-danger" })
                     </div>
                 </div>
@@ -29,7 +37,7 @@
                 <div class="form-group">
                     @Html.LabelFor(model => model.secondaryLMID, "Secondary Line Manager ID", htmlAttributes: new { @class = "control-label col-md-2" })
                     <div class="col-md-4">
-                        @Html.EditorFor(model => model.secondaryLMID, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.DropDownListFor(model => model.secondaryLMID, new SelectList(ViewBag.slm))
                         @Html.ValidationMessageFor(model => model.secondaryLMID, "", new { @class = "text-danger" })
                     </div>
                 </div>

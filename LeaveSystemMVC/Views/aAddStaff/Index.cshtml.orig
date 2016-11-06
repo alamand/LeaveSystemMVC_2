@@ -101,7 +101,11 @@
                 <div class="form-group col-xs-4">
                     @Html.LabelFor(model => model.empStartDate, "Employment Start Date", htmlAttributes: new { @class = "control-label col-md-4", type="Date" })
                     <div class="col-md-8">
+<<<<<<< HEAD
+                        @Html.EditorFor(model => model.empStartDate, new {  htmlAttributes = new { @class = "form-control" } })
+=======
                         @Html.TextBoxFor(model => model.empStartDate, new { type = "date" })
+>>>>>>> 64e38357150f5da26ec54ebee58725ad38a1524d
                         @Html.ValidationMessageFor(model => model.empStartDate, "", new { @class = "text-danger" })
                     </div>
                 </div>
