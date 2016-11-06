@@ -9,20 +9,27 @@
         <h4>Line Manager Subordinate History Page</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        
-           
-                   <div class="col-md-6">
-                       <label for="dt">Start Date</label>
-                       <input id="dt" name="dt" type="date" />
-                   </div>
-               
-               
-                   <div class="col-md-6">
+            <div class="form-horizontal">
+                <label>Staff Name  </label>
+                <select>
+                    <option>Jasim</option>
+                    <option>Zobad</option>
+                </select>
+                
+            </div>
+        <hr />
+            <div class="col-md-6">
+                <label for="dt">Start Date</label>
+                <input id="dt" name="dt" type="date" />
+            </div>
 
-                       <label for="dt">End Date</label>
-                       <input id="edt" name="edt" type="date" />
-                   </div>
-               </div>
+
+            <div class="col-md-6">
+
+                <label for="dt">End Date</label>
+                <input id="edt" name="edt" type="date" />
+            </div>
+        </div>
   <br /> <hr />
         
       
@@ -34,9 +41,7 @@
         
     }
 </div>
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>
+
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
