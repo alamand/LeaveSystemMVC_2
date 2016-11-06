@@ -11,10 +11,16 @@ namespace LeaveSystemMVC.Controllers
 {
     public class lmSubordinateViewHistoryController : Controller
     {
+        private readonly List<minStaff> model = new List<minStaff>
+        {
+            new minStaff {empID = 32160627, empName = "Hamza Rahimy"},
+            new minStaff {empID = 32060627, empName = "Not Hamza Rahimy"}
+        };
+
         // GET: lmSubordinateViewHistory
         public ActionResult Index()
         {
-            subordinateListModel model = new subordinateListModel();
+            
             /*
             subordinateListModel model = new subordinateListModel();
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
@@ -37,18 +43,18 @@ namespace LeaveSystemMVC.Controllers
                 }
             }
             */
-            minEmployee tempEmp = new minEmployee();
-            tempEmp.empID = 32160627;
-            tempEmp.empName = "hamza";
-            model.employeeList = new List<minEmployee>();
-            model.employeeList.Add(tempEmp);
+
             return View(model);
         }
-
-        [HttpPost]
-        public ActionResult Index(string empID)
+        
+        public PartialViewResult SelectEmployee(int id)
         {
-            return View();
+            var temp = new miniLeaveListModel();
+            if(id == 32160627)
+                temp.displayText = "Hamza Rahimy";
+            else
+                temp.displayText = "NOT Hamza Rahimy";
+            return PartialView("_PlaceDisplay", temp);
         }
         
     }

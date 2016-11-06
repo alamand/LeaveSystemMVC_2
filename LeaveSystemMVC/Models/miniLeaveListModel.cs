@@ -13,14 +13,7 @@ namespace LeaveSystemMVC.Models
      history they want to view the full details of.*/
     public class miniLeaveListModel
     {
-        public List<conLeaveDetails> leaveSelectionList;
+        public string displayText { get; set; }
     }
-
-    public struct conLeaveDetails
-    {
-        public int leaveID { get; set; } //Will be used to retrieve the selected leave from database.
-        public string leaveType { get; set; }
-        public DateTime startDate { get; set; }
-        public DateTime endDate { get; set; }
-    }
+    
 }
