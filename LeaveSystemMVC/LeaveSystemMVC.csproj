@@ -173,6 +173,7 @@
     <Compile Include="Controllers\aEditDepartmentController.cs" />
     <Compile Include="Controllers\aEditStaffController.cs" />
     <Compile Include="Controllers\AuthController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\hrChangeApplicationStatusController.cs" />
     <Compile Include="Controllers\hrCreateLeaveTypeController.cs" />
     <Compile Include="Controllers\hrCreditLeaveBalanceController.cs" />
@@ -1738,6 +1739,7 @@
     <Content Include="Views\Shared\_LeftMenu.cshtml" />
     <Content Include="Views\Auth\Login.cshtml" />
     <Content Include="Views\sLeaveStatus\Index.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
