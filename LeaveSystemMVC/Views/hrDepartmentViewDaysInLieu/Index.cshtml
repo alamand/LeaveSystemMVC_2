@@ -1,6 +1,6 @@
 ﻿@model LeaveSystemMVC.Models.sleaveBalanceModel
 @Html.Partial("_LeftMenu")
-<div class="col-md-6">
+<div class="col-md-8">
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
@@ -43,9 +43,6 @@
             </div>
         </div>
     }
-</div>
-<div>
-    @Html.ActionLink("Back to List", "Index")
 </div>
 
 @section Scripts {

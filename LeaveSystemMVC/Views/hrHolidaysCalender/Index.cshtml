@@ -1,17 +1,12 @@
 ﻿@model LeaveSystemMVC.Models.hrHolidaysCalender
 @Html.Partial("_LeftMenu")
-<div class="col-md-6">
+<div class="col-md-9">
     @using (Html.BeginForm()) 
     {
         @Html.AntiForgeryToken()
     
         <div class="form-horizontal">
-            <h4>Holiday Calender</h4>
-            <hr />
-            <section style="border: 1px solid black; margin: 5px;">
-                Note: To create a new holiday just select the starting date in Start Date
-                and selsect the end date for the holidays and click Save button.
-            </section>
+            
         
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             <hr/>
@@ -19,15 +14,18 @@
                 <label for="hName"> Holiday Name</label>
                 <input type="text" name="hName" id="hName" />
             </div> 
-            <div class="form-group">
-               <label>Start Date </label>
-                <input type="date" />
-           
-            </div>
-            <div class="form-group">
-                <label>End Date </label>
-                <input type="date" />
-           
+            <hr />
+            <div class="row">
+                <div class="form-group col-xs-4">
+                    <label>Start Date </label>
+                    <input type="date" />
+
+                </div>
+                <div class="form-group col-xs-4">
+                    <label>End Date </label>
+                    <input type="date" />
+
+                </div>
             </div>
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-10">
@@ -37,9 +35,7 @@
             </div>
     }
 </div>
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>
+
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")

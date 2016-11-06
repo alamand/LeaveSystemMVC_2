@@ -11,6 +11,31 @@ namespace LeaveSystemMVC.Controllers
         // GET: aAddStaff
         public ActionResult Index()
         {
+            //all these lists should not be hardcoded
+
+            List<string> slm = new List<string>();
+            slm.Add("None");
+            slm.Add("Sukhpreet Singh Sidhu");
+            slm.Add("Bidisha Sen");
+            slm.Add("Mandy Northover");
+            slm.Add("Dan Adkins");
+            ViewBag.slm = slm;
+
+            List<string> department = new List<string>();
+            department.Add("None");
+            department.Add("IT");
+            department.Add("Academics");
+            department.Add("HR");
+            department.Add("Student Services");
+            ViewBag.department = department;
+
+            List<string> staffType = new List<string>();
+            staffType.Add("None");
+            staffType.Add("Admin");
+            staffType.Add("Line  Manager");
+            staffType.Add("HR");
+            staffType.Add("Staff Member");
+            ViewBag.staffType = staffType;
             return View();
         }
 
