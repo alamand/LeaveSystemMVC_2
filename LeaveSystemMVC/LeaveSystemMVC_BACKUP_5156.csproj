@@ -1739,8 +1739,11 @@
     <Content Include="Views\LApplication\Index.cshtml" />
     <Content Include="Views\Shared\_LeftMenu.cshtml" />
     <Content Include="Views\Auth\Login.cshtml" />
+<<<<<<< HEAD
     <Content Include="Views\RandomPassword\RandomPassword.cshtml" />
+=======
     <Content Include="Views\sLeaveStatus\Index.cshtml" />
+>>>>>>> 64e38357150f5da26ec54ebee58725ad38a1524d
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
