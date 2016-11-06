@@ -84,7 +84,7 @@ namespace LeaveSystemMVC.Controllers
                     //Makes our claims list persist throughout the application session
                     authManager.SignIn(identity);
 
-                    return RedirectToAction("Index", "LApplication");
+                    return RedirectToAction("Index", "Home");
                 }
             }
 
