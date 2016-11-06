@@ -19,38 +19,35 @@
                             <th>End Date</th>
                             <th>Duration Days</th>
                             <th>Status</th>
-                            <th>View Application</th>
+                            
                         </tr>
                         <tr style="border:0.5px solid black;">
                             <td>Sukhpreet Singh</td>
                             <td>10/10/2016</td>
                             <td>20/10/2016</td>
                             <td>10</td>
-                            <td>Pending</td>
-                            <td><a href="#">View</a></td>
+                            <td>Accept</td>
+                            
                         </tr>
                         <tr>
                             <td>Zobad Mahmood</td>
                             <td>10/08/2016</td>
                             <td>20/08/2016</td>
                             <td>10</td>
-                            <td>Pending</td>
-                            <td><a href="#">View</a></td>
+                            <td>Accept</td>
+                            
                         </tr>
                         @**Html.EditorFor(model => model.staffName, new { htmlAttributes = new { @class = "form-control" } })
                     @Html.ValidationMessageFor(model => model.staffName, "", new { @class = "text-danger" })**@
                     </table>
                     <hr />
                     <div class="col-md-6">
-                        <label for="preStatus">Previous Status: </label>
+                        <label for="preStatus">Current Status: </label>
                         <input id="preStatus" type="text" disabled value="Accepted" />
                     </div>
                     <hr />
                     <label for=combobox2>New Status: </label>
                     <select id="combobox2">
-                        <option>Pending</option>
-                        <option>Acknowlegded</option>
-                        <option>Decline</option>
                         <option>Approved</option>
                         <option>Reject</option>
                     </select>

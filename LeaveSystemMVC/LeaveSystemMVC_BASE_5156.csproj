@@ -173,7 +173,6 @@
     <Compile Include="Controllers\aEditDepartmentController.cs" />
     <Compile Include="Controllers\aEditStaffController.cs" />
     <Compile Include="Controllers\AuthController.cs" />
-    <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\hrChangeApplicationStatusController.cs" />
     <Compile Include="Controllers\hrCreateLeaveTypeController.cs" />
     <Compile Include="Controllers\hrCreditLeaveBalanceController.cs" />
@@ -191,7 +190,6 @@
     <Compile Include="Controllers\lmSubordinateViewHistoryController.cs" />
     <Compile Include="Controllers\lmSelectSubstituteController.cs" />
     <Compile Include="Controllers\LApplicationController.cs" />
-    <Compile Include="Controllers\RandomPasswordController.cs" />
     <Compile Include="Controllers\sChangePasswordController.cs" />
     <Compile Include="Controllers\sLeaveBalanceController.cs" />
     <Compile Include="Controllers\sLeaveHistoryController.cs" />
@@ -206,7 +204,6 @@
     <Compile Include="Models\hrCreateLeave.cs" />
     <Compile Include="Models\hrDaysInLieu.cs" />
     <Compile Include="Models\hrHolidaysCalender.cs" />
-    <Compile Include="Models\RandomPassword.cs" />
     <Compile Include="Models\sChangePasswordModel.cs" />
     <Compile Include="Models\aStaffRole.cs" />
     <Compile Include="Models\sleaveBalanceModel.cs" />
@@ -222,7 +219,6 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
-    <Content Include="Content\GIMEL_logo.jpg" />
     <Content Include="Content\Theme\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\Theme\base\images\ui-bg_flat_75_ffffff_40x100.png" />
     <Content Include="Content\Theme\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
@@ -281,8 +277,7 @@
     <Content Include="Content\Theme\css\datepicker.fixes.css" />
     <Content Include="Content\Theme\css\DT_bootstrap.css" />
     <Content Include="Content\Theme\css\site.css" />
-    <Content Include="Content\Theme\images\GIMEL_logo.jpg" />
-    <Content Include="Content\uniform.default.fixes.css" />
+    <Content Include="Content\Theme\css\uniform.default.fixes.css" />
     <Content Include="Content\Theme\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\Theme\images\bg-input-focus.png" />
     <Content Include="Content\Theme\images\bg-input.png" />
@@ -1737,12 +1732,10 @@
     <Content Include="Views\sLeaveBalance\Index.cshtml" />
     <Content Include="Views\sLeaveHistory\Index.cshtml" />
     <Content Include="Views\aBulkAddStaff\Index.cshtml" />
+    <Content Include="Views\sLeaveStatus\Index.cshtml" />
     <Content Include="Views\LApplication\Index.cshtml" />
     <Content Include="Views\Shared\_LeftMenu.cshtml" />
     <Content Include="Views\Auth\Login.cshtml" />
-    <Content Include="Views\RandomPassword\RandomPassword.cshtml" />
-    <Content Include="Views\sLeaveStatus\Index.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1760,9 +1753,6 @@
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
   </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
@@ -1773,7 +1763,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
+          <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>50683</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
@@ -1783,9 +1773,6 @@
           <CustomServerUrl>
           </CustomServerUrl>
           <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
-          <servers defaultServer="SelfHostServer">
-            <server name="SelfHostServer" exePath="" cmdArgs="" url="http://localhost:50683/" workingDir="" />
-          </servers>
         </WebProjectProperties>
       </FlavorProperties>
     </VisualStudio>
