@@ -49,12 +49,14 @@ namespace LeaveSystemMVC.Controllers
         
         public PartialViewResult SelectEmployee(int id)
         {
+            var tempList = new List<miniLeaveListModel>();
             var temp = new miniLeaveListModel();
             if(id == 32160627)
                 temp.displayText = "Hamza Rahimy";
             else
                 temp.displayText = "NOT Hamza Rahimy";
-            return PartialView("_PlaceDisplay", temp);
+            tempList.Add(temp);
+            return PartialView("_MinLeaveList", tempList);
         }
         
     }

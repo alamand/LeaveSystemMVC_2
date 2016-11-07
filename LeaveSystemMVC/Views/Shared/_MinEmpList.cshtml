@@ -1,11 +1,13 @@
 ﻿@model IEnumerable<LeaveSystemMVC.Models.minStaff>
 
-<ul class="nav navbar-collapse collapse bootstrap-admin-navbar-side">
-    <li role="presentation" class="dropdown-header">List</li>
-    <li>
-        @foreach (var minStaff in Model)
-        {
-            @Html.ActionLink(minStaff.empName, "SelectEmployee", new { id = minStaff.empID }, new { @class = "details-link" })<i class="glyphicon glyphicon-chevron-right"></i>
-        }
-    </li>
-</ul>
+<div class="col-md-6 bootstrap-admin-col-left">
+    <ul class="nav navbar-collapse collapse bootstrap-admin-navbar-side">
+        <li role="presentation" class="dropdown-header">List</li>
+            @foreach (var minStaff in Model)
+            {
+                <li>
+                    <a class="details-link" href="@Url.Action("SelectEmployee", new { id = minStaff.empID })"><i class="glyphicon glyphicon-chevron-right"></i>@minStaff.empName</a>
+                </li>
+            }
+    </ul>
+</div>

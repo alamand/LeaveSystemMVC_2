@@ -13,7 +13,11 @@ namespace LeaveSystemMVC.Models
      history they want to view the full details of.*/
     public class miniLeaveListModel
     {
+        public int leaveID { get; set; }
         public string displayText { get; set; }
+        public string leaveType { get; set; }
+        public DateTime startDate { get; set; }
+        public DateTime endDate { get; set; }
     }
     
 }

@@ -1,0 +1,14 @@
+﻿@model IEnumerable<LeaveSystemMVC.Models.miniLeaveListModel>
+
+<div class="col-md-6 bootstrap-admin-col-left">
+    <ul class="nav navbar-collapse collapse bootstrap-admin-navbar-side">
+        <li role="presentation" class="dropdown-header">Leaves</li>
+        @foreach (var minLeave in Model)
+            {
+            <li>
+                <a href="#"><i class="glyphicon glyphicon-chevron-right"></i>@minLeave.displayText</a>
+                <!--<a class="details-link" href="@Url.Action("SelectEmployee", new { id = minLeave.leaveID })"><i class="glyphicon glyphicon-chevron-right"></i>@minLeave.leaveType</a>-->
+            </li>
+        }
+    </ul>
+</div>

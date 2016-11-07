@@ -1740,6 +1740,7 @@
     <Content Include="Views\Auth\Login.cshtml" />
     <Content Include="Views\Shared\_MinEmpList.cshtml" />
     <Content Include="Views\Shared\_PlaceDisplay.cshtml" />
+    <Content Include="Views\Shared\_MinLeaveList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
