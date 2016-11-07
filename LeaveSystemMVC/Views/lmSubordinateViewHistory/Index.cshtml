@@ -7,6 +7,20 @@
     
     <div class="form-horizontal">
         <h4>Line Manager Subordinate History Page</h4>
+
+        <hr />
+        <div class="row">
+            <div class="form-group col-xs-4">
+                <label>Start Date </label>
+                <input type="date" />
+
+            </div>
+            <div class="form-group col-xs-4">
+                <label>End Date </label>
+                <input type="date" />
+            </div>
+
+        </div>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             <div class="form-horizontal">
