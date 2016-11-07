@@ -5,6 +5,19 @@
     <h2>Log In</h2> 
     @Html.ValidationSummary(true)
 
+<<<<<<< HEAD
+    @using (Html.BeginForm())
+    {
+        @Html.LabelFor(u => u.UserID)<br />
+        @Html.TextBoxFor(u => u.UserID)<br />
+        @Html.LabelFor(u => u.Password)<br />
+        @Html.PasswordFor(u => u.Password)<br />
+        <p>
+            <button type="submit">Log In</button>
+        </p>
+    }
+   
+=======
 @using (Html.BeginForm())
 
 {
@@ -17,3 +30,4 @@
         <button type="submit">Log In</button>
     </p>
 }
+>>>>>>> cd3d2dc692d468207ceef0db8098cec8ef12a36b

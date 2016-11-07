@@ -26,7 +26,7 @@
                             <td>10/10/2016</td>
                             <td>20/10/2016</td>
                             <td>10</td>
-                            <td>Accept</td>
+                            <td>Approved</td>
                             
                         </tr>
                         <tr>
@@ -34,7 +34,7 @@
                             <td>10/08/2016</td>
                             <td>20/08/2016</td>
                             <td>10</td>
-                            <td>Accept</td>
+                            <td>Pending</td>
                             
                         </tr>
                         @**Html.EditorFor(model => model.staffName, new { htmlAttributes = new { @class = "form-control" } })
@@ -43,12 +43,12 @@
                     <hr />
                     <div class="col-md-6">
                         <label for="preStatus">Current Status: </label>
-                        <input id="preStatus" type="text" disabled value="Accepted" />
+                        <input id="preStatus" type="text" disabled value="Pending" />
                     </div>
                     <hr />
                     <label for=combobox2>New Status: </label>
                     <select id="combobox2">
-                        <option>Approved</option>
+                        <option>Approve</option>
                         <option>Reject</option>
                     </select>
 

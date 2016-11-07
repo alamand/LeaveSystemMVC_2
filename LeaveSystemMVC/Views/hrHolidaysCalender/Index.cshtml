@@ -11,6 +11,28 @@
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             <hr/>
             <div class="form-group">
+                <table style="border:1px solid black;">
+                    <tr style="border:1px solid black;">
+                        <th style="border:1px solid black;">Holiday Name</th>
+                        <th style="border:1px solid black;">Start Date</th>
+                        <th style="border:1px solid black;">End Date</th>
+                        <th style="border:1px solid black;">Duration</th>
+                    </tr>
+                    <tr style="border:1px solid black;">
+                        <td style="border:1px solid black;">Eid ul Fitr</td>
+                        <td style="border:1px solid black;">25/08/2015</td>
+                        <td style="border:1px solid black;">28/08/2015</td>
+                        <td style="border:1px solid black;">3</td>
+                    </tr>
+                    <tr style="border:1px solid black;">
+                        <td style="border:1px solid black;">New Year</td>
+                        <td style="border:1px solid black;"> 31/12/2015</td>
+                        <td style="border:1px solid black;"> 01/12/2015</td>
+                        <td style="border:1px solid black;">1</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="form-group">
                 <label for="hName"> Holiday Name</label>
                 <input type="text" name="hName" id="hName" />
             </div> 

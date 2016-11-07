@@ -6,7 +6,7 @@
         @Html.AntiForgeryToken()
 
         <div class="form-horizontal">
-            <h4>View Department Days in Lieu</h4>
+            <h4>Edit Department Days in Lieu</h4>
             <hr />
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             @*Needs to be edited. Didnt know what to show*@
@@ -21,18 +21,23 @@
                             <th>Edit Balance</th>
                         </tr>
                         <tr style="border:0.5px solid black;">
-                            <td>123</td>
+                            <td>12345678</td>
                             <td>Sukhpreet Singh</td>
-                            <td>10</td>
+                            <td><input type="text" value="10" disabled="disabled"/></td>
                             <td>Edit</td>
                         </tr>
                         <tr>
-                            <td>124</td>
+                            <td>1245678</td>
                             <td>Jasim Khumi</td>
-                            <td>10</td>
+                            <td><input type="text" value="10" disabled="disabled" /></td>
                             <td>Edit</td>
                         </tr>
                     </table>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Save" class="btn btn-default" />
                 </div>
             </div>
         </div>
