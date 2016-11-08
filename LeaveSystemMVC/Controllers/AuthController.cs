@@ -74,9 +74,14 @@ namespace LeaveSystemMVC.Controllers
                     var claims = new List<Claim>
                     {
                         new Claim(ClaimTypes.Name, fullNameString),
-                        new Claim(ClaimTypes.NameIdentifier, idString),
-                        new Claim(ClaimTypes.Role, empRoles.ElementAt(0))
+                        new Claim(ClaimTypes.NameIdentifier, idString)
+
                     };
+                    foreach (var role in empRoles)
+                    {
+                        claims.Add(new Claim(ClaimTypes.Role, role));
+                    }
+
                     var identity = new ClaimsIdentity(claims, "ApplicationCookie");
 
                     var ctx = Request.GetOwinContext();
