@@ -41,33 +41,41 @@
                             @Html.ValidationMessageFor(model => model.staffName, "", new { @class = "text-danger" })**@
                     </table>
                     <hr />
-                    <div class="col-md-6">
-                        <label for="preStatus">Current Status: </label>
-                        <input id="preStatus" type="text" disabled value="Approved" />
-                    </div>
-                    <hr />
-                    <label for=combobox2>New Status: </label>
-                    <select id="combobox2">
-                        <option>Approved</option>
-                        <option>Reject</option>
-                    </select>
+                    <table style="width:100%;text-align:left;">
+                        <tr>
 
-                    <hr />
-
-                    <label for="tArea">Comment</label><br /><textarea id="tArea"></textarea>
+                        <td>
+                            <label for="preStatus">Current Status: </label>
+                            <input id="preStatus" type="text" disabled value="Approved" />
+                        
+                           </td> </tr></table>
+                    <br />
+                       <table style="width:100%;text-align:left;"><tr><td>
+                        
+                            <label for=combobox2>New Status: </label>
+                            <select id="combobox2">
+                                <option>Approved</option>
+                                <option>Reject</option>
+                            </select>
+                       
+                            </td></tr></table>
+                    <br />
+                    <table style="width:100%;text-align:left;">
+                   <tr>
+                    <td><label for="tArea">Comment</label><br /><textarea id="tArea"></textarea>
+                </td></tr>
+                    </table>
                 </div>
             </div>
 
-            <div class="col-md-offset-2 col-md-10">
+            <div class="col-md-offset-3 col-md-10">
                 <input type="submit" value="Save" class="btn btn-default" />
             </div>
 
         </div>
     }
 </div>
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>
+
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
