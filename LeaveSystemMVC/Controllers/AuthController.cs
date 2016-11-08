@@ -35,7 +35,7 @@ namespace LeaveSystemMVC.Controllers
                 string password = "";
                 string firstName = "";
                 string lastName = "";
-                string empRole = "";
+                List<string> empRoles = new List<string>();
 
                 var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
                 string queryString = "Select Employee_ID, Password, First_Name, Last_Name FROM dbo.Employee WHERE Employee_ID = " + model.UserID;
@@ -59,7 +59,8 @@ namespace LeaveSystemMVC.Controllers
                     {
                         while(reader.Read())
                         {
-                            empRole = (string)reader[0];
+                            empRoles.Add((string)reader[0]);
+                            //empRoles = (string)reader[0];
                         }
                     }
                     connection.Close();
@@ -74,7 +75,7 @@ namespace LeaveSystemMVC.Controllers
                     {
                         new Claim(ClaimTypes.Name, fullNameString),
                         new Claim(ClaimTypes.NameIdentifier, idString),
-                        new Claim(ClaimTypes.Role, empRole)
+                        new Claim(ClaimTypes.Role, empRoles.ElementAt(0))
                     };
                     var identity = new ClaimsIdentity(claims, "ApplicationCookie");
 
