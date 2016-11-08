@@ -18,6 +18,7 @@ namespace LeaveSystemMVC.Controllers
             leaves.Add("Compassionate");
             leaves.Add("Maternity");
             leaves.Add("Short");
+            leaves.Add("Unpaid");
             ViewBag.leave = leaves;
             return View();
         }

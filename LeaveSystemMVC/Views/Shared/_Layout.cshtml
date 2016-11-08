@@ -20,14 +20,14 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="/LApplication/Index"><img src="~/Content/GIMEL_logo.jpg" height="40" width="=50"</a>
+                    <a class="navbar-brand" href="/Home/Index"><img src="~/Content/GIMEL_logo.jpg" height="40" width="50" /></a>
                 </div>
                 <div class="collapse navbar-collapse main-navbar-collapse">
                     <ul class="nav navbar-nav"></ul>
                     <div class="collapse navbar-collapse bootstrap-admin-navbar-sm">
                         <ul class="nav navbar-nav navbar-right ">
                             <li class="dropdown">
-                                <a href="@Url.Action("Logout", "Auth")" class="dropdown-toggle" data-hover="dropdown">Account<b class="caret"></b></a>
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">Account <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     <li role="presentation" class="dropdown-header">Dropdown header</li>
                                     <li><a href="/sChangePassword/Index">Change Password</a></li>
@@ -59,6 +59,9 @@
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
-    
+
+    <script>
+        $(".dropdown-toggle").attr("data-toggle", "dropdown");
+    </script>
 </body>
 </html>

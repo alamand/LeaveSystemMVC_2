@@ -6,31 +6,37 @@
 		@Html.AntiForgeryToken()
 		
 		<div class="form-horizontal">
-			<h4>Pending Application</h4>
+			<h4>Pending Applications</h4>
 			<hr />
 			@Html.ValidationSummary(true, "", new { @class = "text-danger" })
 			<div class="form-group">
 				<table style="border:2px solid black; text-align:center; margin:15px;">
 					<tr style="border:0.5px solid black;">
-						<th>Staff Name</th>
-						<th>Start Date</th>
-						<th>End Date</th>
-						<th>Duration Days</th>
-						<th>View Application</th>
+						<th style="border:1px solid black;">Staff Name</th>
+                        <th style="border:1px solid black;">Leave Type</th>
+						<th style="border:1px solid black;">Start Date</th>
+						<th style="border:1px solid black;">End Date</th>
+						<th style="border:1px solid black;">Duration Days</th>
+                        <th style="border:1px solid black;">View Balance</th>
+						<th style="border:1px solid black;">View Application</th>
 					</tr>
 					<tr style="border:0.5px solid black;">
-						<td>Sukhpreet Singh</td>
-						<td>10/10/2016</td>
-						<td>20/10/2016</td>
-						<td>10</td>
-						<td><a href="#">View</a></td>
+						<td style="border:1px solid black;">Sukhpreet Singh</td>
+                        <td style="border:1px solid black;">Sick</td>
+						<td style="border:1px solid black;">10/10/2016</td>
+						<td style="border:1px solid black;">25/10/2016</td>
+						<td style="border:1px solid black;">15</td>
+                        <td style="border:1px solid black;"><a href="#">View</a></td>
+						<td style="border:1px solid black;"><a href="#">View</a></td>
 					</tr>
-					<tr>
-						<td>Zobad Mahmood</td>
-						<td>10/08/2016</td>
-						<td>20/08/2016</td>
-						<td>10</td>
-						<td><a href="#">View</a></td>
+					<tr style="border:0.5px solid black;">
+						<td style="border:1px solid black;">Zobad Mahmood</td>
+                        <td style="border:1px solid black;">Sick</td>
+						<td style="border:1px solid black;">10/08/2016</td>
+						<td style="border:1px solid black;">25/08/2016</td>
+						<td style="border:1px solid black;">15</td>
+                        <td style="border:1px solid black;"><a href="#">View</a></td>
+						<td style="border:1px solid black;"><a href="#">View</a></td>
 					</tr>
 				</table>
 			</div>

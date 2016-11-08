@@ -38,5 +38,7 @@ namespace LeaveSystemMVC.Controllers
             ViewBag.staffType = staffType;
             return View();
         }
+
+  
     }
 }
