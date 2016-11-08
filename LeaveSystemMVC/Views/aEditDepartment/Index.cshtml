@@ -5,7 +5,7 @@
     {
         @Html.AntiForgeryToken()
 
-        <div class="form-horizontal">
+        <div class="form-group">
 
             <h4>Editing a Department Page</h4>
             <label for="existLeave"> Select Department to Edit</label>
@@ -18,13 +18,7 @@
             </select>
             <hr />
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            <div class="form-group">
-                @Html.LabelFor(model => model.departmentName, "Department Name", htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-4">
-                    @Html.TextBoxFor(model => model.departmentName, new { @readonly = "readonly" })
-                    @Html.ValidationMessageFor(model => model.departmentName, "", new { @class = "text-danger" })
-                </div>
-            </div>
+            
 
             <div class="form-group">
                 @Html.LabelFor(model => model.primaryLMID, "Primary Line Manager ID", htmlAttributes: new { @class = "control-label col-md-2" })
@@ -41,6 +35,7 @@
                     @Html.ValidationMessageFor(model => model.secondaryLMID, "", new { @class = "text-danger" })
                 </div>
             </div>
+           <br /> <hr />
 
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-10">

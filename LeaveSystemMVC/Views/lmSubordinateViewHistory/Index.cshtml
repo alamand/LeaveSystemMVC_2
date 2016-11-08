@@ -8,71 +8,46 @@
     <div class="form-horizontal">
         <h4>Line Manager Subordinate History Page</h4>
 
-        <hr />
-        <div class="row">
-            <div class="form-group col-xs-4">
-                <label>Start Date </label>
-                <input type="date" />
+        <div class="form-horizontal">
+            <h4>Line Manager Subordinate History Page</h4>
 
-            </div>
-            <div class="form-group col-xs-4">
-                <label>End Date </label>
-                <input type="date" />
-            </div>
-
-        </div>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            <div class="form-horizontal">
-                <label>Staff Name  </label>
-                <select>
-                    <option>Jasim</option>
-                    <option>Zobad</option>
-                </select>
-                
-            </div>
-    
+            <hr />
             
-        </div>
-  <br /> <hr />
-<div id="form-group">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <table style="width:100%;">
+                <tr>
+                    <td>
+                        <div class="form-horizontal">
+                            <label>Staff Name  </label>
+                            <select>
+                                <option>Jasim</option>
+                                <option>Zobad</option>
+                            </select>
 
-    <table style="border: 1px black solid;text-align:center;">
-     
-                <tr style="border: 1px black solid;">
-                    <th style="border:1px solid black;">Staff Name</th>
-                    <th style="border:1px solid black;">Leave Type</th>
-                    <th style="border:1px solid black;">Duration</th>
-                    <th style="border:1px solid black;">Start Date</th>
-                    <th style="border:1px solid black;">End Date</th>
+                        </div>
+                    </td>
                 </tr>
-            <tr style="border: 1px black solid;">
-                <td style="border:1px solid black;">Zobad</td>
-                <td style="border:1px solid black;">Annual</td>
-                <td style="border:1px solid black;">25</td>
-                <td style="border:1px solid black;">10/01/2016</td>
-                <td style="border:1px solid black;">04/02/2016</td>
-            </tr>
-             <tr style="border: 1px black solid;">
-                <td style="border:1px solid black;">Zobad</td>
-                <td style="border:1px solid black;">Sick</td>
-                <td style="border:1px solid black;">5</td>
-                <td style="border:1px solid black;">13/10/2016</td>
-                <td style="border:1px solid black;">18/10/2016</td>
-            </tr>
-            <tr style="border: 1px black solid;">
-                <td style="border:1px solid black;">Zobad</td>
-                <td style="border:1px solid black;">Sick</td>
-                <td style="border:1px solid black;">3</td>
-                <td style="border:1px solid black;">02/11/2016</td>
-                <td style="border:1px solid black;">05/11/2016</td>
-            </tr>
-                            
-    </table>
-</div>
+            </table>
+            <hr />
+            <table style="margin:15px;width:100%">
+                <tr>
+                    <td><div class="form-group">
+                        <label for="dt">Start Date</label>
+                        <input id="dt" name="dt" type="date" />
+                    </div></td>
+                    <td><div class="form-group">
+                        <label for="dt">End Date</label>
+                        <input id="edt" name="edt" type="date" />
+                    </div></td>
+                </tr>
+            </table>
+        </div>
 
+  <br /> <hr />
+        
+      
         <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
+            <div class="col-md-offset-4 col-md-10">
                 <input type="submit" value="View History" class="btn btn-default" />
             </div>
         </div>
