@@ -13,7 +13,7 @@
         {
             <li role="presentation" class="nav-divider"></li>
             <li role="presentation" class="dropdown-header">HR</li>
-            @Html.MenuItem("Peding Applications", "Index", "hrPendingApplication")
+            @Html.MenuItem("Pending Applications", "Index", "hrPendingApplication")
             @Html.MenuItem("Update Leave Status", "Index", "hrChangeApplicationStatus")
             @Html.MenuItem("Create New Leave Type", "Index", "hrCreateLeaveType")
             @Html.MenuItem("Credit Leave Balances", "Index", "hrCreditLeaveBalance")
@@ -40,10 +40,10 @@
             <li role="presentation" class="nav-divider"></li>
             <li role="presentation" class="dropdown-header">Administrator</li>
             @Html.MenuItem("Add Department", "Index", "aAddDepartment")
+            @Html.MenuItem("Edit Department", "Index", "aEditDepartment")
+            @Html.MenuItem("Add Staff Role", "Index", "aAddStaffRole")
             @Html.MenuItem("Add Staff", "Index", "aAddStaff")
             @Html.MenuItem("Edit Staff", "Index", "aEditStaff")
-            @Html.MenuItem("Add Staff Role", "Index", "aAddStaffRole")
-            @Html.MenuItem("Edit Department", "Index", "aEditDepartment")
             @Html.MenuItem("Bulk Add Staff", "Index", "aBulkAddStaff")
         }
         
