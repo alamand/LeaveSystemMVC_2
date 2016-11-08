@@ -104,16 +104,17 @@
                 <td><div class="form-group col-xs-4">
                     @Html.LabelFor(model => model.supportingDocs, "Supporting Docs", htmlAttributes: new { @class = "control-label col-md-4" })
                    </div></td>
-                    <td><div class="col-md-6">
+                    <td>
+                        <div class="col-md-6">
                         @Html.TextBoxFor(model => model.supportingDocs, new { type = "file" })
                         @Html.ValidationMessageFor(model => model.supportingDocs, "", new { @class = "text-danger" })
                         <br />
                         <!-- <input type="submit" value="Upload" name=" = " upload" />
                 -->
-                    </div>
-                </td>
-            </tr>
-       </table>
+                        </div>
+                    </td>
+                </tr>
+            </table>
                 <hr />
             <table style="margin:0px; width:88%;">
                 <tr>
@@ -145,7 +146,7 @@
                         <input type="submit" value="Submit" class="btn btn-default" />
                     </div>
                 </div>
-</div>
+        </div>
     }
 </div>
 
