@@ -12,6 +12,14 @@ namespace LeaveSystemMVC.Controllers
         public ActionResult Index()
         {
             //this should not be hardcoded 
+            List<string> sid = new List<string>();
+            sid.Add("None");
+            sid.Add("12345678");
+            sid.Add("22345678");
+            sid.Add("33345678");
+            sid.Add("44445678");
+            ViewBag.sid = sid;
+
 
             List<string> slm = new List<string>();
             slm.Add("None");
