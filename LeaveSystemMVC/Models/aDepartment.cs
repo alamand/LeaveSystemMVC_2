@@ -9,9 +9,9 @@ namespace LeaveSystemMVC.Models
     {
         public string departmentName { get; set; }
         public List<string> existingDeparment { get; set; }
-        public int departmentID { get; set; }
-        public int primaryLMID { get; set; }
-        public int secondaryLMID { get; set; }
+        public string departmentID { get; set; }
+        public string primaryLMID { get; set; }
+        public string secondaryLMID { get; set; }
 
     }
 }
