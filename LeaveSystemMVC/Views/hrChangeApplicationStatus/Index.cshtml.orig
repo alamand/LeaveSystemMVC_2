@@ -1,206 +1,98 @@
 ﻿@model LeaveSystemMVC.Models.sLeaveModel
 @Html.Partial("_LeftMenu")
-
-<div class="col-md-6">
+<div class="col-md-10">
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
 
-<<<<<<< HEAD
-@using (Html.BeginForm()) 
-{
-    @Html.AntiForgeryToken()
-
-    <div class="form-horizontal">
-        <h4>Change Application Status</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <div class="form-group">
-
-            <div class="col-md-10">
-                <table style="border:2px solid black; text-align:center ;">
-                    <tr style="border:0.5px solid black;">
-                        <th>Staff Name</th>
-                        <th>Start Date</th>
-                        <th>End Date</th>
-                        <th>Duration Days</th>
-                        <th>Status</th>
-                        <th>View Application</th>
-                    </tr>
-                    <tr style="border:0.5px solid black;">
-                        <td>Sukhpreet Singh</td>
-                        <td>10/10/2016</td>
-                        <td>20/10/2016</td>
-                        <td>10</td>
-                        <td>Pending</td>
-                        <td><a href="#">View</a></td>
-                    </tr>
-                    <tr>
-                        <td>Zobad Mahmood</td>
-                        <td>10/08/2016</td>
-                        <td>20/08/2016</td>
-                        <td>10</td>
-                        <td>Pending</td>
-                        <td><a href="#">View</a></td>
-                    </tr>
-                    @**Html.EditorFor(model => model.staffName, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.staffName, "", new { @class = "text-danger" })**@
-                </table>
-                <hr />
-                <label for="preStatus">Previous Status: </label>
-                <input id="preStatus"type="text" disabled value="Accepted"/> 
-                
-                <hr />
-                <label for=combobox2>New Status: </label>
-                <select id="combobox2">
-                    <option>Pending</option>
-                    <option>Acknowlegded</option>
-                    <option>Decline</option>
-                    <option>Approved</option>
-                    <option>Reject</option>
-                </select>
-                <hr />
-                <label for="tArea">Comment</label><br /><textarea id="tArea"></textarea>
-            </div>
-        </div>
-        
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="Save" class="btn btn-default" />
-                </div>
-            
-        </div>
-}
-
-=======
         <div class="form-horizontal">
             <h4>Change Application Status</h4>
             <hr />
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             <div class="form-group">
 
-                <div class="col-md-10">
+                <div class="col-md-7">
                     <table style="border:2px solid black; text-align:center ;">
-                        <tr style="border:0.5px solid black;">
-                            <th>Staff Name</th>
-                            <th>Start Date</th>
-                            <th>End Date</th>
-                            <th>Duration Days</th>
-                            <th>Status</th>
-                            <th>View Application</th>
+                        <tr style="border:1px solid black;">
+                            <th style="border:1px solid black;">Staff Name</th>
+                            <th style="border:1px solid black;"> Start Date</th>
+                            <th style="border:1px solid black;">End Date</th>
+                            <th style="border:1px solid black;">Duration Days</th>
+                            <th style="border:1px solid black;">Status</th>
+                            
                         </tr>
-                        <tr style="border:0.5px solid black;">
-                            <td>Sukhpreet Singh</td>
-                            <td>10/10/2016</td>
-                            <td>20/10/2016</td>
-                            <td>10</td>
-                            <td>Pending</td>
-                            <td>View</td>
+                        <tr style="border:1px solid black;">
+                            <td style="border:1px solid black;">Sukhpreet Singh</td>
+                            <td style="border:1px solid black;">10/10/2016</td>
+                            <td style="border:1px solid black;">20/10/2016</td>
+                            <td style="border:1px solid black;">10</td>
+                            <td style="border:1px solid black;">Approved</td>
+                            
                         </tr>
-                        <tr>
-                            <td>Sukhpreet Singh</td>
-                            <td>10/10/2016</td>
-                            <td>20/10/2016</td>
-                            <td>10</td>
-                            <td>Pending</td>
-                            <td>View</td>
+                        <tr style="border:1px solid black;">
+                            <td style="border:1px solid black;">Zobad Mahmood</td>
+                            <td style="border:1px solid black;">10/08/2016</td>
+                            <td style="border:1px solid black;">20/08/2016</td>
+                            <td style="border:1px solid black;">10</td>
+                            <td style="border:1px solid black;">Approved</td>
+                            
                         </tr>
                         @**Html.EditorFor(model => model.staffName, new { htmlAttributes = new { @class = "form-control" } })
-                            @Html.ValidationMessageFor(model => model.staffName, "", new { @class = "text-danger" })**@
+                @Html.ValidationMessageFor(model => model.staffName, "", new { @class = "text-danger" })**@
                     </table>
+<<<<<<< HEAD
+                    <br /><hr />
+=======
                     <hr />
-                    <label for=combobox>Previous Status: </label>
-                    <select id="combobox">
-                        <option>Pending</option>
-                        <option>Acknowlegded</option>
-                        <option>Decline</option>
-                        <option>Approved</option>
-                        <option>Reject</option>
-                    </select>
+                    <div class="col-md-6">
+                        <label for="preStatus">Current Status: </label>
+                        <input id="preStatus" type="text" disabled value="Approved" />
+                    </div>
                     <hr />
                     <label for=combobox2>New Status: </label>
                     <select id="combobox2">
-                        <option>Pending</option>
-                        <option>Acknowlegded</option>
-                        <option>Decline</option>
-                        <option>Approved</option>
+                        <option>Approve</option>
                         <option>Reject</option>
                     </select>
-                    <hr />
-                    <label for="tArea">Comment</label><br /><textarea id="tArea">
-                </div>
-            </div>
-            <div class="form-group">
 
-                <div class="col-md-10">
-                    <table style="border:2px solid black; text-align:center ;">
-                        <tr style="border:0.5px solid black;">
-                            <th>Staff Name</th>
-                            <th>Start Date</th>
-                            <th>End Date</th>
-                            <th>Duration Days</th>
-                            <th>Status</th>
-                            <th>View Application</th>
-                        </tr>
-                        <tr style="border:0.5px solid black;">
-                            <td>Sukhpreet Singh</td>
-                            <td>10/10/2016</td>
-                            <td>20/10/2016</td>
-                            <td>10</td>
-                            <td>Pending</td>
-                            <td>View</td>
-                        </tr>
+                    <hr />
+>>>>>>> 3bb57b58945575a759b48a83b64e28114859c7fa
+                    
+                                <div class="row">
+                                <div class="col-md-6 col-xs-4">
+                                    <label for="preStatus">Previous Status: </label>
+                                    <input id="preStatus" type="text" disabled value="Accepted" />
+                                </div>
+                                    <div class="col-md-4 col-xs-6">
+                                        <label for=combobox2>New Status: </label>
+                                        <select id="combobox2">
+                                            <option>Pending</option>
+                                            <option>Acknowlegded</option>
+                                            <option>Decline</option>
+                                            <option>Approved</option>
+                                            <option>Reject</option>
+                                        </select>
+                                    </div>
+                    </div>
+                   <hr />
+                    <table style="text-align:left ;">
                         <tr>
-                            <td>Sukhpreet Singh</td>
-                            <td>10/10/2016</td>
-                            <td>20/10/2016</td>
-                            <td>10</td>
-                            <td>Pending</td>
-                            <td>View</td>
-                        </tr>
-                        @**Html.EditorFor(model => model.staffName, new { htmlAttributes = new { @class = "form-control" } })
-                            @Html.ValidationMessageFor(model => model.staffName, "", new { @class = "text-danger" })**@
-                    </table>
-                    <hr />
-                    <label for=combobox>Previous Status: </label>
-                    <select id="combobox">
-                        <option>Pending</option>
-                        <option>Acknowlegded</option>
-                        <option>Decline</option>
-                        <option>Approved</option>
-                        <option>Reject</option>
-                    </select>
-                    <hr />
-                    <label for=combobox2>New Status: </label>
-                    <select id="combobox2">
-                        <option>Pending</option>
-                        <option>Acknowlegded</option>
-                        <option>Decline</option>
-                        <option>Approved</option>
-                        <option>Reject</option>
-                    </select>
-                    <hr />
-                    <label for="tArea">Comment</label><br /><textarea id="tArea"></textarea>
+                           <td><label for="tArea">Comment</label>
+                            <br />
+                           <textarea id="tArea"></textarea>
+                            </td></tr></table>
                 </div>
             </div>
-            <div class="form-group">
-                @Html.LabelFor(model => model.endDate, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.EditorFor(model => model.endDate, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.endDate, "", new { @class = "text-danger" })
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="Save" class="btn btn-default" />
-                </div>
-            </div>
+            
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Save" class="btn btn-default" />
+                    </div>
+           
+
         </div>
     }
 </div>
->>>>>>> 54b2ad5e4b77fa5b271eca8d8c9bec4ec46aec51
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>
+
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
