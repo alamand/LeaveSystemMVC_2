@@ -10,7 +10,7 @@
             <hr />
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             <table style="width:35%;"><tr>
-           <td><div class="form-horizontal ">
+           <td><div class="form-horizontal "style="white-space:nowrap">
                 @Html.LabelFor(model => model.staffID, "Staff ID", htmlAttributes: new { @class = "control-label col-md-1" })
                 </div></td><td><div class="col-md-2">
                     @Html.TextBoxFor(model => model.staffID, new { htmlAttributes = new { @class = "form-control" } })
@@ -20,7 +20,7 @@
 </tr></table>
             <hr />
             <table style="width:70%;"><tr>
-                <td><div class="form-horizontal">
+                <td><div class="form-horizontal"style="white-space:nowrap">
                     @Html.LabelFor(model => model.firstName, "First Name", htmlAttributes: new { @class = "control-label col-md-2" })
                     </div></td>
                 <td><div class="form-inline">
@@ -73,7 +73,7 @@
                 <hr />
 
             <table style="width:34%;"><tr>
-                <td><div class="form-horizontal">
+                <td><div class="form-horizontal"style="white-space:nowrap">
                     @Html.LabelFor(model => model.userName, "User Name", htmlAttributes: new { @class = "control-label col-md-1" })
                     </div></td>
                 <td><div class="form-inline">
@@ -96,7 +96,7 @@
                         </div>
                   </td>
 
-                    <td><div class="form-horizontal">
+                    <td><div class="form-horizontal"style="white-space:nowrap">
                         @Html.LabelFor(model => model.deptName, "Department Name", htmlAttributes: new { @class = "control-label col-md-4" })
                         </div></td>
                     <td><div class="form-inline">
@@ -109,7 +109,7 @@
             <hr />
             <table style="width:49%;">
             <tr>
-                <td><div class="form-horizontal">
+                <td><div class="form-horizontal"style="white-space:nowrap">
                     @Html.LabelFor(model => model.empStartDate, "Employment Start Date", htmlAttributes: new { @class = "control-label col-md-1", type="Date" })
                     </div></td>
                 <td><div class="form-inline">
@@ -118,7 +118,7 @@
                     </div>
                 </td>
 
-                <td><div class="form-horizontal">
+                <td><div class="form-horizontal"style="white-space:nowrap">
                     @Html.LabelFor(model => model.staffType, "Staff Type", htmlAttributes: new { @class = "control-label col-md-1" })
                     </div></td><td><div class="form-inline">
                        @Html.DropDownListFor(model => model.staffType, new SelectList(ViewBag.staffType))
@@ -129,7 +129,7 @@
             <hr />
             <table style="width:62%;"><tr>
                 
-                    <td><div class="form-horizontal">
+                    <td><div class="form-horizontal"style="white-space:nowrap">
                         @Html.LabelFor(model => model.optionalStaffType, "Optional Staff Type", htmlAttributes: new { @class = "control-label col-md-4" })
                        </div></td>
                          <td><div class="form-inline">
@@ -141,7 +141,7 @@
 
                   
 
-                    <td><div class="form-horizontal">
+                    <td><div class="form-horizontal"style="white-space:nowrap">
                         @Html.LabelFor(model => model.optional2ndStaffType, "Optional Staff Type 2", htmlAttributes: new { @class = "control-label col-md-4" })
                         </div></td>
                         <td><div class="form-inline">
@@ -152,7 +152,7 @@
                 </tr></table>
             <hr />
             <table style="width:30%;"><tr>
-                <td><div class="form-horizontal">
+                <td><div class="form-horizontal"style="white-space:nowrap">
                     @Html.LabelFor(model => model.secondLineManager, "Optional Second Line Manager", htmlAttributes: new { @class = "control-label col-md-3" })
                     </div></td>
                 <td><div class="form-inline">
