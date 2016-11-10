@@ -6,18 +6,19 @@
         @Html.AntiForgeryToken()
 
         <div class="form-horizontal">
-            <h4>Credit Leave Balance</h4>
+            <h4>Credit Leave Balances</h4>
             <hr />
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             <article>
-                Note: The button below when once pressed reset the balance for all the employees.
-                Used to reset the leave balance status for all staff members at the start of the year
+                Note: To credit the organization's Annual leave balances press the button below. This would reset the balance of all staff member and
+                set it to what each employees get at the begining of each year. The remaining balance from previous year gets ignored for all employees 
+                except the bus drivers who retain their balance from previous year.
             </article>
             <hr />
 
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="Reset Organization Leave Balance" class="btn btn-default" />
+                    <input type="submit" value="Credit Organization Annual Leave Balances" class="btn btn-default" onclick=""/>
                 </div>
             </div>
         </div>

@@ -20,7 +20,7 @@ namespace LeaveSystemMVC.Models
         public string phoneNo{ get; set; }
         public DateTime empStartDate { get; set; }
         public DateTime empEndDate { get; set; }
-        public int secondLineManager { get; set; }
+        public string secondLineManager { get; set; }
         public string staffType { get; set; }
         public string optionalStaffType { get; set; }
         public string optional2ndStaffType { get; set; }

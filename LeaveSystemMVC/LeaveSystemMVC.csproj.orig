@@ -206,8 +206,11 @@
     <Compile Include="Models\hrCreateLeave.cs" />
     <Compile Include="Models\hrDaysInLieu.cs" />
     <Compile Include="Models\hrHolidaysCalender.cs" />
-    <Compile Include="Models\RandomPassword.cs" />
+<<<<<<< HEAD
     <Compile Include="Models\miniLeaveListModel.cs" />
+=======
+    <Compile Include="Models\RandomPassword.cs" />
+>>>>>>> modelsFeature
     <Compile Include="Models\sChangePasswordModel.cs" />
     <Compile Include="Models\aStaffRole.cs" />
     <Compile Include="Models\sleaveBalanceModel.cs" />
@@ -1739,15 +1742,17 @@
     <Content Include="Views\sLeaveBalance\Index.cshtml" />
     <Content Include="Views\sLeaveHistory\Index.cshtml" />
     <Content Include="Views\aBulkAddStaff\Index.cshtml" />
-    <Content Include="Views\sLeaveStatus\Index.cshtml" />
     <Content Include="Views\LApplication\Index.cshtml" />
     <Content Include="Views\Shared\_LeftMenu.cshtml" />
     <Content Include="Views\Auth\Login.cshtml" />
-    <Content Include="Views\RandomPassword\RandomPassword.cshtml" />
-    <Content Include="Views\sLeaveStatus\Index.cshtml" />
+<<<<<<< HEAD
     <Content Include="Views\Shared\_MinEmpList.cshtml" />
     <Content Include="Views\Shared\_MinLeaveList.cshtml" />
+=======
+    <Content Include="Views\RandomPassword\RandomPassword.cshtml" />
+    <Content Include="Views\sLeaveStatus\Index.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
+>>>>>>> modelsFeature
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1778,7 +1783,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>False</UseIIS>
+          <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>50683</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>

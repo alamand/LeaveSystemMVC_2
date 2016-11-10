@@ -1,45 +1,66 @@
 ﻿@model LeaveSystemMVC.Models.hrHolidaysCalender
 @Html.Partial("_LeftMenu")
-<div class="col-md-6">
+<div class="col-md-10">
     @using (Html.BeginForm()) 
     {
         @Html.AntiForgeryToken()
     
         <div class="form-horizontal">
-            <h4>Holiday Calender</h4>
-            <hr />
-            <section style="border: 1px solid black; margin: 5px;">
-                Note: To create a new holiday just select the starting date in Start Date
-                and selsect the end date for the holidays and click Save button.
-            </section>
+            <h4>Holiday Calendar</h4>
+            
         
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             <hr/>
-            <div class="form-group">
+            <div class="form-inline">
+                <table style="width:50%;border:1px solid black;">
+                    <tr style="border:1px solid black;">
+                        <th style="border:1px solid black;">Holiday Name</th>
+                        <th style="border:1px solid black;">Start Date</th>
+                        <th style="border:1px solid black;">End Date</th>
+                        <th style="border:1px solid black;">Duration</th>
+                    </tr>
+                    <tr style="border:1px solid black;">
+                        <td style="border:1px solid black;">Eid ul Fitr</td>
+                        <td style="border:1px solid black;">25/08/2015</td>
+                        <td style="border:1px solid black;">28/08/2015</td>
+                        <td style="border:1px solid black;">3</td>
+                    </tr>
+                    <tr style="border:1px solid black;">
+                        <td style="border:1px solid black;">New Year</td>
+                        <td style="border:1px solid black;"> 31/12/2015</td>
+                        <td style="border:1px solid black;"> 01/12/2016</td>
+                        <td style="border:1px solid black;">1</td>
+                    </tr>
+                </table>
+                <hr />
+            </div>
+            <div class="form-inline">
                 <label for="hName"> Holiday Name</label>
                 <input type="text" name="hName" id="hName" />
             </div> 
-            <div class="form-group">
-               <label>Start Date </label>
-                <input type="date" />
-           
+            <hr />
+            <div class="row">
+                <div class="form-inline col-xs-4">
+                    <label>Start Date </label>
+                    <input type="date" />
+
+                </div>
+                <div class="form-group col-xs-4">
+                    <label>End Date </label>
+                    <input type="date" />
+                </div>
+
             </div>
-            <div class="form-group">
-                <label>End Date </label>
-                <input type="date" />
-           
-            </div>
+            <hr />
                 <div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
+                    <div class="col-md-offset-2 col-md-12">
                         <input type="submit" value="Save" class="btn btn-default" />
                     </div>
                 </div>
             </div>
     }
 </div>
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>
+
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")

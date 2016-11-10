@@ -9,13 +9,14 @@ namespace LeaveSystemMVC.Models
 {
     public class Users
     {
-        [Required]
+        [Required(ErrorMessage = "You forgot to enter a username.")]
         public int UserID { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "You forgot to enter a password.")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
         
-        public string Name { get; set; }
     }
+
+
 }
