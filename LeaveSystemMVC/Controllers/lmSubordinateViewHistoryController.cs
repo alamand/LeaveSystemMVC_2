@@ -11,18 +11,14 @@ namespace LeaveSystemMVC.Controllers
 {
     public class lmSubordinateViewHistoryController : Controller
     {
-        private readonly List<minStaff> model = new List<minStaff>
-        {
-            new minStaff {empID = 32160627, empName = "Hamza Rahimy"},
-            new minStaff {empID = 32060627, empName = "Not Hamza Rahimy"}
-        };
+        private List<minStaff> staffMembers = new List<minStaff>();
+
+        private List<miniLeaveModel> applications = new List<miniLeaveModel>();
 
         // GET: lmSubordinateViewHistory
         public ActionResult Index()
         {
             
-            /*
-            subordinateListModel model = new subordinateListModel();
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
             string queryString = "Select Employee_ID, First_Name, Last_Name FROM dbo.Employee";
             using (var connection = new SqlConnection(connectionString))
@@ -34,29 +30,41 @@ namespace LeaveSystemMVC.Controllers
                     int iter = 0;
                     while (reader.Read())
                     {
-                        minEmployee tempEmp = new minEmployee();
-                        tempEmp.empID = (int)reader[0];
-                        tempEmp.empName = (string)reader[1] + " " + (string)reader[2];
-                        model.employeeList.Add(tempEmp);
+                        minStaff newEmployee = new minStaff();
+                        newEmployee.empID = (int)reader[0];
+                        newEmployee.empName = (string)reader[1] + " " + (string)reader[2];
+                        staffMembers.Add(newEmployee);
                         iter++;
                     }
                 }
             }
-            */
 
-            return View(model);
+            return View(staffMembers);
         }
         
+        /*Action will return the list of leave applications 
+         corresponding with the selected employeeID to 
+         a partial view that will then be displayed on
+         the main page.*/
+         //
         public PartialViewResult SelectEmployee(int id)
         {
-            var tempList = new List<miniLeaveListModel>();
-            var temp = new miniLeaveListModel();
-            if(id == 32160627)
-                temp.displayText = "Hamza Rahimy";
-            else
-                temp.displayText = "NOT Hamza Rahimy";
-            tempList.Add(temp);
-            return PartialView("_MinLeaveList", tempList);
+            miniLeaveModel tempLeave = new miniLeaveModel
+            {
+                displayText = "Annual Leave: 28 Jun - 15 July"
+            };
+            applications.Add(tempLeave);
+            return PartialView("_MinLeaveList", applications);
+        }
+        
+        /*Action will return the details of the leave application
+         with the corresponding leaveID provided in the parameter
+         and pass it to the partial view to be displayed on the main
+         page.*/
+         //
+        public ActionResult SelectLeave(int id)
+        {
+            return View(this);
         }
         
     }

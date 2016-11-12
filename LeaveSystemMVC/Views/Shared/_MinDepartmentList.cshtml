@@ -1,35 +1,34 @@
-﻿@model IEnumerable<LeaveSystemMVC.Models.minStaff>
+﻿@model IEnumerable<LeaveSystemMVC.Models.minDepartment>
 
 <div class="col-md-6 bootstrap-admin-col-left">
     <ul class="nav navbar-collapse collapse bootstrap-admin-navbar-side">
-        <li role="presentation" class="dropdown-header">Employees</li>
-            @foreach (var minStaff in Model)
+        <li role="presentation" class="dropdown-header">Departments</li>
+        @foreach (var minDepartment in Model)
             {
-                <li>
-                    <a class="employee-link" href="@Url.Action("SelectEmployee", new { id = minStaff.empID })"><i class="glyphicon glyphicon-chevron-right"></i>@minStaff.empName</a>
-                </li>
-            }
+            <li>
+                <a class="department-link" href="@Url.Action("SelectDepartment", new { id = minDepartment.departmentID })"><i class="glyphicon glyphicon-chevron-right"></i>@minDepartment.departmentName</a>
+            </li>
+        }
     </ul>
 </div>
-
 
 <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
 <script type="text/javascript">
     /*This script will take the html partial returend by the href
-    PartialViewResult and place it wherever a div with the 
+    PartialViewResult and place it wherever a div with the
     id corresponding to var detailPartial is placed.*/
     //
         $(function ()
         {
-            //Employee out as in the outcome HtmlPartial 
+            //Employee out as in the outcome HtmlPartial
             //that will be displayed for the selected employee.
-            //The outcome partial could be a _MinLeaveList 
+            //The outcome partial could be a _MinLeaveList
             //or a partial that displays the selected employee's
             //details.
             //
-            var detailsPartial = $('#employeeOut');
+            var detailsPartial = $('#departmentOut');
 
-            $('.employee-link').click(function (event) {
+            $('.department-link').click(function (event) {
                 event.preventDefault();
                 var url = $(this).attr('href');
 
@@ -38,7 +37,7 @@
                     type: 'get',
                     success: function(data) {
                         detailsPartial.html(data);
-                        $('#clearEmpOut').click(function () {
+                        $('#clearDepOut').click(function () {
                             detailsPartial.html(null);
                         });
                     }

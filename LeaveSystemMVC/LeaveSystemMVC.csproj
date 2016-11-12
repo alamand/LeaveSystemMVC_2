@@ -206,8 +206,9 @@
     <Compile Include="Models\hrCreateLeave.cs" />
     <Compile Include="Models\hrDaysInLieu.cs" />
     <Compile Include="Models\hrHolidaysCalender.cs" />
+    <Compile Include="Models\minDepartment.cs" />
     <Compile Include="Models\RandomPassword.cs" />
-    <Compile Include="Models\miniLeaveListModel.cs" />
+    <Compile Include="Models\miniLeaveModel.cs" />
     <Compile Include="Models\sChangePasswordModel.cs" />
     <Compile Include="Models\aStaffRole.cs" />
     <Compile Include="Models\sleaveBalanceModel.cs" />
@@ -1748,6 +1749,7 @@
     <Content Include="Views\Shared\_MinEmpList.cshtml" />
     <Content Include="Views\Shared\_MinLeaveList.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Shared\_MinDepartmentList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

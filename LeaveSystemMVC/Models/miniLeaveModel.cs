@@ -11,7 +11,7 @@ namespace LeaveSystemMVC.Models
      to select which leave they want to view in their history or by HR or 
      line managers to select which of their subordinates' leave from the subordinate
      history they want to view the full details of.*/
-    public class miniLeaveListModel
+    public class miniLeaveModel
     {
         public int leaveID { get; set; }
         public string displayText { get; set; }

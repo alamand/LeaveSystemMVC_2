@@ -19,30 +19,8 @@
         <h4>Leave Applications</h4>
         <hr />
         
-        <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
-        <script type="text/javascript">
-        $(function ()
-        {
-            var detailsPartial = $('#details');
 
-            $('.details-link').click(function (event) {
-                event.preventDefault();
-                var url = $(this).attr('href');
-
-                $.ajax({
-                    url: url,
-                    type: 'get',
-                    success: function(data) {
-                        detailsPartial.html(data);
-                        $('#clearDetails').click(function () {
-                            detailsPartial.html(null);
-                        });
-                    }
-                });
-            });
-        });
-        </script>
-        <div id="details"></div>
+        <div id="employeeOut"></div>
     </div>
         <!--
         <div class="col-md-4">
@@ -105,4 +83,5 @@
         </div>
         </div>
             -->
-        }
+}
+
