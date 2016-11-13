@@ -35,7 +35,7 @@ namespace LeaveSystemMVC.Controllers
                 string password = "";
                 string firstName = "";
                 string lastName = "";
-                string empRole = "";
+                List<string> empRoles = new List<string>();
 
                 var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
                 string queryString = "Select Employee_ID, Password, First_Name, Last_Name FROM dbo.Employee WHERE Employee_ID = " + model.UserID;
@@ -59,7 +59,8 @@ namespace LeaveSystemMVC.Controllers
                     {
                         while(reader.Read())
                         {
-                            empRole = (string)reader[0];
+                            empRoles.Add((string)reader[0]);
+                            //empRoles = (string)reader[0];
                         }
                     }
                     connection.Close();
@@ -73,9 +74,14 @@ namespace LeaveSystemMVC.Controllers
                     var claims = new List<Claim>
                     {
                         new Claim(ClaimTypes.Name, fullNameString),
-                        new Claim(ClaimTypes.NameIdentifier, idString),
-                        new Claim(ClaimTypes.Role, empRole)
+                        new Claim(ClaimTypes.NameIdentifier, idString)
+
                     };
+                    foreach (var role in empRoles)
+                    {
+                        claims.Add(new Claim(ClaimTypes.Role, role));
+                    }
+
                     var identity = new ClaimsIdentity(claims, "ApplicationCookie");
 
                     var ctx = Request.GetOwinContext();
@@ -84,7 +90,7 @@ namespace LeaveSystemMVC.Controllers
                     //Makes our claims list persist throughout the application session
                     authManager.SignIn(identity);
 
-                    return RedirectToAction("Index", "LApplication");
+                    return RedirectToAction("Index", "Home");
                 }
             }
 

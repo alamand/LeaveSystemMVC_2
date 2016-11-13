@@ -6,66 +6,70 @@
     @Html.AntiForgeryToken()
     
     <div class="form-horizontal">
-        <h4>Line Manager Pending leaves</h4>
+        <h4>Line Manager Pending leave Applications</h4>
         <hr />
         <div class="form-horizontal">
            
-            <hr />
+            
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            <div class="form-group">
+            <div class="form-inline">
                 <table style="border:2px solid black; text-align:center ;">
                     <tr style="border:0.5px solid black;">
-                        <th>Staff Name</th>
-                        <th>Start Date</th>
-                        <th>End Date</th>
-                        <th>Duration Days</th>
-                        <th>View Application</th>
+                        <th style="border:1px solid black;">Staff Name</th>
+                        <th style="border:1px solid black;">Start Date</th>
+                        <th style="border:1px solid black;">End Date</th>
+                        <th style="border:1px solid black;">Duration Days</th>
+                        <th style="border:1px solid black;">Leave Type</th>
+                        <th style="border:1px solid black;">View Application</th>
                     </tr>
                     <tr style="border:0.5px solid black;">
-                        <td>Sukhpreet Singh</td>
-                        <td>10/10/2016</td>
-                        <td>20/10/2016</td>
-                        <td>10</td>
-                        <td><a href="#">View</a></td>
+                        <td style="border:1px solid black;">Sukhpreet Singh</td>
+                        <td style="border:1px solid black;">10/10/2016</td>
+                        <td style="border:1px solid black;">20/10/2016</td>
+                        <td style="border:1px solid black;">10</td>
+                        <td style="border:1px solid black;">Sick</td>
+                        <td style="border:1px solid black;"><a href="#">View</a></td>
                     </tr>
-                    <tr>
-                        <td>Zobad Mahmood</td>
-                        <td>10/08/2016</td>
-                        <td>20/08/2016</td>
-                        <td>10</td>
+                    <tr style="border:0.5px solid black;">
+                        <td style="border:1px solid black;">Zobad Mahmood</td>
+                        <td style="border:1px solid black;">10/08/2016</td>
+                        <td style="border:1px solid black;">20/08/2016</td>
+                        <td style="border:1px solid black;">10</td>
+                        <td style="border:1px solid black;">Sick</td>
                         <td><a href="#">View</a></td>
                     </tr>
                 </table>
             </div>
-            <div class="form-group">
-                <table style="border:2px solid black; text-align:center ;">
+            <br />
+            <div class="form-inline">
+                <table style=";border:2px solid black; text-align:center;width:58%;">
                     <tr style="border:0.5px solid black;">
-                        <th>  Leave Type  </th>
-                        <th>  Days        </th>>
+                        <th style="border:1px solid black;">  Leave Type  </th>
+                        <th style="border:1px solid black;">  Days        </th>
                     </tr>
                     <tr style="border:0.5px solid black;">
-                        <td>Annual</td>
-                        <td>0</td>
+                        <td style="border:1px solid black;">Annual</td>
+                        <td style="border:1px solid black;">0</td>
                     </tr>
                     <tr style="border:0.5px solid black;">
-                        <td>Sick</td>
-                        <td>0</td>
+                        <td style="border:1px solid black;">Sick</td>
+                        <td style="border:1px solid black;">15</td>
                     </tr>
                     <tr style="border:0.5px solid black;">
-                        <td>Compassionate</td>
-                        <td>0</td>
+                        <td style="border:1px solid black;">Compassionate</td>
+                        <td style="border:1px solid black;">0</td>
                     </tr>
                     <tr style="border:0.5px solid black;">
-                        <td>Short</td>
-                        <td>0</td>
+                        <td style="border:1px solid black;">Short</td>
+                        <td style="border:1px solid black;">0</td>
                     </tr>
                     <tr style="border:0.5px solid black;">
-                        <td>Maternity</td>
-                        <td>0</td>
+                        <td style="border:1px solid black;">Maternity</td>
+                        <td style="border:1px solid black;">0</td>
                     </tr>
                     <tr style="border:0.5px solid black;">
-                        <td>Days in Lieu</td>
-                        <td>10</td>
+                        <td style="border:1px solid black;">Days in Lieu</td>
+                        <td style="border:1px solid black;">10</td>
                     </tr>
                     @**Html.EditorFor(model => model.staffName, new { htmlAttributes = new { @class = "form-control" } })
                     @Html.ValidationMessageFor(model => model.staffName, "", new { @class = "text-danger" })**@
@@ -81,9 +85,6 @@
         </div>
         </div>
      }
-</div>
-<div>
-    @Html.ActionLink("Back to List", "Index")
 </div>
 
 @section Scripts {

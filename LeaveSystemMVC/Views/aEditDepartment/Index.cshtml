@@ -5,34 +5,31 @@
     {
         @Html.AntiForgeryToken()
 
-        <div class="form-horizontal">
+        <div class="form-group">
 
-            <h4>Editing a Department Page</h4>
+            <h4>Editing a Department</h4>
+            <label for="existLeave"> Select Department to Edit</label>
+            <select id="#existLeave">
+                <option>IT </option>
+                <option>Academic Services</option>
+                <option>Student Services</option>
+                <option>HR</option>
+                <option>Finance</option>
+            </select>
             <hr />
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            <div class="form-group">
-                @Html.LabelFor(model => model.departmentName, "Department Name", htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-4">
-                    @Html.EditorFor(model => model.departmentName, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.departmentName, "", new { @class = "text-danger" })
-                </div>
-            </div>
+            
 
             <div class="form-group">
-                @Html.LabelFor(model => model.primaryLMID, "Primary Line Manager ID", htmlAttributes: new { @class = "control-label col-md-2" })
+                @Html.LabelFor(model => model.primaryLMID, "Line Manager", htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-4">
-                    @Html.EditorFor(model => model.primaryLMID, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.DropDownListFor(model => model.primaryLMID, new SelectList(ViewBag.plm))
                     @Html.ValidationMessageFor(model => model.primaryLMID, "", new { @class = "text-danger" })
                 </div>
             </div>
 
-            <div class="form-group">
-                @Html.LabelFor(model => model.secondaryLMID, "Secondary Line Manager ID", htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-4">
-                    @Html.EditorFor(model => model.secondaryLMID, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.secondaryLMID, "", new { @class = "text-danger" })
-                </div>
-            </div>
+
+           <br /> <hr />
 
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-10">

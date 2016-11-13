@@ -6,13 +6,12 @@ using System.Web.Mvc;
 
 namespace LeaveSystemMVC.Controllers
 {
-    public class hrCreditLeaveBalanceController : Controller
+    public class HomeController : Controller
     {
-        // GET: hrCreditLeaveBalance
+        // GET: Home
         public ActionResult Index()
         {
             return View();
         }
-       
     }
 }

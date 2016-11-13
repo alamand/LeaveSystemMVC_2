@@ -53,7 +53,7 @@ namespace LeaveSystemMVC.Models
         [DisplayName("Book Air Ticket?")]
         public bool bookAirTicket { get; set; } = true;
 
-        [DisplayName("Contact Details Outside UAE")]
+        [DisplayName("Phone Number")]
         public string contactDetails { get; set; } = "052123344";
     }
 }
