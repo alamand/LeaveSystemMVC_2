@@ -10,7 +10,6 @@ namespace LeaveSystemMVC.Controllers
     public class aBulkAddStaffController : Controller
     {
         sEmployeeModel tempEmp = new sEmployeeModel();
-        int itr = 0;
         [HttpGet]
         // GET: aBulkAddStaff
         public ActionResult Index()
