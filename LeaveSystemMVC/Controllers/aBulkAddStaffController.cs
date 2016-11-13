@@ -10,19 +10,21 @@ namespace LeaveSystemMVC.Controllers
     public class aBulkAddStaffController : Controller
     {
         sEmployeeModel tempEmp = new sEmployeeModel();
-        
+        int itr = 0;
         [HttpGet]
         // GET: aBulkAddStaff
         public ActionResult Index()
         {
-            tempEmp.firstName = "File name here...";
+                tempEmp.firstName = "File name here...";
+            
             return View(tempEmp);
         }
         
-
-        public ActionResult Upload(HttpPostedFileBase file)
+        [HttpPost]
+        public ActionResult Index(HttpPostedFileBase upload)
         {
-            return RedirectToAction("Index");
+            tempEmp.firstName = upload.FileName;
+            return View(tempEmp);
         }
     }
 }

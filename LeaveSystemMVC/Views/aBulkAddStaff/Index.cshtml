@@ -6,14 +6,15 @@
 
 <h2>Index</h2>
 
-@Html.AntiForgeryToken()
-@Html.ValidationSummary(true)
-@using (Html.BeginForm("Upload", "aBulkAddStaff", FormMethod.Post, new { enctype = "multipart/form-data" }))
+
+@using (Html.BeginForm("Index", "aBulkAddStaff", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
     //Below should not be empstartdate.... need to ask ma'am what to do here
     //this to be committed
-    
-    
+
+
     <div class="form-horizontal">
         <div class="col-md-offset-2 col-md-10">
             <input type="file" id="dataFile" name="upload"/>
@@ -21,7 +22,7 @@
     </div>
     <div class="form-horizontal">
         <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Upload" class="btn btn-default" />
+            <input type="submit" value="Index" class="btn btn-default" />
         </div>
     </div>
 
