@@ -15,17 +15,22 @@
 
 <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
 <script type="text/javascript">
-    /*This script will take the html partial returend by the href
-    PartialViewResult and place it wherever a div with the 
-    id corresponding to var detailPartial is placed.*/
+    //This script is designed to place html partials at a location 
+    //in the master page of this partial. If we want the employee links
+    //provided above to take the user to the next page then dont include
+    //employee-link in the above <a /> tags' classes. Also the 
+    //SelectEmployee action in the controller will need to return a 
+    //View instead of a PartialView, note the href in the <a /> tag.
     //
         $(function ()
         {
-            //Employee out as in the outcome HtmlPartial 
-            //that will be displayed for the selected employee.
-            //The outcome partial could be a _MinLeaveList 
-            //or a partial that displays the selected employee's
-            //details.
+            //detailsPartial represents the id value of the 
+            //container that will hold the outcome html 
+            //which will most probably be a partial html.
+            //The script will place the outcome html 
+            //wherever the first container with the id
+            //value corresponding to detailsPartial is
+            //placed.
             //
             var detailsPartial = $('#employeeOut');
 
