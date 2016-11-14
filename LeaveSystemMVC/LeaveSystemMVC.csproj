@@ -196,6 +196,7 @@
     <Compile Include="Controllers\sLeaveBalanceController.cs" />
     <Compile Include="Controllers\sLeaveHistoryController.cs" />
     <Compile Include="Controllers\sLeaveStatusController.cs" />
+    <Compile Include="CustomLibraries\CsvParser.cs" />
     <Compile Include="CustomLibraries\CustomDecrypt.cs" />
     <Compile Include="CustomLibraries\CustomEncrypt.cs" />
     <Compile Include="Global.asax.cs">
