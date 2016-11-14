@@ -21,6 +21,28 @@ namespace LeaveSystemMVC.Controllers
         [HttpGet]
         public ActionResult CreateHoliday()
         {
+            var model = new List<Models.hrHolidaysCalender>();
+            var connectionString = ConfigurationManager.ConnectionStrings["CustomConnection"].ConnectionString;
+            string queryString = "Select * FROM dbo.Public_Holiday";
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var calender = new Models.hrHolidaysCalender();
+                        calender.holidayName = (string)reader["Name"];
+                        calender.startDate = (DateTime)reader["Date"];
+                        model.Add(calender);
+                    }
+                }
+
+                connection.Close();
+            }
+            
             return View();
         }
         [HttpPost]
@@ -45,69 +67,109 @@ namespace LeaveSystemMVC.Controllers
             if (ModelState.IsValid)
 
             {
-                
-                var model = new List<Models.hrHolidaysCalender>();
-                DateTime dt = DateTime.ParseExact(calender.startDate.ToString(), "dd/MM/yyyy hh:mm:ss tt", CultureInfo.InvariantCulture);
-                string date = dt.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
-                string datee= "'" + date+"'";
-                string datee2 = "'12/10/2016'";
-                // string date = calender.startDate.Day+"/"+calender.startDate.Month+"/"+calender.startDate.Year;
-                //string date=calender.startDate.ToString("dd-mm-yyyy");
-                var connectionString = ConfigurationManager.ConnectionStrings["CustomConnection"].ConnectionString;
-                string insert = "INSERT INTO dbo.Public_Holiday (Name, Date)"
-                 //+ "VALUES('"+calender.holidayName + "','" + date.ToString()/*s*/ + "') " ;
-                 + "VALUES('" + calender.holidayName + "',"+datee2+")";
-                using (var connection = new SqlConnection(connectionString))
+                if (!isDateSame(calender.startDate, calender.endDate))
                 {
-                    var command = new SqlCommand(insert, connection);
-                    connection.Open();
-                    using (var reader = command.ExecuteReader())
-                    connection.Close();
+                    string date = calender.startDate.ToString("yyyy-MM-dd");
+                    var connectionString = ConfigurationManager.ConnectionStrings["CustomConnection"].ConnectionString;
+                    int totalDay = totalDays(calender.startDate, calender.endDate);
+                    for (int i = 0; i <= totalDay; i++)
+                    {
+                        DateTime d = calender.startDate.AddDays(i);
+                        string date1 = d.ToString("yyyy-MM-dd");
+                        if (!isDateSame(d))
+                        {
+                            date1 = d.ToString("yyyy-MM-dd");
+                            string insert = "INSERT INTO dbo.Public_Holiday (Name, Date) VALUES('" + calender.holidayName + "','" + date1 + "')";
+                            using (var connection = new SqlConnection(connectionString))
+                            {
+                                var command = new SqlCommand(insert, connection);
+                                connection.Open();
+                                using (var reader = command.ExecuteReader())
+                                    connection.Close();
+                            }
+                        }
+                    }
+                    ModelState.AddModelError("sucessMessage", "Success! The Holidays Have been Successfully Added");
                 }
 
-
-                return RedirectToAction("Index");
+                else { ModelState.AddModelError("errorMessage", "Error!Holiday already Exists."); }            
+            
+                // return RedirectToAction("Display");
             }
             return CreateHoliday();
-        }
-        public ActionResult Display()
+    }
+    public ActionResult Display()
+    {
+        var model = new List<Models.hrHolidaysCalender>();
+        var connectionString = ConfigurationManager.ConnectionStrings["CustomConnection"].ConnectionString;
+        string queryString = "Select * FROM dbo.Public_Holiday";
+        using (var connection = new SqlConnection(connectionString))
         {
-            // DataTable dtTemplate= new SqlDataAdapter()
+            var command = new SqlCommand(queryString, connection);
 
-            /*string holidayName = "";
-            DateTime startDate = DateTime.Today;
-            DateTime endDate = DateTime.Today;
-            string description = "";
-            List<string> empRoles = new List<string>();
-            */
-            var model = new List<Models.hrHolidaysCalender>();
+            connection.Open();
+            using (var reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    var calender = new Models.hrHolidaysCalender();
+                    calender.holidayName = (string)reader["Name"];
+                    calender.startDate = (DateTime)reader["Date"];
+                    model.Add(calender);
+                }
+            }
+
+            connection.Close();
+        }
+
+        return View(model);
+    }
+        public bool isDateSame(DateTime date)
+        {
             var connectionString = ConfigurationManager.ConnectionStrings["CustomConnection"].ConnectionString;
-            string queryString = "Select * FROM dbo.Public_Holiday" ;
+            string queryString = "Select * FROM dbo.Public_Holiday where Date= '" + date.ToString("yyyy-MM-dd") + "'";
             using (var connection = new SqlConnection(connectionString))
             {
                 var command = new SqlCommand(queryString, connection);
-                
+
                 connection.Open();
-                 using (var reader = command.ExecuteReader())
+                try
                 {
-                    while (reader.Read())
-                    {
-                        var calender = new Models.hrHolidaysCalender();
-                        calender.holidayName = (string)reader["Name"];
-                        calender.startDate = (DateTime)reader["Date"];
-                        model.Add(calender);                        
-                    }
+                    int dateCount = (int)command.ExecuteScalar();
+                    if (dateCount > 0)
+                    { return true; }
                 }
-               
+                catch { return false; }
                 connection.Close();
             }
 
-            return View(model);
+            return false;
+        }
+        public bool isDateSame(DateTime start, DateTime end)
+        {
+            var connectionString = ConfigurationManager.ConnectionStrings["CustomConnection"].ConnectionString;
+            int totalDay = totalDays(start, end);
+            for (int i = 0; i <= totalDay; i++)
+            {
+                DateTime d = start.AddDays(i);
+                string date1 = d.ToString("yyyy-MM-dd");
+                if (isDateSame(d))
+                {
+                    return true;
+                }                
+            }
+            return false;
+        }
+        public int totalDays(DateTime start, DateTime end)
+        {
+            TimeSpan ts = start - end;
+            return Math.Abs(ts.Days);
         }
         /*public ActionResult Index([Bind(Exclude = "description")] Models.hrHolidaysCalender calender)
         {
             return View();
         }*/
-
-    }
+    } 
+        
+    
 }
