@@ -16,7 +16,7 @@ namespace LeaveSystemMVC.Controllers
         public ActionResult Index()
         {
             var calender = new LeaveSystemMVC.Models.hrHolidaysCalender();
-            return View();
+            return RedirectToAction("Display");
         }
         [HttpGet]
         public ActionResult CreateHoliday()
