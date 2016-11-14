@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using LeaveSystemMVC.Models;
 using System.IO;
 using LeaveSystemMVC.CustomLibraries;
+using System.Globalization;
 
 namespace LeaveSystemMVC.Controllers
 {
@@ -59,6 +60,16 @@ namespace LeaveSystemMVC.Controllers
                                         break;
                                     case 4:
                                         newEmployee.deptName = tableColumn;
+                                        break;
+                                    case 5:
+                                        newEmployee.gender = tableColumn;
+                                        break;
+                                    case 6:
+                                        /*
+                                        DateTime startDate = DateTime.ParseExact(tableColumn, "MM/dd/yyyy",
+                                            System.Globalization.CultureInfo.InvariantCulture);*/
+                                        DateTime startDate = DateTime.Parse(tableColumn);
+                                        newEmployee.empStartDate = startDate;
                                         break;
                                 }
                                 column++;
