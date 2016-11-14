@@ -8,7 +8,7 @@
         <div class="form-horizontal">
             <h4>Holiday Calendar</h4>
             
-        
+            
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             <hr/>
             <div class="form-inline">
@@ -35,19 +35,19 @@
                 <hr />
             </div>
             <div class="form-inline">
-                <label for="hName"> Holiday Name</label>
-                <input type="text" name="hName" id="hName" />
+                @Html.LabelFor(calender => calender.holidayName, "Holiday Name ")
+                @Html.TextBoxFor(calender => calender.holidayName)<br />
+
             </div> 
             <hr />
             <div class="row">
                 <div class="form-inline col-xs-4">
-                    <label>Start Date </label>
-                    <input type="date" />
-
-                </div>
-                <div class="form-group col-xs-4">
-                    <label>End Date </label>
-                    <input type="date" />
+                    @Html.LabelFor(calender => calender.startDate, "Sart Date " )
+                    @Html.TextBoxFor(calender => calender.startDate, new { type="Date"} )
+                 </div>
+                <div class="form-group col-xs-6">
+                    @Html.LabelFor(calender => calender.endDate, "End Date ")
+                    @Html.TextBoxFor(calender => calender.endDate, new { type = "Date" })<br />
                 </div>
 
             </div>
