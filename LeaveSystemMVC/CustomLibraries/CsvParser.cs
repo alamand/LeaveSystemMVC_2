@@ -15,11 +15,11 @@ namespace LeaveSystemMVC.CustomLibraries
         }
         
 
-        public void readFile()
+        public string[] readFile()
         {
             FileStream stream = new FileStream(path, FileMode.Open);
             StreamReader reader = new StreamReader(stream);
-            string[] values;
+            string[] values = new string[];
 
             if(!reader.EndOfStream)
                 reader.ReadLine().Skip(1);
@@ -29,7 +29,7 @@ namespace LeaveSystemMVC.CustomLibraries
                 string line = reader.ReadLine();
                 values = line.Split(',');
             }
+            return values;
         }
-
     }
 }
