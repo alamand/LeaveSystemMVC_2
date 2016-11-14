@@ -1,34 +1,37 @@
-﻿@model LeaveSystemMVC.Models.sLeaveModel
+﻿@model IEnumerable<LeaveSystemMVC.Models.minStaff>
+  
+@{ 
+    ViewBag.Title = "Index";
+}
 @Html.Partial("_LeftMenu")
-<div class="col-md-6">
-    @using (Html.BeginForm()) 
-    {
+@Html.ValidationSummary(true)
+@using (Html.BeginForm())
+{
     @Html.AntiForgeryToken()
-
+    <div class="col-md-4">
         <div class="form-horizontal">
-            <h4>Line Manager Subordinate History</h4>
-
+            <h4>Subordinates</h4>
             <hr />
-            
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            <table style="width:100%;">
-                <tr>
-                    <td>
-                        <div class="form-horizontal">
-                            <label>Staff Name  </label>
-                            <select>
-                                <option>Jasim</option>
-                                <option>Zobad</option>
-                            </select>
+            @Html.Partial("_MinEmpList", @Model)
+        </div>
+    </div>
+    <div class="col-md-4">
+        <h4>Leave Applications</h4>
+        <hr />
+        
 
-                        </div>
-                    </td>
-                </tr>
-            </table>
-            <hr />
-            <table style="margin:15px;width:100%">
-                <tr>
-                    <td><div class="form-group">
+        <div id="employeeOut"></div>
+    </div>
+        <!--
+        <div class="col-md-4">
+
+            <div class="form-horizontal">
+                <h4>Line Manager Subordinate History Page</h4>
+                <hr />
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+
+                    <div class="col-md-10">
                         <label for="dt">Start Date</label>
                         <input id="dt" name="dt" type="date" />
                     </div></td>
@@ -69,20 +72,16 @@
                      <td style="border:1px solid black;">05/11/2016</td>
                  </tr>
 
-             </table>
-  <br /> <hr />
-        </div>
-      
-        <div class="form-group">
-            <div class="col-md-offset-4 col-md-10">
-                <input type="submit" value="View History" class="btn btn-default" />
-            </div>
-        </div>
-        
-    }
-</div>
 
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="View History" class="btn btn-default" />
+                    </div>
+                </div>
+                </div>
 
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
+        </div>
+        </div>
+            -->
 }
+
