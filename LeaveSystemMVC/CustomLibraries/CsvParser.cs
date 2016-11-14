@@ -9,9 +9,9 @@ namespace LeaveSystemMVC.CustomLibraries
     public class CsvParser
     {
         string path;
-        CsvParser()
+        public CsvParser(string _path)
         {
-            path = "";
+            path = _path;
         }
         
 
@@ -19,18 +19,15 @@ namespace LeaveSystemMVC.CustomLibraries
         {
             FileStream stream = new FileStream(path, FileMode.Open);
             StreamReader reader = new StreamReader(stream);
-            int iter = 0;
+            string[] values;
+
+            if(!reader.EndOfStream)
+                reader.ReadLine().Skip(1);
+
             while(!reader.EndOfStream)
             {
-                if(iter == 0)
-                {
-                    iter++;
-                    
-                    continue;
-                }
                 string line = reader.ReadLine();
-                var values = line.Split(',');
-
+                values = line.Split(',');
             }
         }
 
