@@ -1,0 +1,30 @@
+﻿@model IEnumerable<LeaveSystemMVC.Models.hrHolidaysCalender>
+
+@{
+    ViewBag.Title = "Display";
+}
+
+<h2>Display</h2>
+@Html.Partial("_LeftMenu")
+<p>
+    @Html.ActionLink("Create a new Holiday", "CreateHoliday")
+</p>
+
+    <div class="form-inline">
+        <table style="width:50%;border:1px solid black;">
+            <tr style="border:1px solid black;">
+                <th style="border:1px solid black;">@Html.DisplayNameFor(model => model.holidayName)</th>
+                <th style="border:1px solid black;">@Html.DisplayNameFor(model => model.startDate)</th>
+            </tr>
+            @foreach (var item in Model)
+            {
+                <tr style="border:1px solid black;">
+                    <td style="border:1px solid black;">@Html.DisplayFor(modelItem => item.holidayName) </td>
+                    <td style="border:1px solid black;">@Html.DisplayFor(modelItem => item.startDate)</td>
+                </tr>
+            }
+        </table>
+    </div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
