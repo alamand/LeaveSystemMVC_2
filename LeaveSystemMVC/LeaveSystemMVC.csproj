@@ -1737,12 +1737,13 @@
     <Content Include="Views\sLeaveBalance\Index.cshtml" />
     <Content Include="Views\sLeaveHistory\Index.cshtml" />
     <Content Include="Views\aBulkAddStaff\Index.cshtml" />
-    <Content Include="Views\LApplication\Index.cshtml" />
+    <Content Include="Views\LApplication\Create.cshtml" />
     <Content Include="Views\Shared\_LeftMenu.cshtml" />
     <Content Include="Views\Auth\Login.cshtml" />
     <Content Include="Views\RandomPassword\RandomPassword.cshtml" />
     <Content Include="Views\sLeaveStatus\Index.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\LApplication\IndexTest.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
