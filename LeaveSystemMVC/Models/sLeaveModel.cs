@@ -17,24 +17,26 @@ namespace LeaveSystemMVC.Models
         public String leaveType { get; set; } = "Annual";
 
         //[DisplayName("Select Application Date")]
-        public DateTime applicationDate { get; set; } = new DateTime(24-11-2016);
+        public DateTime applicationDate { get; set; } 
 
+        [Required]
         [DisplayName("Select Leave Start Date")]
-        public DateTime startDate { get; set; } = new DateTime(24 - 12 - 2016);
+        public DateTime startDate { get; set; } 
+
 
         [DisplayName("Select Leave End Date")]
-        public DateTime endDate { get; set; } = new DateTime(24 - 1 - 2017);
+        public DateTime endDate { get; set; } 
 
-        public DateTime returnDate { get; set; } = new DateTime(24 - 1 - 2017);
+
+        public DateTime returnDate { get; set; }
 
         public int leaveDuration { get; set; } = 30;
 
         [DisplayName("Select Leave Start Time")]
-        public DateTime shortStartTime { get; set; } = new DateTime(24 - 1 - 2017);
+        public DateTime shortStartTime { get; set; } 
 
         [DisplayName("Select Leave End Time")]
-        public DateTime shortEndTime { get; set; } = new DateTime(24 - 1 - 2017);
-
+        public DateTime shortEndTime { get; set; } 
         [DisplayName("Line Manager Comment")]
         public string lmComment { get; set; } = "Leave Approved";
 
