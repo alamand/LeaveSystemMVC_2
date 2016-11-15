@@ -1,7 +1,7 @@
 ﻿@model LeaveSystemMVC.Models.sleaveBalanceModel
 @Html.Partial("_LeftMenu")
 <div class="col-md-6">
-    @using (Html.BeginForm(""))
+    @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
 
@@ -18,7 +18,8 @@
 
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="Credit Organization Annual Leave Balances" class="btn btn-default" onclick=""/>
+                   
+                    <input type="submit" value="Credit Organization Annual Leave Balances" class="btn btn-default" />
                 </div>
             </div>
         </div>

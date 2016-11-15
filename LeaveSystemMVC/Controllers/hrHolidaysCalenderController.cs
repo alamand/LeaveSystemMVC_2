@@ -56,13 +56,13 @@ namespace LeaveSystemMVC.Controllers
             {
                 ModelState.AddModelError("startDate", "Start Date Must not be left empty");
             }
-            else if (calender.startDate.Equals(DateTime.Today))
+            else if (calender.startDate.Equals(DateTime.Today) || calender.startDate< DateTime.Today)
             {
-                ModelState.AddModelError("startDate", "The Start Date cannot be today");
+                ModelState.AddModelError("startDate", "The Start Date cannot be the current or previous day.");
             }
-            else if (calender.endDate.Equals(DateTime.Today))
+            else if (calender.endDate.Equals(DateTime.Today) || calender.startDate < DateTime.Today)
             {
-                ModelState.AddModelError("endDate", "The End Date cannot be today");
+                ModelState.AddModelError("endDate", "The End Date cannot be the current or previous days");
             }
             if (ModelState.IsValid)
 

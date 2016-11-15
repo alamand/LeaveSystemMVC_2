@@ -17,26 +17,39 @@ namespace LeaveSystemMVC.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult Credit(string value)
+        public ActionResult Index(int? value)
         {
-            //2 steps
-            //1: Query DB for all Leave types
-            //2: Sort by Leave type and update the values
-            //QUery DB for leave name and duration
-            //Send in parameter leave name and duration
-            //For Counting Rows SELECT COUNT(*) FROM dbo.Leave_Balance;
             if (ModelState.IsValid)
             {
-              /*  var list = new List<Leave>();
-                list.Add(new Leave(1,1));
-                foreach (var item in list)
+                var list = new List<Leave>();
+                var driver = new List<Leave>();
+                var connectionString = ConfigurationManager.ConnectionStrings["CustomConnection"].ConnectionString;
+                string queryString = "Select * from LeaveSystem.dbo.Leave_Type";
+                using (var connection = new SqlConnection(connectionString))
                 {
-                    CreditBalance(item.id, item.duration);
-                }*/
-                ModelState.AddModelError("Save", "Save Button Clicked");
-                return RedirectToAction("Index");
+                    var command = new SqlCommand(queryString, connection);
+
+                    connection.Open();
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            //if not driver
+                            var id = (int)reader["Leave_ID"];
+                            var duration = (int)reader["Duration"];
+                            list.Add(new Leave(id,duration ));
+                            //if driver CreditDriver()
+                        }
+                    }
+
+                    connection.Close();
+                }
+                foreach (var item in list)
+                  {
+                      CreditBalance(item.id, item.duration);
+                  }
             }
-            return View("Index");
+            return View();
         }
         public struct Leave
         {
@@ -56,19 +69,21 @@ namespace LeaveSystemMVC.Controllers
                 connection.Open();
                 using (var reader = command.ExecuteReader())
                 {
-                    while (reader.Read())
-                    {
-                        var calender = new Models.hrHolidaysCalender();
-                        calender.holidayName = (string)reader["Name"];
-                        calender.startDate = (DateTime)reader["Date"];
-                        model.Add(calender);
-                    }
                 }
 
                 connection.Close();
             }
 
         }
+        public bool isDriver(int id)
+        {
+            return false;
+        }
+        public Leave CreditDriver(int id, int duration)
+        {
+            return new Leave(id,duration);
+        }
+
 
     }
 }
