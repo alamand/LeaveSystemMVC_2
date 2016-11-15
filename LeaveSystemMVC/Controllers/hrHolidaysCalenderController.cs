@@ -22,7 +22,8 @@ namespace LeaveSystemMVC.Controllers
         public ActionResult CreateHoliday()
         {
             var model = new List<Models.hrHolidaysCalender>();
-            var connectionString = ConfigurationManager.ConnectionStrings["CustomConnection"].ConnectionString;
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            //var connectionString = ConfigurationManager.ConnectionStrings["CustomConnection"].ConnectionString;
             string queryString = "Select * FROM dbo.Public_Holiday";
             using (var connection = new SqlConnection(connectionString))
             {
@@ -70,7 +71,9 @@ namespace LeaveSystemMVC.Controllers
                 if (!isDateSame(calender.startDate, calender.endDate))
                 {
                     string date = calender.startDate.ToString("yyyy-MM-dd");
-                    var connectionString = ConfigurationManager.ConnectionStrings["CustomConnection"].ConnectionString;
+                    var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+
+                    //var connectionString = ConfigurationManager.ConnectionStrings["CustomConnection"].ConnectionString;
                     int totalDay = totalDays(calender.startDate, calender.endDate);
                     for (int i = 0; i <= totalDay; i++)
                     {
@@ -101,8 +104,10 @@ namespace LeaveSystemMVC.Controllers
     public ActionResult Display()
     {
         var model = new List<Models.hrHolidaysCalender>();
-        var connectionString = ConfigurationManager.ConnectionStrings["CustomConnection"].ConnectionString;
-        string queryString = "Select * FROM dbo.Public_Holiday";
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+
+            //var connectionString = ConfigurationManager.ConnectionStrings["CustomConnection"].ConnectionString;
+            string queryString = "Select * FROM dbo.Public_Holiday";
         using (var connection = new SqlConnection(connectionString))
         {
             var command = new SqlCommand(queryString, connection);
@@ -126,7 +131,9 @@ namespace LeaveSystemMVC.Controllers
     }
         public bool isDateSame(DateTime date)
         {
-            var connectionString = ConfigurationManager.ConnectionStrings["CustomConnection"].ConnectionString;
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+
+            //var connectionString = ConfigurationManager.ConnectionStrings["CustomConnection"].ConnectionString;
             string queryString = "Select * FROM dbo.Public_Holiday where Date= '" + date.ToString("yyyy-MM-dd") + "'";
             using (var connection = new SqlConnection(connectionString))
             {
@@ -147,7 +154,9 @@ namespace LeaveSystemMVC.Controllers
         }
         public bool isDateSame(DateTime start, DateTime end)
         {
-            var connectionString = ConfigurationManager.ConnectionStrings["CustomConnection"].ConnectionString;
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+
+            //var connectionString = ConfigurationManager.ConnectionStrings["CustomConnection"].ConnectionString;
             int totalDay = totalDays(start, end);
             for (int i = 0; i <= totalDay; i++)
             {

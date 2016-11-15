@@ -23,7 +23,8 @@ namespace LeaveSystemMVC.Controllers
             {
                 var list = new List<Leave>();
                 var driver = new List<Leave>();
-                var connectionString = ConfigurationManager.ConnectionStrings["CustomConnection"].ConnectionString;
+                var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+                //var connectionString = ConfigurationManager.ConnectionStrings["CustomConnection"].ConnectionString;
                 string queryString = "Select * from LeaveSystem.dbo.Leave_Type";
                 using (var connection = new SqlConnection(connectionString))
                 {
@@ -60,7 +61,8 @@ namespace LeaveSystemMVC.Controllers
         public void CreditBalance(int leaveID, int balance)
         {
             var model = new List<Models.hrHolidaysCalender>();
-            var connectionString = ConfigurationManager.ConnectionStrings["CustomConnection"].ConnectionString;
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            //var connectionString = ConfigurationManager.ConnectionStrings["CustomConnection"].ConnectionString;
             string queryString = "Update dbo.Leave_Balance SET Balance='"+balance+"' WHERE Leave_ID='"+leaveID+"'";
             using (var connection = new SqlConnection(connectionString))
             {
