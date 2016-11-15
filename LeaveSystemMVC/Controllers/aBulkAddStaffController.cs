@@ -40,14 +40,17 @@ namespace LeaveSystemMVC.Controllers
                         {
                             int column = 0;
                             var newEmployee = new employeeCons();
+                            bool addEmployee = true;
                             foreach (string tableColumn in tableRow)
                             {
+                                
                                 switch(column)
                                 {
                                     case 0:
                                         int ID;
                                         int.TryParse(tableColumn, out ID);
                                         newEmployee.employeeObject.staffID = ID;
+                                        
                                         break;
                                     case 1:
                                         newEmployee.employeeObject.firstName = tableColumn;
@@ -119,9 +122,13 @@ namespace LeaveSystemMVC.Controllers
                                         break;
 
                                 }
+                                if (!addEmployee)
+                                    break;
                                 column++;
                             }
-                            newEmployees.Add(newEmployee);
+                            if(addEmployee)
+                                newEmployees.Add(newEmployee);
+
                             column = 0;
                         }
                         ViewBag.Message = "File uploaded successfully";
