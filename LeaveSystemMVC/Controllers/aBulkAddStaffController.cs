@@ -166,6 +166,13 @@ namespace LeaveSystemMVC.Controllers
             roles = new List<string>();
             balances = new sleaveBalanceModel();
         }
+
+        public string autoUsername()
+        {
+            string username = "";
+
+            return username;
+        }
     }
 
 }
