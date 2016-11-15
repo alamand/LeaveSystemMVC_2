@@ -35,45 +35,93 @@ namespace LeaveSystemMVC.Controllers
                         CsvFile csv = new CsvFile(Path.Combine(Server.MapPath("~/App_Data"), Path.GetFileName(upload.FileName)));
                         upload.SaveAs(csv.path);
                         var tableRows = csv.readFile();
-                        var newEmployees = new List<sEmployeeModel>();
+                        var newEmployees = new List<employeeCons>();
                         foreach(string[] tableRow in tableRows)
                         {
                             int column = 0;
-                            foreach(string tableColumn in tableRow)
+                            var newEmployee = new employeeCons();
+                            foreach (string tableColumn in tableRow)
                             {
-                                var newEmployee = new sEmployeeModel();
                                 switch(column)
                                 {
                                     case 0:
                                         int ID;
                                         int.TryParse(tableColumn, out ID);
-                                        newEmployee.staffID = ID;
+                                        newEmployee.employeeObject.staffID = ID;
                                         break;
                                     case 1:
-                                        newEmployee.firstName = tableColumn;
+                                        newEmployee.employeeObject.firstName = tableColumn;
                                         break;
                                     case 2:
-                                        newEmployee.lastName = tableColumn;
+                                        newEmployee.employeeObject.lastName = tableColumn;
                                         break;
                                     case 3:
-                                        newEmployee.designation = tableColumn;
+                                        newEmployee.employeeObject.designation = tableColumn;
                                         break;
                                     case 4:
-                                        newEmployee.deptName = tableColumn;
+                                        newEmployee.employeeObject.deptName = tableColumn;
                                         break;
                                     case 5:
-                                        newEmployee.gender = tableColumn;
+                                        newEmployee.employeeObject.gender = tableColumn;
                                         break;
                                     case 6:
                                         /*
                                         DateTime startDate = DateTime.ParseExact(tableColumn, "MM/dd/yyyy",
                                             System.Globalization.CultureInfo.InvariantCulture);*/
                                         DateTime startDate = DateTime.Parse(tableColumn);
-                                        newEmployee.empStartDate = startDate;
+                                        newEmployee.employeeObject.empStartDate = startDate;
                                         break;
+                                    case 7:
+                                        newEmployee.employeeObject.email = tableColumn;
+                                        break;
+                                    case 8:
+                                        newEmployee.roles.Add(tableColumn);
+                                        break;
+                                    case 9:
+                                        newEmployee.roles.Add(tableColumn);
+                                        break;
+                                    case 10:
+                                        newEmployee.roles.Add(tableColumn);
+                                        break;
+
+                                    case 11:
+                                        newEmployee.employeeObject.phoneNo = tableColumn;
+                                        break;
+                                    case 12:
+                                        int annual;
+                                        int.TryParse(tableColumn, out annual);
+                                        newEmployee.balances.annual = annual;
+                                        break;
+                                    case 13:
+                                        int maternity;
+                                        int.TryParse(tableColumn, out maternity);
+                                        newEmployee.balances.maternity = maternity;
+                                        break;
+                                    case 14:
+                                        int sick;
+                                        int.TryParse(tableColumn, out sick);
+                                        newEmployee.balances.sick = sick;
+                                        break;
+                                    case 15:
+                                        int compassionate;
+                                        int.TryParse(tableColumn, out compassionate);
+                                        newEmployee.balances.compassionate = compassionate;
+                                        break;
+                                    case 16:
+                                        int dil;
+                                        int.TryParse(tableColumn, out dil);
+                                        newEmployee.balances.daysInLieue = dil;
+                                        break;
+                                    case 17:
+                                        int hours;
+                                        int.TryParse(tableColumn, out hours);
+                                        newEmployee.balances.shortLeaveHours = hours;
+                                        break;
+
                                 }
                                 column++;
                             }
+                            newEmployees.Add(newEmployee);
                             column = 0;
                         }
                         ViewBag.Message = "File uploaded successfully";
@@ -98,4 +146,19 @@ namespace LeaveSystemMVC.Controllers
             return View(tempEmp);
         }
     }
+
+    public class employeeCons
+    {
+        public sEmployeeModel employeeObject;
+        public List<string> roles;
+        public sleaveBalanceModel balances;
+
+        public employeeCons()
+        {
+            employeeObject = new sEmployeeModel();
+            roles = new List<string>();
+            balances = new sleaveBalanceModel();
+        }
+    }
+
 }
