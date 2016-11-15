@@ -47,10 +47,15 @@ namespace LeaveSystemMVC.Controllers
                                 switch(column)
                                 {
                                     case 0:
+                                        if(tableColumn.Length > 5)
+                                        //> 5 because some IDs might contain less than 5 digits
+                                        {
+                                            addEmployee = false;
+                                            break;
+                                        }
                                         int ID;
                                         int.TryParse(tableColumn, out ID);
                                         newEmployee.employeeObject.staffID = ID;
-                                        
                                         break;
                                     case 1:
                                         newEmployee.employeeObject.firstName = tableColumn;
@@ -59,26 +64,45 @@ namespace LeaveSystemMVC.Controllers
                                         newEmployee.employeeObject.lastName = tableColumn;
                                         break;
                                     case 3:
-                                        newEmployee.employeeObject.designation = tableColumn;
+                                        //username cant be empty, it cant contain no .s, it cant contain spaces
+                                        if(tableColumn == "" || !tableColumn.Contains(".") || tableColumn.Contains(" "))
+                                        {
+                                            addEmployee = false;
+                                            break;
+                                        }
+                                        //if there's nothing after the dot, the username isn't valid
+                                        string afterDot = tableColumn.Substring(tableColumn.LastIndexOf('.') + 1);
+                                        if(afterDot == "")
+                                        {
+                                            addEmployee = false;
+                                            break;
+                                        }
+                                        //usernames cannot have more than one .
+                                        if(tableColumn.Count(x => x == '.') > 1)
+                                        {
+                                            addEmployee = false;
+                                            break;
+                                        }
+                                        newEmployee.employeeObject.userName = tableColumn;
                                         break;
                                     case 4:
-                                        newEmployee.employeeObject.deptName = tableColumn;
+                                        newEmployee.employeeObject.designation = tableColumn;
                                         break;
                                     case 5:
-                                        newEmployee.employeeObject.gender = tableColumn;
+                                        newEmployee.employeeObject.deptName = tableColumn;
                                         break;
                                     case 6:
+                                        newEmployee.employeeObject.gender = tableColumn;
+                                        break;
+                                    case 7:
                                         /*
                                         DateTime startDate = DateTime.ParseExact(tableColumn, "MM/dd/yyyy",
                                             System.Globalization.CultureInfo.InvariantCulture);*/
                                         DateTime startDate = DateTime.Parse(tableColumn);
                                         newEmployee.employeeObject.empStartDate = startDate;
                                         break;
-                                    case 7:
-                                        newEmployee.employeeObject.email = tableColumn;
-                                        break;
                                     case 8:
-                                        newEmployee.roles.Add(tableColumn);
+                                        newEmployee.employeeObject.email = tableColumn;
                                         break;
                                     case 9:
                                         newEmployee.roles.Add(tableColumn);
@@ -86,51 +110,55 @@ namespace LeaveSystemMVC.Controllers
                                     case 10:
                                         newEmployee.roles.Add(tableColumn);
                                         break;
-
                                     case 11:
+                                        newEmployee.roles.Add(tableColumn);
+                                        break;
+
+                                    case 12:
                                         newEmployee.employeeObject.phoneNo = tableColumn;
                                         break;
-                                    case 12:
+                                    case 13:
                                         int annual;
                                         int.TryParse(tableColumn, out annual);
                                         newEmployee.balances.annual = annual;
                                         break;
-                                    case 13:
+                                    case 14:
                                         int maternity;
                                         int.TryParse(tableColumn, out maternity);
                                         newEmployee.balances.maternity = maternity;
                                         break;
-                                    case 14:
+                                    case 15:
                                         int sick;
                                         int.TryParse(tableColumn, out sick);
                                         newEmployee.balances.sick = sick;
                                         break;
-                                    case 15:
+                                    case 16:
                                         int compassionate;
                                         int.TryParse(tableColumn, out compassionate);
                                         newEmployee.balances.compassionate = compassionate;
                                         break;
-                                    case 16:
+                                    case 17:
                                         int dil;
                                         int.TryParse(tableColumn, out dil);
                                         newEmployee.balances.daysInLieue = dil;
                                         break;
-                                    case 17:
+                                    case 18:
                                         int hours;
                                         int.TryParse(tableColumn, out hours);
                                         newEmployee.balances.shortLeaveHours = hours;
                                         break;
 
-                                }
+                                } // end of switch
                                 if (!addEmployee)
                                     break;
+                                newEmployee.employeeObject.password = RandomPassword.Generate(7, 7);
                                 column++;
-                            }
+                            } // end of tablecolumn foreach
                             if(addEmployee)
                                 newEmployees.Add(newEmployee);
 
                             column = 0;
-                        }
+                        } // end of tablerow foreach
                         ViewBag.Message = "File uploaded successfully";
                     }
                     catch (Exception ex)
