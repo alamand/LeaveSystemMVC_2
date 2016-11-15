@@ -23,7 +23,10 @@ namespace LeaveSystemMVC.Controllers
         {
             var model = new List<Models.hrHolidaysCalender>();
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+<<<<<<< HEAD
             //var connectionString = ConfigurationManager.ConnectionStrings["CustomConnection"].ConnectionString;
+=======
+>>>>>>> b0db73d76ae3986837724d44bdaba813e0999703
             string queryString = "Select * FROM dbo.Public_Holiday";
             using (var connection = new SqlConnection(connectionString))
             {
@@ -57,6 +60,7 @@ namespace LeaveSystemMVC.Controllers
             {
                 ModelState.AddModelError("startDate", "Start Date Must not be left empty");
             }
+<<<<<<< HEAD
             else if (calender.startDate.Equals(DateTime.Today) || calender.startDate< DateTime.Today)
             {
                 ModelState.AddModelError("startDate", "The Start Date cannot be the current or previous day.");
@@ -64,6 +68,15 @@ namespace LeaveSystemMVC.Controllers
             else if (calender.endDate.Equals(DateTime.Today) || calender.startDate < DateTime.Today)
             {
                 ModelState.AddModelError("endDate", "The End Date cannot be the current or previous days");
+=======
+            else if (calender.startDate.Equals(DateTime.Today))
+            {
+                ModelState.AddModelError("startDate", "The Start Date cannot be today");
+            }
+            else if (calender.endDate.Equals(DateTime.Today))
+            {
+                ModelState.AddModelError("endDate", "The End Date cannot be today");
+>>>>>>> b0db73d76ae3986837724d44bdaba813e0999703
             }
             if (ModelState.IsValid)
 
@@ -72,8 +85,11 @@ namespace LeaveSystemMVC.Controllers
                 {
                     string date = calender.startDate.ToString("yyyy-MM-dd");
                     var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+<<<<<<< HEAD
 
                     //var connectionString = ConfigurationManager.ConnectionStrings["CustomConnection"].ConnectionString;
+=======
+>>>>>>> b0db73d76ae3986837724d44bdaba813e0999703
                     int totalDay = totalDays(calender.startDate, calender.endDate);
                     for (int i = 0; i <= totalDay; i++)
                     {
@@ -104,10 +120,15 @@ namespace LeaveSystemMVC.Controllers
     public ActionResult Display()
     {
         var model = new List<Models.hrHolidaysCalender>();
+<<<<<<< HEAD
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
 
             //var connectionString = ConfigurationManager.ConnectionStrings["CustomConnection"].ConnectionString;
             string queryString = "Select * FROM dbo.Public_Holiday";
+=======
+        var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+        string queryString = "Select * FROM dbo.Public_Holiday";
+>>>>>>> b0db73d76ae3986837724d44bdaba813e0999703
         using (var connection = new SqlConnection(connectionString))
         {
             var command = new SqlCommand(queryString, connection);
@@ -132,8 +153,11 @@ namespace LeaveSystemMVC.Controllers
         public bool isDateSame(DateTime date)
         {
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+<<<<<<< HEAD
 
             //var connectionString = ConfigurationManager.ConnectionStrings["CustomConnection"].ConnectionString;
+=======
+>>>>>>> b0db73d76ae3986837724d44bdaba813e0999703
             string queryString = "Select * FROM dbo.Public_Holiday where Date= '" + date.ToString("yyyy-MM-dd") + "'";
             using (var connection = new SqlConnection(connectionString))
             {
@@ -155,8 +179,11 @@ namespace LeaveSystemMVC.Controllers
         public bool isDateSame(DateTime start, DateTime end)
         {
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+<<<<<<< HEAD
 
             //var connectionString = ConfigurationManager.ConnectionStrings["CustomConnection"].ConnectionString;
+=======
+>>>>>>> b0db73d76ae3986837724d44bdaba813e0999703
             int totalDay = totalDays(start, end);
             for (int i = 0; i <= totalDay; i++)
             {
