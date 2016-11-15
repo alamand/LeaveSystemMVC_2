@@ -31,10 +31,40 @@ namespace LeaveSystemMVC.Controllers
                 {
                     try
                     {
-                        string path = Path.Combine(Server.MapPath("~/App_Data"), Path.GetFileName(upload.FileName));
-                        upload.SaveAs(path);
-                        CsvParser csvParser = new CsvParser(path);
-                        csvParser.readFile();
+                        CsvFile csv = new CsvFile(Path.Combine(Server.MapPath("~/App_Data"), Path.GetFileName(upload.FileName)));
+                        upload.SaveAs(csv.path);
+                        var tableRows = csv.readFile();
+                        var newEmployees = new List<sEmployeeModel>();
+                        foreach(string[] tableRow in tableRows)
+                        {
+                            int column = 0;
+                            foreach(string tableColumn in tableRow)
+                            {
+                                var newEmployee = new sEmployeeModel();
+                                switch(column)
+                                {
+                                    case 0:
+                                        int ID;
+                                        int.TryParse(tableColumn, out ID);
+                                        newEmployee.staffID = ID;
+                                        break;
+                                    case 1:
+                                        newEmployee.firstName = tableColumn;
+                                        break;
+                                    case 2:
+                                        newEmployee.lastName = tableColumn;
+                                        break;
+                                    case 3:
+                                        newEmployee.designation = tableColumn;
+                                        break;
+                                    case 4:
+                                        newEmployee.deptName = tableColumn;
+                                        break;
+                                }
+                                column++;
+                            }
+                            column = 0;
+                        }
                         ViewBag.Message = "File uploaded successfully";
                     }
                     catch (Exception ex)
