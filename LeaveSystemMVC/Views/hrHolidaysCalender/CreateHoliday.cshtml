@@ -1,0 +1,52 @@
+﻿@model LeaveSystemMVC.Models.hrHolidaysCalender
+
+
+<h2>Create Holiday</h2>
+
+@Html.Partial("_LeftMenu")
+<p>
+    @Html.ActionLink("Display Holidays", "Display")
+</p>
+<div class="col-md-10">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            <h4>@ViewBag.title</h4>
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <hr />
+            <h6> @Html.ValidationMessage("sucessMessage" ) </h6>
+           <h6> @Html.ValidationMessage("errorMessage") </h6>
+                 <div class="form-inline">
+                @Html.LabelFor(calender => calender.holidayName)
+                @Html.TextBoxFor(calender => calender.holidayName)<br />
+                @Html.ValidationMessageFor(calender => calender.holidayName)
+            </div>
+            <hr />
+            <div class="row">
+                <div class="form-inline col-xs-4">
+                    @Html.LabelFor(calender => calender.startDate)
+                    @Html.EditorFor(calender => calender.startDate, new { type = "Date"})<br />
+                    @Html.ValidationMessageFor(calender => calender.startDate)
+                </div>
+                <div class="form-group col-xs-6">
+                    @Html.LabelFor(calender => calender.endDate)
+                    @Html.TextBoxFor(calender => calender.endDate, new { type = "date" })<br />
+                    @Html.ValidationMessageFor(calender => calender.endDate)
+                </div>
+
+            </div>
+            <hr />
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-12">
+                    <input type="submit" value="Save" class="btn btn-default" />
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

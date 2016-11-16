@@ -206,11 +206,9 @@
     <Compile Include="Models\hrCreateLeave.cs" />
     <Compile Include="Models\hrDaysInLieu.cs" />
     <Compile Include="Models\hrHolidaysCalender.cs" />
-<<<<<<< HEAD
-    <Compile Include="Models\miniLeaveListModel.cs" />
-=======
+    <Compile Include="Models\minDepartment.cs" />
     <Compile Include="Models\RandomPassword.cs" />
->>>>>>> modelsFeature
+    <Compile Include="Models\miniLeaveModel.cs" />
     <Compile Include="Models\sChangePasswordModel.cs" />
     <Compile Include="Models\aStaffRole.cs" />
     <Compile Include="Models\sleaveBalanceModel.cs" />
@@ -1708,14 +1706,18 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
-    <Content Include="Views\Web.config" />
+    <Content Include="Views\Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\LApplication\IndexOld.cshtml" />
@@ -1742,17 +1744,21 @@
     <Content Include="Views\sLeaveBalance\Index.cshtml" />
     <Content Include="Views\sLeaveHistory\Index.cshtml" />
     <Content Include="Views\aBulkAddStaff\Index.cshtml" />
+    <Content Include="Views\sLeaveStatus\Index.cshtml" />
     <Content Include="Views\LApplication\Index.cshtml" />
     <Content Include="Views\Shared\_LeftMenu.cshtml" />
     <Content Include="Views\Auth\Login.cshtml" />
-<<<<<<< HEAD
-    <Content Include="Views\Shared\_MinEmpList.cshtml" />
-    <Content Include="Views\Shared\_MinLeaveList.cshtml" />
-=======
     <Content Include="Views\RandomPassword\RandomPassword.cshtml" />
     <Content Include="Views\sLeaveStatus\Index.cshtml" />
+    <Content Include="Views\Shared\_MinEmpList.cshtml" />
+    <Content Include="Views\Shared\_MinLeaveList.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
->>>>>>> modelsFeature
+<<<<<<< HEAD
+    <Content Include="Views\Shared\_MinDepartmentList.cshtml" />
+=======
+    <Content Include="Views\hrHolidaysCalender\CreateHoliday.cshtml" />
+    <Content Include="Views\hrHolidaysCalender\Display.cshtml" />
+>>>>>>> master
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1783,7 +1789,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
+          <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>50683</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
