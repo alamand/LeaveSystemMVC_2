@@ -164,8 +164,10 @@ namespace LeaveSystemMVC.Controllers
 
                         foreach(var employee in newEmployees)
                         {
-
                             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+
+                            //Check if employee with same ID and username already exists.
+                            //If it does then move on to the next employee.
                             string queryString = "SELECT Employee_ID, User_Name FROM dbo.Employee WHERE Employee_ID = "
                                 + employee.employeeObject.staffID + " OR User_Name = '" + employee.employeeObject.userName + "'";
                             using (var connection = new SqlConnection(connectionString))
@@ -183,8 +185,11 @@ namespace LeaveSystemMVC.Controllers
                                     if (toContinue)
                                         continue;
                                 }
+                                connection.Close();
                             }
+                            //End check for existing employee
 
+                            //Insert employee data into the database table
                             queryString = "INSERT INTO dbo.Employee (Employee_ID, First_Name, " +
                                 "Last_Name, User_Name, Password, Designation, Email, Gender, PH_No, " +
                                 "Emp_Start_Date, Account_Status) VALUES('" + employee.employeeObject.staffID +
@@ -201,6 +206,15 @@ namespace LeaveSystemMVC.Controllers
                                 using (var reader = command.ExecuteReader())
                                     connection.Close();
                             }
+                            //End employee insertion
+
+                            //Employee Balances insertion
+
+                            //end employee balances insertion
+
+                            //Employee roles insertion
+
+                            //End employee roles insertion
                         }
 
                         /* I tried having only a single connection open for adding all of the entries
