@@ -1749,7 +1749,6 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\hrHolidaysCalender\CreateHoliday.cshtml" />
     <Content Include="Views\hrHolidaysCalender\Display.cshtml" />
-    <Content Include="Views\LApplication\IndexTest.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
