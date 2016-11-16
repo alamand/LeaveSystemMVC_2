@@ -1,11 +1,11 @@
 Employee_ID,First_Name,Last_Name,Username,Designation,Department_Name,Gender,Emp_Start_Date,Email,Role_Name,Role_Name_1,Role_Name_2,Ph_No,Annual_Balance,Maternity_Balance,Sick_Balance,Compassionate_Balance,Days_in_Lieu_Total,Short_Leave_Balance_(hours)
-12345,Bruce,Wayne,bruce.wayn.e,Academics,Academic Services,M,1/9/2010,bruce.wayne@murdoch.edu.au,Admin,LM,HR,9.72E+11,20,0,2,10,5,120
-12346,Clark,Kent,clark.kent,HR Officer,HR,M,1/10/2010,clark.kent@murdoch.edu.au,Admin,Staff,,9.72E+11,20,0,2,10,5,120
-12347,Kunal,Shah,kunal.shah,IT Head,IT,M,1/11/2010,kunal.shah@murdoch.edu.au,Staff ,,,9.72E+11,20,0,2,10,5,120
-12348,Mandy,Northover,mandy.northover,IT Head,IT,F,1/12/2010,mandy.northover@murdoch.edu.au,HR,LM,Staff,9.72E+11,20,0,2,10,5,120
-12349,Sukhi,Paji,sukhi.paji,Marketing Head,Marketing,M,1/13/2010,sukhi.paji@murdoch.edu.au,LM,,,9.72E+11,20,0,2,10,5,120
-12355,Zobad,Batam,zobad.batam,Finance Head,Finance,M,1/14/2010,zobad.batam@murdoch.edu.au,LM,Staff,,9.72E+11,20,0,2,10,5,120
-12365,Jasim,Khuni,jasim.khuni,IT Intern,IT,M,1/15/2010,jasim.khuni@murdoch.edu.au,HR,,,9.72E+11,20,0,2,10,5,120
-12375,Awais,Legend,awais.legend,Logistics Head,Logistics,M,1/16/2010,awais.legend@murdoch.edu.au,Staff,LM,HR,9.72E+11,20,0,2,10,5,120
-12385,Junaid,Doggo,junaid.doggo,AS Intern,Academic Services,M,1/17/2010,junaid.doggo@murdoch.edu.au,HR,,,9.72E+11,20,0,2,10,5,120
-12395,Vito,Escobar,vito.escobar,Finance In Charge,Finance,M,1/18/2010,vitto.escobar@murdoch.edu.au,LM,,,9.72E+11,20,0,2,10,5,120
+12345,Bruce,Wayne,bruce.wayne,Academics,Academic Services,M,1/09/2010,bruce.wayne@murdoch.edu.au,Admin,LM,HR,9.71528E+11,20,0,2,10,5,120
+12346,Clark,Kent,clark.kent,HR Officer,HR,M,1/10/2010,clark.kent@murdoch.edu.au,Admin,Staff,,9.71521E+11,20,0,2,10,5,120
+12347,Kunal,Shah,kunal.shah,IT Head,IT,M,1/11/2010,kunal.shah@murdoch.edu.au,Staff ,,,9.71521E+11,20,0,2,10,5,120
+12348,Mandy,Northover,mandy.northover,IT Head,IT,F,1/12/2010,mandy.northover@murdoch.edu.au,HR,LM,Staff,9.71521E+11,20,0,2,10,5,120
+12349,Sukhi,Paji,sukhi.paji,Marketing Head,Marketing,M,1/13/2010,sukhi.paji@murdoch.edu.au,LM,,,9.71521E+11,20,0,2,10,5,120
+12355,Zobad,Batam,zobad.batam,Finance Head,Finance,M,1/14/2010,zobad.batam@murdoch.edu.au,LM,Staff,,9.71521E+11,20,0,2,10,5,120
+12365,Jasim,Khuni,jasim.khuni,IT Intern,IT,M,1/15/2010,jasim.khuni@murdoch.edu.au,HR,,,9.71521E+11,20,0,2,10,5,120
+12375,Awais,Legend,awais.legend,Logistics Head,Logistics,M,1/16/2010,awais.legend@murdoch.edu.au,Staff,LM,HR,9.71521E+11,20,0,2,10,5,120
+12385,Junaid,Doggo,junaid.doggo,Academic Services Intern,Academic Services,M,1/17/2010,junaid.doggo@murdoch.edu.au,HR,,,9.71521E+11,20,0,2,10,5,120
+12395,Vito,Escobar,vito.escobar,Finance In Charge,Finance,M,1/18/2010,vitto.escobar@murdoch.edu.au,LM,,,9.71521E+11,20,0,2,10,5,120

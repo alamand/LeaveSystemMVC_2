@@ -209,6 +209,54 @@ namespace LeaveSystemMVC.Controllers
                             //End employee insertion
 
                             //Employee Balances insertion
+                            //lets assume that all the leave types and
+                            //their appropriate max balances will be included
+                            //in the database from the getgo
+                            //
+                            for(int i = 0; i <= 5; i++)
+                            {
+                                int balance = 0;
+                                int employeeID = employee.employeeObject.staffID;
+                                int leaveID = 0;
+                                switch(i)
+                                {
+                                    case 0:
+                                        balance = employee.balances.annual;
+                                        leaveID = 1;
+                                        break;
+                                    case 1:
+                                        balance = employee.balances.maternity;
+                                        leaveID = 2;
+                                        break;
+                                    case 3:
+                                        balance = employee.balances.sick;
+                                        leaveID = 3;
+                                        break;
+                                    case 4:
+                                        balance = employee.balances.compassionate;
+                                        leaveID = 4;
+                                        break;
+                                    case 5:
+                                        balance = employee.balances.daysInLieue;
+                                        leaveID = 5;
+                                        break;
+                                    case 6:
+                                        balance = employee.balances.shortLeaveHours;
+                                        leaveID = 5;
+                                        break;
+                                } // end of switch
+                                queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_ID, Balance) " +
+                                "VALUES('" + employeeID + "', '" + leaveID + "', '" + balance +  "')";
+
+                                using (var connection = new SqlConnection(connectionString))
+                                {
+                                    var command = new SqlCommand(queryString, connection);
+                                    connection.Open();
+                                    using (var reader = command.ExecuteReader())
+                                        connection.Close();
+                                }
+                            }
+                            
 
                             //end employee balances insertion
 
