@@ -1749,12 +1749,16 @@
     <Content Include="Views\Shared\_LeftMenu.cshtml" />
     <Content Include="Views\Auth\Login.cshtml" />
     <Content Include="Views\RandomPassword\RandomPassword.cshtml" />
+    <Content Include="Views\sLeaveStatus\Index.cshtml" />
     <Content Include="Views\Shared\_MinEmpList.cshtml" />
     <Content Include="Views\Shared\_MinLeaveList.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
+<<<<<<< HEAD
+    <Content Include="Views\Shared\_MinDepartmentList.cshtml" />
+=======
     <Content Include="Views\hrHolidaysCalender\CreateHoliday.cshtml" />
     <Content Include="Views\hrHolidaysCalender\Display.cshtml" />
-    <Content Include="Views\Shared\_MinDepartmentList.cshtml" />
+>>>>>>> master
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
