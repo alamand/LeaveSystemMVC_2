@@ -12,29 +12,45 @@ namespace LeaveSystemMVC.Models
 
         public string staffName { get; set; } = "Dwayne";
 
+        
         // [DisplayName("Select Leave Type")]
         [Required(ErrorMessage = "Please select leave type")]
         public String leaveType { get; set; } = "Annual";
 
         //[DisplayName("Select Application Date")]
+<<<<<<< HEAD
         [Required(ErrorMessage = "Please select leave application date")]
         public DateTime applicationDate { get; set; } = new DateTime(24-11-2016);
+=======
+        public DateTime applicationDate { get; set; } 
+>>>>>>> 1a8f15a4ea2e49c500ff2ddccacc06d0d8d94ec8
 
+        [Required]
         [DisplayName("Select Leave Start Date")]
+<<<<<<< HEAD
         [Required(ErrorMessage = "Please select leave start date")]
         public DateTime startDate { get; set; } = new DateTime(24 - 12 - 2016);
 
         [DisplayName("Select Leave End Date")]
         [Required(ErrorMessage = "Please select leave end date")]
         public DateTime endDate { get; set; } = new DateTime(24 - 1 - 2017);
+=======
+        public DateTime startDate { get; set; } 
 
-        public DateTime returnDate { get; set; } = new DateTime(24 - 1 - 2017);
+
+        [DisplayName("Select Leave End Date")]
+        public DateTime endDate { get; set; } 
+>>>>>>> 1a8f15a4ea2e49c500ff2ddccacc06d0d8d94ec8
+
+
+        public DateTime returnDate { get; set; }
 
         [DisplayName("Leave Duration")]
         [Required(ErrorMessage = "Please enter the leave duration before submitting form")]
         public int leaveDuration { get; set; } = 30;
 
         [DisplayName("Select Leave Start Time")]
+<<<<<<< HEAD
         [Required(ErrorMessage = "Please select leave start time")]
         public DateTime shortStartTime { get; set; } = new DateTime(24 - 1 - 2017);
 
@@ -42,6 +58,12 @@ namespace LeaveSystemMVC.Models
         [Required(ErrorMessage = "Please select leave end time")]
         public DateTime shortEndTime { get; set; } = new DateTime(24 - 1 - 2017);
 
+=======
+        public DateTime shortStartTime { get; set; } 
+
+        [DisplayName("Select Leave End Time")]
+        public DateTime shortEndTime { get; set; } 
+>>>>>>> 1a8f15a4ea2e49c500ff2ddccacc06d0d8d94ec8
         [DisplayName("Line Manager Comment")]
         public string lmComment { get; set; } = "Leave Approved";
 
