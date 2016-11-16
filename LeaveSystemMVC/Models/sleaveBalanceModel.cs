@@ -15,6 +15,6 @@ namespace LeaveSystemMVC.Models
         public int maternity { get; set; } = 0;
         public int daysInLieue { get; set; } = 0;
         public int unpaidTotal { get; set; } = 0;
-        public double shortLeaveHours { get; set; } = 0;
+        public int shortLeaveHours { get; set; } = 0;
     }
 }
