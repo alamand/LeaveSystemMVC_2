@@ -56,7 +56,7 @@ namespace LeaveSystemMVC.Controllers
                 //Redirect(Create.UrlReferrer.ToString());
             }
             if (ModelState.IsValid)
-
+                //
             {
                 if (result == 0)
                     System.Diagnostics.Debug.WriteLine("is the same time as");
