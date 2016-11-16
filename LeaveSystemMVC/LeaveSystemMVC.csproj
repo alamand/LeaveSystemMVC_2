@@ -1749,7 +1749,6 @@
     <Content Include="Views\Shared\_LeftMenu.cshtml" />
     <Content Include="Views\Auth\Login.cshtml" />
     <Content Include="Views\RandomPassword\RandomPassword.cshtml" />
-    <Content Include="Views\sLeaveStatus\Index.cshtml" />
     <Content Include="Views\Shared\_MinEmpList.cshtml" />
     <Content Include="Views\Shared\_MinLeaveList.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
@@ -1786,7 +1785,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
+          <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>50683</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
