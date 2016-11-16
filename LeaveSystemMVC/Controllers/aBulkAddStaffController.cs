@@ -7,6 +7,8 @@ using LeaveSystemMVC.Models;
 using System.IO;
 using LeaveSystemMVC.CustomLibraries;
 using System.Globalization;
+using System.Data.SqlClient;
+using System.Configuration;
 
 namespace LeaveSystemMVC.Controllers
 {
@@ -159,6 +161,55 @@ namespace LeaveSystemMVC.Controllers
 
                             column = 0;
                         } // end of tablerow foreach
+
+                        foreach(var employee in newEmployees)
+                        {
+                            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+                            string queryString = "INSERT INTO dbo.Employee (Employee_ID, First_Name, " +
+                                "Last_Name, User_Name, Password, Designation, Email, Gender, PH_No, " +
+                                "Emp_Start_Date, Account_Status) VALUES('" + employee.employeeObject.staffID + 
+                                "', '" + employee.employeeObject.firstName + "', '" + employee.employeeObject.lastName +
+                                "', '" + employee.employeeObject.userName +
+                                "', '" + employee.employeeObject.password + "', '" + employee.employeeObject.designation +
+                                "', '" + employee.employeeObject.email + "', '" + employee.employeeObject.gender +
+                                "', '" + employee.employeeObject.phoneNo + "', '" + employee.employeeObject.empStartDate +
+                                "', '" + "True" + "')";
+                            using (var connection = new SqlConnection(connectionString))
+                            {
+                                var command = new SqlCommand(queryString, connection);
+                                connection.Open();
+                                using (var reader = command.ExecuteReader())
+                                    connection.Close();
+                            }
+                        }
+
+                        /* I tried having only a single connection open for adding all of the entries
+                         * gave an error saying i need to close the previous connection for new one
+                        var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+
+                        using (var connection = new SqlConnection(connectionString))
+                        {
+                            connection.Open();
+                            foreach (var employee in newEmployees)
+                            {
+                                string queryString = "INSERT INTO dbo.Employee (Employee_ID, First_Name, " +
+                                    "Last_Name, User_Name, Password, Designation, Email, Gender, PH_No, " +
+                                    "Emp_Start_Date, Account_Status) VALUES('" + employee.employeeObject.staffID + 
+                                    "', '" + employee.employeeObject.firstName + "', '" + employee.employeeObject.lastName +
+                                    "', '" + employee.employeeObject.userName +
+                                    "', '" + employee.employeeObject.password + "', '" + employee.employeeObject.designation +
+                                    "', '" + employee.employeeObject.email + "', '" + employee.employeeObject.gender +
+                                    "', '" + employee.employeeObject.phoneNo + "', '" + employee.employeeObject.empStartDate +
+                                    "', '" + "True" + "')";
+
+                                var command = new SqlCommand(queryString, connection);
+
+                                command.ExecuteReader();
+                            }
+                            connection.Close();
+                        }*/
+
+
                         ViewBag.Message = "File uploaded successfully";
                     }
                     catch (Exception ex)
