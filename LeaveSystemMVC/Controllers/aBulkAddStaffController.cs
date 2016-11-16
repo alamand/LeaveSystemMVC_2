@@ -164,10 +164,30 @@ namespace LeaveSystemMVC.Controllers
 
                         foreach(var employee in newEmployees)
                         {
+
                             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-                            string queryString = "INSERT INTO dbo.Employee (Employee_ID, First_Name, " +
+                            string queryString = "SELECT Employee_ID, User_Name FROM dbo.Employee WHERE Employee_ID = "
+                                + employee.employeeObject.staffID + " OR User_Name = '" + employee.employeeObject.userName + "'";
+                            using (var connection = new SqlConnection(connectionString))
+                            {
+                                var command = new SqlCommand(queryString, connection);
+                                connection.Open();
+                                using (var reader = command.ExecuteReader())
+                                {
+                                    bool toContinue = false;
+                                    while(reader.Read())
+                                    {
+                                        toContinue = true;
+                                        break;
+                                    }
+                                    if (toContinue)
+                                        continue;
+                                }
+                            }
+
+                            queryString = "INSERT INTO dbo.Employee (Employee_ID, First_Name, " +
                                 "Last_Name, User_Name, Password, Designation, Email, Gender, PH_No, " +
-                                "Emp_Start_Date, Account_Status) VALUES('" + employee.employeeObject.staffID + 
+                                "Emp_Start_Date, Account_Status) VALUES('" + employee.employeeObject.staffID +
                                 "', '" + employee.employeeObject.firstName + "', '" + employee.employeeObject.lastName +
                                 "', '" + employee.employeeObject.userName +
                                 "', '" + employee.employeeObject.password + "', '" + employee.employeeObject.designation +
