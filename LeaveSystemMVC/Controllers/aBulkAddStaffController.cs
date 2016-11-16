@@ -245,8 +245,9 @@ namespace LeaveSystemMVC.Controllers
                                         leaveID = 6;
                                         break;
                                 } // end of switch
+
                                 queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_ID, Balance) " +
-                                "VALUES('" + employeeID + "', '" + leaveID + "', '" + balance +  "')";
+                                "VALUES ('" + employeeID + "', '" + leaveID + "', '" + balance +  "')";
 
                                 using (var connection = new SqlConnection(connectionString))
                                 {
@@ -256,12 +257,39 @@ namespace LeaveSystemMVC.Controllers
                                         connection.Close();
                                 }
                             }
-                            
-
                             //end employee balances insertion
 
                             //Employee roles insertion
+                            foreach(var role in employee.roles)
+                            {
+                                int roleID = 0;
+                                queryString = "SELECT Role_ID FROM dbo.Role WHERE Role_Name = '" + role + "'";
+                                using (var connection = new SqlConnection(connectionString))
+                                {
+                                    var command = new SqlCommand(queryString, connection);
+                                    connection.Open();
+                                    using (var reader = command.ExecuteReader())
+                                    {
+                                        while(reader.Read())
+                                        {
+                                            roleID = (int)reader[0];
+                                        }
+                                    }
+                                    connection.Close();
+                                }
+                                if (roleID == 0)
+                                    continue;
 
+                                queryString = "INSERT INTO dbo.Employee_Role (Employee_ID, Role_ID) " +
+                                    "VALUES ('" + employee.employeeObject.staffID + "', '" + roleID +"')";
+                                using (var connection = new SqlConnection(connectionString))
+                                {
+                                    var command = new SqlCommand(queryString, connection);
+                                    connection.Open();
+                                    using (var reader = command.ExecuteReader())
+                                        connection.Close();
+                                }
+                            }
                             //End employee roles insertion
                         }
 
