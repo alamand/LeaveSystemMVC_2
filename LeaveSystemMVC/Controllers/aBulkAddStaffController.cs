@@ -228,21 +228,21 @@ namespace LeaveSystemMVC.Controllers
                                         balance = employee.balances.maternity;
                                         leaveID = 2;
                                         break;
-                                    case 3:
+                                    case 2:
                                         balance = employee.balances.sick;
                                         leaveID = 3;
                                         break;
-                                    case 4:
+                                    case 3:
                                         balance = employee.balances.compassionate;
                                         leaveID = 4;
                                         break;
-                                    case 5:
+                                    case 4:
                                         balance = employee.balances.daysInLieue;
                                         leaveID = 5;
                                         break;
-                                    case 6:
+                                    case 5:
                                         balance = employee.balances.shortLeaveHours;
-                                        leaveID = 5;
+                                        leaveID = 6;
                                         break;
                                 } // end of switch
                                 queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_ID, Balance) " +
