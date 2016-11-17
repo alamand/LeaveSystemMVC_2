@@ -1744,8 +1744,12 @@
     <Content Include="Views\sLeaveBalance\Index.cshtml" />
     <Content Include="Views\sLeaveHistory\Index.cshtml" />
     <Content Include="Views\aBulkAddStaff\Index.cshtml" />
-    <Content Include="Views\LApplication\Create.cshtml" />
+<<<<<<< HEAD
     <Content Include="Views\sLeaveStatus\Index.cshtml" />
+    <Content Include="Views\LApplication\Index.cshtml" />
+=======
+    <Content Include="Views\LApplication\Create.cshtml" />
+>>>>>>> 1a8f15a4ea2e49c500ff2ddccacc06d0d8d94ec8
     <Content Include="Views\Shared\_LeftMenu.cshtml" />
     <Content Include="Views\Auth\Login.cshtml" />
     <Content Include="Views\RandomPassword\RandomPassword.cshtml" />
@@ -1756,9 +1760,9 @@
     <Content Include="Views\hrHolidaysCalender\Display.cshtml" />
 <<<<<<< HEAD
     <Content Include="Views\Shared\_MinDepartmentList.cshtml" />
-    <Content Include="Views\LApplication\IndexTest.cshtml" />
 =======
->>>>>>> dc83d723b7269e9ce2445bf667c20671fc3a4e0f
+    <Content Include="Views\LApplication\IndexTest.cshtml" />
+>>>>>>> 1a8f15a4ea2e49c500ff2ddccacc06d0d8d94ec8
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1789,7 +1793,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
+          <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>50683</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
