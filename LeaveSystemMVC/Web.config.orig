@@ -88,4 +88,15 @@
       <compiler language="vb;vbs;visualbasic;vbscript" extension=".vb" type="Microsoft.CodeDom.Providers.DotNetCompilerPlatform.VBCodeProvider, Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" warningLevel="4" compilerOptions="/langversion:14 /nowarn:41008 /define:_MYTYPE=\&quot;Web\&quot; /optionInfer+" />
     </compilers>
   </system.codedom>
+<<<<<<< HEAD
 </configuration>
+=======
+  <system.net>
+    <mailSettings>
+      <smtp from="project_ict333@murdochdubai.ac.ae">
+        <network host="outlook.office365.com" port="587" userName="project_ict333@murdochdubai.ac.ae" password="ict@333" defaultCredentials="false" enableSsl="true" />
+      </smtp>
+    </mailSettings>
+  </system.net>
+</configuration>
+>>>>>>> 8307776e86606c30e9e7491a326731f72f4ac662
