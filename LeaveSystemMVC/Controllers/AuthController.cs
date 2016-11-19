@@ -36,7 +36,6 @@ namespace LeaveSystemMVC.Controllers
                 string firstName = "";
                 string lastName = "";
                 List<string> empRoles = new List<string>();
-
                 var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
                 string queryString = "Select Employee_ID, Password, First_Name, Last_Name FROM dbo.Employee WHERE Employee_ID = " + model.UserID;
                 using (var connection = new SqlConnection(connectionString))
