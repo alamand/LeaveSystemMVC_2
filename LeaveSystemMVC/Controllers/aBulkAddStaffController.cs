@@ -19,8 +19,6 @@ namespace LeaveSystemMVC.Controllers
         // GET: aBulkAddStaff
         public ActionResult Index()
         {
-            ViewBag.Message = "File name here...";
-            tempEmp.firstName = "File name here...";
             
             return View(tempEmp);
         }
