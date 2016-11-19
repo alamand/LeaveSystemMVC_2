@@ -28,8 +28,6 @@
                         @Html.ValidationMessageFor(model => model.firstName, "", new { @class = "text-danger" })
                     </div>
                 </td>
-            
-
             <td><div class="form-horizontal">
                 @Html.LabelFor(model => model.lastName, "Last Name", htmlAttributes: new { @class = "control-label col-md-2" })
                 </div></td>
@@ -39,8 +37,6 @@
                 </div>
             </td>
                 </tr>
-            
-            
             <tr>
                 <td><div class="form-horizontal ">
                     @Html.LabelFor(model => model.gender, "Gender", htmlAttributes: new { @class = "control-label col-md-3" })
@@ -86,7 +82,7 @@
 
 
 
-                <table style="width:58%;"><tr>
+                <table style="width:70%;"><tr>
                     <td><div class="form-horizontal">
                         @Html.LabelFor(model => model.designation, "Designation", htmlAttributes: new { @class = "control-label col-md-4" })
                         </div></td>
@@ -100,17 +96,17 @@
                         @Html.LabelFor(model => model.deptName, "Department Name", htmlAttributes: new { @class = "control-label col-md-4" })
                         </div></td>
                     <td><div class="form-inline">
-                            @Html.DropDownListFor(model => model.deptName, new SelectList(ViewBag.department))
+                            @Html.DropDownListFor(model => model.deptName, new SelectList(Model.departmentList, "Key", "Value"), "-Select Department -", new { @class = "form-control" })
                             @Html.ValidationMessageFor(model => model.deptName, "", new { @class = "text-danger" })
                         </div>
                    </td>
                 </tr></table>
                 
             <hr />
-            <table style="width:49%;">
+            <table style="width:70%;">
             <tr>
                 <td><div class="form-horizontal"style="white-space:nowrap">
-                    @Html.LabelFor(model => model.empStartDate, "Employment Start Date", htmlAttributes: new { @class = "control-label col-md-1", type="Date" })
+                    @Html.LabelFor(model => model.empStartDate, "Employment Start Date", htmlAttributes: new { @class = "control-label col-md-1", type = "Date" })
                     </div></td>
                 <td><div class="form-inline">
                         @Html.TextBoxFor(model => model.empStartDate, new { type = "date" })
@@ -121,31 +117,27 @@
                 <td><div class="form-horizontal"style="white-space:nowrap">
                     @Html.LabelFor(model => model.staffType, "Staff Type", htmlAttributes: new { @class = "control-label col-md-1" })
                     </div></td><td><div class="form-inline">
-                       @Html.DropDownListFor(model => model.staffType, new SelectList(ViewBag.staffType))
+                        @Html.DropDownListFor(model => model.staffType, new SelectList(Model.staffTypeSelectionOptions, "Key", "Value"), "- Select type -", new { @class = "form-control" })
                         @Html.ValidationMessageFor(model => model.staffType, "", new { @class = "text-danger" })
                     </div>
                 </td>
                 </tr></table>
             <hr />
-            <table style="width:62%;"><tr>
+            <table style="width:70%;"><tr>
                 
                     <td><div class="form-horizontal"style="white-space:nowrap">
                         @Html.LabelFor(model => model.optionalStaffType, "Optional Staff Type", htmlAttributes: new { @class = "control-label col-md-4" })
                        </div></td>
                          <td><div class="form-inline">
-                            @Html.DropDownListFor(model => model.optionalStaffType, new SelectList(ViewBag.staffType))
+                            @Html.DropDownListFor(model => model.optionalStaffType, new SelectList(Model.staffTypeSelectionOptions, "Key", "Value"), "- Select type -", new { @class = "form-control" })
                             @Html.ValidationMessageFor(model => model.optionalStaffType, "", new { @class = "text-danger" })
                         </div>
                     </td>
-                    
-
-                  
-
                     <td><div class="form-horizontal"style="white-space:nowrap">
                         @Html.LabelFor(model => model.optional2ndStaffType, "Optional Staff Type 2", htmlAttributes: new { @class = "control-label col-md-4" })
                         </div></td>
                         <td><div class="form-inline">
-                            @Html.DropDownListFor(model => model.optional2ndStaffType, new SelectList(ViewBag.staffType))
+                            @Html.DropDownListFor(model => model.optional2ndStaffType, new SelectList(Model.staffTypeSelectionOptions, "Key", "Value"), "- Select type -", new { @class = "form-control" })
                             @Html.ValidationMessageFor(model => model.optional2ndStaffType, "", new { @class = "text-danger" })
                         </div>
                     </td>

@@ -5,6 +5,10 @@ using System.Net;
 using System.Net.Mail;
 using System.Web;
 using System.Web.Mvc;
+using System.Configuration;
+using System.Data.SqlClient;
+using System.Dynamic;
+using LeaveSystemMVC.Models;
 
 namespace LeaveSystemMVC.Controllers
 {
@@ -14,6 +18,50 @@ namespace LeaveSystemMVC.Controllers
         [HttpGet]
         public ActionResult Index()
         {
+            /*The employee model object that will be passed into the view*/
+            sEmployeeModel EmptyEmployee = new sEmployeeModel();
+
+            //Intermediary staff roles/types selection list
+
+            //Get list of available roles
+            var connectionString = 
+                ConfigurationManager.ConnectionStrings["DefaultConnection"].
+                ConnectionString;
+            var queryString = "SELECT Role_ID, Role_Name FROM dbo.Role";
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while(reader.Read())
+                    {
+                        EmptyEmployee.staffTypeSelectionOptions.Add((int)reader[0], (string)reader[1]);
+                    }
+                }
+                connection.Close();
+            }
+
+            //We should have all role types from the database now
+            //end get roles
+
+            //Get all departments for selection
+            queryString = "SELECT Department_ID, Department_Name FROM dbo.Department";
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while(reader.Read())
+                    {
+                        EmptyEmployee.departmentList.Add((int)reader[0], (string)reader[1]);
+                    }
+                }
+                connection.Close();
+            }
+            //End get departments
+
             //all these lists should not be hardcoded
 
             List<string> sid = new List<string>();
@@ -47,8 +95,10 @@ namespace LeaveSystemMVC.Controllers
             staffType.Add("HR");
             staffType.Add("Staff Member");
             ViewBag.staffType = staffType;
-            return View();
+            return View(EmptyEmployee);
         }
+
+        
 
         [HttpPost]
         public ActionResult Index(LeaveSystemMVC.Models.sEmployeeModel SE)
@@ -78,6 +128,27 @@ namespace LeaveSystemMVC.Controllers
             return Index();
         }
 
+        /*Function referred to from @ http://nimblegecko.com/using-simple-drop-down-lists-in-ASP-NET-MVC/
+         * Essentially encapsulates the creation of a list of SelectItem. Or a SelectList object.
+         * Please note that this function is not being used because a better solution has replaced 
+          it's specific use for creating dropdown lists out of dictionary objects. However, this might
+          become useful later(possibly in other projects). This (especially the link) will be kept here
+          essentially for future reference because it helped clear up a lot of confusions.*/
+        private IEnumerable<SelectListItem> GetDropdownListItems(Dictionary<int, string> elements)
+        {
+            var selectList = new List<SelectListItem>();
+
+            foreach(var element in elements)
+            {
+                selectList.Add(new SelectListItem
+                {
+                    Value = element.Key.ToString(),
+                    Text = element.Value
+                });
+            }
+
+            return selectList;
+        }
 
     }
 }
