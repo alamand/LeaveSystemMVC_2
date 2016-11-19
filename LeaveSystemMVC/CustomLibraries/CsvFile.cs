@@ -31,6 +31,7 @@ namespace LeaveSystemMVC.CustomLibraries
                 values = line.Split(',');
                 valueList.Add(values);
             }
+            reader.Close();
             return valueList;
         }
     }
