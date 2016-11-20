@@ -1,4 +1,7 @@
-﻿@model LeaveSystemMVC.Models.aStaffRole
+﻿
+<!-- Adding a new staff role view -->
+
+@model LeaveSystemMVC.Models.aStaffRole
 @Html.Partial("_LeftMenu")
 <div class="col-md-6">
     @using (Html.BeginForm())
@@ -7,33 +10,46 @@
 
         <div class="form-horizontal">
             <h4>Adding a new Staff Role</h4>
-            <div class="form-inline">
-            <label for="existLeave"> Existing Staff Roles</label>
-            <select id="#existLeave">
-                <option>Admin</option>
-                <option>HR</option>
-                <option>LM</option>
-                <option>Staff Member</option>
-            </select>
-            <hr />
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            
-                <div class="form-group">
-                    @Html.LabelFor(model => model.staffRoleName, "New Staff Role Name", htmlAttributes: new { @class = "control-label col-md-4" })
-                    <div class="col-md-8">
-                        @Html.EditorFor(model => model.staffRoleName, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.staffRoleName, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                </div>
-            </div>
-            <hr />
-                <div class="form-group">
-                    <div class="col-md-offset-4 col-md-10">
-                        <input type="submit" value="Submit" class="btn btn-default" />
-                    </div>
-                </div>
-           
+            <table style="margin:30px;width:100%;">
+                <tr>
+                    <td>
+                        <div class="form-inline">
+
+                            <!-- Display a list of existing staff roles in the database -->
+
+                            @Html.LabelFor(model => model.tempStaffRoleName, "Existing Staff Role Name", htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-4">
+                                @Html.DropDownListFor(model => model.tempStaffRoleName, new SelectList(ViewBag.roleNames))
+                                @Html.ValidationMessageFor(model => model.tempStaffRoleName, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+            <table style="margin: 30px;">
+                <tr>
+                    <td>
+                        <div class="form-group">
+
+                            <!--Prompts user to enter a new staff role-->
+
+                            @Html.LabelFor(model => model.staffRoleName, "New Staff Role Name", htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-8">
+                                @Html.EditorFor(model => model.staffRoleName, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.staffRoleName, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="form-group">
+        <div class="col-md-offset-4 col-md-10">
+            <input type="submit" value="Submit" class="btn btn-default" />
+        </div>
+        </div>
     }
 </div>
 @section Scripts {

@@ -11,6 +11,7 @@ namespace LeaveSystemMVC.Controllers
         // GET: lmSubstitute
         public ActionResult Index()
         {
+
             return View();
         }
     }
