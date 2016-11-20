@@ -9,7 +9,7 @@ namespace LeaveSystemMVC.Models
 {
     public class Users
     {
-        [Display(Name = "Username")]
+        [Display(Name = "Username or Employee ID")]
         [Required(ErrorMessage = "You forgot to enter a username.")]
         public string UserID { get; set; }
 

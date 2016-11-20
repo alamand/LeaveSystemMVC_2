@@ -1,4 +1,7 @@
-﻿using System;
+﻿/*
+ * Author: M Hamza Rahimy
+ */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -34,11 +37,17 @@ namespace LeaveSystemMVC.Controllers
                 int enteredID;
                 bool isLoginNumeric = int.TryParse(model.UserID, out enteredID);
 
+                /*Data returned from the database will
+                 be assigned to these variables.
+                 The critical ones are password, username
+                 and empID.*/
                 int empID = -1;
                 string password = "";
                 string firstName = "";
                 string lastName = "";
                 string username = "";
+                /////////////////////
+
                 List<string> empRoles = new List<string>();
                 var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
                 string queryString;
@@ -80,16 +89,19 @@ namespace LeaveSystemMVC.Controllers
                             while (reader.Read())
                             {
                                 empRoles.Add((string)reader[0]);
-                                //empRoles = (string)reader[0];
                             }
                         }
                     }
                     connection.Close();
                 }
 
+                /*Check if the user entered an employeeID or username
+                 and then check if the username and password that were entered
+                 matches the ones returned from the database, if returned at all.
+                 Obviously if nothing was returned from the database than it
+                 will be a negative match.*/
                 if(isLoginNumeric)
                 {
-                    
                     if (enteredID == empID && model.Password == password)
                     {
                         string fullName = firstName + " " + lastName;
@@ -106,17 +118,19 @@ namespace LeaveSystemMVC.Controllers
                         return RedirectToAction("Index", "Home");
                     }
                 }
-
             }
 
             ModelState.AddModelError("", "Invalid UserID or Password");
             return View(model);
         }
 
+        /*This implementation makes specific user data such as name, 
+         ID and roles persistent throughout their session until the
+         Logout action is called. The Login is effectively incomplete
+         without this.*/
         private void authenticateClaim(int empID, string fullNameString, List<string> empRoles)
         {
             string idString = empID.ToString();
-            //string fullNameString = firstName + " " + lastName;
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, fullNameString),
