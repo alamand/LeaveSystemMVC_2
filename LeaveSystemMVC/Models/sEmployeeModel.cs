@@ -20,6 +20,7 @@ namespace LeaveSystemMVC.Models
 
         [Display(Name = "Username")]
         [Required(ErrorMessage = "Username is required")]
+        [Remote("doesUserNameExist", "aAddStaffController")]
         public string userName { get; set; }
         public string password { get; set; }
         public string designation{ get; set; }
@@ -45,6 +46,7 @@ namespace LeaveSystemMVC.Models
 
 
         public string secondLineManager { get; set; }
+        public Dictionary<int, string> SecondLMSelectionOptions { get; set; } = new Dictionary<int, string>();
         //Would make more sense for the below to be
         //staffRole -- not staffType since in db it's
         //staff roles, not types
