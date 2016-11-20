@@ -29,15 +29,27 @@ namespace LeaveSystemMVC.Controllers
                 return View(model);
             }
 
-            if (model.UserID > 0)
+            if (model.UserID != null)
             {
-                int empID = 0;
+                int enteredID;
+                bool isLoginNumeric = int.TryParse(model.UserID, out enteredID);
+
+                int empID = -1;
                 string password = "";
                 string firstName = "";
                 string lastName = "";
+                string username = "";
                 List<string> empRoles = new List<string>();
                 var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-                string queryString = "Select Employee_ID, Password, First_Name, Last_Name FROM dbo.Employee WHERE Employee_ID = " + model.UserID;
+                string queryString;
+                if(isLoginNumeric)
+                {
+                    queryString = "Select Employee_ID, Password, First_Name, Last_Name, User_Name FROM dbo.Employee WHERE Employee_ID = '" + enteredID + "'";
+                }
+                else
+                {
+                    queryString = "Select Employee_ID, Password, First_Name, Last_Name, User_Name FROM dbo.Employee WHERE User_Name = '" + model.UserID + "'";
+                }
                 using (var connection = new SqlConnection(connectionString))
                 {
                     var command = new SqlCommand(queryString, connection);
@@ -50,51 +62,80 @@ namespace LeaveSystemMVC.Controllers
                             password = (string)reader[1];
                             firstName = (string)reader[2];
                             lastName = (string)reader[3];
+                            username = (string)reader[4];
                         }
                     }
-                    queryString = "Select Role_Name From dbo.Role Full Join dbo.Employee_Role On dbo.Role.Role_ID = dbo.Employee_Role.Role_ID Where dbo.Employee_Role.Employee_ID = " + model.UserID;
-                    command = new SqlCommand(queryString, connection);
-                    using (var reader = command.ExecuteReader())
+                    //This if statement is unnecessary for the login procedure but it saves clock cycles.
+                    //When we don't have this if statement, we will go through the roles table trying to 
+                    //find roles that correspond to the employee ID -1 in the Employee_Role table.
+                    //Obviously it won't return anything unless the database is actually storing 
+                    //employee ID numbers below 0.
+                    //
+                    if (empID >= 0) 
                     {
-                        while(reader.Read())
+                        queryString = "Select Role_Name From dbo.Role Full Join dbo.Employee_Role On dbo.Role.Role_ID = dbo.Employee_Role.Role_ID Where dbo.Employee_Role.Employee_ID = '" + empID + "'";
+                        command = new SqlCommand(queryString, connection);
+                        using (var reader = command.ExecuteReader())
                         {
-                            empRoles.Add((string)reader[0]);
-                            //empRoles = (string)reader[0];
+                            while (reader.Read())
+                            {
+                                empRoles.Add((string)reader[0]);
+                                //empRoles = (string)reader[0];
+                            }
                         }
                     }
                     connection.Close();
                 }
 
-
-                if (model.UserID == empID && model.Password == password)
+                if(isLoginNumeric)
                 {
-                    string idString = empID.ToString();
-                    string fullNameString = firstName + " " + lastName;
-                    var claims = new List<Claim>
+                    
+                    if (enteredID == empID && model.Password == password)
                     {
-                        new Claim(ClaimTypes.Name, fullNameString),
-                        new Claim(ClaimTypes.NameIdentifier, idString)
-
-                    };
-                    foreach (var role in empRoles)
-                    {
-                        claims.Add(new Claim(ClaimTypes.Role, role));
+                        string fullName = firstName + " " + lastName;
+                        authenticateClaim(empID, fullName, empRoles);
+                        return RedirectToAction("Index", "Home");
                     }
-
-                    var identity = new ClaimsIdentity(claims, "ApplicationCookie");
-
-                    var ctx = Request.GetOwinContext();
-                    var authManager = ctx.Authentication;
-
-                    //Makes our claims list persist throughout the application session
-                    authManager.SignIn(identity);
-
-                    return RedirectToAction("Index", "Home");
                 }
+                else
+                {
+                    if (model.UserID.Equals(username) && model.Password == password)
+                    {
+                        string fullName = firstName + " " + lastName;
+                        authenticateClaim(empID, fullName, empRoles);
+                        return RedirectToAction("Index", "Home");
+                    }
+                }
+
             }
 
             ModelState.AddModelError("", "Invalid UserID or Password");
             return View(model);
+        }
+
+        private void authenticateClaim(int empID, string fullNameString, List<string> empRoles)
+        {
+            string idString = empID.ToString();
+            //string fullNameString = firstName + " " + lastName;
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, fullNameString),
+                new Claim(ClaimTypes.NameIdentifier, idString)
+
+            };
+            foreach (var role in empRoles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
+
+            var identity = new ClaimsIdentity(claims, "ApplicationCookie");
+
+            var ctx = Request.GetOwinContext();
+            var authManager = ctx.Authentication;
+
+            //Makes our claims list persist throughout the application session
+            authManager.SignIn(identity);
+
         }
 
         public ActionResult Logout()
