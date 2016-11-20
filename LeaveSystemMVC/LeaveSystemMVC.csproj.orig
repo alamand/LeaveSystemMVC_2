@@ -196,7 +196,6 @@
     <Compile Include="Controllers\sLeaveBalanceController.cs" />
     <Compile Include="Controllers\sLeaveHistoryController.cs" />
     <Compile Include="Controllers\sLeaveStatusController.cs" />
-    <Compile Include="CustomLibraries\CsvFile.cs" />
     <Compile Include="CustomLibraries\CustomDecrypt.cs" />
     <Compile Include="CustomLibraries\CustomEncrypt.cs" />
     <Compile Include="Global.asax.cs">
@@ -1755,8 +1754,11 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\hrHolidaysCalender\CreateHoliday.cshtml" />
     <Content Include="Views\hrHolidaysCalender\Display.cshtml" />
+<<<<<<< HEAD
     <Content Include="Views\Shared\_MinDepartmentList.cshtml" />
     <Content Include="Views\LApplication\IndexTest.cshtml" />
+=======
+>>>>>>> dc83d723b7269e9ce2445bf667c20671fc3a4e0f
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

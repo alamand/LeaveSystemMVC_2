@@ -16,11 +16,17 @@
             <h4>@ViewBag.title</h4>
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             <hr />
-            <h6> @Html.ValidationMessage("sucessMessage" ) </h6>
+            @if (TempData["Success"] != null)
+            {
+                <div class="green">
+                    <p><strong>Success:</strong> @TempData["Success"].ToString()</p>
+                </div>
+            }
+            
            <h6> @Html.ValidationMessage("errorMessage") </h6>
                  <div class="form-inline">
                 @Html.LabelFor(calender => calender.holidayName)
-                @Html.TextBoxFor(calender => calender.holidayName)<br />
+                @Html.TextBoxFor(calender => calender.holidayName, new { maxlength = 50 })<br />
                 @Html.ValidationMessageFor(calender => calender.holidayName)
             </div>
             <hr />

@@ -3,9 +3,11 @@
 @{
     ViewBag.Title = "Apply For Leave";
 }
+
 @Html.Partial("_LeftMenu")
+
 <div class="col-md-10">
-    @using (Html.BeginForm())
+    @using (Html.BeginForm("Create","LApplication", FormMethod.Post))
     {
         @Html.AntiForgeryToken()
 
@@ -109,8 +111,7 @@
                         @Html.TextBoxFor(model => model.supportingDocs, new { type = "file" })
                         @Html.ValidationMessageFor(model => model.supportingDocs, "", new { @class = "text-danger" })
                         <br />
-                        <!-- <input type="submit" value="Upload" name=" = " upload" />
-                -->
+                   
                         </div>
                     </td>
                 </tr>
@@ -143,14 +144,10 @@
                 <hr />
                 <div class="form-group">
                     <div class="col-md-offset-3 col-md-10">
-                        <input type="submit" value="Submit" class="btn btn-default" />
+                        <input type="submit" value="Create" class="btn btn-default" />
                     </div>
                 </div>
         </div>
     }
 </div>
 
-
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}

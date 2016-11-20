@@ -13,7 +13,5 @@ namespace LeaveSystemMVC.Models
     {
         public string staffRoleName { get; set;  } //used to get and store the new entered staff role name 
         public string tempStaffRoleName { get; set; } //used to display existing staff roles in view do not delete
-       
-
     }
 }

@@ -53,6 +53,10 @@ namespace LeaveSystemMVC.Controllers
             {
                 ModelState.AddModelError("holidayName", "Holiday Name Must be entered");
             }
+            if (calender.holidayName.Length>30)
+            {
+                ModelState.AddModelError("holidayName", "Holiday Name Too long. The Name should be no greater than 30 char");
+            }
             else if (string.IsNullOrEmpty(calender.startDate.ToString()))
             {
                 ModelState.AddModelError("startDate", "Start Date Must not be left empty");
@@ -94,7 +98,7 @@ namespace LeaveSystemMVC.Controllers
                             }
                         }
                     }
-                    ModelState.AddModelError("sucessMessage", "Success! The Holidays Have been Successfully Added");
+                    Response.Write("<script> alert('Success!');location.href='CreateHoliday'</script>");                    
                 }
 
                 else { ModelState.AddModelError("errorMessage", "Error!Holiday already Exists."); }            
