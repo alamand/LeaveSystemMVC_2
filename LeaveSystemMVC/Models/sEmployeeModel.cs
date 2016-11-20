@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using LeaveSystemMVC.CustomLibraries;
 
 namespace LeaveSystemMVC.Models
 {
@@ -27,7 +28,8 @@ namespace LeaveSystemMVC.Models
 
         [Display(Name = "Email address")]
         [Required(ErrorMessage = "The email address is required")]
-        [EmailAddress(ErrorMessage = "Invalid Email Address, please check if " + "@" + " symbol exists")]
+        //[EmailAddress(ErrorMessage = "Invalid Email Address, please check if " + "@" + " symbol exists")]
+        [Unique(typeof(string))]
         public string email { get; set; }
         public string gender { get; set; }
         public int deptId { get; set; }
