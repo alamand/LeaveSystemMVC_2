@@ -20,7 +20,6 @@ namespace LeaveSystemMVC.Controllers
         {
             /*The employee model object that will be passed into the view*/
             sEmployeeModel EmptyEmployee = new sEmployeeModel();
-
             //Intermediary staff roles/types selection list
 
             //Get list of available roles
@@ -88,9 +87,9 @@ namespace LeaveSystemMVC.Controllers
                 connection.Close();
             }
 
-            
-            //End get line mananger list
 
+            //End get line mananger list
+            TempData["EmptyEmployee"] = EmptyEmployee;
             return View(EmptyEmployee);
         }
 
@@ -99,10 +98,51 @@ namespace LeaveSystemMVC.Controllers
         [HttpPost]
         public ActionResult Index(sEmployeeModel SE)
         {
-            
-            SE.password = RandomPassword.Generate(7, 7);
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "INSERT INTO dbo.Employee (Employee_ID, First_Name, " +
+            string queryString = "";
+
+            //Validations
+            bool hasValidationErrors = false;
+            //Check if username already exists
+            queryString = "SELECT Employee_ID, User_Name FROM dbo.Employee WHERE dbo.Employee.User_Name = '" + SE.userName + "' OR dbo.Employee.Employee_ID = '" + SE.staffID + "'";
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while(reader.Read())
+                    {
+                        int id = (int)reader[0];
+                        if(id == SE.staffID)
+                        {
+                            ModelState.AddModelError("staffID", "Staff ID already exists.");
+                            hasValidationErrors = true;
+                        }
+                        string userName = (string)reader[1];
+                        if(userName.Equals(SE.userName))
+                        {
+                            ModelState.AddModelError("userName", "Username already exists.");
+                            hasValidationErrors = true;
+                        }
+                    }
+                }
+                connection.Close();
+            }
+            //
+            if(hasValidationErrors)
+            {
+                sEmployeeModel EmptyEmployee = (sEmployeeModel)TempData["EmptyEmployee"];
+                SE.staffTypeSelectionOptions = EmptyEmployee.staffTypeSelectionOptions;
+                SE.departmentList = EmptyEmployee.departmentList;
+                SE.SecondLMSelectionOptions = EmptyEmployee.SecondLMSelectionOptions;
+                return View(SE);
+            }
+            // End validations
+
+            //Table insertions
+            SE.password = RandomPassword.Generate(7, 7);
+            queryString = "INSERT INTO dbo.Employee (Employee_ID, First_Name, " +
                         "Last_Name, User_Name, Password, Designation, Email, Gender, PH_No, " +
                         "Emp_Start_Date, Account_Status, Department_ID) VALUES('" + SE.staffID +
                         "', '" + SE.firstName + "', '" + SE.lastName + "', '" + SE.userName +
@@ -117,7 +157,14 @@ namespace LeaveSystemMVC.Controllers
                 using (var reader = command.ExecuteReader())
                     connection.Close();
             }
-            //////////////////////////////
+
+            queryString = "INSERT INTO dbo.Employee_Role (Employee_ID, Role_ID)" +
+                "VALUES ('" + SE.staffID + "', '" + SE.staffType + "') " + 
+                "INSERT INTO dbo.Employee_Role (Employee_ID, Role_ID)" + 
+                "VALUES ('" + SE.staffID + "', '" + SE.optionalStaffType + "') " +
+                "INSERT INTO dbo.Employee_Role (Employee_ID, Role_ID)" +
+                "VALUES ('" + SE.staffID + "', '" + SE.optional2ndStaffType + "')";
+            //End table insertions
             string temp_email = SE.email;
             string temp_username = SE.userName;
 
@@ -160,46 +207,5 @@ namespace LeaveSystemMVC.Controllers
 
             return selectList;
         }
-
-        [AllowAnonymous]
-        [HttpPost]
-        public JsonResult doesUserNameExist(string userName)
-        {
-            
-            /*
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "SELECT User_Name FROM dbo.Employee";
-            using (var connection = new SqlConnection(connectionString))
-            {
-                var command = new SqlCommand(queryString, connection);
-                connection.Open();
-                bool toTerminate = false;
-                using (var reader = command.ExecuteReader())
-                {
-                    while(reader.Read())
-                    {
-                        string newText = (string)reader[0];
-                        if(newText.Equals(userName))
-                        {
-                            user = (string)reader[0];
-                            toTerminate = true;
-                            break;
-                        }
-
-                    }
-                }
-                connection.Close();
-                if(toTerminate)
-                {
-
-                }
-            }*/
-            if (userName == "hamza.rahimyr")
-            {
-                return Json("The username is already taken", JsonRequestBehavior.AllowGet);
-            }
-            return Json(true, JsonRequestBehavior.AllowGet);
-        }
-
     }
 }

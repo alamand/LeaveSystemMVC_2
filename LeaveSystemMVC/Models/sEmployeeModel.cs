@@ -21,15 +21,13 @@ namespace LeaveSystemMVC.Models
 
         [Display(Name = "Username")]
         [Required(ErrorMessage = "Username is required")]
-        [Remote("doesUserNameExist", "aAddStaffController")]
         public string userName { get; set; }
         public string password { get; set; }
         public string designation{ get; set; }
 
         [Display(Name = "Email address")]
         [Required(ErrorMessage = "The email address is required")]
-        //[EmailAddress(ErrorMessage = "Invalid Email Address, please check if " + "@" + " symbol exists")]
-        [Unique(typeof(string))]
+        [EmailAddress(ErrorMessage = "Invalid Email Address, please check if " + "@" + " symbol exists")]
         public string email { get; set; }
         public string gender { get; set; }
         public int deptId { get; set; }
