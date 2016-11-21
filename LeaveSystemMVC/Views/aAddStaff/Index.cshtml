@@ -167,16 +167,6 @@
                     </div>
                 </td>
 
-                  
-
-                    <td><div class="form-horizontal"style="white-space:nowrap">
-                        @Html.LabelFor(model => model.optional2ndStaffType, "Optional Staff Type 2", htmlAttributes: new { @class = "control-label col-md-4" })
-                        </div></td>
-                        <td><div class="form-inline">
-                            @Html.DropDownListFor(model => model.optional2ndStaffType, new SelectList(ViewBag.staffType))
-                            @Html.ValidationMessageFor(model => model.optional2ndStaffType, "", new { @class = "text-danger" })
-                        </div>
-                    </td>
                 </tr></table>
             <hr />
             <table style="width:70%;"><tr>
