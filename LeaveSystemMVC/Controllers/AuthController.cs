@@ -125,16 +125,8 @@ namespace LeaveSystemMVC.Controllers
                     }
                 }
 
-                    var identity = new ClaimsIdentity(claims, "ApplicationCookie");
-
-                    var ctx = Request.GetOwinContext();
-                    var authManager = ctx.Authentication;
-
-                    //Makes our claims list persist throughout the application session
-                    authManager.SignIn(identity);
-
                     return RedirectToAction("Index", "Home");
-                }
+                
             }
 
             ModelState.AddModelError("", "Invalid UserID or Password");
