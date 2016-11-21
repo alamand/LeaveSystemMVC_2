@@ -153,7 +153,8 @@ namespace LeaveSystemMVC.Controllers
         }
 
         /*Look into @ http://stackoverflow.com/questions/26182660/how-to-logout-user-in-owin-asp-net-mvc5 
-        */
+        http://stackoverflow.com/questions/17592530/cookie-is-not-delete-in-mvcc
+             */
         public ActionResult Logout()
         {
             var ctx = Request.GetOwinContext();
