@@ -56,6 +56,8 @@ namespace LeaveSystemMVC.Controllers
                 {
                     while(reader.Read())
                     {
+                        if ((int)reader[0] == 0)
+                            continue;
                         EmptyEmployee.departmentList.Add((int)reader[0], (string)reader[1]);
                     }
                 }
@@ -142,13 +144,27 @@ namespace LeaveSystemMVC.Controllers
 
             //Table insertions
             SE.password = RandomPassword.Generate(7, 7);
-            queryString = "INSERT INTO dbo.Employee (Employee_ID, First_Name, " +
-                        "Last_Name, User_Name, Password, Designation, Email, Gender, PH_No, " +
-                        "Emp_Start_Date, Account_Status, Department_ID) VALUES('" + SE.staffID +
-                        "', '" + SE.firstName + "', '" + SE.lastName + "', '" + SE.userName +
-                        "', '" + SE.password + "', '" + SE.designation + "', '" + SE.email +
-                        "', '" + SE.gender + "', '" + SE.phoneNo + "', '" + SE.empStartDate +
-                        "', '" +  "True" + "', '" + SE.deptId + "')";
+
+            if(SE.deptId == 0)
+            {
+                queryString = "INSERT INTO dbo.Employee (Employee_ID, First_Name, " +
+                    "Last_Name, User_Name, Password, Designation, Email, Gender, PH_No, " +
+                    "Emp_Start_Date, Account_Status) VALUES('" + SE.staffID +
+                    "', '" + SE.firstName + "', '" + SE.lastName + "', '" + SE.userName +
+                    "', '" + SE.password + "', '" + SE.designation + "', '" + SE.email +
+                    "', '" + SE.gender + "', '" + SE.phoneNo + "', '" + SE.empStartDate +
+                    "', '" + "True" + "')";
+            }
+            else
+            {
+                queryString = "INSERT INTO dbo.Employee (Employee_ID, First_Name, " +
+                    "Last_Name, User_Name, Password, Designation, Email, Gender, PH_No, " +
+                    "Emp_Start_Date, Account_Status, Department_ID) VALUES('" + SE.staffID +
+                    "', '" + SE.firstName + "', '" + SE.lastName + "', '" + SE.userName +
+                    "', '" + SE.password + "', '" + SE.designation + "', '" + SE.email +
+                    "', '" + SE.gender + "', '" + SE.phoneNo + "', '" + SE.empStartDate +
+                    "', '" + "True" + "', '" + SE.deptId + "')";
+            }
 
             using (var connection = new SqlConnection(connectionString))
             {
