@@ -97,6 +97,8 @@ namespace LeaveSystemMVC.Controllers
             return View(model);
         }
 
+        /*Look into @ http://stackoverflow.com/questions/26182660/how-to-logout-user-in-owin-asp-net-mvc5 
+         */
         public ActionResult Logout()
         {
             var ctx = Request.GetOwinContext();
