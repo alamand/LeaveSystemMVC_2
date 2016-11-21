@@ -46,6 +46,7 @@ namespace LeaveSystemMVC.Controllers
                 string firstName = "";
                 string lastName = "";
                 string username = "";
+                bool isActivated = false;
                 /////////////////////
 
                 List<string> empRoles = new List<string>();
@@ -53,11 +54,11 @@ namespace LeaveSystemMVC.Controllers
                 string queryString;
                 if(isLoginNumeric)
                 {
-                    queryString = "Select Employee_ID, Password, First_Name, Last_Name, User_Name FROM dbo.Employee WHERE Employee_ID = '" + enteredID + "'";
+                    queryString = "Select Employee_ID, Password, First_Name, Last_Name, User_Name, Account_Status FROM dbo.Employee WHERE Employee_ID = '" + enteredID + "'";
                 }
                 else
                 {
-                    queryString = "Select Employee_ID, Password, First_Name, Last_Name, User_Name FROM dbo.Employee WHERE User_Name = '" + model.UserID + "'";
+                    queryString = "Select Employee_ID, Password, First_Name, Last_Name, User_Name, Account_Status FROM dbo.Employee WHERE User_Name = '" + model.UserID + "'";
                 }
                 using (var connection = new SqlConnection(connectionString))
                 {
@@ -72,7 +73,14 @@ namespace LeaveSystemMVC.Controllers
                             firstName = (string)reader[2];
                             lastName = (string)reader[3];
                             username = (string)reader[4];
+                            isActivated = (bool)reader[5];
                         }
+                    }
+                    if(!isActivated)
+                    {
+                        connection.Close();
+                        ModelState.AddModelError("", "Account is disabled");
+                        return View(model);
                     }
                     //This if statement is unnecessary for the login procedure but it saves clock cycles.
                     //When we don't have this if statement, we will go through the roles table trying to 
@@ -95,12 +103,13 @@ namespace LeaveSystemMVC.Controllers
                     connection.Close();
                 }
 
+
                 /*Check if the user entered an employeeID or username
-                 and then check if the username and password that were entered
-                 matches the ones returned from the database, if returned at all.
-                 Obviously if nothing was returned from the database than it
-                 will be a negative match.*/
-                if(isLoginNumeric)
+                    and then check if the username and password that were entered
+                    matches the ones returned from the database, if returned at all.
+                    Obviously if nothing was returned from the database than it
+                    will be a negative match.*/
+                if (isLoginNumeric)
                 {
                     if (enteredID == empID && model.Password == password)
                     {
@@ -118,6 +127,8 @@ namespace LeaveSystemMVC.Controllers
                         return RedirectToAction("Index", "Home");
                     }
                 }
+
+
             }
 
             ModelState.AddModelError("", "Invalid UserID or Password");
@@ -152,6 +163,9 @@ namespace LeaveSystemMVC.Controllers
 
         }
 
+        /*Look into @ http://stackoverflow.com/questions/26182660/how-to-logout-user-in-owin-asp-net-mvc5 
+        http://stackoverflow.com/questions/17592530/cookie-is-not-delete-in-mvcc
+             */
         public ActionResult Logout()
         {
             var ctx = Request.GetOwinContext();
