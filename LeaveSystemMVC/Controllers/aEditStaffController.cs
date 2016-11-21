@@ -1,16 +1,28 @@
-﻿using System;
+﻿/*
+ * Author: M Hamza Rahimy
+ */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using LeaveSystemMVC.Models;
 
 namespace LeaveSystemMVC.Controllers
 {
     public class aEditStaffController : Controller
     {
         // GET: aEditStaff
+        [HttpGet]
         public ActionResult Index()
         {
+            sEmployeeModel EmptyEmployee = new sEmployeeModel();
+            List<minDepartment> tempDeps = new List<minDepartment>
+            {
+                new minDepartment {departmentID = 1, departmentName = "newDep" },
+                new minDepartment {departmentID = 2, departmentName = "newDep1" }
+            };
+            ViewData["DepartmentList"] = tempDeps;
             //all these lists should not be hardcoded
 
             List<string> sid = new List<string>();
@@ -44,7 +56,13 @@ namespace LeaveSystemMVC.Controllers
             staffType.Add("HR");
             staffType.Add("Staff Member");
             ViewBag.staffType = staffType;
-            return View();
+            return View(tempDeps);
+        }
+
+        [HttpPost]
+        public ActionResult Index(sEmployeeModel SE)
+        {
+            return View(SE);
         }
     }
 }

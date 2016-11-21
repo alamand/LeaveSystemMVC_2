@@ -1758,6 +1758,7 @@
     <Content Include="Views\hrHolidaysCalender\Display.cshtml" />
     <Content Include="Views\Shared\_MinDepartmentList.cshtml" />
     <Content Include="Views\LApplication\IndexTest.cshtml" />
+    <Content Include="Views\Shared\_EmployeeDetails.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
