@@ -285,7 +285,7 @@ namespace LeaveSystemMVC.Controllers
 
             message.Subject = "Your User Details";
             string body = "";
-            body = body + "Hi, Your user details are: username: " + temp_username + " and your password is: " + LeaveSystemMVC.Models.RandomPassword.Generate(7, 7);
+            body = body + "Hi, Your user details are: username: " + temp_username + " and your password is: " + SE.password;
 
             message.Body = body;
             SmtpClient client = new SmtpClient();

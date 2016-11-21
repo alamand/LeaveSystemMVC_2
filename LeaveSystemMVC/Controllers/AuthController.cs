@@ -127,8 +127,6 @@ namespace LeaveSystemMVC.Controllers
                         return RedirectToAction("Index", "Home");
                     }
                 }
-
-                    return RedirectToAction("Index", "Home");
                 
             }
 
