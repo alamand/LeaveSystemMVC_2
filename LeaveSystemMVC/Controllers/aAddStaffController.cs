@@ -20,13 +20,33 @@ namespace LeaveSystemMVC.Controllers
         {
             /*The employee model object that will be passed into the view*/
             sEmployeeModel EmptyEmployee = new sEmployeeModel();
+            EmptyEmployee.deptId = 0;
+            Dictionary<int, string> nonDisplayRoleOptions = new Dictionary<int, string>();
             //Intermediary staff roles/types selection list
 
             //Get list of available roles
             var connectionString = 
                 ConfigurationManager.ConnectionStrings["DefaultConnection"].
                 ConnectionString;
-            var queryString = "SELECT Role_ID, Role_Name FROM dbo.Role";
+            bool notDisplayHrResponsible = true;
+            var queryString = "SELECT Employee_ID " +
+                "FROM dbo.Employee_Role " +
+                "FULL JOIN dbo.Role " +
+                "ON dbo.Role.Role_ID = dbo.Employee_Role.Role_ID " +
+                "WHERE dbo.Role.Role_Name = 'HR_Responsible' " + 
+                "AND dbo.Employee_Role.Employee_ID IS NOT NULL";
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    notDisplayHrResponsible = reader.HasRows;
+                }
+                connection.Close();
+            }
+
+            queryString = "SELECT Role_ID, Role_Name FROM dbo.Role";
             using (var connection = new SqlConnection(connectionString))
             {
                 var command = new SqlCommand(queryString, connection);
@@ -35,7 +55,31 @@ namespace LeaveSystemMVC.Controllers
                 {
                     while(reader.Read())
                     {
-                        EmptyEmployee.staffTypeSelectionOptions.Add((int)reader[0], (string)reader[1]);
+                        string readRole = (string)reader[1];
+                        switch(readRole)
+                        {
+                            case "Admin":
+                                nonDisplayRoleOptions.Add((int)reader[0], readRole);
+                                break;
+                            case "HR_Responsible":
+                                if (notDisplayHrResponsible)
+                                    nonDisplayRoleOptions.Add((int)reader[0], readRole);
+                                else
+                                    EmptyEmployee.staffTypeSelectionOptions.Add((int)reader[0], readRole);
+                                break;
+                            case "HR":
+                                if(notDisplayHrResponsible)
+                                    EmptyEmployee.staffTypeSelectionOptions.Add((int)reader[0], readRole);
+                                else
+                                    nonDisplayRoleOptions.Add((int)reader[0], readRole);
+                                break;
+                            case "Staff":
+                                nonDisplayRoleOptions.Add((int)reader[0], readRole);
+                                break;
+                            default:
+                                EmptyEmployee.staffTypeSelectionOptions.Add((int)reader[0], readRole);
+                                break;
+                        }
                     }
                 }
                 connection.Close();
@@ -56,8 +100,6 @@ namespace LeaveSystemMVC.Controllers
                 {
                     while(reader.Read())
                     {
-                        if ((int)reader[0] == 0)
-                            continue;
                         EmptyEmployee.departmentList.Add((int)reader[0], (string)reader[1]);
                     }
                 }
@@ -73,7 +115,10 @@ namespace LeaveSystemMVC.Controllers
                               "ON dbo.Employee.Employee_ID = dbo.Employee_Role.Employee_ID " +
                               "FULL JOIN dbo.Role " +
                               "ON dbo.Role.Role_ID = dbo.Employee_Role.Role_ID " +
-                              "WHERE dbo.Role.Role_Name = 'LM'";
+                              "WHERE dbo.Role.Role_Name = 'LM' " +
+                              "AND dbo.Employee.First_Name IS NOT NULL " +
+                              "AND dbo.Employee.Last_Name IS NOT NULL " +
+                              "AND dbo.Employee.Employee_ID IS NOT NULL";
             using (var connection = new SqlConnection(connectionString))
             {
                 var command = new SqlCommand(queryString, connection);
@@ -90,15 +135,18 @@ namespace LeaveSystemMVC.Controllers
             }
 
 
-            //End get line mananger list
+            //End get line manager list
             TempData["EmptyEmployee"] = EmptyEmployee;
+            TempData["nonDisplayRoleOptions"] = nonDisplayRoleOptions;
             return View(EmptyEmployee);
         }
 
         
-
+        /*The bind attribute simply excludes validation errors for the given fields in the model.
+         Needed to add that because some the given non-required fields were giving "required" 
+         validation errors.*/
         [HttpPost]
-        public ActionResult Index(sEmployeeModel SE)
+        public ActionResult Index([Bind(Exclude = "deptId, empStartDate")]sEmployeeModel SE)
         {
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
             string queryString = "";
@@ -138,32 +186,43 @@ namespace LeaveSystemMVC.Controllers
                 SE.staffTypeSelectionOptions = EmptyEmployee.staffTypeSelectionOptions;
                 SE.departmentList = EmptyEmployee.departmentList;
                 SE.SecondLMSelectionOptions = EmptyEmployee.SecondLMSelectionOptions;
+                TempData["EmptyEmployee"] = EmptyEmployee;
+                TempData["nonDisplayRoleOptions"] = TempData["nonDisplayRoleOptions"];
                 return View(SE);
             }
             // End validations
 
             //Table insertions
             SE.password = RandomPassword.Generate(7, 7);
-
+            bool toAddSecondLM = false;
+            string secondLMtext = "";
+            string secondLmValueText = "";
+            if (SE.secondLineManager != null)
+            {
+                toAddSecondLM = true;
+                secondLMtext = ", [2nd_Line_Manager]";
+                secondLmValueText = "', '" + SE.secondLineManager;
+            }
             if(SE.deptId == 0)
             {
+                
                 queryString = "INSERT INTO dbo.Employee (Employee_ID, First_Name, " +
                     "Last_Name, User_Name, Password, Designation, Email, Gender, PH_No, " +
-                    "Emp_Start_Date, Account_Status) VALUES('" + SE.staffID +
+                    "Emp_Start_Date, Account_Status" + secondLMtext + ") VALUES('" + SE.staffID +
                     "', '" + SE.firstName + "', '" + SE.lastName + "', '" + SE.userName +
                     "', '" + SE.password + "', '" + SE.designation + "', '" + SE.email +
                     "', '" + SE.gender + "', '" + SE.phoneNo + "', '" + SE.empStartDate +
-                    "', '" + "True" + "')";
+                    "', '" + "True" + secondLmValueText + "')";
             }
             else
             {
                 queryString = "INSERT INTO dbo.Employee (Employee_ID, First_Name, " +
                     "Last_Name, User_Name, Password, Designation, Email, Gender, PH_No, " +
-                    "Emp_Start_Date, Account_Status, Department_ID) VALUES('" + SE.staffID +
+                    "Emp_Start_Date, Account_Status, Department_ID, [2nd_Line_Manager]) VALUES('" + SE.staffID +
                     "', '" + SE.firstName + "', '" + SE.lastName + "', '" + SE.userName +
                     "', '" + SE.password + "', '" + SE.designation + "', '" + SE.email +
                     "', '" + SE.gender + "', '" + SE.phoneNo + "', '" + SE.empStartDate +
-                    "', '" + "True" + "', '" + SE.deptId + "')";
+                    "', '" + "True" + "', '" + SE.deptId + secondLmValueText + "')";
             }
 
             using (var connection = new SqlConnection(connectionString))
@@ -174,12 +233,57 @@ namespace LeaveSystemMVC.Controllers
                     connection.Close();
             }
 
-            queryString = "INSERT INTO dbo.Employee_Role (Employee_ID, Role_ID)" +
-                "VALUES ('" + SE.staffID + "', '" + SE.staffType + "') " + 
-                "INSERT INTO dbo.Employee_Role (Employee_ID, Role_ID)" + 
-                "VALUES ('" + SE.staffID + "', '" + SE.optionalStaffType + "') " +
-                "INSERT INTO dbo.Employee_Role (Employee_ID, Role_ID)" +
-                "VALUES ('" + SE.staffID + "', '" + SE.optional2ndStaffType + "')";
+            /*We are now assuming that all roles except for admin are also a 
+             staff member, so the staff member role will be hard coded */
+            Dictionary<int, string> nonDisplayRoleOptions = (Dictionary<int, string>)TempData["nonDisplayRoleOptions"];
+            if (SE.isAdmin)
+            {
+                int adminID = nonDisplayRoleOptions.FirstOrDefault(obj => obj.Value == "Admin").Key;
+                queryString = "INSERT INTO dbo.Employee_Role (Employee_ID, Role_ID) " +
+                "VALUES ('" + SE.staffID + "', '" + adminID + "') ";
+            }
+            else
+            {
+                int staffRoleID = nonDisplayRoleOptions.FirstOrDefault(obj => obj.Value == "Staff").Key;
+                bool toAddStaffType = true;
+                bool toAddOptionalType = true;
+                if (SE.staffType == null)
+                    toAddStaffType = false;
+                if (SE.optional2ndStaffType == null)
+                    toAddOptionalType = false;
+                if (SE.staffType != null && SE.staffType.Equals(SE.optionalStaffType))
+                {
+                    queryString = CreateRolesQuery(toAddStaffType, false, SE, staffRoleID);
+                    /*
+                    queryString = "NSERT INTO dbo.Employee_Role (Employee_ID, Role_ID) " +
+                        "VALUES ('" + SE.staffID + "', '" + SE.staffType + "') " + 
+                        "INSERT INTO dbo.Employee_Role (Employee_ID, Role_ID) " +
+                        "VALUES ('" + SE.staffID + "', '" + staffRoleID + "')";
+                        */
+                }
+                else
+                {
+                    queryString = CreateRolesQuery(toAddStaffType, toAddOptionalType, SE, staffRoleID);
+                    /*
+                    queryString = "INSERT INTO dbo.Employee_Role (Employee_ID, Role_ID) " +
+                        "VALUES ('" + SE.staffID + "', '" + SE.staffType + "') " +
+                        "INSERT INTO dbo.Employee_Role (Employee_ID, Role_ID) " +
+                        "VALUES ('" + SE.staffID + "', '" + SE.optionalStaffType + "')" +
+                        "INSERT INTO dbo.Employee_Role (Employee_ID, Role_ID)" +
+                        "VALUES ('" + SE.staffID + "', '" + staffRoleID + "')";
+                        */
+                }
+
+            }
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                    connection.Close();
+            }
+
             //End table insertions
             string temp_email = SE.email;
             string temp_username = SE.userName;
@@ -191,7 +295,7 @@ namespace LeaveSystemMVC.Controllers
             message.Subject = "Your User Details";
 
             string body = "";
-            body = body + "Hi, Your user details are: username: " + temp_username + " and your password is: " + LeaveSystemMVC.Models.RandomPassword.Generate(7, 7);
+            body = body + "Hi, Your user details are: username: " + temp_username + " and your password is: " + SE.password;
             message.Body = body;
 
             SmtpClient client = new SmtpClient();
@@ -199,7 +303,32 @@ namespace LeaveSystemMVC.Controllers
             client.EnableSsl = true;
             client.Credentials = new NetworkCredential("project_ict333@murdochdubai.ac.ae", "ict@333");
             client.Send(message);
+            string gendertext = "";
+            if (SE.gender.Equals("M"))
+                gendertext = "him";
+            else
+                gendertext = "her";
+            
+            ViewBag.SuccessMessage = SE.firstName + " " + SE.lastName + " has been added to the database and an e-mail containing the account details sent to " + gendertext;
             return Index();
+        }
+
+        private string CreateRolesQuery(bool toAddStaffType, bool toAddOptionalType, sEmployeeModel employeeObject, int staffRoleID)
+        {
+            string queryString = "";
+            if(toAddStaffType)
+            {
+                queryString += "INSERT INTO dbo.Employee_Role (Employee_ID, Role_ID) " +
+                    "VALUES ('" + employeeObject.staffID + "', '" + employeeObject.staffType + "') ";
+            }
+            if(toAddOptionalType)
+            {
+                queryString += "INSERT INTO dbo.Employee_Role (Employee_ID, Role_ID) " +
+                    "VALUES ('" + employeeObject.staffID + "', '" + employeeObject.optionalStaffType + "') ";
+            }
+            queryString += "INSERT INTO dbo.Employee_Role (Employee_ID, Role_ID) " +
+                "VALUES ('" + employeeObject.staffID + "', '" + staffRoleID + "') ";
+            return queryString;
         }
 
         /*Function referred to from @ http://nimblegecko.com/using-simple-drop-down-lists-in-ASP-NET-MVC/

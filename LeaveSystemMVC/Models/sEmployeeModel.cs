@@ -64,5 +64,8 @@ namespace LeaveSystemMVC.Models
         //
 
         public bool accountStatus { get; set; }
+
+        [Display(Name = "Administrator User")]
+        public bool isAdmin { get; set; }
     }
 }

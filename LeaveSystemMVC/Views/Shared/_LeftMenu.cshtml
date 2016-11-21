@@ -2,39 +2,43 @@
 <!-- left, vertical navbar -->
 <div class="col-md-2 bootstrap-admin-col-left">
     <ul class="nav navbar-collapse collapse bootstrap-admin-navbar-side">
-        <li role="presentation" class="dropdown-header">Staff Member</li>
-        @Html.MenuItem("Home", "Index", "Home")
-        @Html.MenuItem("Apply for Leave", "Index", "LApplication")
-        @Html.MenuItem("View Leave Balance", "Index", "sLeaveBalance")
-        @Html.MenuItem("View Leave History", "Index", "sLeaveHistory")
-        @Html.MenuItem("Pending Applications", "Index", "sLeaveStatus")
-
-        @if (User.IsInRole("HR"))
+        @if (!User.IsInRole("Admin"))
         {
-            <li role="presentation" class="nav-divider"></li>
-            <li role="presentation" class="dropdown-header">HR</li>
-            @Html.MenuItem("Pending Applications", "Index", "hrPendingApplication")
-            @Html.MenuItem("Update Leave Status", "Index", "hrChangeApplicationStatus")
-            @Html.MenuItem("Create New Leave Type", "Index", "hrCreateLeaveType")
-            @Html.MenuItem("Credit Leave Balances", "Index", "hrCreditLeaveBalance")
-            @Html.MenuItem("Edit Days in Lieu", "Index", "hrDepartmentViewDaysInLieu")
-            @Html.MenuItem("View Leave Balances", "Index", "hrDepartmentViewLeaveBalance")
-            @Html.MenuItem("View Leave Histories", "Index", "hrDepartmentViewLeaveHistory")
-            @Html.MenuItem("Holidays Calendar", "Index", "hrHolidaysCalender")
-            @Html.MenuItem("Select Substitute", "Index", "hrSelectSubstitute")
-        }
-
-        @if (User.IsInRole("LM"))
-        {
-            <li role="presentation" class="nav-divider"></li>
-            <li role="presentation" class="dropdown-header">Line Manager</li>
-            @Html.MenuItem("Pending Applications", "Index", "lmPendingApplications")
-            @Html.MenuItem("Update Leave Status", "Index", "lmChangeApplicationStatus")
-            @Html.MenuItem("Select Substitute", "Index", "lmSelectSubstitute")
-            @Html.MenuItem("Subordinate Balances", "Index", "lmSubordinateViewBalance")
-            @Html.MenuItem("Subordinate Histories", "Index", "lmSubordinateViewHistory")
-        }
+            <li role="presentation" class="dropdown-header">Staff Member</li>
+            @Html.MenuItem("Home", "Index", "Home")
+            @Html.MenuItem("Apply for Leave", "Index", "LApplication")
+            @Html.MenuItem("View Leave Balance", "Index", "sLeaveBalance")
+            @Html.MenuItem("View Leave History", "Index", "sLeaveHistory")
+            @Html.MenuItem("Pending Applications", "Index", "sLeaveStatus")
         
+
+            if (User.IsInRole("HR"))
+            {
+                <li role="presentation" class="nav-divider"></li>
+                <li role="presentation" class="dropdown-header">HR</li>
+                @Html.MenuItem("Pending Applications", "Index", "hrPendingApplication")
+                @Html.MenuItem("Update Leave Status", "Index", "hrChangeApplicationStatus")
+                @Html.MenuItem("Create New Leave Type", "Index", "hrCreateLeaveType")
+                @Html.MenuItem("Credit Leave Balances", "Index", "hrCreditLeaveBalance")
+                @Html.MenuItem("Edit Days in Lieu", "Index", "hrDepartmentViewDaysInLieu")
+                @Html.MenuItem("View Leave Balances", "Index", "hrDepartmentViewLeaveBalance")
+                @Html.MenuItem("View Leave Histories", "Index", "hrDepartmentViewLeaveHistory")
+                @Html.MenuItem("Holidays Calendar", "Index", "hrHolidaysCalender")
+                @Html.MenuItem("Select Substitute", "Index", "hrSelectSubstitute")
+            }
+
+            if (User.IsInRole("LM"))
+            {
+                <li role="presentation" class="nav-divider"></li>
+                <li role="presentation" class="dropdown-header">Line Manager</li>
+                @Html.MenuItem("Pending Applications", "Index", "lmPendingApplications")
+                @Html.MenuItem("Update Leave Status", "Index", "lmChangeApplicationStatus")
+                @Html.MenuItem("Select Substitute", "Index", "lmSelectSubstitute")
+                @Html.MenuItem("Subordinate Balances", "Index", "lmSubordinateViewBalance")
+                @Html.MenuItem("Subordinate Histories", "Index", "lmSubordinateViewHistory")
+            }
+        }
+
         @if (User.IsInRole("Admin"))
         {
             <li role="presentation" class="nav-divider"></li>
