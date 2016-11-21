@@ -12,6 +12,9 @@ namespace LeaveSystemMVC.Controllers
 {
     public class aEditStaffController : Controller
     {
+        /*
+         * Look into @ http://stackoverflow.com/questions/32949510/add-items-to-select-list-on-the-client-side-in-mvc-5-asp
+         */
         // GET: aEditStaff
         [HttpGet]
         public ActionResult Index()
