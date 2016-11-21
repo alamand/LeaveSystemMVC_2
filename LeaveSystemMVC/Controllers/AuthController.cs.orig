@@ -1,4 +1,7 @@
-﻿using System;
+﻿/*
+ * Author: M Hamza Rahimy
+ */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -125,22 +128,17 @@ namespace LeaveSystemMVC.Controllers
                     }
                 }
 
-                    var identity = new ClaimsIdentity(claims, "ApplicationCookie");
 
-                    var ctx = Request.GetOwinContext();
-                    var authManager = ctx.Authentication;
-
-                    //Makes our claims list persist throughout the application session
-                    authManager.SignIn(identity);
-
-                    return RedirectToAction("Index", "Home");
-                }
             }
 
             ModelState.AddModelError("", "Invalid UserID or Password");
             return View(model);
         }
 
+<<<<<<< HEAD
+        /*Look into @ http://stackoverflow.com/questions/26182660/how-to-logout-user-in-owin-asp-net-mvc5 
+         */
+=======
         /*This implementation makes specific user data such as name, 
          ID and roles persistent throughout their session until the
          Logout action is called. The Login is effectively incomplete
@@ -172,6 +170,7 @@ namespace LeaveSystemMVC.Controllers
         /*Look into @ http://stackoverflow.com/questions/26182660/how-to-logout-user-in-owin-asp-net-mvc5 
         http://stackoverflow.com/questions/17592530/cookie-is-not-delete-in-mvcc
              */
+>>>>>>> master
         public ActionResult Logout()
         {
             var ctx = Request.GetOwinContext();
