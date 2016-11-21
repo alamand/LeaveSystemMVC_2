@@ -11,6 +11,7 @@ using LeaveSystemMVC.CustomLibraries;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Security.Claims;
+using Microsoft.Owin.Security;
 
 namespace LeaveSystemMVC.Controllers
 {
@@ -158,7 +159,7 @@ namespace LeaveSystemMVC.Controllers
             var authManager = ctx.Authentication;
 
             //Makes our claims list persist throughout the application session
-            authManager.SignIn(identity);
+            authManager.SignIn(new AuthenticationProperties { IsPersistent = true }, identity);
 
         }
 
