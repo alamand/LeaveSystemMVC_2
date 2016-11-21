@@ -128,7 +128,8 @@ namespace LeaveSystemMVC.Controllers
                     }
                 }
 
-
+                    return RedirectToAction("Index", "Home");
+                
             }
 
             ModelState.AddModelError("", "Invalid UserID or Password");
