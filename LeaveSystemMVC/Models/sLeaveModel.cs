@@ -32,12 +32,10 @@ namespace LeaveSystemMVC.Models
         public int leaveDuration { get; set; } 
 
         [DisplayName("Select Leave Start Time")]
-        [Required(ErrorMessage = "Please select leave start time")]
-        public DateTime shortStartTime { get; set; }
+        public TimeSpan shortStartTime { get; set; }
 
         [DisplayName("Select Leave End Time")]
-        [Required(ErrorMessage = "Please select leave end time")]
-        public DateTime shortEndTime { get; set; } 
+        public TimeSpan shortEndTime { get; set; } 
 
         [DisplayName("Line Manager Comment")]
         public string lmComment { get; set; } 

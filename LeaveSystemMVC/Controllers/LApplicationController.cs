@@ -34,11 +34,11 @@ namespace LeaveSystemMVC.Controllers
         public ActionResult Create(Models.sLeaveModel model) {
             System.Diagnostics.Debug.WriteLine("Entered post");
 
-            DateTime d3 = model.shortStartTime;
-            string stTime = d3.ToString("HH:mm:ss");
+//            DateTime d3 = model.shortStartTime;
+  //          string stTime = d3.ToString("HH:mm:ss");
 
-            DateTime d4 = model.shortEndTime;
-            string endTime = d4.ToString("HH:mm:ss");
+            //DateTime d4 = model.shortEndTime;
+            //string endTime = d4.ToString("HH:mm:ss");
 
             DateTime d1 = model.startDate;
             string stdate = d1.ToString("yyyy-MM-dd");
@@ -56,7 +56,7 @@ namespace LeaveSystemMVC.Controllers
                 //Redirect(Create.UrlReferrer.ToString());
             }
             if (ModelState.IsValid)
-                //
+                
             {
                 if (result == 0)
                     System.Diagnostics.Debug.WriteLine("is the same time as");
@@ -86,7 +86,7 @@ namespace LeaveSystemMVC.Controllers
                 {
                     leaveId = 6;
                 }
-
+                    
                 string leaveid = leaveId.ToString();
 
                 var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
@@ -99,13 +99,13 @@ namespace LeaveSystemMVC.Controllers
                 bool ticket = model.bookAirTicket;
 
                 //System.Diagnostics.Debug.WriteLine("ticket is:" +ticket);
-
+                
 
                 string abc = model.comments;
 
                 var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
 
-                string queryString = "Insert INTO Leave (Employee_ID,Start_Date,End_Date,Reporting_Back_Date,Leave_ID,Contact_Outside_UAE,Comment,Flight_Ticket,Total_Leave_Days,Start_Hrs,End_Hrs,Status) VALUES ('" + a + "','" + stdate + "','" + endate + "','" + endate + "','" + leaveid + "','" + model.contactDetails + "','" + model.comments + "','" + ticket + "','2','" + stTime + "','" + endTime + "','1');";
+                string queryString = "Insert INTO Leave (Employee_ID,Start_Date,End_Date,Reporting_Back_Date,Leave_ID,Contact_Outside_UAE,Comment,Flight_Ticket,Total_Leave_Days,Start_Hrs,End_Hrs,Status) VALUES ('" + a + "','" + stdate + "','" + endate + "','" + endate + "','" + leaveid + "','" + model.contactDetails + "','" + model.comments + "','" + ticket + "','2','" + model.shortStartTime + "','" + model.shortEndTime + "','1');";
 
                 var connection = new SqlConnection(connectionString);
 
