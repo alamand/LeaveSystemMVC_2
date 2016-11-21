@@ -1,4 +1,7 @@
-﻿using System;
+﻿/*
+ * Author: M Hamza Rahimy
+ */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -179,7 +182,7 @@ namespace LeaveSystemMVC.Controllers
                 }
                 connection.Close();
             }
-            //
+            //End check if username exists.
             if(hasValidationErrors)
             {
                 sEmployeeModel EmptyEmployee = (sEmployeeModel)TempData["EmptyEmployee"];
@@ -194,12 +197,10 @@ namespace LeaveSystemMVC.Controllers
 
             //Table insertions
             SE.password = RandomPassword.Generate(7, 7);
-            bool toAddSecondLM = false;
             string secondLMtext = "";
             string secondLmValueText = "";
             if (SE.secondLineManager != null)
             {
-                toAddSecondLM = true;
                 secondLMtext = ", [2nd_Line_Manager]";
                 secondLmValueText = "', '" + SE.secondLineManager;
             }
@@ -224,7 +225,6 @@ namespace LeaveSystemMVC.Controllers
                     "', '" + SE.gender + "', '" + SE.phoneNo + "', '" + SE.empStartDate +
                     "', '" + "True" + "', '" + SE.deptId + secondLmValueText + "')";
             }
-
             using (var connection = new SqlConnection(connectionString))
             {
                 var command = new SqlCommand(queryString, connection);
@@ -254,24 +254,10 @@ namespace LeaveSystemMVC.Controllers
                 if (SE.staffType != null && SE.staffType.Equals(SE.optionalStaffType))
                 {
                     queryString = CreateRolesQuery(toAddStaffType, false, SE, staffRoleID);
-                    /*
-                    queryString = "NSERT INTO dbo.Employee_Role (Employee_ID, Role_ID) " +
-                        "VALUES ('" + SE.staffID + "', '" + SE.staffType + "') " + 
-                        "INSERT INTO dbo.Employee_Role (Employee_ID, Role_ID) " +
-                        "VALUES ('" + SE.staffID + "', '" + staffRoleID + "')";
-                        */
                 }
                 else
                 {
                     queryString = CreateRolesQuery(toAddStaffType, toAddOptionalType, SE, staffRoleID);
-                    /*
-                    queryString = "INSERT INTO dbo.Employee_Role (Employee_ID, Role_ID) " +
-                        "VALUES ('" + SE.staffID + "', '" + SE.staffType + "') " +
-                        "INSERT INTO dbo.Employee_Role (Employee_ID, Role_ID) " +
-                        "VALUES ('" + SE.staffID + "', '" + SE.optionalStaffType + "')" +
-                        "INSERT INTO dbo.Employee_Role (Employee_ID, Role_ID)" +
-                        "VALUES ('" + SE.staffID + "', '" + staffRoleID + "')";
-                        */
                 }
 
             }
@@ -285,6 +271,8 @@ namespace LeaveSystemMVC.Controllers
             }
 
             //End table insertions
+
+            /*Construct and send a success e-mail to the newly created staff member*/
             string temp_email = SE.email;
             string temp_username = SE.userName;
 
@@ -308,11 +296,18 @@ namespace LeaveSystemMVC.Controllers
                 gendertext = "him";
             else
                 gendertext = "her";
-            
+            //End email construction
+
+            //Message string for the success case. Message will appear in popup window
             ViewBag.SuccessMessage = SE.firstName + " " + SE.lastName + " has been added to the database and an e-mail containing the account details sent to " + gendertext;
             return Index();
         }
 
+        /*Construct a query string for inserting roles into the db
+         *Will always insert the staff role, and staff role ID must be provided
+         *Will insertion query to add the roles provided in the staffType and 
+          optionalStaffType object if their corresponding bools are true.
+         */
         private string CreateRolesQuery(bool toAddStaffType, bool toAddOptionalType, sEmployeeModel employeeObject, int staffRoleID)
         {
             string queryString = "";
