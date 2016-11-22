@@ -16,7 +16,7 @@ namespace LeaveSystemMVC.App_Start
             DataAnnotationsModelValidatorProvider.AddImplicitRequiredAttributeForValueTypes = false;
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
-                ExpireTimeSpan = TimeSpan.FromMinutes(5),
+                ExpireTimeSpan = TimeSpan.FromMinutes(15),
                 AuthenticationType = "ApplicationCookie",
                 LoginPath = new PathString("/Auth/Login")
             });

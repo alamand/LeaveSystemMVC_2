@@ -67,6 +67,11 @@ namespace LeaveSystemMVC.Controllers
                     connection.Open();
                     using (var reader = command.ExecuteReader())
                     {
+                        if(!reader.HasRows)
+                        {
+                            ModelState.AddModelError("", "Invalid UserID or Password");
+                            return View(model);
+                        }
                         while(reader.Read())
                         {
                             empID = (int)reader[0];
