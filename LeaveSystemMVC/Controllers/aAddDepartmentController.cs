@@ -20,6 +20,7 @@ namespace LeaveSystemMVC.Controllers
             
             aDepartment EmptyDepartment = new aDepartment();  //object created to make a list of LMs with their IDs and Names stored in it
             List<string> departmentNames = new List<string>(); //list to display department names 
+            int temproleID= 0 ;
 
             //displays a list of existing departments for the user's reference 
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
@@ -36,8 +37,19 @@ namespace LeaveSystemMVC.Controllers
                     }
                 }
 
+                queryString = "Select Role_Id FROM dbo.Role Where Role_Name= 'LM'";
+                command = new SqlCommand(queryString, connection);
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        temproleID= (int)reader[0];
+                    }
+                }
+                System.Diagnostics.Debug.WriteLine("This the LM role ID - " + temproleID);
+
                 //displays a list of employees who fall under the staff type category Line Manager 
-                queryString = "Select Employee.Employee_ID, First_Name,Last_Name FROM dbo.Employee Full Join dbo.Employee_Role On dbo.Employee_Role.Employee_ID = dbo.Employee.Employee_ID WHERE Employee_Role.Role_ID ='3' "; //display list of lms 
+                queryString = "Select Employee.Employee_ID, First_Name,Last_Name FROM dbo.Employee Full Join dbo.Employee_Role On dbo.Employee_Role.Employee_ID = dbo.Employee.Employee_ID WHERE Employee_Role.Role_ID ='"+temproleID +"'" ; //display list of lms 
                 command = new SqlCommand(queryString, connection);
                 using (var reader = command.ExecuteReader())
                 {
@@ -86,11 +98,26 @@ namespace LeaveSystemMVC.Controllers
             {
                 if (newDepartmentName.departmentName.ToLower() == department.ToLower())
                 {
-                    ModelState.AddModelError("departmentName", "Department name already exsists");
+                    ModelState.AddModelError("departmentName", "Department name already exists");
                     
                 }
             }
         
+            //checks if department name has more than 30 charecters
+            if (newDepartmentName.departmentName.Length> 30)
+            {
+               ModelState.AddModelError("departmentName", "Department name too long");
+            }
+
+            //checks if department name has integers in it
+            foreach (char c in newDepartmentName.departmentName)
+            {
+                if (char.IsDigit(c))
+                {
+                    ModelState.AddModelError("departmentName", "Department name cannot contain digits");
+                }
+            }
+
             //if above checks are passed
             if (ModelState.IsValid)
             {
@@ -122,7 +149,7 @@ namespace LeaveSystemMVC.Controllers
                     using (var reader = command.ExecuteReader())
                     connection.Close();
                 }
-                Response.Write("<script> alert ('Successfully added a new department');location.href='Index'</script>");
+                Response.Write("<script> alert ('Successfully added a new department');location='Index'</script>");
             }
             return Index();
         }

@@ -8,7 +8,7 @@
     {
         @Html.AntiForgeryToken()
 
-        <h4>Editting a Department</h4>
+        <h4>Editing a Department</h4>
 
         <table style="margin:30px;width:100%;">
             <tr>
@@ -22,6 +22,23 @@
                                 @Html.DropDownListFor(model => model.departmentName, new SelectList(ViewBag.departmentNames))
                                 @Html.ValidationMessageFor(model => model.departmentName, "", new { @class = "text-danger" })
                             </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <table style="margin:30px;width:100%;">
+            <tr>
+                <td>
+                    <div class="form-group">
+
+                        <!--Prompts user to select one of the departments in the database to edit -->
+
+                        @Html.LabelFor(model => model.primaryLMID, "Current Line Manager of the Selected Department", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4">
+                            @Html.TextBoxFor(model => model.primaryLMID, new { ViewBag.tempLMName, @class = "text-box single-line readonly", @readonly = "readonly"})
+                            @Html.ValidationMessageFor(model => model.primaryLMID, "", new { @class = "text-danger" })
+                        </div>
                     </div>
                 </td>
             </tr>

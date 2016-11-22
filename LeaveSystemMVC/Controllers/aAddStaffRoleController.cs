@@ -76,12 +76,18 @@ namespace LeaveSystemMVC.Controllers
                 }
             }
 
+            if (newRoleName.staffRoleName.Length>30)
+            {
+                ModelState.AddModelError("staffRoleName", "Staff Role name too long");
+            }
+
+
             //if the checks are passed 
             //gets the enterd staff role name and adds it to the database 
             if (ModelState.IsValid)
                 {
                     connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-                    string insertString = "INSERT INTO dbo.Role (Role_Name) VALUES (' " + newRoleName.staffRoleName + "')";
+                    string insertString = "INSERT INTO dbo.Role (Role_Name) VALUES ('" + newRoleName.staffRoleName + "')";
                     using (var connection = new SqlConnection(connectionString))
                     {
                         var command = new SqlCommand(insertString, connection);
@@ -89,7 +95,7 @@ namespace LeaveSystemMVC.Controllers
                         using (var reader = command.ExecuteReader())
                             connection.Close();
                     }
-                Response.Write("<script> alert ('Successfully created a new staff role');location.href='Index'</script>");
+                Response.Write("<script> alert ('Successfully created a new staff role');location='Index'</script>");
             }
             return Index() ;
         } 
