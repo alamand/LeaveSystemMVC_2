@@ -204,7 +204,7 @@ namespace LeaveSystemMVC.Controllers
                 secondLMtext = ", [2nd_Line_Manager]";
                 secondLmValueText = "', '" + SE.secondLineManager;
             }
-            if(SE.deptId == 0)
+            if(SE.deptName == null)
             {
                 
                 queryString = "INSERT INTO dbo.Employee (Employee_ID, First_Name, " +
@@ -223,7 +223,7 @@ namespace LeaveSystemMVC.Controllers
                     "', '" + SE.firstName + "', '" + SE.lastName + "', '" + SE.userName +
                     "', '" + SE.password + "', '" + SE.designation + "', '" + SE.email +
                     "', '" + SE.gender + "', '" + SE.phoneNo + "', '" + SE.empStartDate +
-                    "', '" + "True" + "', '" + SE.deptId + secondLmValueText + "')";
+                    "', '" + "True" + "', '" + SE.deptName + secondLmValueText + "')";
             }
             using (var connection = new SqlConnection(connectionString))
             {
@@ -249,7 +249,7 @@ namespace LeaveSystemMVC.Controllers
                 bool toAddOptionalType = true;
                 if (SE.staffType == null)
                     toAddStaffType = false;
-                if (SE.optional2ndStaffType == null)
+                if (SE.optionalStaffType == null)
                     toAddOptionalType = false;
                 if (SE.staffType != null && SE.staffType.Equals(SE.optionalStaffType))
                 {
