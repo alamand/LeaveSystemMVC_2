@@ -37,10 +37,11 @@ namespace LeaveSystemMVC.Models
         //to for display purposes, to give users a list of departments to
         //choose from
         public Dictionary<int, string> departmentList { get; set; } = new Dictionary<int, string>();
-        //[Required(ErrorMessage = "A Department is required")]
+        [Required(ErrorMessage = "A Department is required")]
         public string deptName { get; set; }
         public string phoneNo{ get; set; }
 
+        [Required(ErrorMessage = "The Start Date is required")]
         [DataType(DataType.Date)]
         public DateTime empStartDate { get; set; }
 
