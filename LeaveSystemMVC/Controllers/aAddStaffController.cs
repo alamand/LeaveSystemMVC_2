@@ -154,6 +154,13 @@ namespace LeaveSystemMVC.Controllers
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
             string queryString = "";
 
+            /*Redundant: yes but the rest of the implementation requires references to the staff ID
+             and there was no effective way to enforce that the staff ID be 5 digits as an int*/
+            int actualStaffID;
+            int.TryParse(SE.staffIDInString, out actualStaffID);
+            SE.staffID = actualStaffID;
+            /////////////////////////////
+
             //Validations
             bool hasValidationErrors = false;
             //Check if username already exists
@@ -204,6 +211,9 @@ namespace LeaveSystemMVC.Controllers
                 secondLMtext = ", [2nd_Line_Manager]";
                 secondLmValueText = "', '" + SE.secondLineManager;
             }
+            /*Had to use deptname to store the actual department ID because for some 
+             reason the view wouldn't store the value of the dropdown for department
+             selection in the deptID int*/
             if(SE.deptName == null)
             {
                 
@@ -219,7 +229,7 @@ namespace LeaveSystemMVC.Controllers
             {
                 queryString = "INSERT INTO dbo.Employee (Employee_ID, First_Name, " +
                     "Last_Name, User_Name, Password, Designation, Email, Gender, PH_No, " +
-                    "Emp_Start_Date, Account_Status, Department_ID, [2nd_Line_Manager]) VALUES('" + SE.staffID +
+                    "Emp_Start_Date, Account_Status, Department_ID" + secondLMtext + ") VALUES('" + SE.staffID +
                     "', '" + SE.firstName + "', '" + SE.lastName + "', '" + SE.userName +
                     "', '" + SE.password + "', '" + SE.designation + "', '" + SE.email +
                     "', '" + SE.gender + "', '" + SE.phoneNo + "', '" + SE.empStartDate +
@@ -285,7 +295,10 @@ namespace LeaveSystemMVC.Controllers
 
             message.Subject = "Your User Details";
             string body = "";
-            body = body + "Hi, Your user details are: username: " + temp_username + " and your password is: " + SE.password;
+            body = body + "Hi, Your user details are:" + Environment.NewLine + 
+                "Username: " + temp_username + Environment.NewLine + 
+                "Password is: " + SE.password + Environment.NewLine + 
+                "Please visit leavesystem.azurewebsites.net in order to log in.";
 
             message.Body = body;
             SmtpClient client = new SmtpClient();
@@ -303,6 +316,7 @@ namespace LeaveSystemMVC.Controllers
 
             //Message string for the success case. Message will appear in popup window
             ViewBag.SuccessMessage = SE.firstName + " " + SE.lastName + " has been added to the database and an e-mail containing the account details sent to " + gendertext;
+            ModelState.Clear();
             return Index();
         }
 

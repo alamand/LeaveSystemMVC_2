@@ -13,23 +13,33 @@ namespace LeaveSystemMVC.Models
         [Display(Name = "Staff ID")]
         [Required(ErrorMessage = "The 5-digit Staff ID is required")]
         public int staffID { get;set; }
+        [Display(Name = "Staff ID")]
+        [Required(ErrorMessage = "The 5-digit Staff ID is required")]
+        [RegularExpression("^[0-9]*$", ErrorMessage = "Staff ID must be numeric")]
+        [StringLength(5, MinimumLength = 5, ErrorMessage = "The Staff ID must be 5 digits")]
+        public string staffIDInString { get; set; }
 
         [Display(Name = "First Name")]
         [Required(ErrorMessage = "The First Name is required")]
+        [StringLength(25, MinimumLength = 1, ErrorMessage = "First Name is too long")]
         public string firstName { get; set; }
         [Display(Name = "Last Name")]
         [Required(ErrorMessage = "The Last Name is required")]
+        [StringLength(25, MinimumLength = 1, ErrorMessage = "Last Name is too long")]
         public string lastName { get; set; }
 
         [Display(Name = "Username")]
         [Required(ErrorMessage = "Username is required")]
+        [StringLength(100, MinimumLength = 1, ErrorMessage = "User Name is too long")]
         public string userName { get; set; }
         public string password { get; set; }
+        [StringLength(100, MinimumLength = 0, ErrorMessage = "Designation name is too long")]
         public string designation{ get; set; }
 
         [Display(Name = "Email address")]
         [Required(ErrorMessage = "The email address is required")]
         [EmailAddress(ErrorMessage = "Invalid Email Address, please check if " + "@" + " symbol exists")]
+        [StringLength(100, MinimumLength = 0, ErrorMessage = "E-mail address is too long")]
         public string email { get; set; }
         public string gender { get; set; }
         public int deptId { get; set; }
@@ -39,6 +49,7 @@ namespace LeaveSystemMVC.Models
         public Dictionary<int, string> departmentList { get; set; } = new Dictionary<int, string>();
         [Required(ErrorMessage = "A Department is required")]
         public string deptName { get; set; }
+        [StringLength(20, MinimumLength = 9, ErrorMessage = "Invalid phone number")]
         public string phoneNo{ get; set; }
 
         [Required(ErrorMessage = "The Start Date is required")]
@@ -58,7 +69,9 @@ namespace LeaveSystemMVC.Models
         /*Holds the actual staff type/role. In the case of
          views specifically, these will hold the user's selection
          of staff type/role in dropdown lists*/
+        [Display(Name = "Staff Role")]
         public string staffType { get; set; }
+        [Display(Name = "Optional Staff Role")]
         public string optionalStaffType { get; set; }
         public string optional2ndStaffType { get; set; }
         /*Will hold a list of options of staff roles/types for the 

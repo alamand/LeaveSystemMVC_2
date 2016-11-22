@@ -26,8 +26,8 @@
            <td><div class="form-horizontal "style="white-space:nowrap">
                 @Html.LabelFor(model => model.staffID, "Staff ID", htmlAttributes: new { @class = "control-label col-md-1" })
                 </div></td><td><div class="col-md-2">
-                    @Html.TextBoxFor(model => model.staffID, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.staffID, "", new { @class = "text-danger" })
+                    @Html.TextBoxFor(model => model.staffIDInString, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.staffIDInString, "", new { @class = "text-danger" })
                 </div>
             </td>
 </tr></table>
@@ -149,7 +149,7 @@
                 
                 <td>
                     <div class="form-horizontal" style="white-space:nowrap">
-                        @Html.LabelFor(model => model.staffType, "Staff Type", htmlAttributes: new { @class = "control-label col-md-1" })
+                        @Html.LabelFor(model => model.staffType, "Staff Role", htmlAttributes: new { @class = "control-label col-md-1" })
                     </div>
                 </td>
                 <td>
@@ -159,7 +159,7 @@
                     </div>
                 </td>
                 <td><div class="form-horizontal"style="white-space:nowrap">
-                    @Html.LabelFor(model => model.optionalStaffType, "Optional Staff Type", htmlAttributes: new { @class = "control-label col-md-4" })
+                    @Html.LabelFor(model => model.optionalStaffType, "Optional Staff Role", htmlAttributes: new { @class = "control-label col-md-4" })
                     </div></td>
                         <td><div class="form-inline">
                         @Html.DropDownListFor(model => model.optionalStaffType, new SelectList(Model.staffTypeSelectionOptions, "Key", "Value"), "- Select type -", new { @class = "form-control" })
