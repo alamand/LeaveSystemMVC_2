@@ -17,6 +17,8 @@ namespace LeaveSystemMVC.Models
         [Display(Name = "First Name")]
         [Required(ErrorMessage = "The First Name is required")]
         public string firstName { get; set; }
+        [Display(Name = "Last Name")]
+        [Required(ErrorMessage = "The Last Name is required")]
         public string lastName { get; set; }
 
         [Display(Name = "Username")]
