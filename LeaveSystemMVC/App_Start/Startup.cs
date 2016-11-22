@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
 using Owin;
@@ -12,10 +13,12 @@ namespace LeaveSystemMVC.App_Start
     {
         public void Configuration(IAppBuilder app)
         {
+            DataAnnotationsModelValidatorProvider.AddImplicitRequiredAttributeForValueTypes = false;
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
+                ExpireTimeSpan = TimeSpan.FromMinutes(5),
                 AuthenticationType = "ApplicationCookie",
-                LoginPath = new PathString("/auth/login")
+                LoginPath = new PathString("/Auth/Login")
             });
         }
     }

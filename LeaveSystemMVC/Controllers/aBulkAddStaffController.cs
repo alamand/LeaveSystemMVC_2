@@ -341,7 +341,7 @@ namespace LeaveSystemMVC.Controllers
         }
     }
 
-    public class employeeCons
+    public class employeeCons // EmployeeConsolidated
     {
         public sEmployeeModel employeeObject;
         public List<string> roles;
