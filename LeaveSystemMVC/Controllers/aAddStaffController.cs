@@ -12,6 +12,7 @@ using System.Configuration;
 using System.Data.SqlClient;
 using System.Dynamic;
 using LeaveSystemMVC.Models;
+using System.Globalization;
 
 namespace LeaveSystemMVC.Controllers
 {
@@ -149,7 +150,7 @@ namespace LeaveSystemMVC.Controllers
          Needed to add that because some the given non-required fields were giving "required" 
          validation errors.*/
         [HttpPost]
-        public ActionResult Index([Bind(Exclude = "deptId, empStartDate")]sEmployeeModel SE)
+        public ActionResult Index(sEmployeeModel SE)
         {
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
             string queryString = "";
@@ -211,6 +212,7 @@ namespace LeaveSystemMVC.Controllers
                 secondLMtext = ", [2nd_Line_Manager]";
                 secondLmValueText = "', '" + SE.secondLineManager;
             }
+            
             /*Had to use deptname to store the actual department ID because for some 
              reason the view wouldn't store the value of the dropdown for department
              selection in the deptID int*/

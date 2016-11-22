@@ -126,7 +126,7 @@
                     @Html.LabelFor(model => model.empStartDate, "Employment Start Date", htmlAttributes: new { @class = "control-label col-md-1", type = "Date" })
                     </div></td>
                 <td><div class="form-inline">
-                        @Html.TextBoxFor(model => model.empStartDate, new { type = "date" })
+                        @Html.EditorFor(model => model.empStartDate)
                         @Html.ValidationMessageFor(model => model.empStartDate, "", new { @class = "text-danger" })
                     </div>
                 </td>

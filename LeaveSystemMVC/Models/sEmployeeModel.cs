@@ -49,7 +49,10 @@ namespace LeaveSystemMVC.Models
         public Dictionary<int, string> departmentList { get; set; } = new Dictionary<int, string>();
         [Required(ErrorMessage = "A Department is required")]
         public string deptName { get; set; }
-        [StringLength(20, MinimumLength = 9, ErrorMessage = "Invalid phone number")]
+        [Display(Name = "Phone Number")]
+        [Required(ErrorMessage = "You must provide your home phone number.")]
+        [DataType(DataType.PhoneNumber, ErrorMessage = "You must provide a proper phone number.")]
+        [RegularExpression(@"^(?:\+971|00971|0)?(?:50|51|52|55|56|2|3|4|6|7|9)\d{7}$", ErrorMessage = "You must provide a proper phone number.")]
         public string phoneNo{ get; set; }
 
         [Required(ErrorMessage = "The Start Date is required")]
