@@ -19,7 +19,7 @@ namespace LeaveSystemMVC.Controllers
             var c = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);   
             ViewBag.claim = c;
             string a = c.ToString();
-            a = a.Substring(a.Length - 8);
+            a = a.Substring(a.Length - 5);
             //System.Diagnostics.Debug.WriteLine("id is:"+a + ".");
 
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;

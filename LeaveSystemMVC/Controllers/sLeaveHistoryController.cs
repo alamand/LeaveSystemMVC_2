@@ -15,9 +15,16 @@ namespace LeaveSystemMVC.Controllers
         public ActionResult Index()
         {
             var model = new List<Models.sLeaveModel>();
+            var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
+            var c = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            ViewBag.claim = c;
+            string a = c.ToString();
+            a = a.Substring(a.Length - 5);
+            //System.Diagnostics.Debug.WriteLine("id is:"+a + ".");
+
 
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string query = "Select * FROM dbo.leave";
+            string query = "Select * FROM dbo.leave where Employee_ID = '" + a + "' AND Start_Date < GETDATE()";
 
             using (var connection = new SqlConnection(connectionString)){
                 var command = new SqlCommand(query, connection);
