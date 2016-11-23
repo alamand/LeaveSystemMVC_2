@@ -19,8 +19,6 @@ namespace LeaveSystemMVC.Controllers
         // GET: aBulkAddStaff
         public ActionResult Index()
         {
-            ViewBag.Message = "File name here...";
-            tempEmp.firstName = "File name here...";
             
             return View(tempEmp);
         }
@@ -343,7 +341,7 @@ namespace LeaveSystemMVC.Controllers
         }
     }
 
-    public class employeeCons
+    public class employeeCons // EmployeeConsolidated
     {
         public sEmployeeModel employeeObject;
         public List<string> roles;
