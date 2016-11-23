@@ -24,7 +24,7 @@ namespace LeaveSystemMVC.Controllers
 
 
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string query = "Select * FROM dbo.leave where Employee_ID = '" + a + "' AND Start_Date < GETDATE()";
+            string query = "Select * FROM dbo.leave,dbo.Leave_Type where Employee_ID = '" + a + "' AND Start_Date < GETDATE() AND leave.Leave_ID = Leave_Type.Leave_ID";
 
             using (var connection = new SqlConnection(connectionString)){
                 var command = new SqlCommand(query, connection);
@@ -34,23 +34,24 @@ namespace LeaveSystemMVC.Controllers
                 using (var reader = command.ExecuteReader()) {
                     while (reader.Read()) {
                         var leave = new Models.sLeaveModel();
-                        int leaveId = (int)reader["Leave_ID"];
-                        if (leaveId == 1)
+                        string leave1 = (string)reader["Leave_Name"];
+
+                        if (leave1.Equals("Annual"))
                             leave.leaveType = "Annual";
 
-                        if (leaveId == 2)
+                        if (leave1.Equals("Sick"))
                             leave.leaveType = "Sick";
 
-                        if (leaveId == 3)
+                        if (leave1.Equals("Compassionate"))
                             leave.leaveType = "Compassionate";
 
-                        if (leaveId == 4)
+                        if (leave1.Equals("Maternity"))
                             leave.leaveType = "Maternity";
 
-                        if (leaveId == 5)
+                        if (leave1.Equals("Short_Hours"))
                             leave.leaveType = "Short";
 
-                        if (leaveId == 6)
+                        if (leave1.Equals("Unpaid"))
                             leave.leaveType = "Unpaid";
 
                         //leave.leaveType = (string)reader["Leave_ID"];
