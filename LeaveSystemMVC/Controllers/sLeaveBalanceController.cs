@@ -24,7 +24,7 @@ namespace LeaveSystemMVC.Controllers
 
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
 
-            string queryString = "Select * FROM dbo.Leave_Balance where Employee_ID = '"+a+"'";
+            string queryString = "Select Balance,Leave_Name FROM dbo.Leave_Balance, dbo.Leave_Type where Leave_Balance.Employee_ID = '" + a+"' AND Leave_Balance.Leave_ID = Leave_Type.Leave_ID";
 
            using( var connection = new SqlConnection(connectionString))
             {
@@ -37,6 +37,7 @@ namespace LeaveSystemMVC.Controllers
                 int maternity = 0;
                 int shortHrs = 0;
                 int unpaid = 0;
+                int DIL = 0;
 
                 using (var reader = command.ExecuteReader()) {
                     while (reader.Read()) {
@@ -44,30 +45,34 @@ namespace LeaveSystemMVC.Controllers
 
                         //string leave = "";
 
-                        int id = (int)reader["Leave_ID"];
-                        if (id == 1)
+                        string leave = (string)reader["Leave_Name"];
+                        if (leave.Equals("Annual"))
                             annual =  (int)reader["Balance"];
                         ViewBag.annual = annual;    
 
-                        if (id == 2)
-                            sick = (int)reader["balance"];
+                        if (leave.Equals("Sick"))
+                            sick = (int)reader["Balance"];
                         ViewBag.sick = sick;
 
-                        if (id == 3)
-                            compassionate = (int)reader["balance"];
+                        if (leave.Equals("Compassionate"))
+                            compassionate = (int)reader["Balance"];
                         ViewBag.compassionate = compassionate;
 
-                        if (id == 4)
-                           maternity = (int)reader["balance"];
+                        if (leave.Equals("Maternity"))
+                           maternity = (int)reader["Balance"];
                         ViewBag.maternity = maternity;
 
-                        if (id == 5)
-                           shortHrs = (int)reader["balance"];
+                        if (leave.Equals("Short_Hours"))
+                           shortHrs = (int)reader["Balance"];
                         ViewBag.shortHrs = shortHrs;
 
-                        if (id == 6)
-                            unpaid = (int)reader["balance"];
+                        if (leave.Equals("Unpaid"))
+                            unpaid = (int)reader["Balance"];
                         ViewBag.unpaid = unpaid;
+
+                        if (leave.Equals("DIL"))
+                            DIL = (int)reader["Balance"];
+                        ViewBag.DIL = DIL;
 
                         model.Add(balance);
                     }
