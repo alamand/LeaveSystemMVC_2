@@ -7,6 +7,8 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using LeaveSystemMVC.Models;
+using System.Configuration;
+using System.Data.SqlClient;
 
 namespace LeaveSystemMVC.Controllers
 {
@@ -20,45 +22,37 @@ namespace LeaveSystemMVC.Controllers
         public ActionResult Index()
         {
             sEmployeeModel EmptyEmployee = new sEmployeeModel();
-            List<minDepartment> tempDeps = new List<minDepartment>
+            /*Get the list of departments and create a list of 
+             minDepartment objects. This object will be passed into the 
+             _MinDepartmentList partial*/
+            List<minDepartment> tempDeps = new List<minDepartment>();
+            var connectionString =
+                ConfigurationManager.ConnectionStrings["DefaultConnection"].
+                ConnectionString;
+            string queryString = "SELECT Department_ID, Department_Name " +
+                "FROM dbo.Department " + 
+                "WHERE dbo.Department.Department_Name IS NOT NULL";
+            using (var connection = new SqlConnection(connectionString))
             {
-                new minDepartment {departmentID = 1, departmentName = "newDep" },
-                new minDepartment {departmentID = 2, departmentName = "newDep1" }
-            };
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    if(reader.HasRows)
+                    {
+                        while(reader.Read())
+                        {
+                            tempDeps.Add(new minDepartment
+                            {
+                                departmentID = (int)reader[0],
+                                departmentName = (string)reader[1]
+                            });
+                        }
+                    }
+                }
+                connection.Close();
+            }
             ViewData["DepartmentList"] = tempDeps;
-            //all these lists should not be hardcoded
-
-            List<string> sid = new List<string>();
-            sid.Add("None");
-            sid.Add("1234567");
-            sid.Add("22345678");
-            sid.Add("33345678");
-            sid.Add("44445678");
-            ViewBag.sid = sid;
-
-            List<string> slm = new List<string>();
-            slm.Add("None");
-            slm.Add("Sukhpreet Singh Sidhu");
-            slm.Add("Bidisha Sen");
-            slm.Add("Mandy Northover");
-            slm.Add("Dan Adkins");
-            ViewBag.slm = slm;
-
-            List<string> department = new List<string>();
-            department.Add("None");
-            department.Add("IT");
-            department.Add("Academics");
-            department.Add("HR");
-            department.Add("Student Services");
-            ViewBag.department = department;
-
-            List<string> staffType = new List<string>();
-            staffType.Add("None");
-            staffType.Add("Admin");
-            staffType.Add("Line  Manager");
-            staffType.Add("HR");
-            staffType.Add("Staff Member");
-            ViewBag.staffType = staffType;
             return View(tempDeps);
         }
 

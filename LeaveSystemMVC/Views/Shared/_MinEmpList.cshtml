@@ -5,9 +5,15 @@
         <li role="presentation" class="dropdown-header">Employees</li>
             @foreach (var minStaff in Model)
             {
+                var actionWithID = "SelectEmployee/" + minStaff.empID;
+                var urlAction = Url.Action("");
+                var actualUrlAction = urlAction.Substring(1, urlAction.Length - 1);
+                @Html.MenuItemExt(minStaff.empName, actionWithID, actualUrlAction, "employee-link")
+                <!--
                 <li>
                     <a class="employee-link" href="@Url.Action("SelectEmployee", new { id = minStaff.empID })"><i class="glyphicon glyphicon-chevron-right"></i>@minStaff.empName</a>
                 </li>
+                    -->
             }
     </ul>
 </div>
