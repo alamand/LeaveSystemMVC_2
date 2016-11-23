@@ -13,16 +13,10 @@
                 Leave Type
             </th>
             <th>
-                Application Date 
-            </th>
-            <th>
                 Start Date 
             </th>
             <th>
                 End Date 
-            </th>
-            <th>
-                Return Date 
             </th>
             <th>
                 Leave Duration 
@@ -37,113 +31,33 @@
                 Leave Status 
             </th>
             <th>
-                Comments 
+                HR Comment
+            </th>
+            <th>
+               LM Comment 
             </th>
         </tr>
 
-
-        <tr>
-            <td>
-                Annual
-            </td>
-            <td>
-                24-6-2015
-            </td>
-            <td>
-                24-7-2015
-            </td>
-            <td>
-                24-8-2015
-            </td>
-            <td>
-                24-8-2015
-            </td>
-            <td>
-                22 Days
-            </td>
-            <td>
-                12:00AM
-            </td>
-            <td>
-                12:00AM
-            </td>
-            <td>
-                Approved
-            </td>
-            <td>
-                Applying for annual leave
-            </td>
-
-        </tr>
-
-
-        <tr>
-            <td>
-                Sick
-            </td>
-            <td>
-                24-2-2015
-            </td>
-            <td>
-                24-2-2015
-            </td>
-            <td>
-                27-2-2015
-            </td>
-            <td>
-                24-8-2015
-            </td>
-            <td>
-                2 Days
-            </td>
-            <td>
-                12:00AM
-            </td>
-            <td>
-                12:00AM
-            </td>
-            <td>
-                Approved
-            </td>
-            <td>
-                Sick Leave
-            </td>
-        </tr>
-        
-
-
-        <tr>
-            <td>
-               Short
-            </td>
-            <td>
-                24-2-2015
-            </td>
-            <td>
-                24-2-2015
-            </td>
-            <td>
+        @foreach (var item in Model) {
+            <tr>
                 
-            </td>
-            <td>
+                <td>@Html.DisplayFor(modelItem => item.leaveType)</td>
                 
-            </td>
-            <td>
-                4 Hours
-            </td>
-            <td>
-                12:00PM
-            </td>
-            <td>
-                4:00PM
-            </td>
-            <td>
-                Approved
-            </td>
-            <td>
-                Personal Work            </td>
-        </tr>
+                <td>@ViewBag.stDt</td>
+            
+                <td>@ViewBag.enDt</td>
+                        
+                <td>@Html.DisplayFor(modelItem => item.leaveDuration)</td>
+                
+                <td>@Html.DisplayFor(modelItem => item.shortStartTime)</td>
+            
+                <td>@Html.DisplayFor(modelItem => item.shortEndTime)</td>
 
+                <td>@Html.DisplayFor(modelItem => item.leaveStatus)</td>
+
+                <td>@Html.DisplayFor(modelItem => item.hrComment)</td>
+            </tr>
+        }
 
     </table>
     </div>
