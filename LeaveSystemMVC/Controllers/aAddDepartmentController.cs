@@ -37,6 +37,7 @@ namespace LeaveSystemMVC.Controllers
                     }
                 }
 
+                //for the next query to get the role id of line manager 
                 queryString = "Select Role_Id FROM dbo.Role Where Role_Name= 'LM'";
                 command = new SqlCommand(queryString, connection);
                 using (var reader = command.ExecuteReader())
@@ -49,7 +50,7 @@ namespace LeaveSystemMVC.Controllers
                 System.Diagnostics.Debug.WriteLine("This the LM role ID - " + temproleID);
 
                 //displays a list of employees who fall under the staff type category Line Manager 
-                queryString = "Select Employee.Employee_ID, First_Name,Last_Name FROM dbo.Employee Full Join dbo.Employee_Role On dbo.Employee_Role.Employee_ID = dbo.Employee.Employee_ID WHERE Employee_Role.Role_ID ='"+temproleID +"'" ; //display list of lms 
+                queryString = "Select Employee.Employee_ID, First_Name,Last_Name FROM dbo.Employee Full Join dbo.Employee_Role On dbo.Employee_Role.Employee_ID = dbo.Employee.Employee_ID WHERE Employee_Role.Role_ID ='"+temproleID +"' AND Account_Status != 'False'"; //display list of lms 
                 command = new SqlCommand(queryString, connection);
                 using (var reader = command.ExecuteReader())
                 {
@@ -149,7 +150,7 @@ namespace LeaveSystemMVC.Controllers
                     using (var reader = command.ExecuteReader())
                     connection.Close();
                 }
-                Response.Write("<script> alert ('Successfully added a new department');location='Index'</script>");
+                Response.Write("<script> alert ('Successfully added a new department')</script>");
             }
             return Index();
         }

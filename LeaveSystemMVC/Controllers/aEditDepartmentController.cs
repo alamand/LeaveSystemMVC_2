@@ -13,20 +13,18 @@ using LeaveSystemMVC.Models;
 namespace LeaveSystemMVC.Controllers
 {
     public class aEditDepartmentController : Controller
-    { 
+    {
         // GET: aEditDepartment
         public ActionResult Index()
         {
             aDepartment EmptyDepartment = new aDepartment(); //object created to make a list of LMs with their IDs and Names stored in it
             List<string> departmentNames = new List<string>(); //list to display department names 
+            List<string> departmentDetails = new List<string>();
             int temproleID = 0;
 
-            string tempLMName = "bla";
-            ViewBag.tempLMName = tempLMName;
-
-            //displays a list of departments in the system for the user to select one to edit 
+            //to display a list of department along with the line managers 
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "Select Department_Name FROM dbo.Department ";
+            string queryString = "Select Department.Department_Name, Employee.First_Name, Employee.Last_Name FROM dbo.Department INNER JOIN dbo.Employee ON Employee.Employee_Id = Department.Line_Manager_ID Where Employee.Employee_Id = Department.Line_Manager_ID";
             using (var connection = new SqlConnection(connectionString))
             {
                 var command = new SqlCommand(queryString, connection);
@@ -35,8 +33,23 @@ namespace LeaveSystemMVC.Controllers
                 {
                     while (reader.Read())
                     {
-                        departmentNames.Add((string)reader[0]);
+
+                        string deptNames = (string)reader[0];
+                        string lmNames = (string)reader[1] + " " + (string)reader[2];
+                        string tempDisplay = deptNames + "-" + lmNames;
+                        departmentDetails.Add(tempDisplay);
                     }
+                }
+
+                queryString = "Select Department_Name FROM dbo.Department";
+                command = new SqlCommand(queryString, connection);
+                {
+                    using (var reader = command.ExecuteReader())
+                        while (reader.Read())
+                        {
+                            departmentNames.Add((string)reader[0]);
+                        }
+
                 }
 
                 queryString = "Select Role_Id FROM dbo.Role Where Role_Name= 'LM'";
@@ -51,7 +64,7 @@ namespace LeaveSystemMVC.Controllers
                 //System.Diagnostics.Debug.WriteLine("This the LM role ID - " + temproleID);
 
                 //display a list of LM's for the user to select a new one for a particular department 
-                queryString = "Select Employee.Employee_ID, First_Name,Last_Name FROM dbo.Employee Full Join dbo.Employee_Role On dbo.Employee_Role.Employee_ID = dbo.Employee.Employee_ID WHERE Employee_Role.Role_ID ='" + temproleID + "'";
+                queryString = "Select Employee.Employee_ID, First_Name,Last_Name FROM dbo.Employee Full Join dbo.Employee_Role On dbo.Employee_Role.Employee_ID = dbo.Employee.Employee_ID WHERE Employee_Role.Role_ID ='" + temproleID + "' AND Account_Status != 'False'";
                 command = new SqlCommand(queryString, connection);
                 using (var reader = command.ExecuteReader())
                 {
@@ -64,7 +77,7 @@ namespace LeaveSystemMVC.Controllers
 
                 connection.Close();
                 ViewBag.departmentNames = departmentNames; //sends the list of departments to the view 
-
+                ViewBag.departmentDetails = departmentDetails;
 
             }
 
@@ -75,75 +88,38 @@ namespace LeaveSystemMVC.Controllers
         public ActionResult Index(Models.aDepartment editDepartmentName)
         {
             int tempID = 0; //to temporarily store LM ID before adding to the database 
-
-            //start
-            string tempLMName = "bla";
-            int tempLMID = 0; 
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString="Select Line_Manager_ID From dbo.Department Where Department_Name= '" + editDepartmentName.departmentName + "'";
-            using (var connection = new SqlConnection(connectionString))
-            {
-                var command = new SqlCommand(queryString, connection);
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-
-                    while (reader.Read())
-                    {
-                        tempLMID = (int)reader[0];
-                    }
-            }
-
-            queryString = "Select First_Name, Last_Name from dbo.Employee Where Employee_Id ='" +tempLMID +"'";
-            using (var connection = new SqlConnection(connectionString))
-            {
-                var command = new SqlCommand(queryString, connection);
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-
-                    while (reader.Read())
-                    {
-                        tempLMName = (string)reader[0] + " " + (string)reader[1];
-                    }
-                System.Diagnostics.Debug.WriteLine("This the LM Name "+tempLMName);
-                connection.Close();
-            }
-
-            ViewBag.tempLMName = tempLMName; //to display current lm in the view 
-            //end
-
-
-
             if (ModelState.IsValid)
+            {
+
+                // get slected lm's ID 
+                var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+                string getIDString = "Select Employee_ID From dbo.Employee Where Employee_ID= '" + editDepartmentName.primaryLMID + "'";
+                using (var connection = new SqlConnection(connectionString))
                 {
-                    // get slected lm's ID 
-                    //var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-                    string getIDString = "Select Employee_ID From dbo.Employee Where Employee_ID= '" + editDepartmentName.primaryLMID + "'";
-                    using (var connection = new SqlConnection(connectionString))
-                    {
-                        var command = new SqlCommand(getIDString, connection);
-                        connection.Open();
-                        using (var reader = command.ExecuteReader())
+                    var command = new SqlCommand(getIDString, connection);
+                    connection.Open();
+                    using (var reader = command.ExecuteReader())
 
-                            while (reader.Read())
-                            {
-                                tempID = (int)reader[0];
+                        while (reader.Read())
+                        {
+                            tempID = (int)reader[0];
 
-                            }
-                        //System.Diagnostics.Debug.WriteLine("This the LM ID"+tempID);
-                        connection.Close();
-                    }
-
-                    //update the selected lm id along on to the selected department in the database 
-                    string insertString = "UPDATE dbo.Department SET Line_Manager_ID = '" + tempID + "' WHERE Department_Name = '" + editDepartmentName.departmentName + "'";
-                    using (var connection = new SqlConnection(connectionString))
-                    {
-                        var command = new SqlCommand(insertString, connection);
-                        connection.Open();
-                        using (var reader = command.ExecuteReader())
-                            connection.Close();
-                    }
-                    Response.Write("<script> alert ('Successfully edited the department');location='Index'</script>");
+                        }
+                    //System.Diagnostics.Debug.WriteLine("This the LM ID"+tempID);
+                    connection.Close();
                 }
+
+                //update the selected lm id along on to the selected department in the database 
+                string insertString = "UPDATE dbo.Department SET Line_Manager_ID = '" + tempID + "' WHERE Department_Name = '" + editDepartmentName.departmentName + "'";
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    var command = new SqlCommand(insertString, connection);
+                    connection.Open();
+                    using (var reader = command.ExecuteReader())
+                        connection.Close();
+                }
+                Response.Write("<script> alert ('Successfully edited the department')</script>");
+            }
             return Index();
         }
     }

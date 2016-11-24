@@ -1,4 +1,7 @@
-﻿@model LeaveSystemMVC.Models.selectSubstitute
+﻿
+<!--LM Select Substitute -->
+
+@model LeaveSystemMVC.Models.selectSubstitute
 @Html.Partial("_LeftMenu")
 <div class="col-md-8">
     @using (Html.BeginForm()) 
@@ -6,26 +9,48 @@
         @Html.AntiForgeryToken()
     
         <div class="form-horizontal">
+
             <h4>Select Substitute Line Manager</h4>
-            <hr />
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            <div class="form-group">
-                <select>
-                    <option>
-                        Select Substitute
-                    </option>
-                </select>
-                <hr/>
-                <label for="radio">Transfer Back to me &nbsp; </label><input id="radio" name="radio" type="radio"  /> <!--disabled="disabled"/> -->
-                <div style="border: 1px solid black;">
-                    Note: Option only available when authority previously transferred
+
+            <table style="margin:30px;width:100%;">
+                <tr>
+                    <td>
+                        <div class="form-group">
+
+                            <!--Displays a list of members in  the given department in the database-->
+
+                            @Html.LabelFor(model => model.substituteStaffID, "Select a Substitute from the Department", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.DropDownListFor(model => model.substituteStaffID, new SelectList(Model.substituteListOptions, "Key", "Value"))
+                                @Html.ValidationMessageFor(model => model.substituteStaffID, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            
+            <table>
+                <tr>
+                <td> 
+                <div class="form-horizontal" >
+                    <!--To get LM Authority Back -->
+                    @Html.LabelFor(model => model.toTransferBack, "Transfer Authority Back", htmlAttributes: new { @class = "control-label col-md-2" })
                 </div>
-                <hr/>
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="Save" class="btn btn-default" />
+                    </td>
+                    <td>
+                        <div class="checkbox">
+                            @Html.EditorFor(model => model.toTransferBack)
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Save" class="btn btn-default" />
+                    </div>
                 </div>
             </div>
-        </div>
     }
 </div>
 
