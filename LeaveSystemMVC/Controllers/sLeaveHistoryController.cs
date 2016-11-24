@@ -24,7 +24,7 @@ namespace LeaveSystemMVC.Controllers
 
 
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string query = "Select * FROM dbo.leave,dbo.Leave_Type where Employee_ID = '" + a + "' AND Start_Date < GETDATE() AND leave.Leave_ID = Leave_Type.Leave_ID";
+            string query = "Select * FROM dbo.leave,dbo.Leave_Type where Employee_ID = '" + a + "' AND Start_Date < GETDATE() AND leave.Leave_ID = Leave_Type.Leave_ID and leave.Status IN (2,3,4,5,7)";
 
             using (var connection = new SqlConnection(connectionString)){
                 var command = new SqlCommand(query, connection);
@@ -54,15 +54,15 @@ namespace LeaveSystemMVC.Controllers
                         if (leave1.Equals("Unpaid"))
                             leave.leaveType = "Unpaid";
 
-                        //leave.leaveType = (string)reader["Leave_ID"];
-                        //leave.applicationDate = (int)reader["Leave_Application_ID"];
                         leave.startDate = (DateTime)reader["Start_Date"];
+
                         string date1 = leave.startDate.ToString("yyyy-MM-dd");
-                        ViewBag.stDt = date1;
+                        
+                        //ViewBag.stDt = date1;
 
                         leave.endDate = (DateTime)reader["End_Date"];
                         string date2 = leave.endDate.ToString("yyyy-MM-dd");
-                        ViewBag.enDt = date2;
+                        //ViewBag.enDt = date2;
                         
                         leave.leaveDuration = (int)reader["Total_Leave_Days"];
                         if (!reader.IsDBNull(11))
