@@ -408,8 +408,8 @@ namespace LeaveSystemMVC.Controllers
                     "Last_Name = '" + SE.lastName + "', User_Name = '" + SE.userName + 
                     "', Designation = '" + SE.designation + "', Email = '" + SE.email + 
                     "', Gender = '" + SE.gender + "', PH_No = '" + SE.phoneNo +  "', " +
-                    "Emp_Start_Date = '" + SE.empStartDate + "', Account_Status = '" + SE.accountStatus + 
-                    "', Department_ID = '" + SE.deptName + "', Emp_End_Date = '" + SE.empEndDate + "' " + secondLMtext + " " + 
+                    "Emp_Start_Date = '" + SE.empStartDate.ToString("yyyy-MM-dd") + "', Account_Status = '" + SE.accountStatus + 
+                    "', Department_ID = '" + SE.deptName + "', Emp_End_Date = '" + SE.empEndDate.ToString("yyyy-MM-dd") + "' " + secondLMtext + " " + 
                     "WHERE dbo.Employee.Employee_ID = '" + SE.staffID + "' ";
             }
             using (var connection = new SqlConnection(connectionString))
@@ -474,6 +474,8 @@ namespace LeaveSystemMVC.Controllers
             /*Construct notification e-mail only if the username has been changed*/
 
             TempData["EmpID"] = SE.staffIDInString;
+            string successMessage = "The details of " + SE.firstName + " " + SE.lastName + "have been edited.";
+            TempData["SuccessMessage"] = successMessage;
             return RedirectToAction("Index");
         }
 
