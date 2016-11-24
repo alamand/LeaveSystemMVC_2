@@ -212,11 +212,11 @@ namespace LeaveSystemMVC.Controllers
                 secondLMtext = ", [2nd_Line_Manager]";
                 secondLmValueText = "', '" + SE.secondLineManager;
             }
-            /*
-            string dateTimeFormat = "d/MM/yyyy";
-            string startDateString = SE.empStartDate.ToString(dateTimeFormat);
-            DateTime convertedStartDate = DateTime.ParseExact(startDateString, dateTimeFormat, new CultureInfo("en-CA"));
-            */
+            
+            //string dateTimeFormat = "d/MM/yyyy";
+            string startDateString = SE.empStartDate.ToString("yyyy-MM-dd");
+            //DateTime convertedStartDate = DateTime.ParseExact(startDateString, dateTimeFormat, new CultureInfo("en-CA"));
+            
             /*Had to use deptname to store the actual department ID because for some 
              reason the view wouldn't store the value of the dropdown for department
              selection in the deptID int*/
@@ -238,7 +238,7 @@ namespace LeaveSystemMVC.Controllers
                     "Emp_Start_Date, Account_Status, Department_ID" + secondLMtext + ") VALUES('" + SE.staffID +
                     "', '" + SE.firstName + "', '" + SE.lastName + "', '" + SE.userName +
                     "', '" + SE.password + "', '" + SE.designation + "', '" + SE.email +
-                    "', '" + SE.gender + "', '" + SE.phoneNo + "', '" + SE.empStartDate +
+                    "', '" + SE.gender + "', '" + SE.phoneNo + "', '" + startDateString +
                     "', '" + "True" + "', '" + SE.deptName + secondLmValueText + "')";
             }
             using (var connection = new SqlConnection(connectionString))
