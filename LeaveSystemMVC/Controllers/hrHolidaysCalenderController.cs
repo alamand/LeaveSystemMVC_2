@@ -6,6 +6,8 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Globalization;
+using System.Collections;
+using System.Data;
 
 namespace LeaveSystemMVC.Controllers
 {
@@ -43,7 +45,7 @@ namespace LeaveSystemMVC.Controllers
 
                 connection.Close();
             }
-            
+
             return View();
         }
         [HttpPost]
@@ -53,7 +55,7 @@ namespace LeaveSystemMVC.Controllers
             {
                 ModelState.AddModelError("holidayName", "Holiday Name Must be entered");
             }
-            if (calender.holidayName.Length>30)
+            if (calender.holidayName.Length > 30)
             {
                 ModelState.AddModelError("holidayName", "Holiday Name Too long. The Name should be no greater than 30 char");
             }
@@ -70,7 +72,7 @@ namespace LeaveSystemMVC.Controllers
             {
                 ModelState.AddModelError("endDate", "The End Date cannot be the current or previous days");
             }
-            
+
             if (ModelState.IsValid)
 
             {
@@ -96,44 +98,46 @@ namespace LeaveSystemMVC.Controllers
                                 using (var reader = command.ExecuteReader())
                                     connection.Close();
                             }
+                            AddCredit(d);
                         }
+
                     }
-                    Response.Write("<script> alert('Success!');location.href='CreateHoliday'</script>");                    
+                    Response.Write("<script> alert('Success!');location.href='CreateHoliday'</script>");
                 }
 
-                else { ModelState.AddModelError("errorMessage", "Error!Holiday already Exists."); }            
-            
+                else { ModelState.AddModelError("errorMessage", "Error!Holiday already Exists."); }
+
                 // return RedirectToAction("Display");
             }
             return CreateHoliday();
-    }
+        }
     public ActionResult Display()
     {
-        var model = new List<Models.hrHolidaysCalender>();
+            var model = new List<Models.hrHolidaysCalender>();
             //var connectionString = ConfigurationManager.ConnectionStrings["CustomConnection"].ConnectionString;
-         var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-        string queryString = "Select * FROM dbo.Public_Holiday";
-        using (var connection = new SqlConnection(connectionString))
-        {
-            var command = new SqlCommand(queryString, connection);
-
-            connection.Open();
-            using (var reader = command.ExecuteReader())
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            string queryString = "Select * FROM dbo.Public_Holiday";
+            using (var connection = new SqlConnection(connectionString))
             {
-                while (reader.Read())
+                var command = new SqlCommand(queryString, connection);
+
+                connection.Open();
+                using (var reader = command.ExecuteReader())
                 {
-                    var calender = new Models.hrHolidaysCalender();
-                    calender.holidayName = (string)reader["Name"];
-                    calender.startDate = (DateTime)reader["Date"];
-                    model.Add(calender);
+                    while (reader.Read())
+                    {
+                        var calender = new Models.hrHolidaysCalender();
+                        calender.holidayName = (string)reader["Name"];
+                        calender.startDate = (DateTime)reader["Date"];
+                        model.Add(calender);
+                    }
                 }
+
+                connection.Close();
             }
 
-            connection.Close();
+            return View(model);
         }
-
-        return View(model);
-    }
         public bool isDateSame(DateTime date)
         {
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
@@ -168,7 +172,7 @@ namespace LeaveSystemMVC.Controllers
                 if (isDateSame(d))
                 {
                     return true;
-                }                
+                }
             }
             return false;
         }
@@ -177,10 +181,122 @@ namespace LeaveSystemMVC.Controllers
             TimeSpan ts = start - end;
             return Math.Abs(ts.Days);
         }
-        /*public ActionResult Index([Bind(Exclude = "description")] Models.hrHolidaysCalender calender)
+        public bool AddCredit(DateTime date)
         {
-            return View();
-        }*/
+            int empid, lid, status;
+            var details = new List<Emp>();
+            DateTime start, end;
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            string queryString = "Select Leave_ID, Employee_ID, Start_Date, End_Date, Status from dbo.Leave where Status!='4' And  year(Start_Date)='" + date.Year + "'";
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                if (connection.State != ConnectionState.Open)
+                {
+                    connection.Close();
+                    connection.Open();
+                }
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        lid = (int)reader["Leave_ID"];
+                        empid = (int)reader["Employee_ID"];
+                        start = (DateTime)reader["Start_Date"];
+                        end = (DateTime)reader["End_Date"];
+                        status = (int)reader["Status"];
+                        details.Add(new Emp(empid, lid, start, end, status));
+                    }
+                }
+                connection.Close();
+                foreach (var item in details)
+                {
+                    if (isDateCheck(date, item.start, item.end))
+                    {
+                        if (date.DayOfWeek != DayOfWeek.Friday && date.DayOfWeek != DayOfWeek.Saturday) { AddHolidayBalance(item.emp_id, item.leave_id, 1, date); }
+                    }
+                }
+            }
+            return false;
+        }
+        public struct Emp
+        {
+            public Emp(int eid, int lid, DateTime strt, DateTime endDate, int stat) { leave_id = lid; emp_id = eid; start = strt; end = endDate; status = stat; }
+            public int status { get; set; }
+            public int emp_id { get; set; }
+            public int leave_id { set; get; }
+            public DateTime start { get; set; }
+            public DateTime end { get; set; }
+        }
+        public bool isDateCheck(DateTime a, DateTime b_start, DateTime b_end)
+        {
+            int total = totalDays(b_start, b_end);
+            for (int i = 0; i <= total; i++)
+            {
+                if (a.CompareTo(b_start.AddDays(i)) == 0) { return true; }
+            }//else return false;
+            return false;
+        }
+        public void AddHolidayBalance(int eid, int lid, int bal, DateTime sdate)
+        {
+            bal += getBalance(eid, lid);
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            string queryString = "Update dbo.Leave_Balance SET Balance='" + bal + "' WHERE Employee_ID='" + eid + "' And Leave_ID= '" + lid + "' ";
+            using (var connection = new SqlConnection(connectionString))
+            {
+                if (connection.State != ConnectionState.Open)
+                {
+                    connection.Close();
+                    connection.Open();
+                }
+                var command = new SqlCommand(queryString, connection);
+                using (var reader = command.ExecuteReader())
+                    connection.Close();
+            }
+            if (sdate.DayOfWeek != DayOfWeek.Friday && sdate.DayOfWeek != DayOfWeek.Saturday)
+            { AddTotalDays(1, eid, lid); }
+
+        }
+        public void AddTotalDays(int duration, int eid, int lid)
+        {
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            string queryString = "Update dbo.Leave SET Total_Leave_Days=Total_Leave_Days+'" + duration + "' WHERE Employee_ID='" + eid + "' And Leave_ID= '" + lid + "' ";
+            using (var connection = new SqlConnection(connectionString))
+            {
+                if (connection.State != ConnectionState.Open)
+                {
+                    connection.Close();
+                    connection.Open();
+                }
+                var command = new SqlCommand(queryString, connection);
+                using (var reader = command.ExecuteReader())
+                    connection.Close();
+            }
+        }
+        public int getBalance(int eid, int lid)
+        {
+            int balance = 0;
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            string queryString = "Select * from dbo.Leave_Balance Where Employee_ID='" + eid + "' And Leave_ID='" + lid + "'";
+            using (var connection = new SqlConnection(connectionString))
+            {
+                if (connection.State != ConnectionState.Open)
+                {
+                    connection.Close();
+                    connection.Open();
+                }
+                var command = new SqlCommand(queryString, connection);
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        balance = (int)reader["Balance"];
+                    }
+                }
+                connection.Close();
+            }
+            return balance;
+        }
     } 
         
     

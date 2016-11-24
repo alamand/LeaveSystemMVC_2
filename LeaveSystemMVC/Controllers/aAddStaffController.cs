@@ -12,6 +12,7 @@ using System.Configuration;
 using System.Data.SqlClient;
 using System.Dynamic;
 using LeaveSystemMVC.Models;
+using System.Globalization;
 
 namespace LeaveSystemMVC.Controllers
 {
@@ -149,10 +150,17 @@ namespace LeaveSystemMVC.Controllers
          Needed to add that because some the given non-required fields were giving "required" 
          validation errors.*/
         [HttpPost]
-        public ActionResult Index([Bind(Exclude = "deptId, empStartDate")]sEmployeeModel SE)
+        public ActionResult Index(sEmployeeModel SE)
         {
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
             string queryString = "";
+
+            /*Redundant: yes but the rest of the implementation requires references to the staff ID
+             and there was no effective way to enforce that the staff ID be 5 digits as an int*/
+            int actualStaffID;
+            int.TryParse(SE.staffIDInString, out actualStaffID);
+            SE.staffID = actualStaffID;
+            /////////////////////////////
 
             //Validations
             bool hasValidationErrors = false;
@@ -204,7 +212,15 @@ namespace LeaveSystemMVC.Controllers
                 secondLMtext = ", [2nd_Line_Manager]";
                 secondLmValueText = "', '" + SE.secondLineManager;
             }
-            if(SE.deptId == 0)
+            
+            //string dateTimeFormat = "d/MM/yyyy";
+            string startDateString = SE.empStartDate.ToString("yyyy-MM-dd");
+            //DateTime convertedStartDate = DateTime.ParseExact(startDateString, dateTimeFormat, new CultureInfo("en-CA"));
+            
+            /*Had to use deptname to store the actual department ID because for some 
+             reason the view wouldn't store the value of the dropdown for department
+             selection in the deptID int*/
+            if(SE.deptName == null)
             {
                 
                 queryString = "INSERT INTO dbo.Employee (Employee_ID, First_Name, " +
@@ -219,11 +235,11 @@ namespace LeaveSystemMVC.Controllers
             {
                 queryString = "INSERT INTO dbo.Employee (Employee_ID, First_Name, " +
                     "Last_Name, User_Name, Password, Designation, Email, Gender, PH_No, " +
-                    "Emp_Start_Date, Account_Status, Department_ID, [2nd_Line_Manager]) VALUES('" + SE.staffID +
+                    "Emp_Start_Date, Account_Status, Department_ID" + secondLMtext + ") VALUES('" + SE.staffID +
                     "', '" + SE.firstName + "', '" + SE.lastName + "', '" + SE.userName +
                     "', '" + SE.password + "', '" + SE.designation + "', '" + SE.email +
-                    "', '" + SE.gender + "', '" + SE.phoneNo + "', '" + SE.empStartDate +
-                    "', '" + "True" + "', '" + SE.deptId + secondLmValueText + "')";
+                    "', '" + SE.gender + "', '" + SE.phoneNo + "', '" + startDateString +
+                    "', '" + "True" + "', '" + SE.deptName + secondLmValueText + "')";
             }
             using (var connection = new SqlConnection(connectionString))
             {
@@ -249,7 +265,7 @@ namespace LeaveSystemMVC.Controllers
                 bool toAddOptionalType = true;
                 if (SE.staffType == null)
                     toAddStaffType = false;
-                if (SE.optional2ndStaffType == null)
+                if (SE.optionalStaffType == null)
                     toAddOptionalType = false;
                 if (SE.staffType != null && SE.staffType.Equals(SE.optionalStaffType))
                 {
@@ -285,7 +301,10 @@ namespace LeaveSystemMVC.Controllers
 
             message.Subject = "Your User Details";
             string body = "";
-            body = body + "Hi, Your user details are: username: " + temp_username + " and your password is: " + SE.password;
+            body = body + "Hi, Your user details are:" + Environment.NewLine + 
+                "Username: " + temp_username + Environment.NewLine + 
+                "Password is: " + SE.password + Environment.NewLine + 
+                "Please visit leavesystem.azurewebsites.net in order to log in.";
 
             message.Body = body;
             SmtpClient client = new SmtpClient();
@@ -303,6 +322,7 @@ namespace LeaveSystemMVC.Controllers
 
             //Message string for the success case. Message will appear in popup window
             ViewBag.SuccessMessage = SE.firstName + " " + SE.lastName + " has been added to the database and an e-mail containing the account details sent to " + gendertext;
+            ModelState.Clear();
             return Index();
         }
 

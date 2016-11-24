@@ -13,16 +13,10 @@
                 Leave Type
             </th>
             <th>
-                Application Date 
-            </th>
-            <th>
                 Start Date 
             </th>
             <th>
                 End Date 
-            </th>
-            <th>
-                Return Date 
             </th>
             <th>
                 Leave Duration 
@@ -36,114 +30,62 @@
             <th>
                 Leave Status 
             </th>
-            <th>
-                Comments 
-            </th>
         </tr>
 
+        @foreach (var item in Model)
+        {
+            <tr>
+                @{
+                    string stDt = item.startDate.ToString();
+                    stDt = stDt.Substring(0, 9);
 
-        <tr>
-            <td>
-                Annual
-            </td>
-            <td>
-                24-6-2015
-            </td>
-            <td>
-                24-7-2015
-            </td>
-            <td>
-                24-8-2015
-            </td>
-            <td>
-                24-8-2015
-            </td>
-            <td>
-                22 Days
-            </td>
-            <td>
-                12:00AM
-            </td>
-            <td>
-                12:00AM
-            </td>
-            <td>
-                Approved
-            </td>
-            <td>
-                Applying for annual leave
-            </td>
+                    string enDt = item.endDate.ToString();
+                    enDt = enDt.Substring(0, 9);
 
-        </tr>
+                    int stats = item.leaveStatus;
+
+                    string status = "";
+
+                    switch (stats) {
+                        case 2: status = "Approved";
+                            break;
+                        case 3: status = "Rejected LM";
+                            break;
+                        case 4:
+                            status = "Rejected HR";
+                            break;
+                        case 5:
+                            status = "Cancelled";
+                            break;
+                        case 7:
+                            status = "2nd Line Manager Rejected";
+                            break;
 
 
-        <tr>
-            <td>
-                Sick
-            </td>
-            <td>
-                24-2-2015
-            </td>
-            <td>
-                24-2-2015
-            </td>
-            <td>
-                27-2-2015
-            </td>
-            <td>
-                24-8-2015
-            </td>
-            <td>
-                2 Days
-            </td>
-            <td>
-                12:00AM
-            </td>
-            <td>
-                12:00AM
-            </td>
-            <td>
-                Approved
-            </td>
-            <td>
-                Sick Leave
-            </td>
-        </tr>
-        
+
+                    }
+                        }
+                <td>@Html.DisplayFor(modelItem => item.leaveType)</td>
 
 
-        <tr>
-            <td>
-               Short
-            </td>
-            <td>
-                24-2-2015
-            </td>
-            <td>
-                24-2-2015
-            </td>
-            <td>
-                
-            </td>
-            <td>
-                
-            </td>
-            <td>
-                4 Hours
-            </td>
-            <td>
-                12:00PM
-            </td>
-            <td>
-                4:00PM
-            </td>
-            <td>
-                Approved
-            </td>
-            <td>
-                Personal Work            </td>
-        </tr>
+                <td>@Html.DisplayFor(modelItem => stDt)</td>
 
+
+                <td>@Html.DisplayFor(modelItem => enDt)</td>
+
+
+                <td>@Html.DisplayFor(modelItem => item.leaveDuration)</td>
+
+
+                <td>@Html.DisplayFor(modelItem => item.shortStartTime)</td>
+
+
+                <td>@Html.DisplayFor(modelItem => item.shortEndTime)</td>
+
+                <td>@Html.DisplayFor(modelItem => status)</td>
+
+            </tr>
+        }
 
     </table>
     </div>

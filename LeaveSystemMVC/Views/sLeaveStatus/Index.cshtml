@@ -10,16 +10,19 @@
     <table class="table">
         <tr>
             <th>
-                Leave Type
+                Leave Application ID
             </th>
             <th>
-                Application Date
+                Leave Type
             </th>
             <th>
                 Start Date
             </th>
             <th>
                 End Date
+            </th>
+            <th>
+                Leave Duration
             </th>
             <th>
                 Start Time
@@ -31,68 +34,42 @@
                 Leave Status
             </th>
             <th>
-                Cancel Application
+                HR Comment
+            </th>
+            <th>
+                LM Comment
+            </th>
+            <th>
+                Cancel
             </th>
         </tr>
 
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.staffName)</td>
 
-        <tr>
-            <td>
-                Annual
-            </td>
-            <td>
-                24-6-2015
-            </td>
-            <td>
-                24-7-2015
-            </td>
-            <td>
-                24-8-2015
-            </td>
-            <td>
-                12:00AM
-            </td>
-            <td>
-                12:00AM
-            </td>
-            <td>
-                Pending by HR
-            </td>
-            <td>
-               <input type="button" value="Cancel" name="Cancel" />
-            </td>
+                <td>@Html.DisplayFor(modelItem => item.leaveType)</td>
 
-        </tr>
+                <td>@ViewBag.stDt</td>
 
+                <td>@ViewBag.enDt</td>
 
-        <tr>
-            <td>
-                Sick
-            </td>
-            <td>
-                24-2-2015
-            </td>
-            <td>
-                24-2-2015
-            </td>
-            <td>
-                24-2-2015
-            </td>
-            <td>
-                12:00AM
-            </td>
-            <td>
-                12:00AM
-            </td>
-            <td>
-                Pending by LM
-            </td>
+                <td>@Html.DisplayFor(modelItem => item.leaveDuration)</td>
 
-            <td>
-                <input type="button" value="Cancel" name="Cancel" />
-            </td>
-        </tr>
+                <td>@Html.DisplayFor(modelItem => item.shortStartTime)</td>
 
+                <td>@Html.DisplayFor(modelItem => item.shortEndTime)</td>
+
+                <td>@Html.DisplayFor(modelItem => item.leaveStatus)</td>
+
+                <td>@Html.DisplayFor(modelItem => item.hrComment)</td>
+
+                <td>@Html.DisplayFor(modelItem => item.lmComment)</td>
+                                
+                <td>@Html.ActionLink("Cancel","Delete", new { id = item.leaveType })</td>
+            </tr>
+        }
 
     </table>
 </div>
