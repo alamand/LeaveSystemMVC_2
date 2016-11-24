@@ -9,12 +9,15 @@ namespace LeaveSystemMVC.Models
 {
     public class sLeaveModel
     {
+        [Display(Name = "Leave ID: ")]
+        public string leaveID { get; set; }
+        public string employeeID { get; set; }
 
-        public string staffName { get; set; } = "Dwayne";
+        public string staffName { get; set; }
 
         // [DisplayName("Select Leave Type")]
         [Required(ErrorMessage = "Please select leave type")]
-        public String leaveType { get; set; } = "Annual";
+        public String leaveType { get; set; }
 
         //[DisplayName("Select Application Date")]
         public DateTime applicationDate { get; set; } 
