@@ -8,17 +8,9 @@ namespace LeaveSystemMVC.Models
 {
     public class hrCreateLeave
     {
-        public List <string> existingLeaveType { set; get; }
-
-        [Display(Name = "New Leave Type")]
-        [Required(ErrorMessage = "The New Leave Type is required")]
-        public string newLeaveType { set; get; }
-
-        public int leaveID { set; get; }
-
-        [Display(Name = "Duration of Leave")]
-        [Required(ErrorMessage = "The New Leave Type Duration is required")]
-        public int holidayDuration { get; set; }
+        public List <string> existingLeaveType { set; get; } //to display leave types in the database
+        public string newLeaveType { set; get; } //to prompt user to enter a new leave type name
+        public int holidayDuration { get; set; } // to prompt user to enter no. of days for new leave type 
 
     }
 }
