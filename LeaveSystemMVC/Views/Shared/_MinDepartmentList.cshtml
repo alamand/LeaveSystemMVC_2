@@ -8,10 +8,6 @@
             var urlAction = Url.Action("");
             var actualUrlAction = urlAction.Substring(1, urlAction.Length - 1);
             @Html.MenuItemExt(minDepartment.departmentName, actionWithID, actualUrlAction, "department-link")
-            //Html.MenuItem(minDepartment.departmentName, )
-            <li>
-                <a class="department-link" href="@Url.Action("SelectDepartment", new { id = minDepartment.departmentID })"><i class="glyphicon glyphicon-chevron-right"></i>@minDepartment.departmentName</a>
-            </li>
         }
     </ul>
 

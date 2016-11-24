@@ -25,7 +25,7 @@ namespace LeaveSystemMVC.HtmlHelperExtensions
             var routeData = htmlHelper.ViewContext.RouteData;
             var currentAction = routeData.GetRequiredString("action");
             var currentController = routeData.GetRequiredString("controller");
-            if (string.Equals(currentAction, action, StringComparison.OrdinalIgnoreCase) &&
+            if (/*string.Equals(currentAction, action, StringComparison.OrdinalIgnoreCase) &&*/
                 string.Equals(currentController, controller, StringComparison.OrdinalIgnoreCase))
             {
                 li.AddCssClass("active");
