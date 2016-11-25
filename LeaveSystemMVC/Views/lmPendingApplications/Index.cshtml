@@ -36,7 +36,12 @@
                                                 @Html.Label(leave.leaveID)
                                             </div>
                                         </div>
-                                        <div class="row">Leave Type: @leave.leaveType</div>
+                                        <div class="row">
+                                            Leave Type: @leave.leaveType
+                                        </div>
+                                        <div class="row">
+                                            @Html.ActionLink("Select", "Approve", new { id = leave.leaveID }, new { @class = "btn btn-primary", @style = "color:white" })
+                                        </div>
                                     </div>
                                 </div>
                             </div>
