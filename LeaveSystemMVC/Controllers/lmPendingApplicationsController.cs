@@ -35,7 +35,10 @@ namespace LeaveSystemMVC.Controllers
                 ConnectionString;
             string queryString = "SELECT dbo.Leave.Leave_Application_ID, dbo.Leave.Employee_ID, " + 
                 "dbo.Leave.Start_Date, dbo.Leave.End_Date, dbo.Leave.Reporting_Back_Date, " +
-                "dbo.Leave.Leave_ID" + 
+                "dbo.Leave.Leave_ID, dbo.Leave.Contact_Outside_UAE, dbo.Leave.Comment, " +
+                "dbo.Leave.Document, dbo.Leave.Flight_Ticket, dbo.Leave.Total_Leave_Days, " +
+                "dbo.Leave.Start_Hrs, dbo.Leave.End_Hrs, dbo.Leave.Status, " + 
+                "dbo.Leave.LM_Comment, dbo.Leave.HR_Comment " +   
                 "FROM dbo.Leave " +
                 "FULL JOIN dbo.Employee " +
                 "ON dbo.Leave.Employee_ID = dbo.Employee.Employee_ID " +
@@ -61,7 +64,17 @@ namespace LeaveSystemMVC.Controllers
                                 employeeID = eid.ToString(), //from reader1
                                 startDate = (DateTime)reader[2], //from reader2
                                 endDate = (DateTime)reader[3], //from reader3
-
+                                returnDate = (DateTime)reader[4],
+                                leaveType = (int)reader[5],
+                                contactDetails = (string)reader[6],
+                                supportingDocs = (string)reader[7],
+                                bookAirTicket = (bool)reader[8],
+                                leaveDuration = (int)reader[9],
+                                shortStartTime = (DateTime)reader[10],
+                                shortEndTime = (DateTime)reader[11],
+                                leaveStatus = (int)reader[12],
+                                lmComment = (string)reader[13],
+                                hrComment = (string)reader[14]
                             });
                         }
                     }
