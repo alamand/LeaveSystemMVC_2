@@ -5,6 +5,8 @@ using System.Web;
 using System.Web.Mvc;
 using LeaveSystemMVC.Models;
 using System.Security.Claims;
+using System.Configuration;
+using System.Data.SqlClient;
 
 namespace LeaveSystemMVC.Controllers
 {
@@ -14,11 +16,58 @@ namespace LeaveSystemMVC.Controllers
         // GET: lmPendingApplications
         public ActionResult Index()
         {
-            List<sLeaveModel> RetrievedApplications = new List<sLeaveModel>
+            string userID = "";
+            List<sLeaveModel> RetrievedApplications = new List<sLeaveModel>();
+
+            //to get the id of the person logged in 
+            var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
+            if (claimsIdentity != null)
             {
-                new sLeaveModel { leaveID = "5013" ,leaveType = "Annual" },
-                new sLeaveModel {leaveID = "5024" ,leaveType = "Maternity" }
-            };
+                var c = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+                if (c != null)
+                {
+                    userID = c.Value;
+                }
+            }
+
+            var connectionString =
+                ConfigurationManager.ConnectionStrings["DefaultConnection"].
+                ConnectionString;
+            string queryString = "SELECT dbo.Leave.Leave_Application_ID, dbo.Leave.Employee_ID, " + 
+                "dbo.Leave.Start_Date, dbo.Leave.End_Date, dbo.Leave.Reporting_Back_Date, " +
+                "dbo.Leave.Leave_ID" + 
+                "FROM dbo.Leave " +
+                "FULL JOIN dbo.Employee " +
+                "ON dbo.Leave.Employee_ID = dbo.Employee.Employee_ID " +
+                "FULL JOIN dbo.Department " +
+                "ON dbo.Employee.Department_ID = dbo.Department.Department_ID " +
+                "WHERE dbo.Department.Line_Manager_ID = '" + userID + "' " +
+                "AND dbo.Leave.Leave_ID IS NOT NULL ";
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    if(reader.HasRows)
+                    {
+                        while(reader.Read())
+                        {
+                            int lid = (int)reader[0];
+                            int eid = (int)reader[1];
+                            RetrievedApplications.Add(new sLeaveModel
+                            {
+                                leaveID = lid.ToString(), //from reader0
+                                employeeID = eid.ToString(), //from reader1
+                                startDate = (DateTime)reader[2], //from reader2
+                                endDate = (DateTime)reader[3], //from reader3
+
+                            });
+                        }
+                    }
+                }
+            }
+            
 
             /*Get the list of applications due for the line manager to approve*/
 
