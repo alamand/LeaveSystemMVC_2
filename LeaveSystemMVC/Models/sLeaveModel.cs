@@ -14,8 +14,10 @@ namespace LeaveSystemMVC.Models
         public string leaveID { get; set; }
         public string employeeID { get; set; }
 
+        [Display(Name ="Name")]
         public string staffName { get; set; }
 
+        [Display(Name = "Leave Type")]
         // [DisplayName("Select Leave Type")]
         [Required(ErrorMessage = "Please select leave type")]
         public string leaveType { get; set; }
@@ -31,6 +33,7 @@ namespace LeaveSystemMVC.Models
         [Required(ErrorMessage = "Please select leave end date")]
         public DateTime endDate { get; set; } 
 
+        [Display(Name ="Return Date")]
         public DateTime returnDate { get; set; }
 
         public int leaveDuration { get; set; } 
@@ -50,7 +53,7 @@ namespace LeaveSystemMVC.Models
         [DisplayName("Leave Status")]
         public int leaveStatus { get; set; } 
 
-        [DisplayName("Enter Comments")]
+        [DisplayName("Comments")]
         public string comments { get; set; } 
 
         [DisplayName("Supporting Docs")]

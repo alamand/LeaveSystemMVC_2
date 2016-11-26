@@ -7,6 +7,8 @@ using LeaveSystemMVC.Models;
 using System.Security.Claims;
 using System.Configuration;
 using System.Data.SqlClient;
+using System.Net;
+using System.Net.Mail;
 
 namespace LeaveSystemMVC.Controllers
 {
@@ -45,6 +47,7 @@ namespace LeaveSystemMVC.Controllers
                 "FULL JOIN dbo.Department " +
                 "ON dbo.Employee.Department_ID = dbo.Department.Department_ID " +
                 "WHERE dbo.Department.Line_Manager_ID = '" + userID + "' " +
+                "AND dbo.Leave.Status = '0'" + 
                 "AND dbo.Leave.Leave_ID IS NOT NULL ";
             using (var connection = new SqlConnection(connectionString))
             {
@@ -104,7 +107,8 @@ namespace LeaveSystemMVC.Controllers
                             string empFirstName = (string)reader["First_Name"];
                             string empLastName = (string)reader["Last_Name"];
                             leave.staffName = empFirstName + " " + empLastName;
-
+                            int empID = (int)reader["Employee_ID"];
+                            leave.employeeID = empID.ToString();
                             RetrievedApplications.Add(leave);
                         }
                     }
@@ -189,13 +193,100 @@ namespace LeaveSystemMVC.Controllers
         {
             List<sLeaveModel> passedApplications = TempData["RetrievedApplications"] as List<sLeaveModel>;
             sLeaveModel passingLeave = passedApplications.First(leave => leave.leaveID.Equals(Id));
+            List<string> balanceStrings = new List<string>();
+            var connectionString =
+                ConfigurationManager.ConnectionStrings["DefaultConnection"].
+                ConnectionString;
+            string queryString = "SELECT * FROM dbo.Leave_Balance, dbo.Employee " +
+                "WHERE dbo.Leave_Balance.Employee_ID = '" + passingLeave.employeeID +"' " + 
+                "AND dbo.Employee.Employee_ID = '" + passingLeave.employeeID + "' ";
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    if(reader.HasRows)
+                    {
+                        while(reader.Read())
+                        {
+                            string balanceType = GetLeaveType((int)reader["Leave_ID"]);
+                            int balance = (int)reader["Balance"];
+                            string empGender = (string)reader["Gender"];
+                            if(empGender.Equals("M") && balanceType.Equals("Maternity"))
+                            {
+                                continue;
+                            }
+                            string email = (string)reader["Email"];
+                            TempData["EmployeeEmail"] = email;
+                            string balanceString = balanceType + ": " + balance.ToString();
+                            balanceStrings.Add(balanceString);
+                        }
+                    }
+                }
+                connection.Close();
+            }
+
+            ViewData["BalanceStrings"] = balanceStrings;
             return View(passingLeave); 
         }
 
         [HttpPost]
         public ActionResult Select(sLeaveModel SL, string submit)
         {
-            return Index();
+            string queryString = "";
+            int lid;
+            int.TryParse(SL.leaveID, out lid);
+            switch (submit)
+            {
+                case "Approve":
+                    queryString = "UPDATE dbo.Leave SET Status = '1', " +
+                        "LM_Comment = '" + SL.lmComment + "' " +
+                        "WHERE dbo.Leave.Leave_Application_ID = '" + lid + "' ";
+                    break;
+                case "Reject":
+                    queryString = "UPDATE dbo.Leave SET Status = '3', " +
+                        "LM_Comment = '" + SL.lmComment + "' " +
+                        "WHERE dbo.Leave.Leave_Application_ID = '" + lid + "' ";
+                    break;
+            }
+            var connectionString =
+                ConfigurationManager.ConnectionStrings["DefaultConnection"].
+                ConnectionString;
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                    connection.Close();
+            }
+
+
+            /*Construct an e-mail and send it.*/
+            string temp_email = TempData["EmployeeEmail"] as string;
+
+            MailMessage message = new MailMessage();
+            message.From = new MailAddress("project_ict333@murdochdubai.ac.ae", "GIMEL LMS");
+
+
+
+            message.To.Add(new MailAddress(temp_email));
+
+            message.Subject = "Leave Application Update";
+            string body = "";
+            body = body + "You application has been approved by your line manager." + Environment.NewLine +
+                "It is now awaiting review by Human Resources." + Environment.NewLine;
+
+            message.Body = body;
+            SmtpClient client = new SmtpClient();
+
+            client.EnableSsl = true;
+
+            client.Credentials = new NetworkCredential("project_ict333@murdochdubai.ac.ae", "ict@333");
+            client.Send(message);
+
+
+            return RedirectToAction("Index");
         }
 
         [HttpGet]
@@ -203,20 +294,7 @@ namespace LeaveSystemMVC.Controllers
         {
             return View();
         }
-
-
-
-        [HttpGet]
-        public ActionResult Approve(string Id)
-        {
-            return View();
-        }
-
-        [HttpGet]
-        public ActionResult Reject(string Id)
-        {
-            return View();
-        }
+        
 
     }
 }
