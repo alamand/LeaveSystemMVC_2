@@ -1,0 +1,159 @@
+﻿@model LeaveSystemMVC.Models.sLeaveModel
+
+@Html.Partial("_LeftMenu")
+
+@using (Html.BeginForm("Select", "lmPendingApplications", FormMethod.Post, new { SL = Model }))
+{
+    <div class="col-md-10">
+        <div>
+            <h2>Application Details</h2>
+            <hr />
+            <div class="col-md-5">
+                <div class="row">
+                    <dl class="dl-horizontal">
+
+                        <dt>
+                            @Html.DisplayNameFor(model => model.leaveID)
+                        </dt>
+
+                        <dd>
+                            @Html.TextBoxFor(model => model.leaveID, new { @class = "form-control", @readonly = "readonly" })
+                        </dd>
+
+                        <dt>
+                            @Html.DisplayNameFor(model => model.staffName)
+                        </dt>
+
+                        <dd>
+                            @Html.DisplayFor(model => model.staffName)
+                        </dd>
+
+                        <dt>
+                            @Html.DisplayNameFor(model => model.leaveType)
+                        </dt>
+
+                        <dd>
+                            @Html.DisplayFor(model => model.leaveType)
+                        </dd>
+
+                        <dt>
+                            @Html.DisplayNameFor(model => model.startDate)
+                        </dt>
+
+                        <dd>
+                            @Html.DisplayFor(model => model.startDate, "{0:yyyy-MM-dd}")
+                        </dd>
+
+                        <dt>
+                            @Html.DisplayNameFor(model => model.endDate)
+                        </dt>
+
+                        <dd>
+                            @Html.DisplayFor(model => model.endDate, "{0:yyyy-MM-dd}")
+                        </dd>
+
+                        <dt>
+                            @Html.DisplayNameFor(model => model.returnDate)
+                        </dt>
+
+                        <dd>
+                            @Html.DisplayFor(model => model.returnDate)
+                        </dd>
+
+                        <dt>
+                            @Html.DisplayNameFor(model => model.leaveDuration)
+                        </dt>
+
+                        <dd>
+                            @Html.DisplayFor(model => model.leaveDuration)
+                        </dd>
+
+
+                        <dt>
+                            @Html.DisplayNameFor(model => model.shortStartTime)
+                        </dt>
+
+                        <dd>
+                            @Html.DisplayFor(model => model.shortStartTime)
+                        </dd>
+
+                        <dt>
+                            @Html.DisplayNameFor(model => model.shortEndTime)
+                        </dt>
+
+                        <dd>
+                            @Html.DisplayFor(model => model.shortEndTime)
+                        </dd>
+
+
+                        <dt>
+                            @Html.DisplayNameFor(model => model.lmComment)
+                        </dt>
+
+                        <dd>
+                            @Html.EditorFor(model => model.lmComment, new { htmlAttributes = new { @class = "form-control" } })
+                        </dd>
+
+                        <dt>
+                            @Html.DisplayNameFor(model => model.hrComment)
+                        </dt>
+
+                        <dd>
+                            @Html.DisplayFor(model => model.hrComment)
+                        </dd>
+
+                        <dt>
+                            @Html.DisplayNameFor(model => model.leaveStatus)
+                        </dt>
+
+                        <dd>
+                            @Html.DisplayFor(model => model.leaveStatus)
+                        </dd>
+
+                        <dt>
+                            @Html.DisplayNameFor(model => model.comments)
+                        </dt>
+
+                        <dd>
+                            @Html.DisplayFor(model => model.comments)
+                        </dd>
+
+                        <dt>
+                            @Html.DisplayNameFor(model => model.supportingDocs)
+                        </dt>
+
+                        <dd>
+                            @Html.DisplayFor(model => model.supportingDocs)
+                        </dd>
+
+                        <dt>
+                            @Html.DisplayNameFor(model => model.bookAirTicket)
+                        </dt>
+
+                        <dd>
+                            @Html.DisplayFor(model => model.bookAirTicket)
+                        </dd>
+
+                        <dt>
+                            @Html.DisplayNameFor(model => model.contactDetails)
+                        </dt>
+
+                        <dd>
+                            @Html.DisplayFor(model => model.contactDetails)
+                        </dd>
+
+                    </dl>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-5">
+                        <input type="submit" name="submit" id="submit" value="Approve" />
+                    </div>
+                    <div class="col-md-5">
+                        <input type="submit" name="submit" id="reject" value="Reject" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

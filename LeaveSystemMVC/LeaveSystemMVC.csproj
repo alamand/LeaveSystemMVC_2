@@ -1804,6 +1804,7 @@
     <Content Include="Views\Shared\_MinDepartmentList.cshtml" />
     <Content Include="Views\LApplication\IndexTest.cshtml" />
     <Content Include="Views\aEditStaff\Select.cshtml" />
+    <Content Include="Views\lmPendingApplications\Select.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

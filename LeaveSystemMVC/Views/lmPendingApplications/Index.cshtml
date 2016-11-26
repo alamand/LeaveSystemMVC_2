@@ -1,58 +1,19 @@
 ﻿@model IEnumerable<LeaveSystemMVC.Models.sLeaveModel>
 @Html.Partial("_LeftMenu")
 <div class="col-md-10">
-
-
-
     <h2>Pending Applications</h2>
     <hr />
-    @using (Html.BeginForm())
-    {
-        @Html.AntiForgeryToken()
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <div class="col-md-5">
             <div class="panel-group" id="accordion">
-                @{ 
-                    int iter = 1;
-                }
                 @foreach (var leave in Model)
                 {
-                    string collapseString = "collapse" + iter.ToString();
-                    string hashCollapseString = "#collapse" + iter.ToString();
-                        <div class="panel panel-default">
-                            <div class="panel-heading clickable">
-                                <h4 class="panel-title">
-                                    <a data-toggle="collapse" data-parent="#accordion" href="@hashCollapseString">
-                                        @leave.leaveType
-                                    </a>
-                                </h4>
-                            </div>
-                            <div id="@collapseString" class="panel-collapse collapse">
-                                <div class="panel-body">
-                                    <div class="col-md-10">
-                                        <div class="row">
-                                            <div class="form-horizontal">
-                                                @Html.LabelFor(m => leave.leaveID)
-                                                @Html.Label(leave.leaveID)
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            Leave Type: @leave.leaveType
-                                        </div>
-                                        <div class="row">
-                                            @Html.ActionLink("Select", "Approve", new { id = leave.leaveID }, new { @class = "btn btn-primary", @style = "color:white" })
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        iter += 1;
-                    }
+                    string buttonText = leave.staffName + " <" + leave.leaveType + ">";
+                    @Html.ActionLink(buttonText, "Select", new { id = leave.leaveID }, new { @class = "btn btn-primary btn-block", @style = "color:white" })
+                    
+                }
             </div>
         </div>
-    }
 </div>
-
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }

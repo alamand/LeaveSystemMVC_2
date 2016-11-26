@@ -38,7 +38,7 @@ namespace LeaveSystemMVC.Controllers
                 "dbo.Leave.Leave_ID, dbo.Leave.Contact_Outside_UAE, dbo.Leave.Comment, " +
                 "dbo.Leave.Document, dbo.Leave.Flight_Ticket, dbo.Leave.Total_Leave_Days, " +
                 "dbo.Leave.Start_Hrs, dbo.Leave.End_Hrs, dbo.Leave.Status, " + 
-                "dbo.Leave.LM_Comment, dbo.Leave.HR_Comment " +   
+                "dbo.Leave.LM_Comment, dbo.Leave.HR_Comment, dbo.Employee.First_Name, dbo.Employee.Last_Name " +   
                 "FROM dbo.Leave " +
                 "FULL JOIN dbo.Employee " +
                 "ON dbo.Leave.Employee_ID = dbo.Employee.Employee_ID " +
@@ -56,35 +56,71 @@ namespace LeaveSystemMVC.Controllers
                     {
                         while(reader.Read())
                         {
-                            int lid = (int)reader[0];
-                            int eid = (int)reader[1];
-                            RetrievedApplications.Add(new sLeaveModel
+                            var leave = new Models.sLeaveModel();
+
+                            if (reader["Leave_ID"] != DBNull.Value)
+                                leave.leaveType = GetLeaveType((int)reader["Leave_ID"]); // Leave Type ID
+                            var lidint = (int)reader["Leave_Application_ID"]; //Leave Application ID
+                            leave.leaveID = lidint.ToString();
+
+                            leave.startDate = (DateTime)reader["Start_Date"];
+
+                            string date1 = leave.startDate.ToString("yyyy-MM-dd");
+
+                            //ViewBag.stDt = date1;
+
+                            leave.endDate = (DateTime)reader["End_Date"];
+                            string date2 = leave.endDate.ToString("yyyy-MM-dd");
+                            //ViewBag.enDt = date2;
+
+                            leave.leaveDuration = (int)reader["Total_Leave_Days"];
+                            if (!reader.IsDBNull(11))
                             {
-                                leaveID = lid.ToString(), //from reader0
-                                employeeID = eid.ToString(), //from reader1
-                                startDate = (DateTime)reader[2], //from reader2
-                                endDate = (DateTime)reader[3], //from reader3
-                                returnDate = (DateTime)reader[4],
-                                leaveType = (int)reader[5],
-                                contactDetails = (string)reader[6],
-                                supportingDocs = (string)reader[7],
-                                bookAirTicket = (bool)reader[8],
-                                leaveDuration = (int)reader[9],
-                                shortStartTime = (DateTime)reader[10],
-                                shortEndTime = (DateTime)reader[11],
-                                leaveStatus = (int)reader[12],
-                                lmComment = (string)reader[13],
-                                hrComment = (string)reader[14]
-                            });
+                                leave.shortStartTime = (TimeSpan)reader["Start_Hrs"];
+                            }
+                            else
+                            {
+                                leave.shortStartTime = new TimeSpan(0, 0, 0, 0, 0);
+                            }
+                            if (!reader.IsDBNull(12))
+                            {
+                                leave.shortEndTime = (TimeSpan)reader["End_Hrs"];
+                            }
+                            else
+                            {
+                                leave.shortEndTime = new TimeSpan(0, 0, 0, 0, 0);
+                            }
+
+                            leave.leaveStatus = (int)reader["Status"];
+                            if (!reader.IsDBNull(15))
+                                leave.hrComment = (string)reader["HR_Comment"];
+                            else
+                                leave.hrComment = "";
+                            if (!reader.IsDBNull(14))
+                                leave.lmComment = (string)reader["LM_Comment"];
+                            else
+                                leave.hrComment = "";
+
+                            string empFirstName = (string)reader["First_Name"];
+                            string empLastName = (string)reader["Last_Name"];
+                            leave.staffName = empFirstName + " " + empLastName;
+
+                            RetrievedApplications.Add(leave);
                         }
                     }
                 }
             }
-            
+
 
             /*Get the list of applications due for the line manager to approve*/
-
+            TempData["RetrievedApplications"] = RetrievedApplications;
             return View(RetrievedApplications);
+        }
+
+        [HttpPost]
+        public ActionResult Index(sLeaveModel SL)
+        {
+            return Index();
         }
 
         private string GetLeaveStatus(int statusID)
@@ -121,11 +157,54 @@ namespace LeaveSystemMVC.Controllers
             return statusInString;
         }
 
+        private string GetLeaveType(int leaveID)
+        {
+            string typeInString = "";
+            switch(leaveID)
+            {
+                case 1:
+                    typeInString = "Annual";
+                    break;
+                case 2:
+                    typeInString = "Maternity";
+                    break;
+                case 3:
+                    typeInString = "Sick";
+                    break;
+                case 4:
+                    typeInString = "Compassionate";
+                    break;
+                case 5:
+                    typeInString = "DIL";
+                    break;
+                case 6:
+                    typeInString = "Short_Hours";
+                    break;
+            }
+            return typeInString;
+        }
+
+        [HttpGet]
+        public ActionResult Select(string Id)
+        {
+            List<sLeaveModel> passedApplications = TempData["RetrievedApplications"] as List<sLeaveModel>;
+            sLeaveModel passingLeave = passedApplications.First(leave => leave.leaveID.Equals(Id));
+            return View(passingLeave); 
+        }
+
         [HttpPost]
-        public ActionResult Index(string Id)
+        public ActionResult Select(sLeaveModel SL, string submit)
         {
             return Index();
         }
+
+        [HttpGet]
+        public ActionResult CreateList()
+        {
+            return View();
+        }
+
+
 
         [HttpGet]
         public ActionResult Approve(string Id)

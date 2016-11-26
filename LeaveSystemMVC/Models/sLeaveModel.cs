@@ -9,6 +9,7 @@ namespace LeaveSystemMVC.Models
 {
     public class sLeaveModel
     {
+        public int iter { get; set; }
         [Display(Name = "Leave ID: ")]
         public string leaveID { get; set; }
         public string employeeID { get; set; }
@@ -17,16 +18,16 @@ namespace LeaveSystemMVC.Models
 
         // [DisplayName("Select Leave Type")]
         [Required(ErrorMessage = "Please select leave type")]
-        public String leaveType { get; set; }
+        public string leaveType { get; set; }
 
         //[DisplayName("Select Application Date")]
-        public DateTime applicationDate { get; set; } 
+        public DateTime applicationDate { get; set; } //Date of application creation
 
-        [DisplayName("Select Leave Start Date")]
+        [DisplayName("Start Date")]
         [Required(ErrorMessage = "Please select leave start date")]
         public DateTime startDate { get; set; } 
 
-        [DisplayName("Select Leave End Date")]
+        [DisplayName("End Date")]
         [Required(ErrorMessage = "Please select leave end date")]
         public DateTime endDate { get; set; } 
 
@@ -34,11 +35,11 @@ namespace LeaveSystemMVC.Models
 
         public int leaveDuration { get; set; } 
 
-        [DisplayName("Select Leave Start Time")]
-        public DateTime shortStartTime { get; set; }
+        [DisplayName("Start Time")]
+        public TimeSpan shortStartTime { get; set; }
 
-        [DisplayName("Select Leave End Time")]
-        public DateTime shortEndTime { get; set; } 
+        [DisplayName("End Time")]
+        public TimeSpan shortEndTime { get; set; } 
 
         [DisplayName("Line Manager Comment")]
         public string lmComment { get; set; } 
@@ -52,7 +53,7 @@ namespace LeaveSystemMVC.Models
         [DisplayName("Enter Comments")]
         public string comments { get; set; } 
 
-        [DisplayName("Upload Supporting Docs")]
+        [DisplayName("Supporting Docs")]
         public string supportingDocs { get; set; } 
 
         [DisplayName("Book Air Ticket?")]
