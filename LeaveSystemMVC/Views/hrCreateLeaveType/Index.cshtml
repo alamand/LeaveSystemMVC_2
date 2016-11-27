@@ -1,4 +1,7 @@
-﻿@model LeaveSystemMVC.Models.hrCreateLeave
+﻿
+<!--Creating a new leave type view-->
+
+@model LeaveSystemMVC.Models.hrCreateLeave
 @Html.Partial("_LeftMenu")
 <div class="col-md-6">
     @using (Html.BeginForm())
@@ -6,33 +9,63 @@
         @Html.AntiForgeryToken()
 
         <div class="form-horizontal">
+
             <h4>Create Leave Type</h4>
-            <hr />
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <table style="margin:30px;width:100%;">
+                <tr>
+                    <td>
+                        <div class="form-group">
+
+                            <!--Displays a list of existing leave types in the database-->
+
+                            @Html.LabelFor(model => model.existingLeaveType, "Existing Leave Types", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.DropDownListFor(model => model.existingLeaveType, new SelectList(ViewBag.LeaveTypeName))
+                                @Html.ValidationMessageFor(model => model.existingLeaveType, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+            <table style="margin: 30px;">
+                <tr>
+                    <td>
+                        <div class="form-group">
+
+                            <!--Prompts user to enter the name of a new leave type name to store in the database -->
+
+                            @Html.LabelFor(model => model.newLeaveType, "New Leave Type Name", htmlAttributes: new { @class = "control-label col-md-2" })
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            @Html.EditorFor(model => model.newLeaveType, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.newLeaveType, "", new { @class = "text-danger" })
+                        </div>
+                    </td>
+                </tr>
+            </table>
 
             <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <label for="existLeave"> Check Existing Leave Types</label>
-                    <select id="#existLeave">
-                        <option>Annual Leave</option>
-                        <option>Maternity Leave</option>
-                        <option>Compassionate Leave</option>
-                        <option>Short Leave</option>
-                        <option>Unpaid Leave</option>
-                    </select>
-                    <hr />
-                    <label for="newLeave">New Leave Type</label>
-                    <input type="text" id="#newLeave" />
-                    <hr />
-                    
-                    <label for="newLeave">Duration</label>
-                    <input type="text" id="#newLeave" />
-                    <hr />
-                    <div class="col-md-offset-3 col-md-10">
-                        <input type="submit" value="Save" class="btn btn-default" />
-</div>
-                    </div>
+
+                <!--Prompts user to enter duration for newly entered leave type -->
+
+                @Html.LabelFor(model => model.holidayDuration, "Duration", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-4">
+                    @Html.EditorFor(model => model.holidayDuration, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.holidayDuration, "", new { @class = "text-danger" })
+                </div>
             </div>
+            
+                
+
+                <div class="form-group">
+                <div class="col-md-offset-3 col-md-10">
+                    <input type="submit" value="Save" class="btn btn-default" />
+                </div>
+                </div>
         </div>
     }
 </div>

@@ -13,6 +13,7 @@ namespace LeaveSystemMVC.Models
         public string departmentName { get; set; }
         public string departmentID { get; set; } //not required not being used in view or controller.. delete at your own risk
         public string primaryLMID { get; set; } //holds employee ID of the primary line manager
+        public string currentLM { get; set; }
         public Dictionary<int, string> linemanagerSelectionListOptions { get; set; } = new Dictionary<int, string>();  //holds a list of names and IDs of line managers to choose from.
 
     }

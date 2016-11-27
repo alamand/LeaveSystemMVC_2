@@ -95,7 +95,7 @@ namespace LeaveSystemMVC.Controllers
                         using (var reader = command.ExecuteReader())
                             connection.Close();
                     }
-                Response.Write("<script> alert ('Successfully created a new staff role');location='Index'</script>");
+                Response.Write("<script> alert ('Successfully created a new staff role')</script>");
             }
             return Index() ;
         } 

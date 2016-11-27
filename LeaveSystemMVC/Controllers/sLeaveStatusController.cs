@@ -64,7 +64,7 @@ namespace LeaveSystemMVC.Controllers
                         leave.endDate = (DateTime)reader["End_Date"];
                         
                         leave.leaveDuration = (int)reader["Total_Leave_Days"];
-
+                        /*
                         if (!reader.IsDBNull(11))
                         {
                             leave.shortStartTime = (TimeSpan)reader["Start_Hrs"];
@@ -78,7 +78,7 @@ namespace LeaveSystemMVC.Controllers
                              leave.shortEndTime = (TimeSpan)reader["End_Hrs"];
                         else
                              leave.shortEndTime = new TimeSpan(0, 0, 0, 0, 0);
-                        
+                        */
 
                         leave.leaveStatus = (int)reader["Status"];
 

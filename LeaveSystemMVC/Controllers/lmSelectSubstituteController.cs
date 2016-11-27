@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Configuration;
+using System.Data.SqlClient;
+using LeaveSystemMVC.Models;
+using System.Security.Claims;
 
 namespace LeaveSystemMVC.Controllers
 {
@@ -11,8 +15,125 @@ namespace LeaveSystemMVC.Controllers
         // GET: lmSubstitute
         public ActionResult Index()
         {
+            int deptID = 0;
+            string userID=" ";
 
-            return View();
+            //to get the id of the person logged in 
+            var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
+            if (claimsIdentity != null)
+            {
+                var c = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+                if (c != null)
+                {
+                    userID = c.Value;
+                }
+
+            }
+            
+            //deptID for the next query to select people from the given department 
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            string searchString = "Select Department_ID FROM dbo.Employee Where Employee_ID='" + userID + "'";
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(searchString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        deptID = (int)reader[0];
+                    }
+                }
+                connection.Close();
+            }
+
+            selectSubstitute substitute = new selectSubstitute();
+
+            //display list of people in department
+            //var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            string queryString = "Select Employee.Employee_ID, First_Name, Last_Name FROM dbo.Employee Where Department_ID='"+deptID+"' AND Employee_ID !='"+userID+ "'AND Account_Status != 'False'";
+                using (var connection = new SqlConnection(connectionString))
+                {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        string fullName = (string)reader[1] + " " + (string)reader[2];
+                        substitute.substituteListOptions.Add((int)reader[0], fullName);
+                    }
+                }
+                connection.Close();
+            }
+                return View(substitute);
         }
+        
+        //to add or remove substitute lm from db 
+        [HttpPost]
+        public ActionResult Index (Models.selectSubstitute newSubstitute)
+        {
+            string userID = " ";
+
+            //to get the id of the person logged in as 
+            var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
+            if (claimsIdentity != null)
+            {
+                var c = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+                if (c != null)
+                {
+                    userID = c.Value;
+                }
+
+            }
+
+            int tempSubstituteID = 0;
+            
+            if (newSubstitute.toTransferBack)
+            {
+                //to remove the substitute id from the database 
+                var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+                string insertString = "Update dbo.Department SET Substitute_LM_ID = NULL Where Line_Manager_ID= '"+userID+"'";
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    var command = new SqlCommand(insertString, connection);
+                    connection.Open();
+                    using (var reader = command.ExecuteReader())
+                        connection.Close();
+                }
+                Response.Write("<script> alert ('Successfully Transfered Authority Back')</script>");
+            }
+            else
+            
+            {
+                //get the name selected in the list to appoint as substitute
+                var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+                string queryString = "Select Employee.Employee_ID From dbo.Employee Where Employee_Id='" + newSubstitute.substituteStaffID + "'";
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    var command = new SqlCommand(queryString, connection);
+                    connection.Open();
+                    using (var reader = command.ExecuteReader())
+                        while (reader.Read())
+                        {
+                            tempSubstituteID = (int)reader[0];
+                        }
+                    connection.Close();
+                   //System.Diagnostics.Debug.WriteLine("This the LM ID - " + tempSubstituteID);
+                }
+
+                //add the id of the substitute into the databse 
+                string insertString = "Update dbo.Department SET Substitute_LM_ID ='" + tempSubstituteID + "' Where Line_Manager_ID='"+userID+"'";
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    var command = new SqlCommand(insertString, connection);
+                    connection.Open();
+                    using (var reader = command.ExecuteReader())
+                        connection.Close();
+                }
+                Response.Write("<script> alert ('Successfully added Substitute Line Manager')</script>");
+            }
+            return Index();
+        } 
     }
 }

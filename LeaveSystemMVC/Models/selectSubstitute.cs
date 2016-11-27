@@ -7,7 +7,9 @@ namespace LeaveSystemMVC.Models
 {
     public class selectSubstitute
     {
-        public List<int> substituteStaffID { get; set; }
-        public List<string> substituteStaffName { get; set; }
+        public string substituteStaffID { get; set; }
+        public string substituteStaffName { get; set; }//not required
+        public bool toTransferBack { get; set; }
+        public Dictionary<int, string> substituteListOptions { get; set; } = new Dictionary<int, string>();  
     }
 }

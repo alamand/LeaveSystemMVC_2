@@ -1,4 +1,7 @@
-﻿@model LeaveSystemMVC.Models.selectSubstitute
+﻿
+<!--Selecting HR Responsible Substitute -->
+
+@model LeaveSystemMVC.Models.selectSubstitute
 @Html.Partial("_LeftMenu")
 <div class="col-md-6">
     @using (Html.BeginForm())
@@ -7,20 +10,26 @@
 
         <div class="form-horizontal">
             <h4>Select Substitute HR</h4>
-            <hr />
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <table style="margin:30px;width:100%;">
+                <tr>
+                    <td>
+                        <div class="form-group">
+
+                            <!--Displays a list of members in  the given department in the database-->
+
+                            @Html.LabelFor(model => model.substituteStaffID, "Select a Substitute from the Department", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.DropDownListFor(model => model.substituteStaffID, new SelectList(Model.substituteListOptions, "Key", "Value"))
+                                @Html.ValidationMessageFor(model => model.substituteStaffID, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+    
             <div class="form-group">
-                <select>
-                    <option>
-                        Select Substitute
-                    </option>
-                </select>
-                <hr />
-                <label for="radio">Transfer Back to me &nbsp; </label><input id="radio" name="radio" type="radio" disabled="disabled" />
-                <div style="border: 1px solid black;">
-                    Note: Option only available when authority previously transferred
-                </div>
-                <hr />
                 <div class="col-md-offset-2 col-md-10">
                     <input type="submit" value="Save" class="btn btn-default" />
                 </div>
