@@ -56,13 +56,8 @@ namespace LeaveSystemMVC.Controllers
 
                         leave.startDate = (DateTime)reader["Start_Date"];
 
-                        string date1 = leave.startDate.ToString("yyyy-MM-dd");
                         
-                        //ViewBag.stDt = date1;
-
                         leave.endDate = (DateTime)reader["End_Date"];
-                        string date2 = leave.endDate.ToString("yyyy-MM-dd");
-                        //ViewBag.enDt = date2;
                         
                         leave.leaveDuration = (int)reader["Total_Leave_Days"];
                         if (!reader.IsDBNull(11))
@@ -80,14 +75,7 @@ namespace LeaveSystemMVC.Controllers
                             leave.shortEndTime = new TimeSpan(0, 0, 0, 0, 0);
                         }
                         leave.leaveStatus = (int)reader["Status"];
-                        if (!reader.IsDBNull(15))
-                            leave.hrComment = (string)reader["HR_Comment"];
-                        else
-                            leave.hrComment = "";
-                        if (!reader.IsDBNull(14))
-                            leave.lmComment = (string)reader["LM_Comment"];
-                        else
-                            leave.hrComment = "";
+
 
                         model.Add(leave);
                     }

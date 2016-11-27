@@ -24,7 +24,7 @@ namespace LeaveSystemMVC.Controllers
 
 
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string query = "Select * FROM dbo.leave where Employee_ID = '" + a + "' AND Start_Date > GETDATE()";
+            string query = "Select * FROM dbo.leave,dbo.Leave_Type where Employee_ID = '" + a + "' AND Start_Date > GETDATE() AND leave.Leave_ID = Leave_Type.Leave_ID and leave.Status IN (0,1,6)";
 
             using (var connection = new SqlConnection(connectionString))
             {
@@ -37,39 +37,32 @@ namespace LeaveSystemMVC.Controllers
                     while (reader.Read())
                     {
                         var leave = new Models.sLeaveModel();
+                        string leave1 = (string)reader["Leave_Name"];
 
-                        int leaveAppId = (int)reader["Leave_Application_ID"];
-                        leave.staffName = leaveAppId.ToString();
-
-                        int leaveId = (int)reader["Leave_ID"];
-                        if (leaveId == 1)
+                        if (leave1.Equals("Annual"))
                             leave.leaveType = "Annual";
 
-                        if (leaveId == 2)
+                        if (leave1.Equals("Sick"))
                             leave.leaveType = "Sick";
 
-                        if (leaveId == 3)
+                        if (leave1.Equals("Compassionate"))
                             leave.leaveType = "Compassionate";
 
-                        if (leaveId == 4)
+                        if (leave1.Equals("Maternity"))
                             leave.leaveType = "Maternity";
 
-                        if (leaveId == 5)
+                        if (leave1.Equals("Short_Hours"))
                             leave.leaveType = "Short";
 
-                        if (leaveId == 6)
+                        if (leave1.Equals("Unpaid"))
                             leave.leaveType = "Unpaid";
 
                         //leave.leaveType = (string)reader["Leave_ID"];
                         //leave.applicationDate = (int)reader["Leave_Application_ID"];
                         leave.startDate = (DateTime)reader["Start_Date"];
-                        string date1 = leave.startDate.ToString("yyyy-MM-dd");
-                        ViewBag.stDt = date1;
-
+                        
                         leave.endDate = (DateTime)reader["End_Date"];
-                        string date2 = leave.endDate.ToString("yyyy-MM-dd");
-                        ViewBag.enDt = date2;
-
+                        
                         leave.leaveDuration = (int)reader["Total_Leave_Days"];
 
                         if (!reader.IsDBNull(11))
