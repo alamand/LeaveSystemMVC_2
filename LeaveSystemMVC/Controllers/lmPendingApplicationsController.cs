@@ -12,6 +12,7 @@ using System.Net.Mail;
 
 namespace LeaveSystemMVC.Controllers
 {
+
     public class lmPendingApplicationsController : Controller
     {
         [HttpGet]
@@ -127,66 +128,7 @@ namespace LeaveSystemMVC.Controllers
             return Index();
         }
 
-        private string GetLeaveStatus(int statusID)
-        {
-            string statusInString = "";
-            switch(statusID)
-            {
-                case 0:
-                    statusInString = "PendingLM";
-                    break;
-                case 1:
-                    statusInString = "PendingHR";
-                    break;
-                case 2:
-                    statusInString = "Approved";
-                    break;
-                case 3:
-                    statusInString = "RejectedLM";
-                    break;
-                case 4:
-                    statusInString = "RejectedHR";
-                    break;
-                case 5:
-                    statusInString = "Cancelled";
-                    break;
-                case 6:
-                    statusInString = "secondLMPending";
-                    break;
-                case 7:
-                    statusInString = "secondLMRejected";
-                    break;
-            }
 
-            return statusInString;
-        }
-
-        private string GetLeaveType(int leaveID)
-        {
-            string typeInString = "";
-            switch(leaveID)
-            {
-                case 1:
-                    typeInString = "Annual";
-                    break;
-                case 2:
-                    typeInString = "Maternity";
-                    break;
-                case 3:
-                    typeInString = "Sick";
-                    break;
-                case 4:
-                    typeInString = "Compassionate";
-                    break;
-                case 5:
-                    typeInString = "DIL";
-                    break;
-                case 6:
-                    typeInString = "Short_Hours";
-                    break;
-            }
-            return typeInString;
-        }
 
         [HttpGet]
         public ActionResult Select(string Id)
@@ -240,12 +182,12 @@ namespace LeaveSystemMVC.Controllers
             switch (submit)
             {
                 case "Approve":
-                    queryString = "UPDATE dbo.Leave SET Status = '1', " +
+                    queryString = "UPDATE dbo.Leave SET Status = '2', " +
                         "LM_Comment = '" + SL.lmComment + "' " +
                         "WHERE dbo.Leave.Leave_Application_ID = '" + lid + "' ";
                     break;
                 case "Reject":
-                    queryString = "UPDATE dbo.Leave SET Status = '3', " +
+                    queryString = "UPDATE dbo.Leave SET Status = '4', " +
                         "LM_Comment = '" + SL.lmComment + "' " +
                         "WHERE dbo.Leave.Leave_Application_ID = '" + lid + "' ";
                     break;
@@ -274,8 +216,7 @@ namespace LeaveSystemMVC.Controllers
 
             message.Subject = "Leave Application Update";
             string body = "";
-            body = body + "You application has been approved by your line manager." + Environment.NewLine +
-                "It is now awaiting review by Human Resources." + Environment.NewLine;
+            body = body + "You application has been fully approved.";
 
             message.Body = body;
             SmtpClient client = new SmtpClient();
@@ -295,6 +236,66 @@ namespace LeaveSystemMVC.Controllers
             return View();
         }
         
+        private string GetLeaveStatus(int statusID)
+        {
+            string statusInString = "";
+            switch (statusID)
+            {
+                case 0:
+                    statusInString = "PendingLM";
+                    break;
+                case 1:
+                    statusInString = "PendingHR";
+                    break;
+                case 2:
+                    statusInString = "Approved";
+                    break;
+                case 3:
+                    statusInString = "RejectedLM";
+                    break;
+                case 4:
+                    statusInString = "RejectedHR";
+                    break;
+                case 5:
+                    statusInString = "Cancelled";
+                    break;
+                case 6:
+                    statusInString = "secondLMPending";
+                    break;
+                case 7:
+                    statusInString = "secondLMRejected";
+                    break;
+            }
 
+            return statusInString;
+        }
+
+        private string GetLeaveType(int leaveID)
+        {
+            string typeInString = "";
+            switch (leaveID)
+            {
+                case 1:
+                    typeInString = "Annual";
+                    break;
+                case 2:
+                    typeInString = "Maternity";
+                    break;
+                case 3:
+                    typeInString = "Sick";
+                    break;
+                case 4:
+                    typeInString = "Compassionate";
+                    break;
+                case 5:
+                    typeInString = "DIL";
+                    break;
+                case 6:
+                    typeInString = "Short_Hours";
+                    break;
+            }
+            return typeInString;
+        }
+        
     }
 }

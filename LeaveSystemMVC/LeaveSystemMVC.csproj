@@ -1813,6 +1813,7 @@
     <Content Include="Views\LApplication\IndexTest.cshtml" />
     <Content Include="Views\aEditStaff\Select.cshtml" />
     <Content Include="Views\lmPendingApplications\Select.cshtml" />
+    <Content Include="Views\hrPendingApplication\Select.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
