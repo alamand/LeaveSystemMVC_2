@@ -79,6 +79,7 @@ namespace LeaveSystemMVC.Controllers
                         {
                             leave.shortEndTime = new TimeSpan(0, 0, 0, 0, 0);
                         }
+                        
                         leave.leaveStatus = (int)reader["Status"];
                         if (!reader.IsDBNull(15))
                             leave.hrComment = (string)reader["HR_Comment"];
