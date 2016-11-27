@@ -179,12 +179,12 @@ namespace LeaveSystemMVC.Controllers
             switch (submit)
             {
                 case "Approve":
-                    queryString = "UPDATE dbo.Leave SET Status = '1', " +
+                    queryString = "UPDATE dbo.Leave SET Status = '2', " +
                         "LM_Comment = '" + SL.lmComment + "' " +
                         "WHERE dbo.Leave.Leave_Application_ID = '" + lid + "' ";
                     break;
                 case "Reject":
-                    queryString = "UPDATE dbo.Leave SET Status = '3', " +
+                    queryString = "UPDATE dbo.Leave SET Status = '4', " +
                         "LM_Comment = '" + SL.lmComment + "' " +
                         "WHERE dbo.Leave.Leave_Application_ID = '" + lid + "' ";
                     break;
