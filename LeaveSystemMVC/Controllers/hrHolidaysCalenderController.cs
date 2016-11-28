@@ -55,7 +55,7 @@ namespace LeaveSystemMVC.Controllers
             {
                 ModelState.AddModelError("holidayName", "Holiday Name Must be entered");
             }
-            if (calender.holidayName.Length > 30)
+            if (!string.IsNullOrWhiteSpace(calender.holidayName) && calender.holidayName.Length > 30)
             {
                 ModelState.AddModelError("holidayName", "Holiday Name Too long. The Name should be no greater than 30 char");
             }
@@ -90,7 +90,7 @@ namespace LeaveSystemMVC.Controllers
                         if (!isDateSame(d))
                         {
                             date1 = d.ToString("yyyy-MM-dd");
-                            string insert = "INSERT INTO dbo.Public_Holiday (Name, Date) VALUES('" + calender.holidayName + "','" + date1 + "')";
+                            string insert = "INSERT INTO dbo.Public_Holiday (Name, Date) VALUES('" + GetSqlString(calender.holidayName) + "','" + date1 + "')";
                             using (var connection = new SqlConnection(connectionString))
                             {
                                 var command = new SqlCommand(insert, connection);
@@ -302,6 +302,12 @@ namespace LeaveSystemMVC.Controllers
                 connection.Close();
             }
             return balance;
+        }
+        public string GetSqlString(string fieldvalue)
+        {
+            if (fieldvalue != null)
+                return fieldvalue.Replace("'", "''");
+            return fieldvalue;
         }
     }
 
