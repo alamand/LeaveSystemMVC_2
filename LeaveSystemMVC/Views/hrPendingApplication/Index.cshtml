@@ -1,92 +1,19 @@
-﻿@model LeaveSystemMVC.Models.sLeaveModel
+﻿@model IEnumerable<LeaveSystemMVC.Models.sLeaveModel>
 @Html.Partial("_LeftMenu")
 <div class="col-md-10">
-	@using (Html.BeginForm()) 
-	{
-		@Html.AntiForgeryToken()
-		
-		<div class="form-horizontal">
-			<h4>Pending Applications</h4>
-			<hr />
-			@Html.ValidationSummary(true, "", new { @class = "text-danger" })
-			<div class="form-inline">
-				<table style="width:80%;border:2px solid black; text-align:center; margin:15px;">
-					<tr style="border:0.5px solid black;">
-						<th style="border:1px solid black;">Staff Name</th>
-                        <th style="border:1px solid black;">Leave Type</th>
-						<th style="border:1px solid black;">Start Date</th>
-						<th style="border:1px solid black;">End Date</th>
-						<th style="border:1px solid black;">Duration Days</th>
-                        <th style="border:1px solid black;">View Balance</th>
-						<th style="border:1px solid black;">View Application</th>
-					</tr>
-					<tr style="border:0.5px solid black;">
-						<td style="border:1px solid black;">Sukhpreet Singh</td>
-                        <td style="border:1px solid black;">Sick</td>
-						<td style="border:1px solid black;">10/10/2016</td>
-						<td style="border:1px solid black;">25/10/2016</td>
-						<td style="border:1px solid black;">15</td>
-                        <td style="border:1px solid black;"><a href="#">View</a></td>
-						<td style="border:1px solid black;"><a href="#">View</a></td>
-					</tr>
-					<tr style="border:0.5px solid black;">
-						<td style="border:1px solid black;">Zobad Mahmood</td>
-                        <td style="border:1px solid black;">Sick</td>
-						<td style="border:1px solid black;">10/08/2016</td>
-						<td style="border:1px solid black;">25/08/2016</td>
-						<td style="border:1px solid black;">15</td>
-                        <td style="border:1px solid black;"><a href="#">View</a></td>
-						<td style="border:1px solid black;"><a href="#">View</a></td>
-					</tr>
-				</table>
-			</div>
-			<div class="form-inline">
-				<table style="width:80%;border:2px solid black; text-align:center; margin:15px;">
-					<tr style="border:0.5px solid black;">
-						<th>  Leave Type  </th>
-						<th>  Days        </th>
-					</tr>
-					<tr style="border:0.5px solid black;">
-						<td>Annual</td>
-						<td>0</td>
-					</tr>
-					<tr style="border:0.5px solid black;">
-						<td>Sick</td>
-						<td>0</td>
-					</tr>
-					<tr style="border:0.5px solid black;">
-						<td>Compassionate</td>
-						<td>0</td>
-					</tr>
-					<tr style="border:0.5px solid black;">
-						<td>Short</td>
-						<td>0</td>
-					</tr>
-					<tr style="border:0.5px solid black;">
-						<td>Maternity</td>
-						<td>0</td>
-					</tr>
-					<tr style="border:0.5px solid black;">
-						<td>Days in Lieu</td>
-						<td>10</td>
-					</tr>
-					@**Html.EditorFor(model => model.staffName, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.staffName, "", new { @class = "text-danger" })**@
-				</table>
-				<hr />
-			</div>
+    <h2>Pending Applications</h2>
+    <hr />
+    <div class="col-md-5">
+        <div class="panel-group" id="accordion">
+            @foreach (var leave in Model)
+            {
+                string buttonText = leave.staffName + " <" + leave.leaveType + ">";
+                @Html.ActionLink(buttonText, "Select", new { id = leave.leaveID }, new { @class = "btn btn-primary btn-block", @style = "color:white" })
 
-			<div class="form-group">
-				<div class="col-md-offset-4 col-md-10">
-					<input type="button" value="Approve" class="btn btn-default" />
-					<input type="button" value="Reject" class="btn btn-default" />
-				</div>
-			</div>
-		</div>
-	}
+            }
+        </div>
+    </div>
 </div>
-
-
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }

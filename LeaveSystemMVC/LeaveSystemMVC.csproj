@@ -1695,6 +1695,14 @@
     <Content Include="Content\Theme\vendors\uniform\www\CNAME" />
     <Content Include="Content\Theme\vendors\uniform\www\downloads\.keep" />
     <Content Include="Content\Theme\vendors\uniform\www\stylesheets\multiple-themes.scss" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\bootstrap.min.css.map" />
+    <Content Include="Content\bootstrap.css.map" />
+    <Content Include="Content\bootstrap-theme.min.css.map" />
+    <Content Include="Content\bootstrap-theme.css.map" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <None Include="Scripts\jquery-1.12.4.intellisense.js" />
     <Content Include="Scripts\jquery-1.12.4.js" />
@@ -1760,15 +1768,14 @@
     <Content Include="Views\Shared\_MinDepartmentList.cshtml" />
     <Content Include="Views\LApplication\IndexTest.cshtml" />
     <Content Include="Views\aEditStaff\Select.cshtml" />
+    <Content Include="Views\lmPendingApplications\Select.cshtml" />
+    <Content Include="Views\hrPendingApplication\Select.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\lmSubordinateView\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="packages.config" />
     <None Include="Project_Readme.html" />
   </ItemGroup>

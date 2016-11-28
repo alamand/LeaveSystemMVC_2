@@ -1,92 +1,19 @@
-﻿@model LeaveSystemMVC.Models.sLeaveModel
+﻿@model IEnumerable<LeaveSystemMVC.Models.sLeaveModel>
 @Html.Partial("_LeftMenu")
 <div class="col-md-10">
-    @using (Html.BeginForm()) 
-    {
-    @Html.AntiForgeryToken()
-    
-    <div class="form-horizontal">
-        <h4>Line Manager Pending leave Applications</h4>
-        <hr />
-        <div class="form-horizontal">
-           
-            
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            <div class="form-inline">
-                <table style="border:2px solid black; text-align:center ;">
-                    <tr style="border:0.5px solid black;">
-                        <th style="border:1px solid black;">Staff Name</th>
-                        <th style="border:1px solid black;">Start Date</th>
-                        <th style="border:1px solid black;">End Date</th>
-                        <th style="border:1px solid black;">Duration Days</th>
-                        <th style="border:1px solid black;">Leave Type</th>
-                        <th style="border:1px solid black;">View Application</th>
-                    </tr>
-                    <tr style="border:0.5px solid black;">
-                        <td style="border:1px solid black;">Sukhpreet Singh</td>
-                        <td style="border:1px solid black;">10/10/2016</td>
-                        <td style="border:1px solid black;">20/10/2016</td>
-                        <td style="border:1px solid black;">10</td>
-                        <td style="border:1px solid black;">Sick</td>
-                        <td style="border:1px solid black;"><a href="#">View</a></td>
-                    </tr>
-                    <tr style="border:0.5px solid black;">
-                        <td style="border:1px solid black;">Zobad Mahmood</td>
-                        <td style="border:1px solid black;">10/08/2016</td>
-                        <td style="border:1px solid black;">20/08/2016</td>
-                        <td style="border:1px solid black;">10</td>
-                        <td style="border:1px solid black;">Sick</td>
-                        <td><a href="#">View</a></td>
-                    </tr>
-                </table>
-            </div>
-            <br />
-            <div class="form-inline">
-                <table style=";border:2px solid black; text-align:center;width:58%;">
-                    <tr style="border:0.5px solid black;">
-                        <th style="border:1px solid black;">  Leave Type  </th>
-                        <th style="border:1px solid black;">  Days        </th>
-                    </tr>
-                    <tr style="border:0.5px solid black;">
-                        <td style="border:1px solid black;">Annual</td>
-                        <td style="border:1px solid black;">0</td>
-                    </tr>
-                    <tr style="border:0.5px solid black;">
-                        <td style="border:1px solid black;">Sick</td>
-                        <td style="border:1px solid black;">15</td>
-                    </tr>
-                    <tr style="border:0.5px solid black;">
-                        <td style="border:1px solid black;">Compassionate</td>
-                        <td style="border:1px solid black;">0</td>
-                    </tr>
-                    <tr style="border:0.5px solid black;">
-                        <td style="border:1px solid black;">Short</td>
-                        <td style="border:1px solid black;">0</td>
-                    </tr>
-                    <tr style="border:0.5px solid black;">
-                        <td style="border:1px solid black;">Maternity</td>
-                        <td style="border:1px solid black;">0</td>
-                    </tr>
-                    <tr style="border:0.5px solid black;">
-                        <td style="border:1px solid black;">Days in Lieu</td>
-                        <td style="border:1px solid black;">10</td>
-                    </tr>
-                    @**Html.EditorFor(model => model.staffName, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.staffName, "", new { @class = "text-danger" })**@
-                </table>
-                <hr />
-            </div>
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="button" value="Approve" class="btn btn-default" />
-                    <input type="button" value="Reject" class="btn btn-default" />
-                </div>
+    <h2>Pending Applications</h2>
+    <hr />
+        <div class="col-md-5">
+            <div class="panel-group" id="accordion">
+                @foreach (var leave in Model)
+                {
+                    string buttonText = leave.staffName + " <" + leave.leaveType + ">";
+                    @Html.ActionLink(buttonText, "Select", new { id = leave.leaveID }, new { @class = "btn btn-primary btn-block", @style = "color:white" })
+                    
+                }
             </div>
         </div>
-        </div>
-     }
 </div>
-
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }
