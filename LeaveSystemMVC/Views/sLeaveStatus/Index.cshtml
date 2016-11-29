@@ -7,7 +7,7 @@
 <div class="col-md-10">
     <h3>Pending Applications</h3>
 
-    <table class="table">
+    <table class="table" style="white-space:nowrap">
         <tr>
             <th>
                 Leave Application ID
@@ -46,14 +46,54 @@
 
         @foreach (var item in Model)
         {
+           
+                string stDt = item.startDate.ToString();
+                stDt = stDt.Substring(0, 9);
+
+                string enDt = item.endDate.ToString();
+                enDt = enDt.Substring(0, 9);
+
+                int stats = item.leaveStatus;
+
+                string status = "";
+
+                switch (stats)
+                {
+                    case 0:
+                        status = "Pending LM";
+                        break;
+                    case 1:
+                        status = "Pending HR";
+                        break;
+                    case 2:
+                        status = "Approved";
+                        break;
+                    case 3:
+                        status = "Rejected LM";
+                        break;
+                    case 4:
+                        status = "Rejected HR";
+                        break;
+                    case 5:
+                        status = "Cancelled";
+                        break;
+                    case 6:
+                        status = "2nd Line Manager Pending";
+                        break;
+                    case 7:
+                        status = "2nd Line Manager Rejected";
+                        break;
+
+                }
+            
             <tr>
                 <td>@Html.DisplayFor(modelItem => item.staffName)</td>
 
                 <td>@Html.DisplayFor(modelItem => item.leaveType)</td>
 
-                <td>@ViewBag.stDt</td>
+                <td>@Html.DisplayFor(modelItem => stDt)</td>
 
-                <td>@ViewBag.enDt</td>
+                <td>@Html.DisplayFor(modelItem => enDt)</td>
 
                 <td>@Html.DisplayFor(modelItem => item.leaveDuration)</td>
 
@@ -61,7 +101,7 @@
 
                 <td>@Html.DisplayFor(modelItem => item.shortEndTime)</td>
 
-                <td>@Html.DisplayFor(modelItem => item.leaveStatus)</td>
+                <td>@Html.DisplayFor(modelItem => status)</td>
 
                 <td>@Html.DisplayFor(modelItem => item.hrComment)</td>
 
