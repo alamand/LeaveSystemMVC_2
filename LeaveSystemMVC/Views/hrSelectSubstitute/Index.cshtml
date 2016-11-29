@@ -3,38 +3,45 @@
 
 @model LeaveSystemMVC.Models.selectSubstitute
 @Html.Partial("_LeftMenu")
-<div class="col-md-6">
+<div class="col-md-8">
+    <h4>Select Substitute HR</h4>
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
 
-        <div class="form-horizontal">
-            <h4>Select Substitute HR</h4>
+        <div class="col-md-10">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="text-muted bootstrap-admin-box-title">Application Details</div>
+                </div>
+                <div class="bootstrap-admin-panel-content">
+                    <div class="form-horizontal">
 
-            <table style="margin:30px;width:100%;">
-                <tr>
-                    <td>
-                        <div class="form-group">
+
+                        <div class="row">
+                        <div class="col-md-7" style="white-space:nowrap">
 
                             <!--Displays a list of members in  the given department in the database-->
 
                             @Html.LabelFor(model => model.substituteStaffID, "Select a Substitute from the Department", htmlAttributes: new { @class = "control-label col-md-2" })
+                            </div>
                             <div class="col-md-4">
                                 @Html.DropDownListFor(model => model.substituteStaffID, new SelectList(Model.substituteListOptions, "Key", "Value"))
                                 @Html.ValidationMessageFor(model => model.substituteStaffID, "", new { @class = "text-danger" })
                             </div>
                         </div>
-                    </td>
-                </tr>
-            </table>
+                 
 
-    
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="Save" class="btn btn-default" />
-                </div>
-            </div>
-        </div>
+                        <br /><br />
+                        <div class="form-group">
+                            <div class="col-md-offset-4 col-md-10">
+                                <input type="submit" value="Save" class="btn btn-default" />
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
     }
 </div>
 
