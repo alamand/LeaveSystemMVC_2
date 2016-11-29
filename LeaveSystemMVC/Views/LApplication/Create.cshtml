@@ -7,7 +7,7 @@
 @Html.Partial("_LeftMenu")
 
 <div class="col-md-10">
-    @using (Html.BeginForm("Create","LApplication", FormMethod.Post))
+    @using (Html.BeginForm("Create", "LApplication", FormMethod.Post, new { enctype = "multipart/form-data" }))
     {
         @Html.AntiForgeryToken()
 
@@ -83,8 +83,8 @@
                     <td style="margin:50px;">
                     <div class="col-md-6">
                             @Html.TextBoxFor(model => model.shortEndTime, new { type = "time" })
-                            <!--  @Html.ValidationMessageFor(model => model.shortEndTime, "", new { @class = "text-danger" })
-                            -->
+                              @Html.ValidationMessageFor(model => model.shortEndTime, "", new { @class = "text-danger" })
+                           
                         </div>
                     </td>
                     </tr>
@@ -104,15 +104,11 @@
                 </td>
 
                 <td><div class="form-group col-xs-4">
-                    @Html.LabelFor(model => model.supportingDocs, "Supporting Docs", htmlAttributes: new { @class = "control-label col-md-4" })
-                   </div></td>
+                    <!--//@Html.LabelFor(model => model.supportingDocs, "Supporting Docs", htmlAttributes: new { @class = "control-label col-md-4" })
+                   -->
+                        <input type="file" name="file" />
+                       </div></td>
                     <td>
-                        <div class="col-md-6">
-                        @Html.TextBoxFor(model => model.supportingDocs, new { type = "file" })
-                        @Html.ValidationMessageFor(model => model.supportingDocs, "", new { @class = "text-danger" })
-                        <br />
-                   
-                        </div>
                     </td>
                 </tr>
             </table>

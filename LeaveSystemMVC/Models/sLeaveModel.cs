@@ -39,10 +39,10 @@ namespace LeaveSystemMVC.Models
         public int leaveDuration { get; set; } 
 
         [DisplayName("Start Time")]
-        public TimeSpan shortStartTime { get; set; }
+        public TimeSpan? shortStartTime { get; set; } 
 
         [DisplayName("End Time")]
-        public TimeSpan shortEndTime { get; set; } 
+        public TimeSpan? shortEndTime { get; set; } 
 
         [DisplayName("Line Manager Comment")]
         public string lmComment { get; set; } 

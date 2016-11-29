@@ -7,8 +7,7 @@ using System.Web.Mvc;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Security.Claims;
-
-
+using System.IO;
 
 namespace LeaveSystemMVC.Controllers
 {
@@ -31,11 +30,23 @@ namespace LeaveSystemMVC.Controllers
         }
 
         [HttpPost]
-        public ActionResult Create(Models.sLeaveModel model) {
+        public ActionResult Create(Models.sLeaveModel model, HttpPostedFileBase file) {
             System.Diagnostics.Debug.WriteLine("Entered post");
+            // Verify that the user selected a file
+            if (file != null && file.ContentLength > 0)
+            {
+                // extract only the filename
+                var fileName = Path.GetFileName(file.FileName);
+                fileName = fileName + "";
+                System.Diagnostics.Debug.WriteLine("file Uploaded");
 
-//            DateTime d3 = model.shortStartTime;
-  //          string stTime = d3.ToString("HH:mm:ss");
+                // store the file inside ~/App_Data/uploads folder
+                var path = Path.Combine(Server.MapPath("~/App_Data"), fileName);
+                file.SaveAs(path);
+            }   // store the file inside ~/App_Data/uploads folder
+             
+            //            DateTime d3 = model.shortStartTime;
+            //          string stTime = d3.ToString("HH:mm:ss");
 
             //DateTime d4 = model.shortEndTime;
             //string endTime = d4.ToString("HH:mm:ss");
@@ -61,9 +72,11 @@ namespace LeaveSystemMVC.Controllers
                 System.Diagnostics.Debug.WriteLine("is earlier than");
                 //Redirect(Create.UrlReferrer.ToString());
             }
+            System.Diagnostics.Debug.WriteLine("Reached is valid");
             if (ModelState.IsValid)
-                
             {
+
+                System.Diagnostics.Debug.WriteLine("entered is valid");
                 int days = 0;
                 if (result > 0 && !(model.leaveType.Equals("Maternity"))) {
                     TimeSpan diff = d2 - d1;
