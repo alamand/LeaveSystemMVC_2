@@ -41,7 +41,7 @@ namespace LeaveSystemMVC.Models
         [EmailAddress(ErrorMessage = "Invalid Email Address, please check if " + "@" + " symbol exists")]
         [StringLength(100, MinimumLength = 0, ErrorMessage = "E-mail address is too long")]
         public string email { get; set; }
-        public string gender { get; set; }
+        public char gender { get; set; }
         public int deptId { get; set; }
         //DepartmentList will hold a list of departments, it will be used
         //to for display purposes, to give users a list of departments to

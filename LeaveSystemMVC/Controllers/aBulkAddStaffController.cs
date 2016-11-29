@@ -95,7 +95,7 @@ namespace LeaveSystemMVC.Controllers
                                         newEmployee.employeeObject.deptName = tableColumn;
                                         break;
                                     case 6:
-                                        newEmployee.employeeObject.gender = tableColumn;
+                                        newEmployee.employeeObject.gender = tableColumn[0];
                                         break;
                                     case 7:
                                         /*
