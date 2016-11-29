@@ -27,7 +27,7 @@ namespace LeaveSystemMVC.Models
         public int unpaidTotal { get; set; } = 0;
         public int unpaidID { get; set; } = 0;
         [Required]
-        public double shortLeaveHours { get; set; } = 0;
+        public int shortLeaveHours { get; set; } = 0;
         public int shortID { get; set; } = 0;
     }
 
