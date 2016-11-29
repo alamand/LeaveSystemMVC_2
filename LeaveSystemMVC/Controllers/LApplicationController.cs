@@ -7,8 +7,7 @@ using System.Web.Mvc;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Security.Claims;
-
-
+using System.IO;
 
 namespace LeaveSystemMVC.Controllers
 {
@@ -31,11 +30,23 @@ namespace LeaveSystemMVC.Controllers
         }
 
         [HttpPost]
-        public ActionResult Create(Models.sLeaveModel model) {
+        public ActionResult Create(Models.sLeaveModel model, HttpPostedFileBase file) {
             System.Diagnostics.Debug.WriteLine("Entered post");
+            // Verify that the user selected a file
+            if (file != null && file.ContentLength > 0)
+            {
+                // extract only the filename
+                var fileName = Path.GetFileName(file.FileName);
+                fileName = fileName + "";
+                System.Diagnostics.Debug.WriteLine("file Uploaded");
 
-//            DateTime d3 = model.shortStartTime;
-  //          string stTime = d3.ToString("HH:mm:ss");
+                // store the file inside ~/App_Data/uploads folder
+                var path = Path.Combine(Server.MapPath("~/App_Data"), fileName);
+                file.SaveAs(path);
+            }   // store the file inside ~/App_Data/uploads folder
+             
+            //            DateTime d3 = model.shortStartTime;
+            //          string stTime = d3.ToString("HH:mm:ss");
 
             //DateTime d4 = model.shortEndTime;
             //string endTime = d4.ToString("HH:mm:ss");
@@ -47,17 +58,25 @@ namespace LeaveSystemMVC.Controllers
             string endate = d2.ToString("yyyy-MM-dd");
             System.Diagnostics.Debug.WriteLine("Endate is: " +endate);
 
+            DateTime today = DateTime.Today;
+
             int result = DateTime.Compare(d2, d1);
+
+            if (d1 < today) {
+                ModelState.AddModelError("startDate", "The Start Date cannot be in the Past");
+            }
 
             if (result < 0) {
                 ModelState.AddModelError("endDate", "The End Date cannot be earlier than the start date");
-                Response.Write("<script> alert('End Date Cannot be earlier than the Start Date');location.href='Create'</script>");
+                //Response.Write("<script> alert('End Date Cannot be earlier than the Start Date');location.href='Create'</script>");
                 System.Diagnostics.Debug.WriteLine("is earlier than");
                 //Redirect(Create.UrlReferrer.ToString());
             }
+            System.Diagnostics.Debug.WriteLine("Reached is valid");
             if (ModelState.IsValid)
-                
             {
+
+                System.Diagnostics.Debug.WriteLine("entered is valid");
                 int days = 0;
                 if (result > 0 && !(model.leaveType.Equals("Maternity"))) {
                     TimeSpan diff = d2 - d1;
@@ -106,27 +125,7 @@ namespace LeaveSystemMVC.Controllers
                     System.Diagnostics.Debug.WriteLine("Not Maternity Days: " +days);
 
                 }
-
-               else {
-                    TimeSpan diff = d2 - d1;
-                    days = diff.Days;
-                    System.Diagnostics.Debug.WriteLine("Maternity Days: " + days);
-                    var connectionString1 = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-                    string query1 = "Select * from dbo.Public_Holiday where Date between'"+ stdate + "' AND '"+ endate +"'";
-
-                    using (var connection1 = new SqlConnection(connectionString1)) {
-                        var command1 = new SqlCommand(query1, connection1);
-
-                        connection1.Open();
-                        using (var reader1 = command1.ExecuteReader()) {
-                            while (reader1.Read()) {
-                                    days--;
-                            }
-                        }
-                        connection1.Close();
-                        System.Diagnostics.Debug.WriteLine("Maternity Days: After holiday Deduction" + days);
-                    }
-                }
+                
 
                 int leaveId = 0;
                 if (model.leaveType.Equals("Annual"))
@@ -144,11 +143,47 @@ namespace LeaveSystemMVC.Controllers
                 if (model.leaveType.Equals("Maternity"))
                 {
                     leaveId = 2;
+
+                    ModelState.AddModelError("startDate", "Maternity is disabled;");
+
+                    TimeSpan diff = d2 - d1;
+                        days = diff.Days;
+                        System.Diagnostics.Debug.WriteLine("Maternity Days: " + days);
+                        var connectionString1 = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+                        string query1 = "Select * from dbo.Public_Holiday where Date between'" + stdate + "' AND '" + endate + "'";
+
+                        using (var connection1 = new SqlConnection(connectionString1))
+                        {
+                            var command1 = new SqlCommand(query1, connection1);
+
+                            connection1.Open();
+                            using (var reader1 = command1.ExecuteReader())
+                            {
+                                while (reader1.Read())
+                                {
+                                    days--;
+                                }
+                            }
+                            connection1.Close();
+                            System.Diagnostics.Debug.WriteLine("Maternity Days: After holiday Deduction" + days);
+                        }
+                    
                 }
                 if (model.leaveType.Equals("Short"))
                 {
                     leaveId = 6;
+                    if (model.startDate != model.endDate)
+                    {
+                        ModelState.AddModelError("endDate", "For short leave, Start date and Return Date should be same!");
+                    }
+
+
                 }
+                else {
+
+                }
+
+
                 if (model.leaveType.Equals("Unpaid"))
                 {
                     leaveId = 6;
