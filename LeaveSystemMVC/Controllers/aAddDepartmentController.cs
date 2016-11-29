@@ -142,7 +142,9 @@ namespace LeaveSystemMVC.Controllers
                 }
 
                 //adding the slected lm id and the entered department name into the database 
-                string insertString = "Insert Into dbo.Department (Line_Manager_ID, Department_Name) VALUES ('" + tempID + "','" + newDepartmentName.departmentName + "')";       
+                newDepartmentName.departmentName = System.Text.RegularExpressions.Regex.Replace(newDepartmentName.departmentName, @"'", "");
+                string insertString = "Insert Into dbo.Department (Line_Manager_ID, Department_Name) VALUES ('" + tempID + "','" + newDepartmentName.departmentName + "')";
+                System.Diagnostics.Debug.WriteLine("insertString:",newDepartmentName.departmentName);
                 using (var connection = new SqlConnection(connectionString))
                 {
                     var command = new SqlCommand(insertString,connection);
