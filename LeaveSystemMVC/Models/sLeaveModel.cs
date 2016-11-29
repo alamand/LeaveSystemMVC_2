@@ -63,9 +63,9 @@ namespace LeaveSystemMVC.Models
         public bool bookAirTicket { get; set; } 
 
         [DisplayName("Phone Number")]
-        [Required(ErrorMessage = "You must provide your home phone number.")]
-        [DataType(DataType.PhoneNumber, ErrorMessage = "You must provide a proper phone number.")]
-        [RegularExpression(@"^(?:\+971|00971|0)?(?:50|51|52|55|56|2|3|4|6|7|9)\d{7}$", ErrorMessage = "You must provide a proper phone number.")]
+        [Required(ErrorMessage = "You must provide a phone number in international format")]
+        [DataType(DataType.PhoneNumber, ErrorMessage = "You must provide a phone number in international format.")]
+        [RegularExpression(@"^\+[1-9]{1}[0-9]{3,14}$", ErrorMessage = "You must provide a phone number in international format")]
         public string contactDetails { get; set; } 
     }
 }

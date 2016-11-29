@@ -12,11 +12,14 @@ namespace LeaveSystemMVC.Controllers
 {
     public class lmSelectSubstituteController : Controller
     {
+        
         // GET: lmSubstitute
         public ActionResult Index()
         {
             int deptID = 0;
             string userID=" ";
+            selectSubstitute substitute = new selectSubstitute();
+            string fullName = "";
 
             //to get the id of the person logged in 
             var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
@@ -29,44 +32,38 @@ namespace LeaveSystemMVC.Controllers
                 }
 
             }
-            
-            //deptID for the next query to select people from the given department 
+            //display the list of employees that work under the current logged in line manager 
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string searchString = "Select Department_ID FROM dbo.Employee Where Employee_ID='" + userID + "'";
+            string queryString = "Select Department_ID FROM dbo.Department Where Line_Manager_ID='" + userID + "'";
             using (var connection = new SqlConnection(connectionString))
             {
-                var command = new SqlCommand(searchString, connection);
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        deptID = (int)reader[0];
-                    }
-                }
-                connection.Close();
-            }
-
-            selectSubstitute substitute = new selectSubstitute();
-
-            //display list of people in department
-            //var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "Select Employee.Employee_ID, First_Name, Last_Name FROM dbo.Employee Where Department_ID='"+deptID+"' AND Employee_ID !='"+userID+ "'AND Account_Status != 'False'";
-                using (var connection = new SqlConnection(connectionString))
-                {
                 var command = new SqlCommand(queryString, connection);
                 connection.Open();
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        string fullName = (string)reader[1] + " " + (string)reader[2];
-                        substitute.substituteListOptions.Add((int)reader[0], fullName);
+                        deptID = (int)reader[0];
+                        string searchString = "Select Employee.Employee_ID, First_Name, Last_Name FROM dbo.Employee Where Department_ID='" + deptID + "' AND Employee_ID !='" + userID + "'AND Account_Status != 'False'";
+                        using (var connection1 = new SqlConnection(connectionString))
+                        {
+                            command = new SqlCommand(searchString, connection1);
+                            connection1.Open();
+                            using (var readerA = command.ExecuteReader())
+                            {
+                                while (readerA.Read())
+                                {
+                                    fullName = (string)readerA[1] + " " + (string)readerA[2];
+                                    substitute.substituteListOptions.Add((int)readerA[0], fullName);
+                                }
+                            }
+                            connection1.Close();
+                        }
                     }
                 }
                 connection.Close();
             }
-                return View(substitute);
+            return View(substitute);
         }
         
         //to add or remove substitute lm from db 
@@ -84,7 +81,6 @@ namespace LeaveSystemMVC.Controllers
                 {
                     userID = c.Value;
                 }
-
             }
 
             int tempSubstituteID = 0;
