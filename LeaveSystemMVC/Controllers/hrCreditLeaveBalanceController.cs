@@ -50,6 +50,7 @@ namespace LeaveSystemMVC.Controllers
                 }
             }
             CreditAnnual();
+            Response.Write("<script> alert('Sucess. The Balance has been reset.');location.href='Index'</script>");
             return View();
         }
 
@@ -162,68 +163,69 @@ namespace LeaveSystemMVC.Controllers
     }
     public void CreditAnnual(int lid, int eid, int balance)
     {
-        var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-        string queryUpdate = "Update dbo.Leave_Balance SET Balance='" + balance + "' WHERE Leave_ID='" + lid + "' AND  Employee_ID = '" + eid + "'";
-        using (var connection = new SqlConnection(connectionString))
-        {
-            var command = new SqlCommand(queryUpdate, connection);
-            connection.Open();
-            using (var reader = command.ExecuteReader())
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            string queryUpdate = "Update dbo.Leave_Balance SET Balance='" + balance + "' WHERE Leave_ID='" + lid + "' AND  Employee_ID = '" + eid + "'";
+            using (var connection = new SqlConnection(connectionString))
             {
-            }
-            connection.Close();
-        }
-    }
-    public int getAnnualDuration(int leave_ID)
-    {
-        int duration = 0;
-        var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-        string queryString = "Select * From dbo.Leave_Type Where Leave_ID ='" + leave_ID + "'";
-        using (var connection = new SqlConnection(connectionString))
-        {
-
-            var command = new SqlCommand(queryString, connection);
-
-            connection.Open();
-            using (var reader = command.ExecuteReader())
-            {
-                while (reader.Read())
+                var command = new SqlCommand(queryUpdate, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
                 {
-                    duration = ((int)reader["Duration"]);
-
                 }
+                connection.Close();
             }
-
-            connection.Close();
         }
-        return duration;
-    }
+    public int getAnnualDuration(int leave_ID)
+        {
+            int duration = 0;
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            string queryString = "Select * From dbo.Leave_Type Where Leave_ID ='" + leave_ID + "'";
+            using (var connection = new SqlConnection(connectionString))
+            {
+
+                var command = new SqlCommand(queryString, connection);
+
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        duration = ((int)reader["Duration"]);
+
+                    }
+                }
+
+                connection.Close();
+            }
+            return duration;
+        }
     public int getAnnualID()
     {
-        var annualID = 0;
+            var annualID = 0;
 
-        var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-        string queryString = "Select * from LeaveSystem.dbo.Leave_Type";
-        using (var connection = new SqlConnection(connectionString))
-        {
-
-            var command = new SqlCommand(queryString, connection);
-
-            connection.Open();
-            using (var reader = command.ExecuteReader())
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            string queryString = "Select * from LeaveSystem.dbo.Leave_Type";
+            using (var connection = new SqlConnection(connectionString))
             {
-                while (reader.Read())
-                {
-                    var id = (int)reader["Leave_ID"];
-                    var name = (string)reader["Leave_Name"];
-                    var duration = (int)reader["Duration"];
-                    if (name.Equals("Annual")) { annualID = id; }
-                }
-            }
 
-            connection.Close();
+                var command = new SqlCommand(queryString, connection);
+
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var id = (int)reader["Leave_ID"];
+                        var name = (string)reader["Leave_Name"];
+                        var duration = (int)reader["Duration"];
+                        if (name.Equals("Annual")) { annualID = id; }
+                        
+                    }
+                }
+
+                connection.Close();
+            }
+            return annualID;
         }
-        return annualID;
-    }
 }
 }
