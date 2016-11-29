@@ -7,7 +7,7 @@
 <div class="col-md-10">
     <h3>Pending Applications</h3>
 
-    <table class="table">
+    <table class="table" style="white-space:nowrap">
         <tr>
             <th>
                 Leave Application ID
@@ -46,7 +46,7 @@
 
         @foreach (var item in Model)
         {
-            @{
+           
                 string stDt = item.startDate.ToString();
                 stDt = stDt.Substring(0, 9);
 
@@ -85,7 +85,7 @@
                         break;
 
                 }
-            }
+            
             <tr>
                 <td>@Html.DisplayFor(modelItem => item.staffName)</td>
 
