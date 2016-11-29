@@ -1,0 +1,28 @@
+﻿@model IEnumerable<LeaveSystemMVC.Models.sEmployeeModel>
+@{
+    ViewBag.Title = "Edit Balance";
+}
+
+@Html.Partial("_LeftMenu")
+<h2>@ViewBag.Title</h2>
+<div class="col-md-offset-2 col-md-12">
+    <table class="table">
+        <tr>
+            <th>Employee ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>View Balance</th>
+        </tr>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.staffID </td>
+                <td>@item.firstName</td>
+                <td>@item.lastName</td>
+                <td>@Html.ActionLink("Edit", "Edit", "hrEditBalance", new { id = item.staffID }, null)</td>
+            </tr>
+
+        }
+    </table>
+</div>
+

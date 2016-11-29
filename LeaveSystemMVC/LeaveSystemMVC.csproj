@@ -178,6 +178,7 @@
     <Compile Include="Controllers\hrCreateLeaveTypeController.cs" />
     <Compile Include="Controllers\hrCreditLeaveBalanceController.cs" />
     <Compile Include="Controllers\hrDepartmentViewDaysInLieuController.cs" />
+    <Compile Include="Controllers\hrEditBalanceController.cs" />
     <Compile Include="Controllers\hrEditDefaultLeaveDurationController.cs" />
     <Compile Include="Controllers\hrHolidaysCalenderController.cs" />
     <Compile Include="Controllers\hrPendingApplicationController.cs" />
@@ -1772,6 +1773,8 @@
     <Content Include="Views\lmPendingApplications\Select.cshtml" />
     <Content Include="Views\hrPendingApplication\Select.cshtml" />
     <Content Include="Views\hrEditDefaultLeaveDuration\Display.cshtml" />
+    <Content Include="Views\hrEditBalance\Index.cshtml" />
+    <Content Include="Views\hrEditBalance\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
