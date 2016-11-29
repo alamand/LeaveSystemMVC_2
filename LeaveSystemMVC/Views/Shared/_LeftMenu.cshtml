@@ -3,7 +3,7 @@
     <ul class="nav navbar-collapse collapse bootstrap-admin-navbar-side">
         @if (!User.IsInRole("Admin"))
         {
-            <li role="presentation" class="dropdown-header">Staff Member</li>
+            <li role="presentation" class="dropdown-header" style="font-size:14pt">Staff Member</li>
             @Html.MenuItem("Home", "Index", "Home")
             @Html.MenuItem("Apply for Leave", "Create", "LApplication")
             @Html.MenuItem("View Leave Balance", "Index", "sLeaveBalance")
@@ -13,7 +13,7 @@
             if (User.IsInRole("HR_Responsible"))
             {
                 <li role="presentation" class="nav-divider"></li>
-                <li role="presentation" class="dropdown-header">HR</li>
+                <li role="presentation" class="dropdown-header"style="font-size:14pt">HR</li>
                 @Html.MenuItem("Pending Applications", "Index", "hrPendingApplication")
                 @Html.MenuItem("Update Leave Status", "Index", "hrChangeApplicationStatus")
                 @Html.MenuItem("Create New Leave Type", "Index", "hrCreateLeaveType")
@@ -27,7 +27,7 @@
             if (User.IsInRole("HR"))
             {
                 <li role="presentation" class="nav-divider"></li>
-                <li role="presentation" class="dropdown-header">HR</li>
+                <li role="presentation" class="dropdown-header"style="font-size:14pt">HR</li>
                 @Html.MenuItem("Create New Leave Type", "Index", "hrCreateLeaveType")
                 @Html.MenuItem("Credit Leave Balances", "Index", "hrCreditLeaveBalance")
                 @Html.MenuItem("Edit Days in Lieu", "Index", "hrDepartmentViewDaysInLieu")
@@ -39,7 +39,7 @@
             if (User.IsInRole("LM"))
             {
                 <li role="presentation" class="nav-divider"></li>
-                <li role="presentation" class="dropdown-header">Line Manager</li>
+                <li role="presentation" class="dropdown-header"style="font-size:14pt">Line Manager</li>
                 @Html.MenuItem("Pending Applications", "Index", "lmPendingApplications")
                 @Html.MenuItem("Update Leave Status", "Index", "lmChangeApplicationStatus")
                 @Html.MenuItem("Select Substitute", "Index", "lmSelectSubstitute")
@@ -51,7 +51,7 @@
         @if (User.IsInRole("Admin"))
         {
             <li role="presentation" class="nav-divider"></li>
-            <li role="presentation" class="dropdown-header">Administrator</li>
+            <li role="presentation" class="dropdown-header"style="font-size:14pt">Administrator</li>
             @Html.MenuItem("Add Department", "Index", "aAddDepartment")
             @Html.MenuItem("Edit Department", "Index", "aEditDepartment")
             @Html.MenuItem("Add Staff Role", "Index", "aAddStaffRole")

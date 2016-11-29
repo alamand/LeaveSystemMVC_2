@@ -1,58 +1,77 @@
 ﻿@model LeaveSystemMVC.Models.hrHolidaysCalender
 
 
-<h2>Create Holiday</h2>
+
 
 @Html.Partial("_LeftMenu")
-<p>
-    @Html.ActionLink("Display Holidays", "Display")
-</p>
 <div class="col-md-10">
-    @using (Html.BeginForm())
-    {
-        @Html.AntiForgeryToken()
+    <h2>Create Holiday</h2>
+    <div class="col-md-10">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="text-muted bootstrap-admin-box-title">Application Details</div>
+            </div>
+            <div class="bootstrap-admin-panel-content">
+                <div class="form-horizontal">
+                <p>
+                    @Html.ActionLink("Display Holidays", "Display")
+                </p>
 
-        <div class="form-horizontal">
-            <h4>@ViewBag.title</h4>
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            <hr />
-            @if (TempData["Success"] != null)
-            {
-                <div class="green">
-                    <p><strong>Success:</strong> @TempData["Success"].ToString()</p>
-                </div>
+                @using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()
+                   
+                    <div class="form-horizontal">
+                        <h4>@ViewBag.title</h4>
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <hr />
+                        @if (TempData["Success"] != null)
+                        {
+                            <div class="green">
+                                <p><strong>Success:</strong> @TempData["Success"].ToString()</p>
+                            </div>
+                        }
+                        <div class="row">
+                         @Html.ValidationMessage("errorMessage") 
+                        <div class="col-md-2" style="white-space:nowrap">
+                            @Html.LabelFor(calender => calender.holidayName)
+                            </div>
+                            <div class="col-md-4">
+                            @Html.TextBoxFor(calender => calender.holidayName, new { maxlength = 50 })
+                            @Html.ValidationMessageFor(calender => calender.holidayName)
+                        </div>
+                        </div>
+                        <hr />
+                        <div class="container-fluid form-group">
+                        <div class="row">
+                            <div class="col-xs-2" style="white-space:nowrap">
+                                @Html.LabelFor(calender => calender.startDate)
+                                </div>
+                            <div class="col-md-4">
+                                @Html.EditorFor(calender => calender.startDate, new { type = "Date" })
+                                @Html.ValidationMessageFor(calender => calender.startDate)
+                            </div>
+                            <div class="col-xs-2" style="white-space:nowrap">
+                                @Html.LabelFor(calender => calender.endDate)
+                                </div>
+                            <div class="col-md-4">
+                                @Html.TextBoxFor(calender => calender.endDate, new { type = "date" })
+                                @Html.ValidationMessageFor(calender => calender.endDate)
+                            </div>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="form-group">
+                            <div class="col-md-offset-5 col-md-12">
+                                <input type="submit" value="Save" class="btn btn-default" />
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                }
+            </div>
+
+            @section Scripts {
+                @Scripts.Render("~/bundles/jqueryval")
             }
-            
-           <h6> @Html.ValidationMessage("errorMessage") </h6>
-                 <div class="form-inline">
-                @Html.LabelFor(calender => calender.holidayName)
-                @Html.TextBoxFor(calender => calender.holidayName, new { maxlength = 50 })<br />
-                @Html.ValidationMessageFor(calender => calender.holidayName)
-            </div>
-            <hr />
-            <div class="row">
-                <div class="form-inline col-xs-4">
-                    @Html.LabelFor(calender => calender.startDate)
-                    @Html.EditorFor(calender => calender.startDate, new { type = "Date"})<br />
-                    @Html.ValidationMessageFor(calender => calender.startDate)
-                </div>
-                <div class="form-group col-xs-6">
-                    @Html.LabelFor(calender => calender.endDate)
-                    @Html.TextBoxFor(calender => calender.endDate, new { type = "date" })<br />
-                    @Html.ValidationMessageFor(calender => calender.endDate)
-                </div>
-
-            </div>
-            <hr />
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-12">
-                    <input type="submit" value="Save" class="btn btn-default" />
-                </div>
-            </div>
-        </div>
-    }
-</div>
-
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}
