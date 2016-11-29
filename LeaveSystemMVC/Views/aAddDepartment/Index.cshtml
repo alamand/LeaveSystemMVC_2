@@ -1,72 +1,79 @@
-﻿ 
-<!-- Adding a department View -->
+﻿<!-- Adding a department View -->
 
 @model LeaveSystemMVC.Models.aDepartment
 @Html.Partial("_LeftMenu")
 <div class="col-md-10">
+    <h2>Adding a Department</h2>
+    <hr />
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
 
-        <div class="form-horizontal">
-
-            <h4>Adding a Department</h4>
-
-            <table style="margin:30px;width:100%;">
-                <tr>
-                    <td>
-                        <div class="form-group"> 
-
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="text-muted bootstrap-admin-box-title">Application Details</div>
+                </div>
+                <div class="bootstrap-admin-panel-content">
+                    <div class="form-horizontal">
+                        <div class="row">
                             <!--Displays a list of existing departments in the database-->
-
-                            @Html.LabelFor(model => model.existingDepartmentName, "Existing Departments", htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-4">
-                                @Html.DropDownListFor(model => model.existingDepartmentName, new SelectList(ViewBag.departmentNames))
+                            <div class="col-md-6" style="white-space:nowrap">
+                                @Html.LabelFor(model => model.existingDepartmentName, "Existing Departments", htmlAttributes: new { @class = "control-label col-md-2" })
+                            </div>
+                            <div class="col-md-6">
+                                @Html.DropDownListFor(model => model.existingDepartmentName, new SelectList(ViewBag.departmentNames), new { @class = "form-control" })
                                 @Html.ValidationMessageFor(model => model.existingDepartmentName, "", new { @class = "text-danger" })
                             </div>
                         </div>
-                    </td>
-                </tr>
-            </table>
+                        <br /><br />
 
-            <table style="margin: 30px;">
-                <tr>
-                    <td>
-                        <div class="form-group">
+                        <div class="row">
 
                             <!--Prompts user to enter the name of a new department to store in the database -->
+                            <div class="col-md-6" style="white-space:nowrap">
+                                @Html.LabelFor(model => model.departmentName, "New Department Name", htmlAttributes: new { @class = "control-label col-md-2" })
+                            </div>
 
-                            @Html.LabelFor(model => model.departmentName, "New Department Name", htmlAttributes: new { @class = "control-label col-md-2" })
-                        </div>
-                    </td>
-                    <td>
-                            <div class="form-group">
+                            <div class="col-md-6">
                                 @Html.EditorFor(model => model.departmentName, new { htmlAttributes = new { @class = "form-control" } })
                                 @Html.ValidationMessageFor(model => model.departmentName, "", new { @class = "text-danger" })
-                            </div>    
-                    </td>
-                </tr>
-            </table>
-            
-            <div class="form-group">
+                            </div>
+                        </div>
 
-                <!--Prompts user to select one of the line managers for the newly entered department -->
+                        <br /><br />
 
-                @Html.LabelFor(model => model.primaryLMID, "Line Manager", htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-4">
-                    @Html.DropDownListFor(model => model.primaryLMID, new SelectList(Model.linemanagerSelectionListOptions, "Key", "Value"))
-                    @Html.ValidationMessageFor(model => model.primaryLMID, "", new { @class = "text-danger" })
+                        <div class="row">
+                            <!--Prompts user to select one of the line managers for the newly entered department -->
+                            <div class="col-md-6" style="white-space:nowrap">
+                                @Html.LabelFor(model => model.primaryLMID, "Line Manager", htmlAttributes: new { @class = "control-label col-md-2" })
+                            </div>
+                            <div class="col-md-6">
+                                @Html.DropDownListFor(model => model.primaryLMID, new SelectList(Model.linemanagerSelectionListOptions, "Key", "Value"), new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.primaryLMID, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <br /><br />
+
+                        <div class="form-group">
+                            <div class="col-md-offset-4 col-md-10">
+                                <input type="submit" value="Submit" class="btn btn-default" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-             <div class="form-group">
-             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Submit" class="btn btn-default" />
-             </div>
-             </div>
         </div>
+    
     }
-</div>
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}
+    </div>
+
+
+
+
+
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
