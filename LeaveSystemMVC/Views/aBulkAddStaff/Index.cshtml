@@ -6,7 +6,7 @@
 
 
 
-<div class="col-md-6">
+<div class="col-md-10">
     @using (Html.BeginForm("Index", "aBulkAddStaff", FormMethod.Post, new { enctype = "multipart/form-data" }))
     {
         @Html.AntiForgeryToken()
@@ -22,6 +22,7 @@
                 <input type="file" id="dataFile" name="upload" />
             </div>
         </div>
+        <br /><br />
         <div class="form-horizontal">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" name="Index" value="Upload" class="btn btn-default" />

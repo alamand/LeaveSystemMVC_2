@@ -1,61 +1,67 @@
-﻿
- <!--Editing a department View -->
+﻿<!--Editing a department View -->
 
 @model LeaveSystemMVC.Models.aDepartment
 @Html.Partial("_LeftMenu")
 <div class="col-md-10">
+    <h2>Editing a Department</h2>
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
 
-        <h5>Editing a Department</h5>
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="text-muted bootstrap-admin-box-title">Application Details</div>
+                </div>
+                <div class="bootstrap-admin-panel-content">
+                    <div class="form-horizontal">
+                        <div class="row">
+                            <div class="col-md-9" style="white-space:nowrap">
+                                <label>List of Departments - Current Line Managers</label>
+                                <div class="col-md-8">
+                                    @Html.ListBoxFor(model => model.departmentName, new SelectList(ViewBag.departmentDetails), new { @class = "form-control" })
+                                </div>
+                                </div>
+                        </div>   
+                        <br />
 
-        
-            <h4>List of Departments - Current Line Manager of the Department </h4>
-            @Html.ListBoxFor(model => model.departmentName, new SelectList(ViewBag.departmentDetails))
-        
-
-        <table style="margin:30px;width:100%;">
-            <tr>
-                <td>
-                     <div class="form-group">
-
-                         <!--Prompts user to select one of the departments in the database to edit -->
-
-                            @Html.LabelFor(model => model.departmentName, "Select Department to Edit", htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-4">
-                                @Html.DropDownListFor(model => model.departmentName,new SelectList(ViewBag.departmentNames) )
-                                @Html.ValidationMessageFor(model => model.departmentName, "", new { @class = "text-danger" })
+                        <div class="row">
+                            
+                                <!--Prompts user to select one of the departments in the database to edit -->
+                            <div class="col-md-6" style="white-space:nowrap">
+                                @Html.LabelFor(model => model.departmentName, "Select Department to Edit", htmlAttributes: new { @class = "control-label col-md-2" })
                             </div>
-                    </div>
-                </td>
-            </tr>
-        </table>
+                                 <div class="col-md-5">
+                                    @Html.DropDownListFor(model => model.departmentName, new SelectList(ViewBag.departmentNames), new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.departmentName, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        
+                        <br />
+                        <div class="col-md-6" style="white-space:nowrap">
 
-        <table style="margin: 30px;">
-            <tr>
-                <td>
-                    <div class="form-group">
+                            <!--Prompts user to select a different line manager for the department from the list-->
 
-                        <!--Prompts user to select a different line manager for the department from the list-->
+                            @Html.LabelFor(model => model.primaryLMID, "Change Line Manager", htmlAttributes: new { @class = "control-label col-md-2" })
+                            </div>
+                            <div class="col-md-5">
+                                @Html.DropDownListFor(model => model.primaryLMID, new SelectList(Model.linemanagerSelectionListOptions, "Key", "Value"), new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.primaryLMID, "", new { @class = "text-danger" })
+                            </div>
+                        
 
-                        @Html.LabelFor(model => model.primaryLMID, "Change Line Manager", htmlAttributes: new { @class = "control-label col-md-4" })
-                        <div class="col-md-4">
-                            @Html.DropDownListFor(model => model.primaryLMID, new SelectList(Model.linemanagerSelectionListOptions, "Key", "Value"))
-                            @Html.ValidationMessageFor(model => model.primaryLMID, "", new { @class = "text-danger" })
+                        <br /><br /><br />
+                        <div class="form-group">
+                            <div class="col-md-offset-4 col-md-10">
+                                <input type="submit" value="Submit" class="btn btn-default" />
+                            </div>
                         </div>
                     </div>
-                </td>
-            </tr>
-        </table>
-
-        <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Submit" class="btn btn-default" />
-        </div>
+                </div>
+            </div>
         </div>
     }
     </div>
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }
