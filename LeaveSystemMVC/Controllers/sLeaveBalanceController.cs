@@ -21,8 +21,7 @@ namespace LeaveSystemMVC.Controllers
             string a = c.ToString();
             a = a.Substring(a.Length - 5);
             //System.Diagnostics.Debug.WriteLine("id is:"+a + ".");
-
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;          
 
             string queryString = "Select Balance,Leave_Name FROM dbo.Leave_Balance, dbo.Leave_Type where Leave_Balance.Employee_ID = '" + a+"' AND Leave_Balance.Leave_ID = Leave_Type.Leave_ID";
 
@@ -38,6 +37,8 @@ namespace LeaveSystemMVC.Controllers
                 int shortHrs = 0;
                 int unpaid = 0;
                 int DIL = 0;
+
+
 
                 using (var reader = command.ExecuteReader()) {
                     while (reader.Read()) {
@@ -79,6 +80,29 @@ namespace LeaveSystemMVC.Controllers
                 }
                 connection.Close();
             }
+
+            string queryString1 = "SELECT DATEDIFF(day,Emp_Start_Date,GETDATE()) AS DiffDate from dbo.Employee where Employee_ID = '" + a + "';";
+            System.Diagnostics.Debug.WriteLine("entered diff query");
+            using (var connection1 = new SqlConnection(connectionString))
+            {
+                var command1 = new SqlCommand(queryString1, connection1);
+                connection1.Open();
+                using (var reader1 = command1.ExecuteReader())
+                {
+                    while (reader1.Read())
+                    {
+                        System.Diagnostics.Debug.WriteLine("inside reader");
+                        int dif = (int)reader1["DiffDate"];
+                        System.Diagnostics.Debug.WriteLine("dif is:" +dif);
+                        if (dif < 183) {
+                            ViewBag.annual = 0;
+                        }
+                    }
+
+                }
+                connection1.Close();
+            }
+
 
 
             return View(model);

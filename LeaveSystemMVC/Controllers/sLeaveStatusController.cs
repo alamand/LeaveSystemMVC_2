@@ -38,7 +38,7 @@ namespace LeaveSystemMVC.Controllers
                     {
                         var leave = new Models.sLeaveModel();
                         string leave1 = (string)reader["Leave_Name"];
-
+                        //leave.staf
                         if (leave1.Equals("Annual"))
                             leave.leaveType = "Annual";
 
@@ -57,14 +57,16 @@ namespace LeaveSystemMVC.Controllers
                         if (leave1.Equals("Unpaid"))
                             leave.leaveType = "Unpaid";
 
-                        //leave.leaveType = (string)reader["Leave_ID"];
-                        //leave.applicationDate = (int)reader["Leave_Application_ID"];
+                        int id = (int)reader["Leave_Application_ID"];
+
+                        leave.leaveID = id.ToString();
+
                         leave.startDate = (DateTime)reader["Start_Date"];
                         
                         leave.endDate = (DateTime)reader["End_Date"];
                         
                         leave.leaveDuration = (int)reader["Total_Leave_Days"];
-                        /*
+                        
                         if (!reader.IsDBNull(11))
                         {
                             leave.shortStartTime = (TimeSpan)reader["Start_Hrs"];
@@ -78,7 +80,7 @@ namespace LeaveSystemMVC.Controllers
                              leave.shortEndTime = (TimeSpan)reader["End_Hrs"];
                         else
                              leave.shortEndTime = new TimeSpan(0, 0, 0, 0, 0);
-                        */
+                        
 
                         leave.leaveStatus = (int)reader["Status"];
 
@@ -99,6 +101,26 @@ namespace LeaveSystemMVC.Controllers
             }
 
             return View(model);
+        }
+        public ActionResult delete(int id) {
+            ///
+
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+
+            string queryString = "DELETE FROM Leave WHERE Leave_Application_ID = '"+id+"'";
+
+            var connection = new SqlConnection(connectionString);
+
+            connection.Open();
+            //    System.Diagnostics.Debug.WriteLine("connection opened");
+            var command = new SqlCommand(queryString, connection);
+
+            command.ExecuteNonQuery();
+            //  System.Diagnostics.Debug.WriteLine("connection executed");
+            Response.Write("<script> alert('Deleted Leave Application')</script>");
+            connection.Close();
+
+            return RedirectToAction("Index");
         }
     }
 }
