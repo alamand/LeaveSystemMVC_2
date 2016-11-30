@@ -1731,7 +1731,7 @@
     <Content Include="Views\Web.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\sLeaveStatus\_ViewStart.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\LApplication\IndexOld.cshtml" />
     <Content Include="Views\aAddDepartment\Index.cshtml" />
