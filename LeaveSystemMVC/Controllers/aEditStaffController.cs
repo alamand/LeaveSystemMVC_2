@@ -48,7 +48,8 @@ namespace LeaveSystemMVC.Controllers
                             EmptyEmployee.staffIDInString = EmptyEmployee.staffID.ToString();
                             EmptyEmployee.firstName = (string)reader[1];
                             EmptyEmployee.lastName = (string)reader[2];
-                            EmptyEmployee.gender = (char)reader[3];
+                            string gender = (string)reader[3];
+                            EmptyEmployee.gender = gender[0];
                             EmptyEmployee.phoneNo = (string)reader[4];
                             EmptyEmployee.email = (string)reader[5];
                             EmptyEmployee.userName = (string)reader[6];
