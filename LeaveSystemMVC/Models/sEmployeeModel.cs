@@ -47,7 +47,7 @@ namespace LeaveSystemMVC.Models
         //to for display purposes, to give users a list of departments to
         //choose from
         public Dictionary<int, string> departmentList { get; set; } = new Dictionary<int, string>();
-        [Required(ErrorMessage = "A Department is required")]
+        //[Required(ErrorMessage = "A Department is required")]
         public string deptName { get; set; }
         [Display(Name = "Phone Number")]
         [Required(ErrorMessage = "You must provide your home phone number.")]

@@ -323,7 +323,9 @@ namespace LeaveSystemMVC.Controllers
             //Message string for the success case. Message will appear in popup window
             ViewBag.SuccessMessage = SE.firstName + " " + SE.lastName + " has been added to the database and an e-mail containing the account details sent to " + gendertext;
             ModelState.Clear();
-            return Index();
+            /*Redirect the user to the hr edit balances page.*/
+            return RedirectToAction("Index", "hrEditBalance");
+            //return Index();
         }
 
         /*Construct a query string for inserting roles into the db
