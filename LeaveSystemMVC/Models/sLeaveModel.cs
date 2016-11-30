@@ -14,7 +14,7 @@ namespace LeaveSystemMVC.Models
         public string leaveID { get; set; }
         public string employeeID { get; set; }
 
-        [Display(Name ="Name")]
+        [Display(Name = "Name")]
         public string staffName { get; set; }
 
         [Display(Name = "Leave Type")]
@@ -27,45 +27,45 @@ namespace LeaveSystemMVC.Models
 
         [DisplayName("Start Date")]
         [Required(ErrorMessage = "Please select leave start date")]
-        public DateTime startDate { get; set; } 
+        public DateTime startDate { get; set; }
 
         [DisplayName("End Date")]
         [Required(ErrorMessage = "Please select leave end date")]
-        public DateTime endDate { get; set; } 
+        public DateTime endDate { get; set; }
 
-        [Display(Name ="Return Date")]
+        [Display(Name = "Return Date")]
         public DateTime returnDate { get; set; }
 
-        public int leaveDuration { get; set; } 
+        public int leaveDuration { get; set; }
 
         [DisplayName("Start Time")]
-        public TimeSpan? shortStartTime { get; set; } 
+        public TimeSpan? shortStartTime { get; set; }
 
         [DisplayName("End Time")]
-        public TimeSpan? shortEndTime { get; set; } 
+        public TimeSpan? shortEndTime { get; set; }
 
         [DisplayName("Line Manager Comment")]
-        public string lmComment { get; set; } 
+        public string lmComment { get; set; }
 
         [DisplayName("HR Comment")]
-        public string hrComment { get; set; } 
+        public string hrComment { get; set; }
 
         [DisplayName("Leave Status")]
-        public int leaveStatus { get; set; } 
+        public int leaveStatus { get; set; }
 
         [DisplayName("Comments")]
-        public string comments { get; set; } 
+        public string comments { get; set; }
 
         [DisplayName("Supporting Docs")]
-        public string supportingDocs { get; set; } 
+        public string supportingDocs { get; set; }
 
         [DisplayName("Book Air Ticket?")]
-        public bool bookAirTicket { get; set; } 
+        public bool bookAirTicket { get; set; }
 
         [DisplayName("Phone Number")]
         [Required(ErrorMessage = "You must provide a phone number in international format")]
         [DataType(DataType.PhoneNumber, ErrorMessage = "You must provide a phone number in international format.")]
         [RegularExpression(@"^\+[1-9]{1}[0-9]{3,14}$", ErrorMessage = "You must provide a phone number in international format")]
-        public string contactDetails { get; set; } 
+        public string contactDetails { get; set; }
     }
 }
