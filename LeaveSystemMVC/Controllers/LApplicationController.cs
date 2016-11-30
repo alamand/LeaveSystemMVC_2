@@ -31,26 +31,26 @@ namespace LeaveSystemMVC.Controllers
 
         [HttpPost]
         public ActionResult Create(Models.sLeaveModel model, HttpPostedFileBase file) {
+            var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
+            var c = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            ViewBag.claim = c;
+            string a = c.ToString();
+            a = a.Substring(a.Length - 5);
+            string fileN = "";
             System.Diagnostics.Debug.WriteLine("Entered post");
             // Verify that the user selected a file
             if (file != null && file.ContentLength > 0)
             {
                 // extract only the filename
                 var fileName = Path.GetFileName(file.FileName);
-                fileName = fileName + "";
+                 fileName = a+fileName;
+                System.Diagnostics.Debug.WriteLine("filename  is:"+fileName);
                 System.Diagnostics.Debug.WriteLine("file Uploaded");
-
+                fileN = fileName;
                 // store the file inside ~/App_Data/uploads folder
-                var path = Path.Combine(Server.MapPath("~/App_Data"), fileName);
+                var path = Path.Combine(Server.MapPath("~/App_Data"),fileName);
                 file.SaveAs(path);
-            }   // store the file inside ~/App_Data/uploads folder
-             
-            //            DateTime d3 = model.shortStartTime;
-            //          string stTime = d3.ToString("HH:mm:ss");
-
-            //DateTime d4 = model.shortEndTime;
-            //string endTime = d4.ToString("HH:mm:ss");
-
+            }
             DateTime d1 = model.startDate;
             string stdate = d1.ToString("yyyy-MM-dd");
 
@@ -73,8 +73,7 @@ namespace LeaveSystemMVC.Controllers
                 //Redirect(Create.UrlReferrer.ToString());
             }
             System.Diagnostics.Debug.WriteLine("Reached is valid");
-            if (ModelState.IsValid)
-            {
+            
 
                 System.Diagnostics.Debug.WriteLine("entered is valid");
                 int days = 0;
@@ -131,7 +130,11 @@ namespace LeaveSystemMVC.Controllers
                 if (model.leaveType.Equals("Annual"))
                 {
                     leaveId = 1;
-                }
+                double difference = (d1 - today).TotalDays;
+                    if(difference<30)
+                    ModelState.AddModelError("startDate", "Leave must be applied 30 days in advance");
+
+            }
                 if (model.leaveType.Equals("Sick"))
                 {
                     leaveId = 3;
@@ -144,7 +147,7 @@ namespace LeaveSystemMVC.Controllers
                 {
                     leaveId = 2;
 
-                    ModelState.AddModelError("startDate", "Maternity is disabled;");
+                //    ModelState.AddModelError("startDate", "Maternity is disabled;");
 
                     TimeSpan diff = d2 - d1;
                         days = diff.Days;
@@ -191,23 +194,15 @@ namespace LeaveSystemMVC.Controllers
                     
                 string leaveid = leaveId.ToString();
 
-                var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
-                var c = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
-                ViewBag.claim = c;
-                string a = c.ToString();
-                a = a.Substring(a.Length - 5);
-                //System.Diagnostics.Debug.WriteLine("id is:"+a + ".");
-
+            if (ModelState.IsValid)
+            {
                 bool ticket = model.bookAirTicket;
-
-                //System.Diagnostics.Debug.WriteLine("ticket is:" +ticket);
                 
-
                 string abc = model.comments;
 
                 var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
 
-                string queryString = "Insert INTO Leave (Employee_ID,Start_Date,End_Date,Reporting_Back_Date,Leave_ID,Contact_Outside_UAE,Comment,Flight_Ticket,Total_Leave_Days,Start_Hrs,End_Hrs,Status) VALUES ('" + a + "','" + stdate + "','" + endate + "','" + endate + "','" + leaveid + "','" + model.contactDetails + "','" + model.comments + "','" + ticket + "','"+days+"','" + model.shortStartTime + "','" + model.shortEndTime + "','0');";
+                string queryString = "Insert INTO Leave (Employee_ID,Document,Start_Date,End_Date,Reporting_Back_Date,Leave_ID,Contact_Outside_UAE,Comment,Flight_Ticket,Total_Leave_Days,Start_Hrs,End_Hrs,Status) VALUES ('" + a + "','"+fileN+"','" + stdate + "','" + endate + "','" + endate + "','" + leaveid + "','" + model.contactDetails + "','" + model.comments + "','" + ticket + "','"+days+"','" + model.shortStartTime + "','" + model.shortEndTime + "','0');";
 
                 var connection = new SqlConnection(connectionString);
 
