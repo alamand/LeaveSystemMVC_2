@@ -9,6 +9,7 @@ namespace LeaveSystemMVC.Models
     public class sleaveBalanceModel
     {
 
+        public int empId { get; set; } = 0;
         [Required]
         public int annual { get; set; } = 0;
         public int annualID { get; set; } = 0;
