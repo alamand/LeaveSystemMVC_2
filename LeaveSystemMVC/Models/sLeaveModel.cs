@@ -9,52 +9,63 @@ namespace LeaveSystemMVC.Models
 {
     public class sLeaveModel
     {
+        public int iter { get; set; }
+        [Display(Name = "Leave ID: ")]
+        public string leaveID { get; set; }
+        public string employeeID { get; set; }
 
-        public String staffName { get; set; } = "Dwayne";
+        [Display(Name = "Name")]
+        public string staffName { get; set; }
 
-        [Required]
+        [Display(Name = "Leave Type")]
         // [DisplayName("Select Leave Type")]
-        public String leaveType { get; set; } = "Annual";
+        [Required(ErrorMessage = "Please select leave type")]
+        public string leaveType { get; set; }
 
         //[DisplayName("Select Application Date")]
-        public DateTime applicationDate { get; set; } = new DateTime(24 - 11 - 2016);
+        public DateTime applicationDate { get; set; } //Date of application creation
 
-        [DisplayName("Leave Start Date")]
-        public DateTime startDate { get; set; } = new DateTime(24 - 12 - 2016);
+        [DisplayName("Start Date")]
+        [Required(ErrorMessage = "Please select leave start date")]
+        public DateTime startDate { get; set; }
 
-        [DisplayName("Leave End Date")]
-        public DateTime endDate { get; set; } = new DateTime(24 - 1 - 2017);
+        [DisplayName("End Date")]
+        [Required(ErrorMessage = "Please select leave end date")]
+        public DateTime endDate { get; set; }
 
-        public DateTime returnDate { get; set; } = new DateTime(24 - 1 - 2017);
+        [Display(Name = "Return Date")]
+        public DateTime returnDate { get; set; }
 
-        [DisplayName("Duration")]
-        public int leaveDuration { get; set; } = 30;
+        public int leaveDuration { get; set; }
 
-        [DisplayName("Leave Start Time")]
-        public DateTime shortStartTime { get; set; } = new DateTime(24 - 1 - 2017);
+        [DisplayName("Start Time")]
+        public TimeSpan? shortStartTime { get; set; }
 
-        [DisplayName("Leave End Time")]
-        public DateTime shortEndTime { get; set; } = new DateTime(24 - 1 - 2017);
+        [DisplayName("End Time")]
+        public TimeSpan? shortEndTime { get; set; }
 
         [DisplayName("Line Manager Comment")]
-        public string lmComment { get; set; } = "Leave Approved";
+        public string lmComment { get; set; }
 
         [DisplayName("HR Comment")]
-        public string hrComment { get; set; } = "Leave Approved";
+        public string hrComment { get; set; }
 
         [DisplayName("Leave Status")]
-        public int leaveStatus { get; set; } = 1;
+        public int leaveStatus { get; set; }
 
-        [DisplayName("Enter Comments")]
-        public string comments { get; set; } = "Taking Annual Leave";
+        [DisplayName("Comments")]
+        public string comments { get; set; }
 
         [DisplayName("Supporting Docs")]
-        public string supportingDocs { get; set; } = "/abc";
+        public string supportingDocs { get; set; }
 
         [DisplayName("Book Air Ticket?")]
-        public bool bookAirTicket { get; set; } = true;
+        public bool bookAirTicket { get; set; }
 
         [DisplayName("Phone Number")]
-        public string contactDetails { get; set; } = "052123344";
+        [Required(ErrorMessage = "You must provide a phone number in international format")]
+        [DataType(DataType.PhoneNumber, ErrorMessage = "You must provide a phone number in international format.")]
+        [RegularExpression(@"^\+[1-9]{1}[0-9]{3,14}$", ErrorMessage = "You must provide a phone number in international format")]
+        public string contactDetails { get; set; }
     }
 }
