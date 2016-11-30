@@ -10,11 +10,11 @@
   </configSections>
   <connectionStrings>
 <<<<<<< HEAD
-    <add name="DefaultConnection" connectionString="Data Source=ZOBAD-PC\ZOBADMSQL;Initial Catalog=LeaveSystem;Integrated Security=True" providerName="System.Data.SqlClient" />
-=======
-    <add name="DefaultConnection" connectionString="Data Source=junaid-TOSH;Initial Catalog=LeaveSystem;Integrated Security=True" providerName="System.Data.SqlClient" />
->>>>>>> 47227ca6e2604151de46066955652bd3178c9364
+    <add name="DefaultConnection" connectionString="Data Source=(local)\SQLEXPRESS;Initial Catalog=LeaveSystem;Integrated Security=True" providerName="System.Data.SqlClient" />
   </connectionStrings>
+=======
+    <add name="DefaultConnection" connectionString="Data Source=PC;Initial Catalog=LeaveSystem;Integrated Security=True" providerName="System.Data.SqlClient" /> </connectionStrings>
+>>>>>>> 8681a32d92bc361ece23e1299bb6dc51e16d4607
   <appSettings>
     <add key="webpages:Version" value="3.0.0.0" />
     <add key="webpages:Enabled" value="false" />

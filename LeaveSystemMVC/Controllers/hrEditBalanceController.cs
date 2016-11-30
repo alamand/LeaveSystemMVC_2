@@ -156,7 +156,9 @@ namespace LeaveSystemMVC.Controllers
         [HttpPost]
         public ActionResult Edit(Models.sleaveBalanceModel mode)
         {
-            int id = mode.empId;
+            int id = 0;
+            //int id = mode.empId;
+
             if (ModelState.IsValid)
             {
                 UpdateBalance(mode.annualID, id, mode.annual);

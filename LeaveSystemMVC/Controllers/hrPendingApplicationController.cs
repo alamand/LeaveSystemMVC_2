@@ -152,12 +152,12 @@ namespace LeaveSystemMVC.Controllers
                             string balanceType = GetLeaveType((int)reader["Leave_ID"]);
                             int balance = (int)reader["Balance"];
                             string empGender = (string)reader["Gender"];
+                            string email = (string)reader["Email"];
+                            TempData["EmployeeEmail"] = email;
                             if (empGender.Equals("M") && balanceType.Equals("Maternity"))
                             {
                                 continue;
                             }
-                            string email = (string)reader["Email"];
-                            TempData["EmployeeEmail"] = email;
                             string balanceString = balanceType + ": " + balance.ToString();
                             balanceStrings.Add(balanceString);
                         }
