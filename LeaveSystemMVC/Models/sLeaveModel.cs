@@ -9,63 +9,52 @@ namespace LeaveSystemMVC.Models
 {
     public class sLeaveModel
     {
-        public int iter { get; set; }
-        [Display(Name = "Leave ID: ")]
-        public string leaveID { get; set; }
-        public string employeeID { get; set; }
 
-        [Display(Name ="Name")]
-        public string staffName { get; set; }
+        public String staffName { get; set; } = "Dwayne";
 
-        [Display(Name = "Leave Type")]
+        [Required]
         // [DisplayName("Select Leave Type")]
-        [Required(ErrorMessage = "Please select leave type")]
-        public string leaveType { get; set; }
+        public String leaveType { get; set; } = "Annual";
 
         //[DisplayName("Select Application Date")]
-        public DateTime applicationDate { get; set; } //Date of application creation
+        public DateTime applicationDate { get; set; } = new DateTime(24 - 11 - 2016);
 
-        [DisplayName("Start Date")]
-        [Required(ErrorMessage = "Please select leave start date")]
-        public DateTime startDate { get; set; } 
+        [DisplayName("Leave Start Date")]
+        public DateTime startDate { get; set; } = new DateTime(24 - 12 - 2016);
 
-        [DisplayName("End Date")]
-        [Required(ErrorMessage = "Please select leave end date")]
-        public DateTime endDate { get; set; } 
+        [DisplayName("Leave End Date")]
+        public DateTime endDate { get; set; } = new DateTime(24 - 1 - 2017);
 
-        [Display(Name ="Return Date")]
-        public DateTime returnDate { get; set; }
+        public DateTime returnDate { get; set; } = new DateTime(24 - 1 - 2017);
 
-        public int leaveDuration { get; set; } 
+        [DisplayName("Duration")]
+        public int leaveDuration { get; set; } = 30;
 
-        [DisplayName("Start Time")]
-        public TimeSpan? shortStartTime { get; set; } 
+        [DisplayName("Leave Start Time")]
+        public DateTime shortStartTime { get; set; } = new DateTime(24 - 1 - 2017);
 
-        [DisplayName("End Time")]
-        public TimeSpan? shortEndTime { get; set; } 
+        [DisplayName("Leave End Time")]
+        public DateTime shortEndTime { get; set; } = new DateTime(24 - 1 - 2017);
 
         [DisplayName("Line Manager Comment")]
-        public string lmComment { get; set; } 
+        public string lmComment { get; set; } = "Leave Approved";
 
         [DisplayName("HR Comment")]
-        public string hrComment { get; set; } 
+        public string hrComment { get; set; } = "Leave Approved";
 
         [DisplayName("Leave Status")]
-        public int leaveStatus { get; set; } 
+        public int leaveStatus { get; set; } = 1;
 
-        [DisplayName("Comments")]
-        public string comments { get; set; } 
+        [DisplayName("Enter Comments")]
+        public string comments { get; set; } = "Taking Annual Leave";
 
         [DisplayName("Supporting Docs")]
-        public string supportingDocs { get; set; } 
+        public string supportingDocs { get; set; } = "/abc";
 
         [DisplayName("Book Air Ticket?")]
-        public bool bookAirTicket { get; set; } 
+        public bool bookAirTicket { get; set; } = true;
 
         [DisplayName("Phone Number")]
-        [Required(ErrorMessage = "You must provide a phone number in international format")]
-        [DataType(DataType.PhoneNumber, ErrorMessage = "You must provide a phone number in international format.")]
-        [RegularExpression(@"^\+[1-9]{1}[0-9]{3,14}$", ErrorMessage = "You must provide a phone number in international format")]
-        public string contactDetails { get; set; } 
+        public string contactDetails { get; set; } = "052123344";
     }
 }

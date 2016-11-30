@@ -1,0 +1,76 @@
+﻿@model LeaveSystemMVC.Models.sleaveBalanceModel
+
+@{
+    ViewBag.Title = "Edit";
+}
+@Html.Partial("_LeftMenu")
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+
+        <h4>@ViewBag.title</h4>
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <hr />
+        @if (TempData["Success"] != null)
+        {
+            <div class="green">
+                <p><strong>Success:</strong> @TempData["Success"].ToString()</p>
+            </div>
+        }
+    </div>
+    @Html.ValidationMessage("errmsg")
+
+    <h2>Edit</h2>
+    @Html.HiddenFor(modelItem => modelItem.empId, new { @Value = ViewBag.sid })
+    <input type="hidden" value=ViewBaf.sID />
+    <div class="col-md-offset-2 col-md-12">
+        <table class="table">
+            <tr>
+                <th>Balance Type</th>
+                <th>Balance</th>
+            </tr>
+            <tr>
+                <td>Annual</td>
+                <td>@ViewBag.annual</td>
+                <td>@Html.TextBoxFor(modelItem => modelItem.annual, new { @Value = ViewBag.annual })</td>
+                @Html.HiddenFor(modelItem => modelItem.annualID)
+            </tr>
+            <tr>
+                <td>Maternity</td>
+                <td>@ViewBag.maternity </td>
+                <td>@Html.TextBoxFor(modelItem => modelItem.maternity, new { @Value = ViewBag.maternity })</td>
+                @Html.HiddenFor(modelItem => modelItem.maternityID)
+            </tr>
+            <tr>
+                <td>Sick</td>
+                <td>@ViewBag.sick</td>
+                <td>@Html.TextBoxFor(modelItem => modelItem.sick, new { @Value = ViewBag.sick })</td>
+                @Html.HiddenFor(modelItem => modelItem.sickID)
+            </tr>
+            <tr>
+                <td>Days In Lieue</td>
+                <td>@ViewBag.daysInLieue</td>
+                <td>@Html.TextBoxFor(modelItem => modelItem.daysInLieue, new { @Value = ViewBag.daysInLieue })</td>
+                @Html.HiddenFor(modelItem => modelItem.daysInLieueID)
+            </tr>
+            <tr>
+                <td>Compassionate</td>
+                <td>@ViewBag.compassionate</td>
+                <td>@Html.TextBoxFor(modelItem => modelItem.compassionate, new { @Value = ViewBag.compassionate })</td>
+                @Html.HiddenFor(modelItem => modelItem.compassionateID)
+            </tr>
+            <tr>
+                <td>Short Leave</td>
+                <td>@ViewBag.shortLeaveHours</td>
+                <td>@Html.TextBoxFor(modelItem => modelItem.shortLeaveHours, new { @Value = ViewBag.shortLeaveHours })</td>
+                @Html.HiddenFor(modelItem => modelItem.shortID)
+            </tr>
+        </table>
+    </div>
+    <div class="col-md-offset-4 col-md-12">
+        <input type="submit" value="Save" class="btn btn-default" />
+    </div>
+}

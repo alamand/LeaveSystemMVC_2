@@ -102,7 +102,7 @@ namespace LeaveSystemMVC.Controllers
                         }
 
                     }
-                    Response.Write("<script> alert('Success!');location.href='CreateHoliday'</script>");
+                    Response.Write("<script> alert('Success!');</script>");
                 }
 
                 else { ModelState.AddModelError("errorMessage", "Error!Holiday already Exists."); }
