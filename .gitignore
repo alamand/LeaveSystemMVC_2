@@ -240,3 +240,6 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+/LeaveSystemMVC/App_Data/33333IBM.txt
+/LeaveSystemMVC/App_Data/Provisioning_template_v2 - Copy.csv
+/LeaveSystemMVC/App_Data/Provisioning_template_v3.csv
