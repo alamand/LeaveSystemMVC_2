@@ -108,7 +108,7 @@ namespace LeaveSystemMVC.Controllers
                     using (var reader = command.ExecuteReader())
                     connection.Close();
                 }
-                Response.Write("<script> alert ('Successfully added a new department')</script>");
+                Response.Write("<script> alert ('Successfully added a new leave type.')</script>");
             }
             return Index();
         }
