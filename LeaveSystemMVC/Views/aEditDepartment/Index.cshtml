@@ -19,7 +19,7 @@
                             <div class="col-md-10" style="white-space:nowrap; line-height:60px;">
                                 <label>List of Departments with Current Line Managers</label>
                                 <div class="col-md-8">
-                                    @Html.ListBoxFor(model => model.departmentName, new SelectList(ViewBag.departmentDetails), new { @class = "form-control" })
+                                    @Html.ListBoxFor(model => model.departmentName, new SelectList(ViewBag.departmentDetails), new { @class = "form-control", size = 5 })
                                 </div>
                                 </div>
                         </div>   
@@ -41,7 +41,7 @@
 
                             <!--Prompts user to select a different line manager for the department from the list-->
 
-                            @Html.LabelFor(model => model.primaryLMID, "Change Line Manager", htmlAttributes: new { @class = "control-label col-md-2" })
+                            @Html.LabelFor(model => model.primaryLMID, "New Line Manager", htmlAttributes: new { @class = "control-label col-md-2" })
                             </div>
                             <div class="col-md-5">
                                 @Html.DropDownListFor(model => model.primaryLMID, new SelectList(Model.linemanagerSelectionListOptions, "Key", "Value"), new { @class = "form-control" })
@@ -51,7 +51,7 @@
 
                         <br /><br /><br />
                         <div class="form-group">
-                            <div class="col-md-offset-4 col-md-10">
+                            <div class="col-md-offset-4 col-md-8">
                                 <input type="submit" value="Submit" class="btn btn-default" />
                             </div>
                         </div>
