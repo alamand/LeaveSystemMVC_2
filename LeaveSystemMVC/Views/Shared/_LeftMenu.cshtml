@@ -44,7 +44,6 @@
 
         @if (User.IsInRole("Admin"))
         {
-            <li role="presentation" class="nav-divider"></li>
             <li role="presentation" class="dropdown-header"style="font-size:14pt">Administrator</li>
             @Html.MenuItem("Add Staff Member", "Index", "aAddStaff")
             @Html.MenuItem("Edit Staff Member", "Select", "aEditStaff")

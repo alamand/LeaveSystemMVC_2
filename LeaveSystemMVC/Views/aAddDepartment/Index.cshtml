@@ -46,7 +46,7 @@
                         <div class="row">
                             <!--Prompts user to select one of the line managers for the newly entered department -->
                             <div class="col-md-6" style="white-space:nowrap">
-                                @Html.LabelFor(model => model.primaryLMID, "Line Manager", htmlAttributes: new { @class = "control-label col-md-2" })
+                                @Html.LabelFor(model => model.primaryLMID, "Existing Line Managers", htmlAttributes: new { @class = "control-label col-md-2" })
                             </div>
                             <div class="col-md-6">
                                 @Html.DropDownListFor(model => model.primaryLMID, new SelectList(Model.linemanagerSelectionListOptions, "Key", "Value"), new { @class = "form-control" })
