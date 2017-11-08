@@ -177,15 +177,9 @@ namespace LeaveSystemMVC.Controllers
                     leaveId = 6;
                     if (model.startDate != model.endDate)
                     {
-                        ModelState.AddModelError("endDate", "For short leave, Start date and Return Date should be same!");
+                        ModelState.AddModelError("endDate", "For short leave, THe start date and return date should be same!");
                     }
-
-
                 }
-                else {
-
-                }
-
 
                 if (model.leaveType.Equals("Unpaid"))
                 {

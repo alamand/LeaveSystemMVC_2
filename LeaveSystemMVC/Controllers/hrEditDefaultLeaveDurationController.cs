@@ -148,11 +148,11 @@ namespace LeaveSystemMVC.Controllers
                 UpdateBalance(mode.daysInLieueID, mode.daysInLieue);
                 UpdateBalance(mode.maternityID, mode.maternityID);
                 UpdateBalance(mode.shortID, mode.shortLeaveHours);
-                Response.Write("<script> alert('Sucess. The Information has been updated.');</script>");
+                Response.Write("<script> alert('Success. The Information has been updated.');</script>");
             }
             else
             {
-                ModelState.AddModelError("errmsg", "Failed: An Error Occured. Please Check your input and try again");
+                ModelState.AddModelError("errmsg", "Failed: An error occured. Please check your input and try again.");
             }
             return Display();
         }

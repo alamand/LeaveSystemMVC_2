@@ -53,25 +53,26 @@ namespace LeaveSystemMVC.Controllers
         {
             if (string.IsNullOrWhiteSpace(calender.holidayName))
             {
-                ModelState.AddModelError("holidayName", "Holiday Name Must be entered");
+                ModelState.AddModelError("holidayName", "A holiday name must be entered.");
             }
             if (!string.IsNullOrWhiteSpace(calender.holidayName) && calender.holidayName.Length > 30)
             {
-                ModelState.AddModelError("holidayName", "Holiday Name Too long. The Name should be no greater than 30 char");
+                ModelState.AddModelError("holidayName", "The holiday name is too long. The name should be no greater than 30 characters.");
             }
             else if (string.IsNullOrEmpty(calender.startDate.ToString()))
             {
-                ModelState.AddModelError("startDate", "Start Date Must not be left empty");
+                ModelState.AddModelError("startDate", "The start date must not be left empty.");
             }
 
-            else if (calender.startDate.Equals(DateTime.Today) || calender.startDate < DateTime.Today)
+            //Should be able to add holidays in the past e.g. when the announcement is made late.
+            /*else if (calender.startDate.Equals(DateTime.Today) || calender.startDate < DateTime.Today)
             {
                 ModelState.AddModelError("startDate", "The Start Date cannot be the current or previous day.");
             }
             else if (calender.endDate.Equals(DateTime.Today) || calender.startDate < DateTime.Today)
             {
                 ModelState.AddModelError("endDate", "The End Date cannot be the current or previous days");
-            }
+            }*/
 
             if (ModelState.IsValid)
 
@@ -105,7 +106,7 @@ namespace LeaveSystemMVC.Controllers
                     Response.Write("<script> alert('Success!');</script>");
                 }
 
-                else { ModelState.AddModelError("errorMessage", "Error!Holiday already Exists."); }
+                else { ModelState.AddModelError("errorMessage", "This holiday already exists."); }
 
                 // return RedirectToAction("Display");
             }

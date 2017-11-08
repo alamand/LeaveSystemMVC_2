@@ -6,20 +6,20 @@
         @Html.AntiForgeryToken()
 
         <div class="form-horizontal">
-            <h4>Credit Leave Balances</h4>
+            <h4>Credit Leave Balances at the Start of Each Calendar Year</h4>
             <hr />
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             <article>
-                Note: To credit the organization's Annual leave balances press the button below. This would reset the balance of all staff member and
-                set it to what each employees get at the begining of each year. Only The remaining balance for annual balance gets added to the new balance. Press this button
-                and the starting of the new year.
+                <b>Note: Use this feature only at the start of the year to credit the organization's leave balances.
+                This feature will reset the balances of all staff members to the alloted quota per year, with the exception of annual leave.
+                For annual leave, the remaining balance is carried over to the next year.</b>
             </article>
             <hr />
 
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-10">
                    
-                    <input type="submit" value="Credit Organization Annual Leave Balances" class="btn btn-default" />
+                    <input type="submit" value="Credit Leave Balances of Organization" class="btn btn-default" />
                 </div>
             </div>
         </div>

@@ -6,7 +6,7 @@
 {
     <div class="col-md-10">
         <div>
-            <h2>Leave Application</h2>
+            <h2>Pending Leave Application</h2>
             <hr />
             <div class="row">
                 <div class="col-md-5">
@@ -132,7 +132,7 @@
                             <div class="row">
                                 @Html.LabelFor(model => model.hrComment, "Comment", htmlAttributes: new { @class = "control-label col-md-4" })
 
-                                @Html.TextAreaFor(model => model.hrComment, new { htmlAttributes = new { @class = "form-control col-md-4" } })
+                                @Html.TextAreaFor(model => model.hrComment, new { rows = "6", cols = "35" })
                             </div>
 
                             <hr />

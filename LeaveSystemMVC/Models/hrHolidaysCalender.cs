@@ -16,7 +16,7 @@ namespace LeaveSystemMVC.Models
         public string holidayName { set; get; }
 
         [Required]
-        [DisplayName("Start Date")]
+        [DisplayName("Date")]
         [DataType(DataType.Date)]
         //[DisplayFormat(DataFormatString ="dd/MM/yyyy")]
         public DateTime startDate { set; get; }

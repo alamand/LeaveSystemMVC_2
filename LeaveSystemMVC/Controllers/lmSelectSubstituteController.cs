@@ -97,7 +97,7 @@ namespace LeaveSystemMVC.Controllers
                     using (var reader = command.ExecuteReader())
                         connection.Close();
                 }
-                Response.Write("<script> alert ('Successfully Transfered Authority Back')</script>");
+                Response.Write("<script> alert ('Successfully transfered authority back')</script>");
             }
             else
             
@@ -127,7 +127,7 @@ namespace LeaveSystemMVC.Controllers
                     using (var reader = command.ExecuteReader())
                         connection.Close();
                 }
-                Response.Write("<script> alert ('Successfully added Substitute Line Manager')</script>");
+                Response.Write("<script> alert ('Successfully added substitute line manager')</script>");
             }
             return Index();
         } 

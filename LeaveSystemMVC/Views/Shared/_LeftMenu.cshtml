@@ -5,7 +5,7 @@
         {
             <li role="presentation" class="dropdown-header" style="font-size:14pt">Staff Member</li>
             @Html.MenuItem("Home", "Index", "Home")
-            @Html.MenuItem("View Leave Balance", "Index", "sLeaveBalance")
+            @Html.MenuItem("View Leave Balances", "Index", "sLeaveBalance")
             @Html.MenuItem("Apply for Leave", "Create", "LApplication")      
             @Html.MenuItem("Pending Applications", "Index", "sLeaveStatus")
             @Html.MenuItem("View Leave History", "Index", "sLeaveHistory")
@@ -15,12 +15,12 @@
                 <li role="presentation" class="nav-divider"></li>
                 <li role="presentation" class="dropdown-header"style="font-size:14pt">HR</li>
                 @Html.MenuItem("Pending Applications", "Index", "hrPendingApplication")
-                @Html.MenuItem("Create New Leave Type", "Index", "hrCreateLeaveType")
-                @Html.MenuItem("Credit Leave Balances", "Index", "hrCreditLeaveBalance")
+                @Html.MenuItem("Holidays Calendar", "Display", "hrHolidaysCalender")                
                 @Html.MenuItem("View Leave Balances", "Index", "hrDepartmentViewLeaveBalance")
-                @Html.MenuItem("Edit Employee Balances", "Index", "hrEditBalance")
-                @Html.MenuItem("Holidays Calendar", "Display", "hrHolidaysCalender")
+                @Html.MenuItem("Edit Employee Balances", "Index", "hrEditBalance")                
                 @Html.MenuItem("Select Substitute", "Index", "hrSelectSubstitute")
+                @Html.MenuItem("Credit Leave Balances", "Index", "hrCreditLeaveBalance")
+                @Html.MenuItem("Create New Leave Type", "Index", "hrCreateLeaveType")
             }
             if (User.IsInRole("HR"))
             {
