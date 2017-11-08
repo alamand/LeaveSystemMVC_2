@@ -5,10 +5,10 @@
         {
             <li role="presentation" class="dropdown-header" style="font-size:14pt">Staff Member</li>
             @Html.MenuItem("Home", "Index", "Home")
-            @Html.MenuItem("Apply for Leave", "Create", "LApplication")
             @Html.MenuItem("View Leave Balance", "Index", "sLeaveBalance")
-            @Html.MenuItem("View Leave History", "Index", "sLeaveHistory")
+            @Html.MenuItem("Apply for Leave", "Create", "LApplication")      
             @Html.MenuItem("Pending Applications", "Index", "sLeaveStatus")
+            @Html.MenuItem("View Leave History", "Index", "sLeaveHistory")
 
             if (User.IsInRole("HR_Responsible"))
             {
@@ -46,11 +46,11 @@
         {
             <li role="presentation" class="nav-divider"></li>
             <li role="presentation" class="dropdown-header"style="font-size:14pt">Administrator</li>
+            @Html.MenuItem("Add Staff Member", "Index", "aAddStaff")
+            @Html.MenuItem("Edit Staff Member", "Select", "aEditStaff")
             @Html.MenuItem("Add Department", "Index", "aAddDepartment")
             @Html.MenuItem("Edit Department", "Index", "aEditDepartment")
-            @Html.MenuItem("Add Staff Role", "Index", "aAddStaffRole")
-            @Html.MenuItem("Add Staff", "Index", "aAddStaff")
-            @Html.MenuItem("Edit Staff", "Select", "aEditStaff")
+            @Html.MenuItem("Add Staff Role", "Index", "aAddStaffRole")            
             @Html.MenuItem("Bulk Add Staff", "Index", "aBulkAddStaff")
         }
 

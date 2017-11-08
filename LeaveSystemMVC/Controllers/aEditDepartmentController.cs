@@ -36,7 +36,7 @@ namespace LeaveSystemMVC.Controllers
 
                         string deptNames = (string)reader[0];
                         string lmNames = (string)reader[1] + " " + (string)reader[2];
-                        string tempDisplay = deptNames + "-" + lmNames;
+                        string tempDisplay = deptNames + ": " + lmNames;
                         departmentDetails.Add(tempDisplay);
                     }
                 }

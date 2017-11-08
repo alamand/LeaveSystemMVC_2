@@ -475,7 +475,7 @@ namespace LeaveSystemMVC.Controllers
             /*Construct notification e-mail only if the username has been changed*/
 
             TempData["EmpID"] = SE.staffIDInString;
-            string successMessage = "The details of " + SE.firstName + " " + SE.lastName + "have been edited.";
+            string successMessage = "The details of " + SE.firstName + " " + SE.lastName + " have been edited.";
             TempData["SuccessMessage"] = successMessage;
             return RedirectToAction("Index");
         }

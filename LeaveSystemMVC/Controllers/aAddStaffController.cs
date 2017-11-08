@@ -301,10 +301,9 @@ namespace LeaveSystemMVC.Controllers
 
             message.Subject = "Your User Details";
             string body = "";
-            body = body + "Hi, Your user details are:" + Environment.NewLine + 
-                "Username: " + temp_username + Environment.NewLine + 
-                "Password is: " + SE.password + Environment.NewLine + 
-                "Please visit leavesystem.azurewebsites.net in order to log in.";
+            body = body + "Your user details are:" + Environment.NewLine +
+                "Username: " + temp_username + Environment.NewLine +
+                "Password is: " + SE.password + Environment.NewLine;
 
             message.Body = body;
             SmtpClient client = new SmtpClient();

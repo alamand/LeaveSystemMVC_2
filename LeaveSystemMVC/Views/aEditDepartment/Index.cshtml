@@ -14,20 +14,19 @@
                     <div class="text-muted bootstrap-admin-box-title">Application Details</div>
                 </div>
                 <div class="bootstrap-admin-panel-content">
-                    <div class="form-horizontal">
+                    <div class="form-horizontal"
                         <div class="row">
-                            <div class="col-md-10" style="white-space:nowrap; line-height:50px;">
-                                <label>List of Departments - Current Line Managers</label>
+                            <div class="col-md-10" style="white-space:nowrap; line-height:60px;">
+                                <label>List of Departments with Current Line Managers</label>
                                 <div class="col-md-8">
                                     @Html.ListBoxFor(model => model.departmentName, new SelectList(ViewBag.departmentDetails), new { @class = "form-control" })
                                 </div>
                                 </div>
                         </div>   
                         <br />
-
+                        
                         <div class="row">
-                            
-                                <!--Prompts user to select one of the departments in the database to edit -->
+                            <!--Prompts user to select one of the departments in the database to edit -->
                             <div class="col-md-6" style="white-space:nowrap">
                                 @Html.LabelFor(model => model.departmentName, "Select Department to Edit", htmlAttributes: new { @class = "control-label col-md-2" })
                             </div>
@@ -59,7 +58,6 @@
                     </div>
                 </div>
             </div>
-        </div>
     }
     </div>
     @section Scripts {
