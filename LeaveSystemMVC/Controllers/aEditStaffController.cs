@@ -308,7 +308,7 @@ namespace LeaveSystemMVC.Controllers
                         }
                         if(SE.isAdmin)
                         {
-                            ModelState.AddModelError("isAdmin", "The employee the active Line Manager of a department. Adminitrator users do not have the functionalities of a Line Manager.");
+                            ModelState.AddModelError("isAdmin", "This employee is an active Line Manager of a department. Administrator users do not have the functionalities of a Line Manager.");
                             hasValidationErrors = true;
                         }
                         /*Check if user tried to change the LM Role of an active LM of a department
