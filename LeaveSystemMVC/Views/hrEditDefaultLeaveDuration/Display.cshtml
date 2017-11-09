@@ -1,9 +1,8 @@
 ﻿@model LeaveSystemMVC.Models.sleaveBalanceModel
 @{
-    ViewBag.Title = "Display";
+    ViewBag.Title = "Edit Leave Durations of Organization";
 
 }
-<h2>Create Holiday</h2>
 
 @Html.Partial("_LeftMenu")
 
@@ -16,7 +15,6 @@
 
             <h4>@ViewBag.title</h4>
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            <hr />
             @if (TempData["Success"] != null)
             {
                 <div class="green">
@@ -27,9 +25,9 @@
             @Html.ValidationMessage("errmsg")
             <table class="table">
                 <tr>
-                    <th>Holiday Name</th>
-                    <th>Holiday Duration</th>
-
+                    <th>Leave Type</th>
+                    <th>Default Duration</th>
+                    <th>Edit Default Duration</th>
                 <tr>
                     <td>
                         @ViewBag.annualName
