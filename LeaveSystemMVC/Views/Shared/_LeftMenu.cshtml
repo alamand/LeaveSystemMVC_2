@@ -8,7 +8,7 @@
             @Html.MenuItem("View Leave Balances", "Index", "sLeaveBalance")
             @Html.MenuItem("Apply for Leave", "Create", "LApplication")      
             @Html.MenuItem("Pending Applications", "Index", "sLeaveStatus")
-            @Html.MenuItem("View Leave History", "Index", "sLeaveHistory")
+            @Html.MenuItem("Processed Applications", "Index", "sLeaveHistory")
 
             if (User.IsInRole("HR_Responsible"))
             {
@@ -21,16 +21,16 @@
                 @Html.MenuItem("Select Substitute", "Index", "hrSelectSubstitute")
                 @Html.MenuItem("Edit Leave Durations", "Display", "hrEditDefaultLeaveDuration")
                 @Html.MenuItem("Credit Leave Balances", "Index", "hrCreditLeaveBalance")
-                @Html.MenuItem("Create New Leave Type", "Index", "hrCreateLeaveType")
+                //@Html.MenuItem("Create New Leave Type", "Index", "hrCreateLeaveType")
             }
             if (User.IsInRole("HR"))
             {
                 <li role="presentation" class="nav-divider"></li>
                 <li role="presentation" class="dropdown-header"style="font-size:14pt">HR</li>
-                @Html.MenuItem("Create New Leave Type", "Index", "hrCreateLeaveType")
-                @Html.MenuItem("Credit Leave Balances", "Index", "hrCreditLeaveBalance")
-                @Html.MenuItem("View Employee Balances", "Index", "hrDepartmentViewLeaveBalance")
                 @Html.MenuItem("Holidays Calendar", "Display", "hrHolidaysCalender")
+                @Html.MenuItem("View Employee Balances", "Index", "hrDepartmentViewLeaveBalance")
+                @Html.MenuItem("Credit Leave Balances", "Index", "hrCreditLeaveBalance")
+                //@Html.MenuItem("Create New Leave Type", "Index", "hrCreateLeaveType")                             
             }
 
             if (User.IsInRole("LM"))
@@ -50,7 +50,7 @@
             @Html.MenuItem("Edit Staff Member", "Select", "aEditStaff")
             @Html.MenuItem("Add Department", "Index", "aAddDepartment")
             @Html.MenuItem("Edit Department", "Index", "aEditDepartment")
-            @Html.MenuItem("Add Staff Role", "Index", "aAddStaffRole")            
+            //@Html.MenuItem("Add Staff Role", "Index", "aAddStaffRole")            
             @Html.MenuItem("Bulk Add Staff", "Index", "aBulkAddStaff")
         }
 

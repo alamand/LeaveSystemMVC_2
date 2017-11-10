@@ -107,7 +107,7 @@ namespace LeaveSystemMVC.Controllers
 
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
 
-            string queryString = "DELETE FROM Leave WHERE Leave_Application_ID = '"+id+"'";
+            string queryString = "UPDATE Leave SET Status= '5' WHERE Leave_Application_ID = '"+id+"'";
 
             var connection = new SqlConnection(connectionString);
 
@@ -117,7 +117,7 @@ namespace LeaveSystemMVC.Controllers
 
             command.ExecuteNonQuery();
             //  System.Diagnostics.Debug.WriteLine("connection executed");
-            Response.Write("<script> alert('Deleted Leave Application')</script>");
+            Response.Write("<script> alert('Your leave application has been canclledd.')</script>");
             connection.Close();
 
             return RedirectToAction("Index");
