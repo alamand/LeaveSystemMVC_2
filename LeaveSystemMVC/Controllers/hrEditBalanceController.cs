@@ -11,9 +11,10 @@ namespace LeaveSystemMVC.Controllers
     public class hrEditBalanceController : Controller
     {
         // GET: hrEditBalance
+
         public ActionResult Index()
         {
-            var model = new List<Models.sEmployeeModel>();
+            var model = new List<Models.EmpLeaveBalModel>();
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
             string queryString = "Select Employee_ID, First_Name, Last_Name FROM dbo.Employee";
 
@@ -26,11 +27,51 @@ namespace LeaveSystemMVC.Controllers
                     // iterate through all employees in the database and add them all to the list
                     while (reader.Read())
                     {
-                        var m = new Models.sEmployeeModel();
-                        m.firstName = (string)reader["First_Name"];
-                        m.lastName = (string)reader["Last_Name"];
-                        m.staffID = (int)reader["Employee_ID"];
-                        model.Add(m);
+                        var t = new Models.EmpLeaveBalModel();
+                        t.employee = new Models.sEmployeeModel();
+                        t.leaveBalance = new Models.sleaveBalanceModel();
+                        t.employee.firstName = (string)reader["First_Name"];
+                        t.employee.lastName = (string)reader["Last_Name"];
+                        t.employee.staffID = (int)reader["Employee_ID"];
+
+                        string queryString2 = "Select Balance,Leave_Name FROM dbo.Leave_Balance, dbo.Leave_Type where Leave_Balance.Employee_ID = '" + t.employee.staffID + "' AND Leave_Balance.Leave_ID = Leave_Type.Leave_ID";
+
+                        using (var connection2 = new SqlConnection(connectionString))
+                        {
+                            var command2 = new SqlCommand(queryString2, connection2);
+                            connection2.Open();
+                            using (var reader2 = command2.ExecuteReader())
+                            {
+                                while (reader2.Read())
+                                {
+                                    string leave = (string)reader2["Leave_Name"];
+                                    if (leave.Equals("Annual"))
+                                        t.leaveBalance.annual = (int)reader2["Balance"];
+
+                                    if (leave.Equals("Sick"))
+                                        t.leaveBalance.sick = (int)reader2["Balance"];
+
+                                    if (leave.Equals("Compassionate"))
+                                        t.leaveBalance.compassionate = (int)reader2["Balance"];
+
+                                    if (leave.Equals("Maternity"))
+                                        t.leaveBalance.maternity = (int)reader2["Balance"];
+
+                                    if (leave.Equals("Short_Hours"))
+                                        t.leaveBalance.shortLeaveHours = (int)reader2["Balance"];
+
+                                    if (leave.Equals("Unpaid"))
+                                        t.leaveBalance.unpaidTotal = (int)reader2["Balance"];
+
+                                    if (leave.Equals("DIL"))
+                                        t.leaveBalance.daysInLieue = (int)reader2["Balance"];
+                                }
+                            }
+
+                            connection2.Close();
+                        }
+                        
+                        model.Add(t);
                     }
                 }
                 connection.Close();
@@ -171,8 +212,7 @@ namespace LeaveSystemMVC.Controllers
             }
             return Edit(id.ToString());
         }
-
-        private void UpdateBalance(int id, int sid, int duration)
+            private void UpdateBalance(int id, int sid, int duration)
         {
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
             string queryUpdate = "Update dbo.Leave_Balance SET Balance='" + duration + "' WHERE Leave_ID='" + id + "' And Employee_ID='" + sid + "'";

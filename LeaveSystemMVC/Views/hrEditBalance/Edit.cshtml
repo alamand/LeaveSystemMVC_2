@@ -3,6 +3,7 @@
 @Html.Partial("_LeftMenu")
 
 <div class="col-md-8">
+
     <h4>Edit Leave Balances</h4>
     @using (Html.BeginForm())
     {
@@ -69,9 +70,19 @@
                 </tr>
             </table>
         </div>
+       
         <div class="col-md-offset-4 col-md-12">
-            <input type="submit" value="Save" class="btn btn-default" />
+            <a href="@Url.Action("Index", "hrEditBalance")" class="btn btn-default">
+                <span class="glyphicon glyphicon-circle-arrow-left" aria-hidden="true"></span>
+                Back
+            </a>
+
+
+            <button type="submit" value="Save" class="btn btn-default">
+                <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span> Save
+            </button>
         </div>
+        
     }
 </div>
 

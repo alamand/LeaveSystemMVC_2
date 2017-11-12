@@ -1,27 +1,36 @@
-﻿@model IEnumerable<LeaveSystemMVC.Models.sEmployeeModel>
+﻿@model IEnumerable<LeaveSystemMVC.Models.EmpLeaveBalModel>
 @{
-    ViewBag.Title = "Edit Employee Balances";
+    ViewBag.Title = "Employee Balances";
 }
 
 @Html.Partial("_LeftMenu")
 <h2>@ViewBag.Title</h2>
-<div class="col-md-4">
+<div class="col-md-10">
     <table class="table">
         <tr>
             <th>Employee ID</th>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Edit Balance</th>
+            <th>Name</th>
+            <th>Annual Leave</th>
+            <th>Sick Leave</th>
+            <th>Compassionate Leave</th>
+            <th>Short Leave</th>
+            <th>Maternity Leave</th>
+            <th>Days in Lieu</th>
+            
         </tr>
         @foreach (var item in Model)
         {
             <tr>
-                <td>@item.staffID </td>
-                <td>@item.firstName</td>
-                <td>@item.lastName</td>
-                <td>@Html.ActionLink("Edit", "Edit", "hrEditBalance", new { id = item.staffID }, null)</td>
+                <td>@item.employee.staffID </td>
+                <td>@item.employee.firstName @item.employee.lastName</td>
+                <td>@item.leaveBalance.annual</td>
+                <td>@item.leaveBalance.sick</td>
+                <td>@item.leaveBalance.compassionate</td>
+                <td>@item.leaveBalance.shortLeaveHours</td>
+                <td>@item.leaveBalance.maternity</td>
+                <td>@item.leaveBalance.daysInLieue</td>
+                <td>@Html.ActionLink("Edit", "Edit", "hrEditBalance", new { id = item.employee.staffID }, null)</td>
             </tr>
-
         }
     </table>
 </div>
