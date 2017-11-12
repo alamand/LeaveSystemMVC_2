@@ -146,7 +146,8 @@ namespace LeaveSystemMVC.Controllers
                 UpdateBalance(mode.annualID, mode.annual);
                 UpdateBalance(mode.compassionateID, mode.compassionate);
                 UpdateBalance(mode.daysInLieueID, mode.daysInLieue);
-                UpdateBalance(mode.maternityID, mode.maternityID);
+                UpdateBalance(mode.maternityID, mode.maternity);
+                UpdateBalance(mode.sickID, mode.sick);
                 UpdateBalance(mode.shortID, mode.shortLeaveHours);
                 Response.Write("<script> alert('Success. The Information has been updated.');</script>");
             }
