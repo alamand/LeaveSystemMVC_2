@@ -69,9 +69,9 @@ namespace LeaveSystemMVC.Controllers
 
             // Include the employees who are line managers
             connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            queryString = "Select dbo.Employee.Employee_ID, First_Name, Last_Name FROM dbo.Employee_Role, dbo.Employee, dbo.Department WHERE " +
-                "dbo.Employee_Role.Employee_ID = dbo.Employee.Employee_ID AND dbo.Department.Line_Manager_ID = dbo.Employee.Employee_ID" +
-                " AND Role_ID = 4 AND dbo.Employee.Employee_ID !='" + userID + "'AND Account_Status != 'False'";
+            queryString = "Select dbo.Employee.Employee_ID, dbo.Employee.First_Name, dbo.Employee.Last_Name FROM dbo.Employee_Role, dbo.Employee WHERE " +
+                "dbo.Employee_Role.Employee_ID = dbo.Employee.Employee_ID" +
+                " AND dbo.Employee_Role.Role_ID = 4 AND dbo.Employee.Employee_ID !='" + userID + "'AND dbo.Employee.Account_Status != 'False'";
             //@todo: remove hardcoding of role_id
             using (var connection = new SqlConnection(connectionString))
             {

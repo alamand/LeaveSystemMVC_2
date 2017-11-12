@@ -33,26 +33,12 @@ namespace LeaveSystemMVC.Controllers
             int tempID = 0;
             selectSubstitute substitute = new selectSubstitute();
 
-            //for the next id to get the list of hr employeees
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "Select Department_ID, Line_Manager_ID from dbo.Department Where Department_Name = 'HR' ";
-            using (var connection = new SqlConnection(connectionString))
-            {
-                var command = new SqlCommand(queryString, connection);
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        tempDept = (int)reader[0];
-                        tempID = (int)reader[1];
-                    }
-                }
-            }
 
-
-            //to show viable candidates who work in the hr department who are not currently either hr responsible or hr line manager 
-            string searchString = "Select Employee_ID, First_Name, Last_Name From dbo.Employee Where Department_ID='"+tempDept+"' AND Employee_ID !='"+tempID+"' AND Employee_ID !='"+userID+"'";
+            //Include the employees who work in the HR department
+            string fullName = "";
+            string searchString = "Select Employee_ID, First_Name, Last_Name From dbo.Employee Where Department_ID = 5 AND Employee_ID !='" + userID + "'AND Account_Status != 'False'";
+            //@todo: remove hardcoding of department_id
             using (var connection = new SqlConnection(connectionString))
             {
                 var command = new SqlCommand(searchString, connection);
@@ -61,12 +47,36 @@ namespace LeaveSystemMVC.Controllers
                 {
                     while (reader.Read())
                     {
-                        string fullName = (string)reader[1] + " " + (string)reader[2];
+                        fullName = (string)reader[1] + " " + (string)reader[2];
                         substitute.substituteListOptions.Add((int)reader[0], fullName);
                     }
                 }
             }
-                return View(substitute);
+
+            // Include the employees who are line managers                      
+            string queryString = "Select dbo.Employee.Employee_ID, First_Name, Last_Name FROM dbo.Employee_Role, dbo.Employee WHERE " +
+                "dbo.Employee_Role.Employee_ID = dbo.Employee.Employee_ID" +
+                " AND Role_ID = 4 AND dbo.Employee.Employee_ID !='" + userID + "'AND Account_Status != 'False'";
+            //@todo: remove hardcoding of role_id
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        fullName = (string)reader[1] + " " + (string)reader[2];
+                        System.Diagnostics.Debug.WriteLine("name is: " + fullName);
+                        if (!substitute.substituteListOptions.ContainsKey((int)reader[0]))
+                        {
+                            substitute.substituteListOptions.Add((int)reader[0], fullName);
+                        }
+                    }
+                }
+                connection.Close();
+            }
+            return View(substitute);
         }
 
         [HttpPost]
@@ -102,8 +112,8 @@ namespace LeaveSystemMVC.Controllers
                 connection.Close();
             }
 
-            //to update current hr responsible as hr 
-            string insertString = "Update dbo.Employee_Role SET Role_ID ='3' Where Employee_ID='" + userID + "'";
+            //The current HR Responsible becomes just HR 
+            string insertString = "Update dbo.Employee_Role SET dbo.Employee_Role.Role_ID ='3' Where dbo.Employee_Role.Employee_ID ='" + userID + "' AND dbo.Employee_Role.Role_ID = '2'";
             using (var connection = new SqlConnection(connectionString))
             {
                 var command = new SqlCommand(insertString, connection);
@@ -112,15 +122,15 @@ namespace LeaveSystemMVC.Controllers
                 connection.Close();
             }
 
-            //to update the selected person as hr responsible 
-            insertString = "Update dbo.Employee_Role SET Role_ID ='2' Where Employee_ID='" + tempSubstituteID + "'";
+            //The selected substitute becomes HR Responsible 
+            insertString = "Update dbo.Employee_Role SET Role_ID ='2' Where Employee_ID ='" + tempSubstituteID + "' AND dbo.Employee_Role.Role_ID = '3'";
             using (var connection = new SqlConnection(connectionString))
             {
                 var command = new SqlCommand(insertString, connection);
                 connection.Open();
                 using (var reader = command.ExecuteReader())
                 connection.Close();
-                Response.Write("<script> alert ('Successfully changed HR Responsible')</script>");
+                Response.Write("<script> alert ('Successfully changed HR Responsible role.')</script>");
             }
 
             return Index();
