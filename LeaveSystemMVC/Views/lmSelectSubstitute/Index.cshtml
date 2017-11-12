@@ -22,7 +22,7 @@
 
                                 <!--Displays a list of members in  the given department in the database-->
 
-                                @Html.LabelFor(model => model.substituteStaffID, "Select a Substitute from the Department", htmlAttributes: new { @class = "control-label col-md-2" })
+                                @Html.LabelFor(model => model.substituteStaffID, "Select a Substitute", htmlAttributes: new { @class = "control-label col-md-2" })
                             </div>
                                         <div class="col-md-4">
                                             @Html.DropDownListFor(model => model.substituteStaffID, new SelectList(Model.substituteListOptions, "Key", "Value"))

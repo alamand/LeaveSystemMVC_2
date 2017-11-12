@@ -72,10 +72,7 @@ namespace LeaveSystemMVC.Controllers
                 System.Diagnostics.Debug.WriteLine("is earlier than");
                 //Redirect(Create.UrlReferrer.ToString());
             }
-            System.Diagnostics.Debug.WriteLine("Reached is valid");
-            
 
-                System.Diagnostics.Debug.WriteLine("entered is valid");
                 int days = 0;
                 if (result > 0 && !(model.leaveType.Equals("Maternity"))) {
                     TimeSpan diff = d2 - d1;
@@ -89,7 +86,6 @@ namespace LeaveSystemMVC.Controllers
                             case DayOfWeek.Saturday:
                             case DayOfWeek.Friday:
                                 days--;
-                                System.Diagnostics.Debug.WriteLine("weekend reached");
                                 //Console.WriteLine(testDate.ToShortDateString());
                                 break;
                         }
@@ -115,14 +111,11 @@ namespace LeaveSystemMVC.Controllers
                                 else
                                 {
                                     days--;
-                                    System.Diagnostics.Debug.WriteLine("Holiday Deducted");
                                 }
                             }
                         }
                         connection1.Close();
                      }
-                    System.Diagnostics.Debug.WriteLine("Not Maternity Days: " +days);
-
                 }
                 
 
@@ -130,11 +123,11 @@ namespace LeaveSystemMVC.Controllers
                 if (model.leaveType.Equals("Annual"))
                 {
                     leaveId = 1;
-                double difference = (d1 - today).TotalDays;
+                    //30 days beforehand need not be enforced by the system
+                    /*double difference = (d1 - today).TotalDays;
                     if(difference<30)
-                    ModelState.AddModelError("startDate", "Leave must be applied 30 days in advance");
-
-            }
+                    ModelState.AddModelError("startDate", "Leave must be applied 30 days in advance");*/
+                }
                 if (model.leaveType.Equals("Sick"))
                 {
                     leaveId = 3;
