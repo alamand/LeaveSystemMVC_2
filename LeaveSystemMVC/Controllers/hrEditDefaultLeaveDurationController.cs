@@ -157,7 +157,7 @@ namespace LeaveSystemMVC.Controllers
             }
             return Display();
         }
-        public void UpdateBalance(int id, int duration)
+        public void UpdateBalance(int id, decimal duration)
         {
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
             string queryUpdate = "Update dbo.Leave_Type SET Duration='" + duration + "' WHERE Leave_ID='" + id + "'";

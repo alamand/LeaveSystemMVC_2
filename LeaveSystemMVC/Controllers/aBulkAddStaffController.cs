@@ -216,7 +216,7 @@ namespace LeaveSystemMVC.Controllers
                             //
                             for(int i = 0; i <= 5; i++)
                             {
-                                int balance = 0;
+                                decimal balance = 0;
                                 int employeeID = employee.employeeObject.staffID;
                                 int leaveID = 0;
                                 switch(i)

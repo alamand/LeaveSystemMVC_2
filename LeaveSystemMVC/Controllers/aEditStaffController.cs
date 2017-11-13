@@ -28,9 +28,34 @@ namespace LeaveSystemMVC.Controllers
             var connectionString =
                 ConfigurationManager.ConnectionStrings["DefaultConnection"].
                 ConnectionString;
-            string queryString = "SELECT Employee_ID, First_Name, Last_Name, " +
+
+            //Get the start and end date from the Employment_Period table.
+            string queryString = "SELECT dbo.Employment_Period.Emp_Start_Date, dbo.Employment_Period.Emp_End_Date " +
+               "FROM dbo.Employment_Period " +
+               "WHERE dbo.Employment_Period.Employee_ID = '" + empID + "'";
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            EmptyEmployee.empStartDate = (DateTime)reader[0];
+                            if (reader[1] != DBNull.Value)
+                                EmptyEmployee.empEndDate = (DateTime)reader[1];                            
+                        }
+                    }
+                }
+                connection.Close();
+            }
+
+            queryString = "SELECT Employee_ID, First_Name, Last_Name, " +
                 "Gender, Ph_No, Email, User_Name, Designation, dbo.Employee.Department_ID, " +
-                "Emp_Start_Date, dbo.Employee.[2nd_Line_Manager], Emp_End_Date, Account_Status " + 
+                "Account_Status " + 
                 "FROM dbo.Employee " + 
                 "WHERE dbo.Employee.Employee_ID = '" + empID + "' " +
                 "AND dbo.Employee.Employee_ID IS NOT NULL";
@@ -62,17 +87,7 @@ namespace LeaveSystemMVC.Controllers
                             }
                             else
                                 EmptyEmployee.deptName = "";
-                            EmptyEmployee.empStartDate = (DateTime)reader[9];
-                            if (reader[10] != DBNull.Value)
-                            {
-                                var slmid = (int)reader[10];
-                                EmptyEmployee.secondLineManager = slmid.ToString();
-                            }
-                            else
-                                EmptyEmployee.secondLineManager = "";
-                            if (reader[11] != DBNull.Value)
-                                EmptyEmployee.empEndDate = (DateTime)reader[11];
-                            EmptyEmployee.accountStatus = (bool)reader[12];
+                            EmptyEmployee.accountStatus = (bool)reader[9];
                         }
                     }
                 }
@@ -206,9 +221,10 @@ namespace LeaveSystemMVC.Controllers
             }
             //End get departments
 
+            //No longer required
             //Get a list of names and ids of line manager employees
             //This will be used to select a secondary line manager for an employee
-            queryString = "SELECT Employee.Employee_ID, First_Name, Last_Name " +
+            /*queryString = "SELECT Employee.Employee_ID, First_Name, Last_Name " +
                               "FROM dbo.Employee " +
                               "FULL JOIN dbo.Employee_Role " +
                               "ON dbo.Employee.Employee_ID = dbo.Employee_Role.Employee_ID " +
@@ -233,9 +249,7 @@ namespace LeaveSystemMVC.Controllers
                     }
                 }
                 connection.Close();
-            }
-
-            
+            }*/            
 
             TempData["EmptyEmployee"] = EmptyEmployee;
             TempData["nonDisplayRoleOptions"] = nonDisplayRoleOptions;
@@ -362,7 +376,7 @@ namespace LeaveSystemMVC.Controllers
             
 
 
-            /*Make sure the selection lists for departments, roles, secondary lm
+            /*Make sure the selection lists for departments, roles
              and the non-display role options are persisted. And then redirect to
              back to the view.*/
             if (hasValidationErrors)
@@ -370,7 +384,7 @@ namespace LeaveSystemMVC.Controllers
                 sEmployeeModel EmptyEmployee = (sEmployeeModel)TempData["EmptyEmployee"];
                 SE.staffTypeSelectionOptions = EmptyEmployee.staffTypeSelectionOptions;
                 SE.departmentList = EmptyEmployee.departmentList;
-                SE.SecondLMSelectionOptions = EmptyEmployee.SecondLMSelectionOptions;
+                //SE.SecondLMSelectionOptions = EmptyEmployee.SecondLMSelectionOptions;
                 TempData["EmptyEmployee"] = EmptyEmployee;
                 TempData["nonDisplayRoleOptions"] = TempData["nonDisplayRoleOptions"];
                 return View(SE);
@@ -380,39 +394,12 @@ namespace LeaveSystemMVC.Controllers
 
             //Table insertions
             SE.password = RandomPassword.Generate(7, 7);
-            string secondLMtext = "";
-            string secondLmValueText = "";
-            if (SE.secondLineManager != null)
-            {
-                secondLMtext = ", [2nd_Line_Manager] = '" + SE.secondLineManager + "'";
-                secondLmValueText = "', '" + SE.secondLineManager;
-            }
+            //string secondLMtext = "";
+            //string secondLmValueText = "";
 
-            /*Had to use deptname to store the actual department ID because for some 
-             reason the view wouldn't store the value of the dropdown for department
-             selection in the deptID int*/
-            if (SE.deptName == null)
-            {
+            //Update the Employment_Period table
+            queryString = "UPDATE dbo.Employment_Period SET Emp_Start_Date = '" + SE.empStartDate.ToString("yyyy-MM-dd") + "' , Emp_End_Date = '" + SE.empEndDate.ToString("yyyy-MM-dd") + "' WHERE dbo.Employment_Period.Employee_ID = '" + SE.staffID + "'";
 
-                queryString = "UPDATE dbo.Employee SET (First_Name, " +
-                    "Last_Name, User_Name, Designation, Email, Gender, PH_No, " +
-                    "Emp_Start_Date, Account_Status" + secondLMtext + ") VALUES('" + SE.firstName +
-                    "', '" + SE.lastName + "', '" + SE.userName +
-                    "', '" + SE.designation + "', '" + SE.email +
-                    "', '" + SE.gender + "', '" + SE.phoneNo + "', '" + SE.empStartDate +
-                    "', '" + SE.accountStatus + secondLmValueText + "') " +
-                    "WHERE dbo.Employee.Employee_ID = '" + SE.staffID + "' ";
-            }
-            else
-            {
-                queryString = "UPDATE dbo.Employee SET First_Name = '" + SE.firstName + "', " +
-                    "Last_Name = '" + SE.lastName + "', User_Name = '" + SE.userName + 
-                    "', Designation = '" + SE.designation + "', Email = '" + SE.email + 
-                    "', Gender = '" + SE.gender + "', PH_No = '" + SE.phoneNo +  "', " +
-                    "Emp_Start_Date = '" + SE.empStartDate.ToString("yyyy-MM-dd") + "', Account_Status = '" + SE.accountStatus + 
-                    "', Department_ID = '" + SE.deptName + "', Emp_End_Date = '" + SE.empEndDate.ToString("yyyy-MM-dd") + "' " + secondLMtext + " " + 
-                    "WHERE dbo.Employee.Employee_ID = '" + SE.staffID + "' ";
-            }
             using (var connection = new SqlConnection(connectionString))
             {
                 var command = new SqlCommand(queryString, connection);
@@ -421,6 +408,23 @@ namespace LeaveSystemMVC.Controllers
                     connection.Close();
             }
 
+            //Update the Employment_Period table
+            if (SE.deptName == null)
+            {
+                queryString = "UPDATE dbo.Employee SET First_Name = '" + SE.firstName + "' , Last_Name = '" + SE.lastName + "' , User_Name = '" + SE.userName + "' , Designation = '" + SE.designation + "' , Email = '" + SE.email + "' , Gender = '" + SE.gender + "' , Ph_No = '" + SE.phoneNo + "' , Account_Status = '" + SE.accountStatus + "' WHERE dbo.Employee.Employee_ID = '" + SE.staffID + "'";
+            }
+            else
+            {
+                queryString = "UPDATE dbo.Employee SET First_Name = '" + SE.firstName + "' , Last_Name = '" + SE.lastName + "' , User_Name = '" + SE.userName + "' , Designation = '" + SE.designation + "' , Email = '" + SE.email + "' , Gender = '" + SE.gender + "' , Ph_No = '" + SE.phoneNo + "' , Account_Status = '" + SE.accountStatus + "' , Department_ID = '" + SE.deptName + "' WHERE dbo.Employee.Employee_ID = '" + SE.staffID + "'";
+            }
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                    connection.Close();
+            }
+            
             /*Clear the employee's roles before adding the updated ones.
              Easiest way to make sure that only the updated roles remain.*/
             queryString = "DELETE FROM dbo.Employee_Role " +

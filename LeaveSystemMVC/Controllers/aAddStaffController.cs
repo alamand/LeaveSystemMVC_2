@@ -111,9 +111,10 @@ namespace LeaveSystemMVC.Controllers
             }
             //End get departments
 
+            //No longer required
             //Get a list of names and ids of line manager employees
             //This will be used to select a secondary line manager for an employee
-            queryString = "SELECT Employee.Employee_ID, First_Name, Last_Name " +
+            /*queryString = "SELECT Employee.Employee_ID, First_Name, Last_Name " +
                               "FROM dbo.Employee " +
                               "FULL JOIN dbo.Employee_Role " +
                               "ON dbo.Employee.Employee_ID = dbo.Employee_Role.Employee_ID " +
@@ -136,7 +137,7 @@ namespace LeaveSystemMVC.Controllers
                     }
                 }
                 connection.Close();
-            }
+            }*/
 
 
             //End get line manager list
@@ -196,7 +197,7 @@ namespace LeaveSystemMVC.Controllers
                 sEmployeeModel EmptyEmployee = (sEmployeeModel)TempData["EmptyEmployee"];
                 SE.staffTypeSelectionOptions = EmptyEmployee.staffTypeSelectionOptions;
                 SE.departmentList = EmptyEmployee.departmentList;
-                SE.SecondLMSelectionOptions = EmptyEmployee.SecondLMSelectionOptions;
+                //SE.SecondLMSelectionOptions = EmptyEmployee.SecondLMSelectionOptions;
                 TempData["EmptyEmployee"] = EmptyEmployee;
                 TempData["nonDisplayRoleOptions"] = TempData["nonDisplayRoleOptions"];
                 return View(SE);
@@ -205,42 +206,45 @@ namespace LeaveSystemMVC.Controllers
 
             //Table insertions
             SE.password = RandomPassword.Generate(7, 7);
-            string secondLMtext = "";
-            string secondLmValueText = "";
-            if (SE.secondLineManager != null)
-            {
-                secondLMtext = ", [2nd_Line_Manager]";
-                secondLmValueText = "', '" + SE.secondLineManager;
-            }
             
             //string dateTimeFormat = "d/MM/yyyy";
             string startDateString = SE.empStartDate.ToString("yyyy-MM-dd");
             //DateTime convertedStartDate = DateTime.ParseExact(startDateString, dateTimeFormat, new CultureInfo("en-CA"));
-            
+
             /*Had to use deptname to store the actual department ID because for some 
              reason the view wouldn't store the value of the dropdown for department
              selection in the deptID int*/
-            if(SE.deptName == null)
+            if (SE.deptName == null)
             {
                 
                 queryString = "INSERT INTO dbo.Employee (Employee_ID, First_Name, " +
                     "Last_Name, User_Name, Password, Designation, Email, Gender, PH_No, " +
-                    "Emp_Start_Date, Account_Status" + secondLMtext + ") VALUES('" + SE.staffID +
+                    "Account_Status) VALUES('" + SE.staffID +
                     "', '" + SE.firstName + "', '" + SE.lastName + "', '" + SE.userName +
                     "', '" + SE.password + "', '" + SE.designation + "', '" + SE.email +
-                    "', '" + SE.gender + "', '" + SE.phoneNo + "', '" + SE.empStartDate +
-                    "', '" + "True" + secondLmValueText + "')";
+                    "', '" + SE.gender + "', '" + SE.phoneNo + "', '" + "True)";
             }
             else
             {
                 queryString = "INSERT INTO dbo.Employee (Employee_ID, First_Name, " +
                     "Last_Name, User_Name, Password, Designation, Email, Gender, PH_No, " +
-                    "Emp_Start_Date, Account_Status, Department_ID" + secondLMtext + ") VALUES('" + SE.staffID +
+                    "Account_Status, Department_ID) VALUES('" + SE.staffID +
                     "', '" + SE.firstName + "', '" + SE.lastName + "', '" + SE.userName +
                     "', '" + SE.password + "', '" + SE.designation + "', '" + SE.email +
-                    "', '" + SE.gender + "', '" + SE.phoneNo + "', '" + startDateString +
-                    "', '" + "True" + "', '" + SE.deptName + secondLmValueText + "')";
+                    "', '" + SE.gender + "', '" + SE.phoneNo + "', '" + "True" + "', '" + SE.deptName + "')";
             }
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                    connection.Close();
+            }
+
+            //Insert into the Employment_Period table
+            queryString = "INSERT INTO dbo.Employment_Period (Employee_ID, Emp_Start_Date) VALUES('" + SE.staffID +
+                   "', '" + SE.empStartDate + "')";
+
             using (var connection = new SqlConnection(connectionString))
             {
                 var command = new SqlCommand(queryString, connection);

@@ -46,25 +46,25 @@ namespace LeaveSystemMVC.Controllers
                                 {
                                     string leave = (string)reader2["Leave_Name"];
                                     if (leave.Equals("Annual"))
-                                        t.leaveBalance.annual = (int)reader2["Balance"];
+                                        t.leaveBalance.annual = (decimal)reader2["Balance"];
 
                                     if (leave.Equals("Sick"))
-                                        t.leaveBalance.sick = (int)reader2["Balance"];
+                                        t.leaveBalance.sick = (decimal)reader2["Balance"];
 
                                     if (leave.Equals("Compassionate"))
-                                        t.leaveBalance.compassionate = (int)reader2["Balance"];
+                                        t.leaveBalance.compassionate = (decimal)reader2["Balance"];
 
                                     if (leave.Equals("Maternity"))
-                                        t.leaveBalance.maternity = (int)reader2["Balance"];
+                                        t.leaveBalance.maternity = (decimal)reader2["Balance"];
 
                                     if (leave.Equals("Short_Hours"))
-                                        t.leaveBalance.shortLeaveHours = (int)reader2["Balance"];
+                                        t.leaveBalance.shortLeaveHours = (decimal)reader2["Balance"];
 
                                     if (leave.Equals("Unpaid"))
-                                        t.leaveBalance.unpaidTotal = (int)reader2["Balance"];
+                                        t.leaveBalance.unpaidTotal = (decimal)reader2["Balance"];
 
                                     if (leave.Equals("DIL"))
-                                        t.leaveBalance.daysInLieue = (int)reader2["Balance"];
+                                        t.leaveBalance.daysInLieue = (decimal)reader2["Balance"];
                                 }
                             }
 
@@ -144,9 +144,9 @@ namespace LeaveSystemMVC.Controllers
             return View(lv);
         }
 
-        private int getBalance(int staffid, int leaveid)
+        private decimal getBalance(int staffid, int leaveid)
         {
-            int balance = 0;                    // actual balance
+            decimal balance = 0;                    // actual balance
             Boolean existingBalance = false;    // in case's where the record does not exist
 
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
@@ -161,7 +161,7 @@ namespace LeaveSystemMVC.Controllers
                 {
                     while(reader.Read()) 
                     {
-                        balance = (int)reader["Balance"];
+                        balance = (decimal)reader["Balance"];
                         existingBalance = true;
                     }
                 }
@@ -176,7 +176,7 @@ namespace LeaveSystemMVC.Controllers
             return balance;
         }
 
-        private void InsertBalance(int staffid, int leaveid, int bal)
+        private void InsertBalance(int staffid, int leaveid, decimal bal)
         {
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
             string insertQuery = "Insert into dbo.Leave_Balance (Employee_ID, Leave_ID, Balance) Values('" + staffid + "','" + leaveid + "','" + bal + "')";
@@ -212,7 +212,7 @@ namespace LeaveSystemMVC.Controllers
             }
             return Edit(id.ToString());
         }
-            private void UpdateBalance(int id, int sid, int duration)
+            private void UpdateBalance(int id, int sid, decimal duration)
         {
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
             string queryUpdate = "Update dbo.Leave_Balance SET Balance='" + duration + "' WHERE Leave_ID='" + id + "' And Employee_ID='" + sid + "'";

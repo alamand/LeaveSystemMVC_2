@@ -30,13 +30,13 @@ namespace LeaveSystemMVC.Controllers
                 var command = new SqlCommand(queryString, connection);
 
                 connection.Open();
-                int annual = 0;
-                int sick = 0;
-                int compassionate = 0;
-                int maternity = 0;
-                int shortHrs = 0;
-                int unpaid = 0;
-                int DIL = 0;
+                decimal annual = 0;
+                decimal sick = 0;
+                decimal compassionate = 0;
+                decimal maternity = 0;
+                decimal shortHrs = 0;
+                decimal unpaid = 0;
+                decimal DIL = 0;
 
 
 
@@ -48,31 +48,31 @@ namespace LeaveSystemMVC.Controllers
 
                         string leave = (string)reader["Leave_Name"];
                         if (leave.Equals("Annual"))
-                            annual =  (int)reader["Balance"];
+                            annual =  (decimal)reader["Balance"];
                         ViewBag.annual = annual;    
 
                         if (leave.Equals("Sick"))
-                            sick = (int)reader["Balance"];
+                            sick = (decimal)reader["Balance"];
                         ViewBag.sick = sick;
 
                         if (leave.Equals("Compassionate"))
-                            compassionate = (int)reader["Balance"];
+                            compassionate = (decimal)reader["Balance"];
                         ViewBag.compassionate = compassionate;
 
                         if (leave.Equals("Maternity"))
-                           maternity = (int)reader["Balance"];
+                           maternity = (decimal)reader["Balance"];
                         ViewBag.maternity = maternity;
 
                         if (leave.Equals("Short_Hours"))
-                           shortHrs = (int)reader["Balance"];
+                           shortHrs = (decimal)reader["Balance"];
                         ViewBag.shortHrs = shortHrs;
 
                         if (leave.Equals("Unpaid"))
-                            unpaid = (int)reader["Balance"];
+                            unpaid = (decimal)reader["Balance"];
                         ViewBag.unpaid = unpaid;
 
                         if (leave.Equals("DIL"))
-                            DIL = (int)reader["Balance"];
+                            DIL = (decimal)reader["Balance"];
                         ViewBag.DIL = DIL;
 
                         model.Add(balance);
@@ -81,8 +81,7 @@ namespace LeaveSystemMVC.Controllers
                 connection.Close();
             }
 
-            string queryString1 = "SELECT DATEDIFF(day,Emp_Start_Date,GETDATE()) AS DiffDate from dbo.Employee where Employee_ID = '" + a + "';";
-            System.Diagnostics.Debug.WriteLine("entered diff query");
+            string queryString1 = "SELECT DATEDIFF(day,Emp_Start_Date,GETDATE()) AS DiffDate from dbo.Employment_Period where Employee_ID = '" + a + "';";
             using (var connection1 = new SqlConnection(connectionString))
             {
                 var command1 = new SqlCommand(queryString1, connection1);
@@ -91,9 +90,7 @@ namespace LeaveSystemMVC.Controllers
                 {
                     while (reader1.Read())
                     {
-                        System.Diagnostics.Debug.WriteLine("inside reader");
                         int dif = (int)reader1["DiffDate"];
-                        System.Diagnostics.Debug.WriteLine("dif is:" +dif);
                         if (dif < 183) {
                             ViewBag.annual = 0;
                         }

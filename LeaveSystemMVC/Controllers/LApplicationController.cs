@@ -189,16 +189,14 @@ namespace LeaveSystemMVC.Controllers
 
                 var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
 
-                string queryString = "Insert INTO Leave (Employee_ID,Document,Start_Date,End_Date,Reporting_Back_Date,Leave_ID,Contact_Outside_UAE,Comment,Flight_Ticket,Total_Leave_Days,Start_Hrs,End_Hrs,Status) VALUES ('" + a + "','"+fileN+"','" + stdate + "','" + endate + "','" + endate + "','" + leaveid + "','" + model.contactDetails + "','" + model.comments + "','" + ticket + "','"+days+"','" + model.shortStartTime + "','" + model.shortEndTime + "','0');";
+                string queryString = "Insert INTO Leave (Employee_ID,Document,Start_Date,End_Date,Reporting_Back_Date,Leave_ID,Contact_Outside_UAE,Comment,Flight_Ticket,Total_Leave_Days,Start_Hrs,End_Hrs,Leave_Status_ID) VALUES ('" + a + "','"+fileN+"','" + stdate + "','" + endate + "','" + endate + "','" + leaveid + "','" + model.contactDetails + "','" + model.comments + "','" + ticket + "','"+days+"','" + model.shortStartTime + "','" + model.shortEndTime + "','0');";
 
                 var connection = new SqlConnection(connectionString);
 
                 connection.Open();
-                //    System.Diagnostics.Debug.WriteLine("connection opened");
                 var command = new SqlCommand(queryString, connection);
 
                 command.ExecuteNonQuery();
-                //  System.Diagnostics.Debug.WriteLine("connection executed");
                 Response.Write("<script> alert('Leave Application Submitted');location.href='Create'</script>");
                 connection.Close();
             }

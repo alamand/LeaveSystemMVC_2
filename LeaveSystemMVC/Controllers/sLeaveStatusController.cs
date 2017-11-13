@@ -24,7 +24,7 @@ namespace LeaveSystemMVC.Controllers
 
 
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string query = "Select * FROM dbo.leave,dbo.Leave_Type where Employee_ID = '" + a + "' AND Start_Date > GETDATE() AND leave.Leave_ID = Leave_Type.Leave_ID and leave.Status IN (0,1,6)";
+            string query = "Select * FROM dbo.leave,dbo.Leave_Type where Employee_ID = '" + a + "' AND Start_Date > GETDATE() AND leave.Leave_ID = Leave_Type.Leave_ID and leave.Leave_Status_ID IN (0,1,6)";
 
             using (var connection = new SqlConnection(connectionString))
             {
@@ -82,7 +82,7 @@ namespace LeaveSystemMVC.Controllers
                              leave.shortEndTime = new TimeSpan(0, 0, 0, 0, 0);
                         
 
-                        leave.leaveStatus = (int)reader["Status"];
+                        leave.leaveStatus = (int)reader["Leave_Status_ID"];
 
                         if (!reader.IsDBNull(15))
                             leave.hrComment = (string)reader["HR_Comment"];
@@ -107,7 +107,7 @@ namespace LeaveSystemMVC.Controllers
 
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
 
-            string queryString = "UPDATE Leave SET Status= '5' WHERE Leave_Application_ID = '"+id+"'";
+            string queryString = "UPDATE Leave SET Leave_Status_ID= '5' WHERE Leave_Application_ID = '"+id+"'";
 
             var connection = new SqlConnection(connectionString);
 

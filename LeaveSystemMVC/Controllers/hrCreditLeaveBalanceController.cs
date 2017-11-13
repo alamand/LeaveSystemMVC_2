@@ -71,7 +71,7 @@ namespace LeaveSystemMVC.Controllers
         public int prevbalance { get; set; }
         public int duration { get; set; }
     }
-    public void CreditBalance(int leaveID, int balance)
+    public void CreditBalance(int leaveID, decimal balance)
     {
         var model = new List<Models.hrHolidaysCalender>();
         var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
@@ -161,7 +161,7 @@ namespace LeaveSystemMVC.Controllers
         }
 
     }
-    public void CreditAnnual(int lid, int eid, int balance)
+    public void CreditAnnual(int lid, int eid, decimal balance)
     {
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
             string queryUpdate = "Update dbo.Leave_Balance SET Balance='" + balance + "' WHERE Leave_ID='" + lid + "' AND  Employee_ID = '" + eid + "'";

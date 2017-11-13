@@ -42,7 +42,7 @@ namespace LeaveSystemMVC.Controllers
                                 "dbo.Leave.Start_Date, dbo.Leave.End_Date, dbo.Leave.Reporting_Back_Date, " +
                                 "dbo.Leave.Leave_ID, dbo.Leave.Contact_Outside_UAE, dbo.Leave.Comment, " +
                                 "dbo.Leave.Document, dbo.Leave.Flight_Ticket, dbo.Leave.Total_Leave_Days, " +
-                                "dbo.Leave.Start_Hrs, dbo.Leave.End_Hrs, dbo.Leave.Status, " +
+                                "dbo.Leave.Start_Hrs, dbo.Leave.End_Hrs, dbo.Leave.Leave_Status_ID, " +
                                 "dbo.Leave.LM_Comment, dbo.Leave.HR_Comment, dbo.Employee.First_Name, dbo.Employee.Last_Name " +
                                 "FROM dbo.Leave " +
                                 "FULL JOIN dbo.Employee " +
@@ -50,7 +50,7 @@ namespace LeaveSystemMVC.Controllers
                                 "FULL JOIN dbo.Department " +
                                 "ON dbo.Employee.Department_ID = dbo.Department.Department_ID " +
                                 "WHERE dbo.Department.Substitute_LM_ID = '" + userID + "' " +
-                                "AND dbo.Leave.Status = '0'" +
+                                "AND dbo.Leave.Leave_Status_ID = '0'" +
                                 "AND dbo.Leave.Leave_ID IS NOT NULL ";
 
             using (var connection = new SqlConnection(connectionString))
@@ -98,7 +98,7 @@ namespace LeaveSystemMVC.Controllers
                                 leave.shortEndTime = new TimeSpan(0, 0, 0, 0, 0);
                             }
 
-                            leave.leaveStatus = (int)reader["Status"];
+                            leave.leaveStatus = (int)reader["Leave_Status_ID"];
                             if (!reader.IsDBNull(15))
                                 leave.hrComment = (string)reader["HR_Comment"];
                             else
@@ -148,7 +148,7 @@ namespace LeaveSystemMVC.Controllers
                     "dbo.Leave.Start_Date, dbo.Leave.End_Date, dbo.Leave.Reporting_Back_Date, " +
                     "dbo.Leave.Leave_ID, dbo.Leave.Contact_Outside_UAE, dbo.Leave.Comment, " +
                     "dbo.Leave.Document, dbo.Leave.Flight_Ticket, dbo.Leave.Total_Leave_Days, " +
-                    "dbo.Leave.Start_Hrs, dbo.Leave.End_Hrs, dbo.Leave.Status, " +
+                    "dbo.Leave.Start_Hrs, dbo.Leave.End_Hrs, dbo.Leave.Leave_Status_ID, " +
                     "dbo.Leave.LM_Comment, dbo.Leave.HR_Comment, dbo.Employee.First_Name, dbo.Employee.Last_Name " +
                     "FROM dbo.Leave " +
                     "FULL JOIN dbo.Employee " +
@@ -156,7 +156,7 @@ namespace LeaveSystemMVC.Controllers
                     "FULL JOIN dbo.Department " +
                     "ON dbo.Employee.Department_ID = dbo.Department.Department_ID " +
                     "WHERE dbo.Department.Line_Manager_ID = '" + userID + "' " +
-                    "AND dbo.Leave.Status = '0'" +
+                    "AND dbo.Leave.Leave_Status_ID = '0'" +
                     "AND dbo.Leave.Leave_ID IS NOT NULL ";
 
                 using (var connection2 = new SqlConnection(connectionString))
@@ -204,7 +204,7 @@ namespace LeaveSystemMVC.Controllers
                                     leave.shortEndTime = new TimeSpan(0, 0, 0, 0, 0);
                                 }
 
-                                leave.leaveStatus = (int)reader2["Status"];
+                                leave.leaveStatus = (int)reader2["Leave_Status_ID"];
                                 if (!reader2.IsDBNull(15))
                                     leave.hrComment = (string)reader2["HR_Comment"];
                                 else
@@ -263,7 +263,7 @@ namespace LeaveSystemMVC.Controllers
                         while(reader.Read())
                         {
                             string balanceType = GetLeaveType((int)reader["Leave_ID"]);
-                            int balance = (int)reader["Balance"];
+                            decimal balance = (decimal)reader["Balance"];
                             string empGender = (string)reader["Gender"];
                             if(empGender.Equals("M") && balanceType.Equals("Maternity"))
                             {
@@ -292,12 +292,12 @@ namespace LeaveSystemMVC.Controllers
             switch (submit)
             {
                 case "Approve":
-                    queryString = "UPDATE dbo.Leave SET Status = '1', " +
+                    queryString = "UPDATE dbo.Leave SET Leave_Status_ID = '1', " +
                         "LM_Comment = '" + SL.lmComment + "' " +
                         "WHERE dbo.Leave.Leave_Application_ID = '" + lid + "' ";
                     break;
                 case "Reject":
-                    queryString = "UPDATE dbo.Leave SET Status = '3', " +
+                    queryString = "UPDATE dbo.Leave SET Leave_Status_ID = '3', " +
                         "LM_Comment = '" + SL.lmComment + "' " +
                         "WHERE dbo.Leave.Leave_Application_ID = '" + lid + "' ";
                     break;
@@ -368,12 +368,6 @@ namespace LeaveSystemMVC.Controllers
                     break;
                 case 5:
                     statusInString = "Cancelled";
-                    break;
-                case 6:
-                    statusInString = "secondLMPending";
-                    break;
-                case 7:
-                    statusInString = "secondLMRejected";
                     break;
             }
 

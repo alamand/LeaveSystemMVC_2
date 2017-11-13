@@ -188,7 +188,7 @@ namespace LeaveSystemMVC.Controllers
             var details = new List<Emp>();
             DateTime start, end;
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "Select * from dbo.Leave where Status!='4' And year(Start_Date)='" + date.Year + "'";
+            string queryString = "Select * from dbo.Leave where Leave_Status_ID!='4' And year(Start_Date)='" + date.Year + "'";
             using (var connection = new SqlConnection(connectionString))
             {
                 var command = new SqlCommand(queryString, connection);
@@ -206,7 +206,7 @@ namespace LeaveSystemMVC.Controllers
                         empid = (int)reader["Employee_ID"];
                         start = (DateTime)reader["Start_Date"];
                         end = (DateTime)reader["End_Date"];
-                        status = (int)reader["Status"];
+                        status = (int)reader["Leave_Status_ID"];
                         details.Add(new Emp(appid, empid, lid, start, end, status));
                     }
                 }
@@ -280,9 +280,9 @@ namespace LeaveSystemMVC.Controllers
                     connection.Close();
             }
         }
-        public int getBalance(int eid, int lid)
+        public decimal getBalance(int eid, int lid)
         {
-            int balance = 0;
+            decimal balance = 0;
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
             string queryString = "Select * from dbo.Leave_Balance Where Employee_ID='" + eid + "' And Leave_ID='" + lid + "'";
             using (var connection = new SqlConnection(connectionString))

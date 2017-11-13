@@ -24,7 +24,7 @@ namespace LeaveSystemMVC.Controllers
 
 
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string query = "Select * FROM dbo.leave,dbo.Leave_Type where Employee_ID = '" + a + "' AND leave.Leave_ID = Leave_Type.Leave_ID and leave.Status IN (2,3,4,5)";
+            string query = "Select * FROM dbo.leave,dbo.Leave_Type where Employee_ID = '" + a + "' AND leave.Leave_ID = Leave_Type.Leave_ID and leave.Leave_Status_ID IN (2,3,4,5)";
 
             using (var connection = new SqlConnection(connectionString)){
                 var command = new SqlCommand(query, connection);
@@ -75,7 +75,7 @@ namespace LeaveSystemMVC.Controllers
                             leave.shortEndTime = new TimeSpan(0, 0, 0, 0, 0);
                         }
                         
-                        leave.leaveStatus = (int)reader["Status"];
+                        leave.leaveStatus = (int)reader["Leave_Status_ID"];
 
 
                         model.Add(leave);
