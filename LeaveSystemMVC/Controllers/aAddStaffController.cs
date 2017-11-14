@@ -313,9 +313,17 @@ namespace LeaveSystemMVC.Controllers
             SmtpClient client = new SmtpClient();
 
             client.EnableSsl = true;
-            
+
+            //@todo: use a different email account 
             client.Credentials = new NetworkCredential("project_ict333@murdochdubai.ac.ae", "ict@333");
-            client.Send(message);
+            try
+            {
+                client.Send(message);
+            }
+            catch (Exception e)
+            {
+                Response.Write("<script> alert('The email could not be sent due to a network error.');</script>");
+            }
             string gendertext = "";
             if (SE.gender.Equals("M"))
                 gendertext = "him";

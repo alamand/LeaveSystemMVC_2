@@ -62,6 +62,11 @@ namespace LeaveSystemMVC.Models
         [DataType(DataType.Date)]
         public DateTime empEndDate { get; set; }
 
+        [DataType(DataType.Date)]
+        public DateTime empOldStartDate { get; set; }
+
+        [DataType(DataType.Date)]
+        public DateTime empOldEndDate { get; set; }
 
         public string secondLineManager { get; set; }
         public Dictionary<int, string> SecondLMSelectionOptions { get; set; } = new Dictionary<int, string>();

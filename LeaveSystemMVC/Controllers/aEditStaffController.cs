@@ -29,10 +29,37 @@ namespace LeaveSystemMVC.Controllers
                 ConfigurationManager.ConnectionStrings["DefaultConnection"].
                 ConnectionString;
 
-            //Get the start and end date from the Employment_Period table.
-            string queryString = "SELECT dbo.Employment_Period.Emp_Start_Date, dbo.Employment_Period.Emp_End_Date " +
+            //In case an employee has multiple employment dates, get the one with the latest start date from the Employment_Period table.
+            string queryString = "SELECT dbo.Employment_Period.Emp_Start_Date " +
                "FROM dbo.Employment_Period " +
                "WHERE dbo.Employment_Period.Employee_ID = '" + empID + "'";
+            DateTime tempStartDate = DateTime.MinValue;
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+               
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            if((DateTime)reader[0] > tempStartDate)
+                            {
+                                tempStartDate = (DateTime)reader[0];
+                            }
+                        }
+                    }
+                }
+                connection.Close();
+            }
+            
+            queryString = "SELECT dbo.Employment_Period.Emp_Start_Date, dbo.Employment_Period.Emp_End_Date " +
+               "FROM dbo.Employment_Period " +
+               "WHERE dbo.Employment_Period.Employee_ID = '" + empID + "' AND dbo.Employment_Period.Emp_Start_Date = '"
+               + tempStartDate.ToString("yyyy-MM-dd") + "'";
 
             using (var connection = new SqlConnection(connectionString))
             {
@@ -45,14 +72,19 @@ namespace LeaveSystemMVC.Controllers
                         while (reader.Read())
                         {
                             EmptyEmployee.empStartDate = (DateTime)reader[0];
+                            EmptyEmployee.empOldStartDate = (DateTime)reader[0]; //For detecting changes to the start date.
                             if (reader[1] != DBNull.Value)
-                                EmptyEmployee.empEndDate = (DateTime)reader[1];                            
+                            {
+                                EmptyEmployee.empEndDate = (DateTime)reader[1];
+                                EmptyEmployee.empOldEndDate = (DateTime)reader[1]; //For detecting changes to the end date.
+                            }                    
                         }
                     }
                 }
                 connection.Close();
             }
 
+            
             queryString = "SELECT Employee_ID, First_Name, Last_Name, " +
                 "Gender, Ph_No, Email, User_Name, Designation, dbo.Employee.Department_ID, " +
                 "Account_Status " + 
@@ -320,11 +352,12 @@ namespace LeaveSystemMVC.Controllers
                             ModelState.AddModelError("accountStatus", "Cannot deactivate a department's Line Manager.\r\n Please replace the Line Manager first.");
                             hasValidationErrors = true;
                         }
-                        if(SE.isAdmin)
+                        //Not required
+                        /*if(SE.isAdmin)
                         {
                             ModelState.AddModelError("isAdmin", "This employee is an active Line Manager of a department. Administrator users do not have the functionalities of a Line Manager.");
                             hasValidationErrors = true;
-                        }
+                        }*/
                         /*Check if user tried to change the LM Role of an active LM of a department
                          *Normally it's okay to deactivate a person with the LM role if they are not 
                          the active LM of a department.*/
@@ -356,7 +389,7 @@ namespace LeaveSystemMVC.Controllers
                         {
                             if (!lsr.Equals(rsr) && !losr.Equals(rsr))
                             {
-                                ModelState.AddModelError("staffType", "The employee is the active line manager of a depaartment. \r\n Please replace the Line Manager first.");
+                                ModelState.AddModelError("staffType", "The employee is the active line manager of a department. \r\n Please replace the Line Manager first.");
                                 hasValidationErrors = true;
                             }
                         }
@@ -364,7 +397,7 @@ namespace LeaveSystemMVC.Controllers
                         {
                             if(!losr.Equals(rosr) && !lsr.Equals(rosr))
                             {
-                                ModelState.AddModelError("optionalStaffType", "The employee is the active line manager of a depaartment. \r\n Please replace the Line Manager first.");
+                                ModelState.AddModelError("optionalStaffType", "The employee is the active line manager of a department. \r\n Please replace the Line Manager first.");
                                 hasValidationErrors = true;
                             }
                         }
@@ -373,8 +406,13 @@ namespace LeaveSystemMVC.Controllers
                 
                 connection.Close();
             }
-            
 
+            int result = DateTime.Compare(SE.empEndDate, SE.empStartDate);
+            if (result < 0)
+            {
+                ModelState.AddModelError("empEndDate", "The end date cannot be earlier than the start date.");
+                hasValidationErrors = true;
+            }
 
             /*Make sure the selection lists for departments, roles
              and the non-display role options are persisted. And then redirect to
@@ -398,24 +436,51 @@ namespace LeaveSystemMVC.Controllers
             //string secondLmValueText = "";
 
             //Update the Employment_Period table
-            queryString = "UPDATE dbo.Employment_Period SET Emp_Start_Date = '" + SE.empStartDate.ToString("yyyy-MM-dd") + "' , Emp_End_Date = '" + SE.empEndDate.ToString("yyyy-MM-dd") + "' WHERE dbo.Employment_Period.Employee_ID = '" + SE.staffID + "'";
-
-            using (var connection = new SqlConnection(connectionString))
+            //Start date has been modified, so create a new entry in the Employment_Period table
+            if (!SE.empStartDate.Equals(SE.empOldStartDate))
             {
-                var command = new SqlCommand(queryString, connection);
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-                    connection.Close();
+                queryString = "INSERT INTO dbo.Employment_Period (Employee_ID, Emp_Start_Date, Emp_End_Date) VALUES('" + SE.staffID +
+                   "', '" + SE.empStartDate.ToString("yyyy-MM-dd") + "', '" + SE.empEndDate.ToString("yyyy-MM-dd") + "')";
+
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    var command = new SqlCommand(queryString, connection);
+                    connection.Open();
+                    using (var reader = command.ExecuteReader())
+                        connection.Close();
+                }
+            }
+            //An employment end date has been added or the employment end date has been modified and the start date is unmodified
+            else if ((SE.empOldEndDate == DateTime.MinValue && SE.empEndDate != DateTime.MinValue) || !SE.empEndDate.Equals(SE.empOldEndDate))
+            {
+                System.Diagnostics.Debug.WriteLine("inside else");
+                queryString = "UPDATE dbo.Employment_Period SET Emp_End_Date = '" + SE.empEndDate.ToString("yyyy-MM-dd") +
+                "' WHERE dbo.Employment_Period.Employee_ID = '" + SE.staffID +
+                "' AND dbo.Employment_Period.Emp_Start_Date = '" + SE.empOldStartDate.ToString("yyyy-MM-dd") + "'";
+
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    var command = new SqlCommand(queryString, connection);
+                    connection.Open();
+                    using (var reader = command.ExecuteReader())
+                        connection.Close();
+                }
             }
 
-            //Update the Employment_Period table
+            //Update the Employee table
             if (SE.deptName == null)
             {
-                queryString = "UPDATE dbo.Employee SET First_Name = '" + SE.firstName + "' , Last_Name = '" + SE.lastName + "' , User_Name = '" + SE.userName + "' , Designation = '" + SE.designation + "' , Email = '" + SE.email + "' , Gender = '" + SE.gender + "' , Ph_No = '" + SE.phoneNo + "' , Account_Status = '" + SE.accountStatus + "' WHERE dbo.Employee.Employee_ID = '" + SE.staffID + "'";
+                queryString = "UPDATE dbo.Employee SET First_Name = '" + SE.firstName + "' , Last_Name = '" + SE.lastName +
+                    "' , User_Name = '" + SE.userName + "' , Designation = '" + SE.designation + "' , Email = '" + SE.email + 
+                    "' , Gender = '" + SE.gender + "' , Ph_No = '" + SE.phoneNo + "' , Account_Status = '" + SE.accountStatus + 
+                    "' WHERE dbo.Employee.Employee_ID = '" + SE.staffID + "'";
             }
             else
             {
-                queryString = "UPDATE dbo.Employee SET First_Name = '" + SE.firstName + "' , Last_Name = '" + SE.lastName + "' , User_Name = '" + SE.userName + "' , Designation = '" + SE.designation + "' , Email = '" + SE.email + "' , Gender = '" + SE.gender + "' , Ph_No = '" + SE.phoneNo + "' , Account_Status = '" + SE.accountStatus + "' , Department_ID = '" + SE.deptName + "' WHERE dbo.Employee.Employee_ID = '" + SE.staffID + "'";
+                queryString = "UPDATE dbo.Employee SET First_Name = '" + SE.firstName + "' , Last_Name = '" + SE.lastName + 
+                    "' , User_Name = '" + SE.userName + "' , Designation = '" + SE.designation + "' , Email = '" + SE.email + 
+                    "' , Gender = '" + SE.gender + "' , Ph_No = '" + SE.phoneNo + "' , Account_Status = '" + SE.accountStatus + 
+                    "' , Department_ID = '" + SE.deptName + "' WHERE dbo.Employee.Employee_ID = '" + SE.staffID + "'";
             }
             using (var connection = new SqlConnection(connectionString))
             {

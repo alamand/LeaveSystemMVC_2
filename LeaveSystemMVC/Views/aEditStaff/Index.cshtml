@@ -143,6 +143,7 @@
                                 <div class="col-md-4">
                                     @Html.TextBoxFor(model => model.empStartDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
                                     @Html.ValidationMessageFor(model => model.empStartDate, "", new { @class = "text-danger" })
+                                    @Html.HiddenFor(model => model.empOldStartDate)
                                 </div>
 
                                 <div class="col-xs-2" style="white-space:nowrap">
@@ -159,6 +160,7 @@
                                     }
                                     @Html.TextBoxFor(model => model.empEndDate, endDateFormat, new { @class = "form-control", type = "date" })
                                     @Html.ValidationMessageFor(model => model.empEndDate, "", new { @class = "text-danger" })
+                                    @Html.HiddenFor(model => model.empOldEndDate)
                                 </div>
                             </div>
                         </div>
