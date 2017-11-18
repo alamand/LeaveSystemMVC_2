@@ -9,27 +9,14 @@
 
     <table class="table">
         <tr>
-            <th>
-                Leave Type
-            </th>
-            <th>
-                Start Date 
-            </th>
-            <th>
-                End Date 
-            </th>
-            <th>
-                Leave Duration 
-            </th>
-            <th>
-                Start Time 
-            </th>
-            <th>
-                End Time 
-            </th>
-            <th>
-                Leave Status 
-            </th>
+            <th>Leave ID</th>
+            <th>Leave Type</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Leave Duration</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Leave Status</th>
         </tr>
 
         @foreach (var item in Model)
@@ -37,48 +24,38 @@
             <tr>
                 @{
                     string stDt = item.startDate.ToString();
-                    stDt = stDt.Substring(0, 9);
+                    stDt = stDt.Substring(0, 10);
 
                     string enDt = item.endDate.ToString();
-                    enDt = enDt.Substring(0, 9);
-
-                    int stats = item.leaveStatus;
+                    enDt = enDt.Substring(0, 10);
 
                     string status = "";
 
-                    switch (stats) {
-                        case 2: status = "Approved";
+                    switch (item.leaveStatus) {
+                        case 0:
+                        case 1:
+                            status = "Pending";
                             break;
-                        case 3: status = "Rejected LM";
+                        case 2:
+                            status = "Approved";
                             break;
+                        case 3:
                         case 4:
-                            status = "Rejected HR";
+                            status = "Rejected";
                             break;
                         case 5:
                             status = "Cancelled";
                             break;
-
                     }
-                        }
+         }
+                <td>@Html.DisplayFor(modelItem => item.leaveID)</td>
                 <td>@Html.DisplayFor(modelItem => item.leaveType)</td>
-
-
                 <td>@Html.DisplayFor(modelItem => stDt)</td>
-
-
                 <td>@Html.DisplayFor(modelItem => enDt)</td>
-
-
                 <td>@Html.DisplayFor(modelItem => item.leaveDuration)</td>
-
-
                 <td>@Html.DisplayFor(modelItem => item.shortStartTime)</td>
-
-
                 <td>@Html.DisplayFor(modelItem => item.shortEndTime)</td>
-
                 <td>@Html.DisplayFor(modelItem => status)</td>
-
             </tr>
         }
 
