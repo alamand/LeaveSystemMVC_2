@@ -221,7 +221,7 @@
     <Compile Include="Models\sLeaveModel.cs" />
     <Compile Include="Models\sEmployeeModel.cs" />
     <Compile Include="Models\minStaff.cs" />
-    <Compile Include="Models\EmpLeaveBalModel.cs" />
+    <Compile Include="Models\hrEmpLeaveBalModel.cs" />
     <Compile Include="Models\Users.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

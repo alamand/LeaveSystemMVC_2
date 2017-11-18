@@ -1,4 +1,4 @@
-﻿@model IEnumerable<LeaveSystemMVC.Models.EmpLeaveBalModel>
+﻿@model IEnumerable<LeaveSystemMVC.Models.hrEmpLeaveBalModel>
 @{
     ViewBag.Title = "Employee Balances";
 }
@@ -6,6 +6,7 @@
 @Html.Partial("_LeftMenu")
 <h2>@ViewBag.Title</h2>
 <div class="col-md-10">
+    <!-- TODO: ADD FILTER BY DEPARTMENT DROPDOWN -->
     <table class="table">
         <tr>
             <th>Employee ID</th>
