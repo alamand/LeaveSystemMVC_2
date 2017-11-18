@@ -204,7 +204,7 @@ namespace LeaveSystemMVC.Controllers
                 UpdateBalance(mode.compassionateID, id, mode.compassionate);
                 UpdateBalance(mode.daysInLieueID, id, mode.daysInLieue);
                 UpdateBalance(mode.shortID, id, mode.shortLeaveHours);
-                Response.Write("<script> alert('Success. The Information has been updated.');</script>");
+                Response.Write("<script> alert('Success. The information has been updated.');</script>");
             }
             else
             {

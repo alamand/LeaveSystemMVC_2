@@ -243,7 +243,7 @@ namespace LeaveSystemMVC.Controllers
 
             //Insert into the Employment_Period table
             queryString = "INSERT INTO dbo.Employment_Period (Employee_ID, Emp_Start_Date) VALUES('" + SE.staffID +
-                   "', '" + SE.empStartDate + "')";
+                   "', '" + SE.empStartDate.ToString("yyyy-MM-dd") + "')";
 
             using (var connection = new SqlConnection(connectionString))
             {

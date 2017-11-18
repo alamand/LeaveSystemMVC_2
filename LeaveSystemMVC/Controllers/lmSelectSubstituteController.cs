@@ -127,7 +127,7 @@ namespace LeaveSystemMVC.Controllers
                 }
 
                 //todo: remove LM role from substitute
-                Response.Write("<script> alert ('Successfully transfered authority back')</script>");
+                Response.Write("<script> alert ('Successfully transfered authority back.')</script>");
             }
             else //transferring LM role to substitute            
             {
@@ -183,7 +183,7 @@ namespace LeaveSystemMVC.Controllers
                     connection.Close();
                 }               
                 
-                Response.Write("<script> alert ('Successfully added substitute line manager')</script>");
+                Response.Write("<script> alert ('Successfully added substitute line manager.')</script>");
             }
             return Index();
         } 

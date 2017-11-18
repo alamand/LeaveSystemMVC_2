@@ -117,7 +117,7 @@ namespace LeaveSystemMVC.Controllers
 
             command.ExecuteNonQuery();
             //  System.Diagnostics.Debug.WriteLine("connection executed");
-            Response.Write("<script> alert('Your leave application has been canclledd.')</script>");
+            Response.Write("<script> alert('Your leave application has been cancelled.')</script>");
             connection.Close();
 
             return RedirectToAction("Index");

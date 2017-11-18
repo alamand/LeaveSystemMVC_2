@@ -297,7 +297,7 @@ namespace LeaveSystemMVC.Controllers
                 {
                     while (reader.Read())
                     {
-                        balance = (int)reader["Balance"];
+                        balance = (decimal)reader["Balance"];
                     }
                 }
                 connection.Close();

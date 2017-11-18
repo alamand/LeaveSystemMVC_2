@@ -50,7 +50,7 @@ namespace LeaveSystemMVC.Controllers
                 }
             }
             CreditAnnual();
-            Response.Write("<script> alert('Success. The Balance has been reset.');</script>");
+            Response.Write("<script> alert('Success. The balance has been reset.');</script>");
             return View();
         }
 

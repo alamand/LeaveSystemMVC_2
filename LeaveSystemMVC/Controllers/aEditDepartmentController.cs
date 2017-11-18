@@ -105,7 +105,6 @@ namespace LeaveSystemMVC.Controllers
                             tempID = (int)reader[0];
 
                         }
-                    //System.Diagnostics.Debug.WriteLine("This the LM ID"+tempID);
                     connection.Close();
                 }
 
@@ -118,7 +117,7 @@ namespace LeaveSystemMVC.Controllers
                     using (var reader = command.ExecuteReader())
                         connection.Close();
                 }
-                Response.Write("<script> alert ('Successfully edited the department')</script>");
+                Response.Write("<script> alert ('Successfully edited the department.')</script>");
             }
             return Index();
         }

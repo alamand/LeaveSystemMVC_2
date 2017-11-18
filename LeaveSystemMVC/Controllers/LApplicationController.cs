@@ -67,10 +67,7 @@ namespace LeaveSystemMVC.Controllers
             }
 
             if (result < 0) {
-                ModelState.AddModelError("endDate", "The End Date cannot be earlier than the start date");
-                //Response.Write("<script> alert('End Date Cannot be earlier than the Start Date');location.href='Create'</script>");
-                System.Diagnostics.Debug.WriteLine("is earlier than");
-                //Redirect(Create.UrlReferrer.ToString());
+                ModelState.AddModelError("endDate", "The End Date cannot be earlier than the start date");                
             }
 
                 int days = 0;
@@ -197,7 +194,7 @@ namespace LeaveSystemMVC.Controllers
                 var command = new SqlCommand(queryString, connection);
 
                 command.ExecuteNonQuery();
-                Response.Write("<script> alert('Leave Application Submitted');location.href='Create'</script>");
+                Response.Write("<script> alert('Your leave application has been submitted.');location.href='Create'</script>");
                 connection.Close();
             }
             return Create();
