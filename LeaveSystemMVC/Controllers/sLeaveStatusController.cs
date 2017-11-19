@@ -20,11 +20,9 @@ namespace LeaveSystemMVC.Controllers
             ViewBag.claim = c;
             string a = c.ToString();
             a = a.Substring(a.Length - 5);
-            System.Diagnostics.Debug.WriteLine("id is:"+a + ".");
-
 
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string query = "Select * FROM dbo.leave,dbo.Leave_Type where Employee_ID = '" + a + "' AND Start_Date > GETDATE() AND leave.Leave_ID = Leave_Type.Leave_ID and leave.Leave_Status_ID IN (0,1,6)";
+            string query = "Select * FROM dbo.leave,dbo.Leave_Type where Employee_ID = '" + a + "' AND leave.Leave_ID = Leave_Type.Leave_ID and leave.Leave_Status_ID IN (0,1)";
 
             using (var connection = new SqlConnection(connectionString))
             {

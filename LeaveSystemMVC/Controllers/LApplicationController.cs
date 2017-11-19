@@ -62,12 +62,18 @@ namespace LeaveSystemMVC.Controllers
 
             int result = DateTime.Compare(d2, d1);
 
+            /* Can apply e.g. for sick leave in the past
             if (d1 < today) {
                 ModelState.AddModelError("startDate", "The Start Date cannot be in the Past");
-            }
+            }*/
 
             if (result < 0) {
-                ModelState.AddModelError("endDate", "The End Date cannot be earlier than the start date");                
+                ModelState.AddModelError("endDate", "The reporting back date cannot be earlier than the start date.");                
+            }
+
+            if(result == 0)
+            {
+                ModelState.AddModelError("endDate", "The start and reporting back dates cannot be the same.");
             }
 
                 int days = 0;

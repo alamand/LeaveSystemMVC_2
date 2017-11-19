@@ -19,10 +19,9 @@ namespace LeaveSystemMVC.Controllers
             var identity = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
             string loggedInID = identity.ToString();
             loggedInID = loggedInID.Substring(loggedInID.Length - 5);
-            //System.Diagnostics.Debug.WriteLine("id is:"+ loggedInID + ".");
 
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string query = "Select Leave_Application_ID, Leave_Name, Leave_Status_ID, Start_Date, Reporting_Back_Date, Start_Hrs, End_Hrs, Total_Leave_Days FROM dbo.leave,dbo.Leave_Type where Employee_ID = '" + loggedInID + "' AND leave.Leave_ID = Leave_Type.Leave_ID";
+            string query = "Select Leave_Application_ID, Leave_Name, Leave_Status_ID, Start_Date, Reporting_Back_Date, Start_Hrs, End_Hrs, Total_Leave_Days FROM dbo.leave,dbo.Leave_Type where Employee_ID = '" + loggedInID + "' AND leave.Leave_ID = Leave_Type.Leave_ID and leave.Leave_Status_ID IN (2,3,4,5)";
 
             using (var connection = new SqlConnection(connectionString)){
                 var command = new SqlCommand(query, connection);
