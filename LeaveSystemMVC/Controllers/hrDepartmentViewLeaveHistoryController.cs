@@ -19,7 +19,8 @@ namespace LeaveSystemMVC.Controllers
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
             string query = "SELECT Leave_Application_ID, e.Employee_ID, First_Name, Last_Name, Leave_Name, Leave_Status_ID, Start_Date, Reporting_Back_Date, Start_Hrs, End_Hrs, Total_Leave_Days " +
                 "FROM dbo.leave l,dbo.Leave_Type t, dbo.Employee e " +
-                "WHERE e.Employee_ID = l.Employee_ID AND l.Leave_ID = t.Leave_ID AND l.leave_Status_ID IN (2,3,4,5)";
+                "WHERE e.Employee_ID = l.Employee_ID AND l.Leave_ID = t.Leave_ID AND l.leave_Status_ID IN (2,3,4,5)" +
+                "ORDER BY First_Name, Last_Name, Start_Date";
 
             using (var connection = new SqlConnection(connectionString))
             {
