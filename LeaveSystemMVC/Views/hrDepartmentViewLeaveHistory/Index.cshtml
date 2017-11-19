@@ -1,129 +1,62 @@
-﻿@model LeaveSystemMVC.Models.sLeaveModel
+﻿@model List<Tuple<LeaveSystemMVC.Models.sEmployeeModel, LeaveSystemMVC.Models.sLeaveModel>>
+
 @Html.Partial("_LeftMenu")
 <div class="col-md-10">
-    @using (Html.BeginForm())
-    {
-        @Html.AntiForgeryToken()
-        <div class="col-md-10">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <div class="text-muted bootstrap-admin-box-title">Application Details</div>
-                </div>
-                <div class="bootstrap-admin-panel-content">
-                    <div class="form-horizontal">
-                        <h4>Department View Leave History</h4>
-                        <hr />
-                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                       <div class="row">
-                         <div class="col-md-3" style="white-space:nowrap">
-                            <label>Select Department:  </label></div>
-                           <div class="col-md-4">
-                            <select id="department" name="department">
-                                <option>Finance</option>
-                                <option>IT</option>
-                                <option>HR</option>
-                                <option>LM</option>
-                            </select>
-                        </div>
-                           </div>
-                        <hr />
-                        <div class="container-fluid form-group">
-                        <div class="row">
-                            <div class="col-xs-2" style="white-space:nowrap">
-                                <label>Start Date </label></div>
-                               <div class="col-md-4"> 
-                                    <input type="date" />
-                            </div>
+    <h3>Employee Leave History</h3>
+    <div class="row">
+        <table class="table">
+            <tr>
+                <th>Staff Name</th>
+                <th>Leave ID</th>
+                <th>Leave Type</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Duration</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Leave Status</th>
+            </tr>
 
-                            <div class="col-xs-2" style="white-space:nowrap">
-                                <label>End Date </label></div>
-                            <div class="col-md-4">   
-                             <input type="date" />
-                            </div>
-                            </div>
-                        </div>
-                        <br /> <br />
-                        @*
-                            The table would retrieve data from db and show the staff name
-                            the view button would take them to their detailed history.
-                            When the view link would be clicked it would also send the staffid to the page
-                            staffid would be used to query and display the details**@
-                        <div id="form-group">
+            @foreach (var item in Model)
+            {
+                <tr>
+                    @{
+                        string stDt = item.Item2.startDate.ToString();
+                        stDt = stDt.Substring(0, 10);
 
-                            <table style="width:50%;margin:0px;border: 1px black solid;text-align:center;">
-                                @{  var dept = "Staff";
-                                    if (dept == "Staff")
-                                    {
+                        string enDt = item.Item2.endDate.ToString();
+                        enDt = enDt.Substring(0, 10);
 
-                                        <tr style="border: 1px black solid;">
-                                            <th style="border:1px solid black;">Staff Name</th>
-                                            <th style="border:1px solid black;">View History</th>
-                                        </tr>
-                                        <tr style="border: 1px black solid;">
-                                            <td style="border:1px solid black;">Sukhi</td>
-                                            <td style="border:1px solid black;"><a href="#">View</a></td>
-                                        </tr>
-                                        <tr style="border: 1px black solid;">
-                                            <td style="border:1px solid black;">Jasim</td>
-                                            <td style="border:1px solid black;"><a href="#">View</a></td>
-                                        </tr>
-                                        <tr style="border: 1px black solid;">
-                                            <td style="border:1px solid black;">Kunal</td>
-                                            <td style="border:1px solid black;"><a href="#">View</a></td>
-                                        </tr>
+                        string status = "";
 
-                                    }
-                                    else if (dept == "Admin")
-                                    {
-                    < tr > Department: Admin </ tr >
-                                    }
-                                    else if (dept == "HR")
-                                    {
-                    < tr > Department: HR </ tr >
-                                    } }
-                            </table>                <hr />
-                            <table style="border: 1.5px solid black; margin:15px;">
-                                <tr style="border: 1px black solid;">
-                                    <th style="border:1px solid black;">Staff Name</th>
-                                    <th style="border:1px solid black;">Leave Type</th>
-                                    <th style="border:1px solid black;">Duration</th>
-                                    <th style="border:1px solid black;">Start Date</th>
-                                    <th style="border:1px solid black;">End Date</th>
-
-                                </tr>
-                                <tr style="border: 1.5px solid black;">
-                                    <td style="border: 1px solid black;"> Junaid </td>
-                                    <td style="border:1px solid black;">Annual</td>
-                                    <td style="border:1px solid black;">25</td>
-                                    <td style="border:1px solid black;">10/01/2016</td>
-                                    <td style="border:1px solid black;">04/02/2016</td>
-                                </tr>
-                                <tr style="border: 1.5px solid black;">
-                                    <td style="border: 1px solid black;"> Jared </td>
-                                    <td style="border:1px solid black;">Annual</td>
-                                    <td style="border:1px solid black;">25</td>
-                                    <td style="border:1px solid black;">10/02/2016</td>
-                                    <td style="border:1px solid black;">04/03/2016</td>
-                                </tr>
-                                <tr style="border: 1.5px solid black;">
-                                    <td style="border: 1px solid black;"> Sam</td>
-                                    <td style="border:1px solid black;">Annual</td>
-                                    <td style="border:1px solid black;">25</td>
-                                    <td style="border:1px solid black;">10/01/2016</td>
-                                    <td style="border:1px solid black;">04/02/2016</td>
-
-                                </tr>
-
-                            </table>
-                        </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                        switch (item.Item2.leaveStatus)
+                        {
+                            case 2:
+                                status = "Approved";
+                                break;
+                            case 3:
+                            case 4:
+                                status = "Rejected";
+                                break;
+                        }
                     }
-                </div>
+                    <td>@Html.DisplayFor(modelItem => item.Item1.firstName) @Html.DisplayFor(modelItem => item.Item1.lastName) </td>
+                    <td>@Html.DisplayFor(modelItem => item.Item2.leaveID)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Item2.leaveType)</td>
+                    <td>@Html.DisplayFor(modelItem => stDt)</td>
+                    <td>@Html.DisplayFor(modelItem => enDt)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Item2.leaveDuration)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Item2.shortStartTime)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Item2.shortEndTime)</td>
+                    <td>@Html.DisplayFor(modelItem => status)</td>
+                </tr>
+                        }
+        </table>
+    </div>
+</div>
 
 
-                @section Scripts {
-                    @Scripts.Render("~/bundles/jqueryval")
-                }
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
