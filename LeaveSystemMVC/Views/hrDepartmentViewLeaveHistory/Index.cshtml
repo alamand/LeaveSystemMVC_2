@@ -38,6 +38,9 @@
                             case 4:
                                 status = "Rejected";
                                 break;
+                            case 5:
+                                status = "Canceled";
+                                break;
                         }
                     }
                     <td>@Html.DisplayFor(modelItem => item.Item1.firstName) @Html.DisplayFor(modelItem => item.Item1.lastName) </td>
@@ -50,7 +53,7 @@
                     <td>@Html.DisplayFor(modelItem => item.Item2.shortEndTime)</td>
                     <td>@Html.DisplayFor(modelItem => status)</td>
                 </tr>
-                        }
+             }
         </table>
     </div>
 </div>
