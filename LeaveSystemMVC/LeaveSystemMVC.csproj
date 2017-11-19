@@ -1777,6 +1777,7 @@
     <Content Include="Views\hrEditDefaultLeaveDuration\Display.cshtml" />
     <Content Include="Views\hrEditBalance\Index.cshtml" />
     <Content Include="Views\hrEditBalance\Edit.cshtml" />
+    <Content Include="Views\hrDepartmentViewDaysInLieu\Select.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

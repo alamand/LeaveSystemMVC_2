@@ -176,17 +176,20 @@ namespace LeaveSystemMVC.Controllers
             string queryString = "";
             int lid;
             int.TryParse(SL.leaveID, out lid);
+            string text = "";
             switch (submit)
             {
                 case "Approve":
                     queryString = "UPDATE dbo.Leave SET Leave_Status_ID = '2', " +
                         "LM_Comment = '" + SL.lmComment + "' " +
                         "WHERE dbo.Leave.Leave_Application_ID = '" + lid + "' ";
+                    text = "Your leave application had been fully approved.";
                     break;
                 case "Reject":
                     queryString = "UPDATE dbo.Leave SET Leave_Status_ID = '4', " +
                         "LM_Comment = '" + SL.lmComment + "' " +
                         "WHERE dbo.Leave.Leave_Application_ID = '" + lid + "' ";
+                    text = "Your leave application has been rejected by Human Resources.";
                     break;
             }
             var connectionString =
@@ -213,8 +216,7 @@ namespace LeaveSystemMVC.Controllers
 
             message.Subject = "Leave Application Update";
             string body = "";
-            body = body + "You application has been approved by your line manager." + Environment.NewLine +
-                "It is now awaiting review by Human Resources." + Environment.NewLine;
+            body = body + text + Environment.NewLine;
 
             message.Body = body;
             SmtpClient client = new SmtpClient();

@@ -1,4 +1,4 @@
-﻿@model LeaveSystemMVC.Models.sleaveBalanceModel
+﻿@model LeaveSystemMVC.Models.sEmployeeModel
 @Html.Partial("_LeftMenu")
 <div class="col-md-8">
     @using (Html.BeginForm())
@@ -6,43 +6,54 @@
         @Html.AntiForgeryToken()
 
         <div class="form-horizontal">
-            <h4>Edit Department Days in Lieu</h4>
+            <h4>Credit Days in Lieu</h4>
             <hr />
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            @*Needs to be edited. Didnt know what to show*@
+            
+            <!--employee start and end date-->
+            <div class="container-fluid form-group">
+                <div class="row">
+                    <div class="col-xs-2" style="white-space:nowrap">
+                        @Html.LabelFor(model => model.empStartDate, "Start Date", htmlAttributes: new { @class = "control-label col-md-1", type = "Date" })
+                    </div>
 
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <table style="border:2px solid black; text-align:center ;">
-                        <tr style="border:0.5px solid black;">
-                            <th style="border:1px solid black;">Staff ID</th>
-                            <th style="border:1px solid black;">Staff Name</th>
-                            <th style="border:1px solid black;">Balance</th>
-                            <th style="border:1px solid black;">Edit Balance</th>
-                        </tr>
-                        <tr style="border:0.5px solid black;">
-                            <td style="border:1px solid black;">12345678</td>
-                            <td style="border:1px solid black;">Sukhpreet Singh</td>
-                            <td style="border:1px solid black;"><input type="text" value="10" disabled="disabled"/></td>
-                            <td style="border:1px solid black;">Edit</td>
-                        </tr>
-                        <tr style="border:0.5px solid black;">
-                            <td style="border:1px solid black;">1245678</td>
-                            <td style="border:1px solid black;">Jasim Khumi</td>
-                            <td style="border:1px solid black;"><input type="text" value="10" disabled="disabled" /></td>
-                            <td style="border:1px solid black;">Edit</td>
-                        </tr>
-                    </table>
+                    <div class="col-md-4">
+                        @Html.TextBoxFor(model => model.empStartDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                        @Html.ValidationMessageFor(model => model.empStartDate, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(model => model.empOldStartDate)
+                    </div>
+
+                    <div class="col-xs-2" style="white-space:nowrap">
+                        @Html.LabelFor(model => model.empEndDate, "End Date", htmlAttributes: new { @class = "control-label col-md-4" })
+                    </div>
+
+                    <div class="col-md-4">
+                        @{
+                            string endDateFormat = "";
+                        }
+                        @Html.TextBoxFor(model => model.empEndDate, endDateFormat, new { @class = "form-control", type = "date" })
+                        @Html.ValidationMessageFor(model => model.empEndDate, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(model => model.empOldEndDate)
+                    </div>
                 </div>
             </div>
-            <div class="form-group">
-                <div class="col-md-offset-5 col-md-10">
-                    <input type="submit" value="Save" class="btn btn-default" />
+            <hr />
+            <div class="row">
+                @Html.LabelFor(model => model.designation, "Comment", htmlAttributes: new { @class = "control-label col-md-2" })
+
+                @Html.TextAreaFor(model => model.designation, new { rows = "6", cols = "35" })
+            </div>
+
+            <br /><br /><br />
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Submit" class="btn btn-default" />
+                    </div>
                 </div>
             </div>
         </div>
     }
-</div>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
