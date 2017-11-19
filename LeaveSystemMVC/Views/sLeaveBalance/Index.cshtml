@@ -27,6 +27,8 @@
                 @ViewBag.Compassionate
             </td>
         </tr>
+        @if (ViewBag.gender == 'F')
+        {
         <tr>
             <th>
                 Maternity 
@@ -35,6 +37,7 @@
                 @ViewBag.maternity
             </td>
         </tr>
+        }
         <tr>
             <th>
                 Days in Lieu 

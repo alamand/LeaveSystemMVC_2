@@ -38,12 +38,14 @@
                     <td>@Html.TextBoxFor(modelItem => modelItem.annual, new { @Value = ViewBag.annual })</td>
                     @Html.HiddenFor(modelItem => modelItem.annualID)
                 </tr>
+                @if (ViewBag.gender == 'F') {
                 <tr>
                     <td>Maternity</td>
                     <td>@ViewBag.maternity </td>
                     <td>@Html.TextBoxFor(modelItem => modelItem.maternity, new { @Value = ViewBag.maternity })</td>
                     @Html.HiddenFor(modelItem => modelItem.maternityID)
                 </tr>
+                }
                 <tr>
                     <td>Sick</td>
                     <td>@ViewBag.sick</td>

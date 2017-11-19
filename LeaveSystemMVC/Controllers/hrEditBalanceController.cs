@@ -16,7 +16,7 @@ namespace LeaveSystemMVC.Controllers
         {
             var model = new List<Models.hrEmpLeaveBalModel>();
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "Select Employee_ID, First_Name, Last_Name FROM dbo.Employee";
+            string queryString = "Select Employee_ID, First_Name, Last_Name, Gender FROM dbo.Employee";
 
             using (var connection = new SqlConnection(connectionString))
             {
@@ -33,6 +33,7 @@ namespace LeaveSystemMVC.Controllers
                         empBal.employee.firstName = (string)reader["First_Name"];
                         empBal.employee.lastName = (string)reader["Last_Name"];
                         empBal.employee.staffID = (int)reader["Employee_ID"];
+                        empBal.employee.gender = Convert.ToChar(reader["Gender"]);
 
                         string queryString2 = "Select Balance,Leave_Name FROM dbo.Leave_Balance, dbo.Leave_Type where Leave_Balance.Employee_ID = '" + empBal.employee.staffID + "' AND Leave_Balance.Leave_ID = Leave_Type.Leave_ID";
 
@@ -133,6 +134,22 @@ namespace LeaveSystemMVC.Controllers
             int staff_id = int.Parse(id);
             var lv = ConstructLeaveBalance();
 
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            string queryString = "Select Gender FROM dbo.Employee WHERE Employee_ID = '" + staff_id + "'";
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        ViewBag.gender = Convert.ToChar(reader["Gender"]);
+                    }
+                }
+                connection.Close();
+            }
+            
             ViewBag.sid = staff_id;                                             // pass the staff id to view
             ViewBag.annual = getBalance(staff_id, lv.annualID);                 // retrieve staff's annual balance and pass it to view
             ViewBag.maternity = getBalance(staff_id, lv.maternityID);           // retrieve staff's maternity balance and pass it to view

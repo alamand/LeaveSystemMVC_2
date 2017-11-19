@@ -28,7 +28,14 @@
                 <td>@item.leaveBalance.sick</td>
                 <td>@item.leaveBalance.compassionate</td>
                 <td>@item.leaveBalance.shortLeaveHours</td>
-                <td>@item.leaveBalance.maternity</td>
+                @if (item.employee.gender == 'F')
+                {
+                    <td>@item.leaveBalance.maternity</td>
+                }
+                else
+                {
+                    <td></td>
+                }
                 <td>@item.leaveBalance.daysInLieue</td>
                 <td>@Html.ActionLink("Edit", "Edit", "hrEditBalance", new { id = item.employee.staffID }, null)</td>
             </tr>

@@ -13,69 +13,48 @@ namespace LeaveSystemMVC.Controllers
         // GET: sLeaveBalance
         public ActionResult Index()
         {
-
-            var model = new List<Models.sleaveBalanceModel>();
             var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
             var c = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);   
             ViewBag.claim = c;
             string a = c.ToString();
             a = a.Substring(a.Length - 5);
-            //System.Diagnostics.Debug.WriteLine("id is:"+a + ".");
+
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;          
+            string queryString = "Select Gender, Balance,Leave_Name FROM dbo.Employee, dbo.Leave_Balance, dbo.Leave_Type where Leave_Balance.Employee_ID = Employee.Employee_ID AND Leave_Balance.Employee_ID = '" + a+"' AND Leave_Balance.Leave_ID = Leave_Type.Leave_ID";
 
-            string queryString = "Select Balance,Leave_Name FROM dbo.Leave_Balance, dbo.Leave_Type where Leave_Balance.Employee_ID = '" + a+"' AND Leave_Balance.Leave_ID = Leave_Type.Leave_ID";
-
-           using( var connection = new SqlConnection(connectionString))
+            using ( var connection = new SqlConnection(connectionString))
             {
                 var command = new SqlCommand(queryString, connection);
 
                 connection.Open();
-                decimal annual = 0;
-                decimal sick = 0;
-                decimal compassionate = 0;
-                decimal maternity = 0;
-                decimal shortHrs = 0;
-                decimal unpaid = 0;
-                decimal DIL = 0;
-
-
 
                 using (var reader = command.ExecuteReader()) {
                     while (reader.Read()) {
-                        var balance = new Models.sleaveBalanceModel();
 
-                        //string leave = "";
-
+                        ViewBag.gender = Convert.ToChar(reader["Gender"]);            
                         string leave = (string)reader["Leave_Name"];
+                        System.Diagnostics.Debug.WriteLine("Gender:"+ Convert.ToChar(reader["Gender"]));
+
                         if (leave.Equals("Annual"))
-                            annual =  (decimal)reader["Balance"];
-                        ViewBag.annual = annual;    
+                            ViewBag.annual = (decimal)reader["Balance"];
 
                         if (leave.Equals("Sick"))
-                            sick = (decimal)reader["Balance"];
-                        ViewBag.sick = sick;
+                            ViewBag.sick = (decimal)reader["Balance"];
 
                         if (leave.Equals("Compassionate"))
-                            compassionate = (decimal)reader["Balance"];
-                        ViewBag.compassionate = compassionate;
+                            ViewBag.compassionate = (decimal)reader["Balance"];
 
                         if (leave.Equals("Maternity"))
-                           maternity = (decimal)reader["Balance"];
-                        ViewBag.maternity = maternity;
+                            ViewBag.maternity = (decimal)reader["Balance"];
 
                         if (leave.Equals("Short_Hours"))
-                           shortHrs = (decimal)reader["Balance"];
-                        ViewBag.shortHrs = shortHrs;
+                            ViewBag.shortHrs = (decimal)reader["Balance"];
 
                         if (leave.Equals("Unpaid"))
-                            unpaid = (decimal)reader["Balance"];
-                        ViewBag.unpaid = unpaid;
+                            ViewBag.unpaid = (decimal)reader["Balance"];
 
                         if (leave.Equals("DIL"))
-                            DIL = (decimal)reader["Balance"];
-                        ViewBag.DIL = DIL;
-
-                        model.Add(balance);
+                            ViewBag.DIL = (decimal)reader["Balance"];  
                     }
                 }
                 connection.Close();
@@ -100,9 +79,7 @@ namespace LeaveSystemMVC.Controllers
                 connection1.Close();
             }
 
-
-
-            return View(model);
+            return View();
         }
     }
 }

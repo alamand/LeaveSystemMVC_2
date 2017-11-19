@@ -17,15 +17,43 @@ namespace LeaveSystemMVC.Controllers
         [HttpGet]
         public ActionResult Create()
         {
-            System.Diagnostics.Debug.WriteLine("Entered get");
-            List<string> leaves = new List<string>() ;
-            leaves.Add("Annual");
-            leaves.Add("Sick");
-            leaves.Add("Compassionate");
-            leaves.Add("Maternity");
-            leaves.Add("Short");
-            leaves.Add("Unpaid");
-            ViewBag.leave = leaves;
+            var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
+            var c = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            ViewBag.claim = c;
+            string a = c.ToString();
+            a = a.Substring(a.Length - 5);
+
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            string queryString = "Select Gender FROM dbo.Employee where Employee_ID = '" + a + "'";
+            using (var connection = new SqlConnection(connectionString))
+            {
+                char gender = '\0';
+                var command = new SqlCommand(queryString, connection);
+
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                       gender = Convert.ToChar(reader["Gender"]);
+                    }
+                }
+                connection.Close();
+
+                System.Diagnostics.Debug.WriteLine("Entered get");
+                List<string> leaves = new List<string>();
+                leaves.Add("Annual");
+                leaves.Add("Sick");
+                leaves.Add("Compassionate");
+                if (gender == 'F')
+                {
+                    leaves.Add("Maternity");
+                }
+                leaves.Add("Short");
+                leaves.Add("Unpaid");
+                ViewBag.leave = leaves;
+            }
+           
             return View();
         }
 
