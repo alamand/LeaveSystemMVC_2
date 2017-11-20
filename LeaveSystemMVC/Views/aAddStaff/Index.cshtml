@@ -137,27 +137,36 @@
     <!--contains empy. start date-->
                         
                             <div class="row">
-                                <div class="col-xs-3" style="white-space:nowrap">
-                                    @Html.LabelFor(model => model.empStartDate, "Employment Start Date", htmlAttributes: new { @class = "control-label col-md-2", type = "Date" })
+                                <div class="col-sm-2" style="white-space:nowrap">
+                                    @Html.LabelFor(model => model.empStartDate, "Start Date", htmlAttributes: new { @class = "control-label col-md-2", type = "Date" })
                                 </div>
 
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     @Html.EditorFor(model => model.empStartDate)
                                     @Html.ValidationMessageFor(model => model.empStartDate, "", new { @class = "text-danger" })
                                 </div>
+
+                                <div class="col-sm-2" style="white-space:nowrap">
+                                    @Html.LabelFor(model => model.Reports_To, "Reports To", htmlAttributes: new { @class = "control-label col-md-2", type = "Date" })
                                 </div>
+                                
+                                <div class="col-md-4">
+                                    @Html.DropDownListFor(model => model.staffType, new SelectList(Model.staffTypeSelectionOptions, "Key", "Value"), "- Select Employee -", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.staffType, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
                         <hr />
 
                         <!--admin role-->
                         <div class="row">
-                                <div class="col-xs-3" style="white-space:nowrap">
+                                <div class="col-xs-2" style="white-space:nowrap">
                                     @Html.LabelFor(model => model.isAdmin, "Administrator", htmlAttributes: new { @class = "control-label col-md-2" })
                                 </div>
 
-                                <div class="col-xs-6">
+                                <div class="col-md-4">
                                     @Html.CheckBoxFor(model => model.isAdmin)
                                     @Html.ValidationMessageFor(model => model.isAdmin, "", new { @class = "text-danger" })
-                                </div>
+                                </div>                            
                             </div>
                                     <hr />
 

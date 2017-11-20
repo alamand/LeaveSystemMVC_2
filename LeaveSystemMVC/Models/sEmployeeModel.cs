@@ -90,6 +90,8 @@ namespace LeaveSystemMVC.Models
 
         public bool accountStatus { get; set; }
 
+        public int Reports_To { get; set; }
+
         [Display(Name = "Administrator User")]
         public bool isAdmin { get; set; }
     }

@@ -176,6 +176,15 @@
                             @Html.EditorFor(model => model.isAdmin)
                             @Html.ValidationMessageFor(model => model.isAdmin, "", new { @class = "text-danger" })
                         </div>
+
+                            <div class="col-sm-5" style="white-space:nowrap">
+                                @Html.LabelFor(model => model.Reports_To, "Reports To", htmlAttributes: new { @class = "control-label col-md-2", type = "Date" })
+                            </div>
+
+                            <div class="col-md-4">
+                                @Html.DropDownListFor(model => model.staffType, new SelectList(Model.staffTypeSelectionOptions, "Key", "Value"), "- Select Employee -", new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.staffType, "", new { @class = "text-danger" })
+                            </div>
                     </div>
                     <hr />
 
