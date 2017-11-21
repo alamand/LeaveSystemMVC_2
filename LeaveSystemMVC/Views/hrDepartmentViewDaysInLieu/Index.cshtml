@@ -28,11 +28,13 @@
                     </div>
 
                     <div class="col-md-4">
-                        @Html.DropDownList("Duration", new List<SelectListItem> { 
+                        @Html.DropDownListFor(model => model.NumDays, new List<SelectListItem> { 
                             new SelectListItem{ Text="1 hour", Value = "1" },
-                            new SelectListItem{ Text="1/2 hour", Value = "0" }
+                            new SelectListItem{ Text="Half hour", Value = "0.5" }
                         }) 
+
                         @Html.ValidationMessageFor(model => model.NumDays, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(model => model.Employee_ID)
                     </div>
                 </div>
             </div>
