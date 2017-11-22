@@ -107,6 +107,7 @@ namespace LeaveSystemMVC.Controllers
                             EmptyEmployee.lastName = (string)reader[2];
                             string gender = (string)reader[3];
                             EmptyEmployee.gender = gender[0];
+                            System.Diagnostics.Debug.WriteLine("Gender is: " + EmptyEmployee.gender);                               
                             EmptyEmployee.phoneNo = (string)reader[4];
                             EmptyEmployee.email = (string)reader[5];
                             EmptyEmployee.userName = (string)reader[6];
@@ -281,8 +282,9 @@ namespace LeaveSystemMVC.Controllers
                     }
                 }
                 connection.Close();
-            }*/            
+            }*/
 
+            TempData["Gender"] = EmptyEmployee.gender;
             TempData["EmptyEmployee"] = EmptyEmployee;
             TempData["nonDisplayRoleOptions"] = nonDisplayRoleOptions;
             return View(EmptyEmployee);
@@ -543,7 +545,7 @@ namespace LeaveSystemMVC.Controllers
 
             /*Construct notification e-mail only if the username has been changed*/
 
-            TempData["EmpID"] = SE.staffIDInString;
+            TempData["EmpID"] = SE.staffIDInString;            
             string successMessage = "The details of " + SE.firstName + " " + SE.lastName + " have been edited.";
             TempData["SuccessMessage"] = successMessage;
             return RedirectToAction("Index");

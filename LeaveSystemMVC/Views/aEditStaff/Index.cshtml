@@ -87,8 +87,17 @@
 
                             <div class="col-md-4">
                                 <select class="form-control" id="gender" name="gender">
-                                    <option value="M">Male</option>
-                                    <option value="F">Female</option>
+                                    @if (TempData["Gender"].Equals('F'))
+                                    {
+                                        <option value="M">Male</option>
+                                        <option value="F" selected>Female</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="M" selected>Male</option>
+                                        <option value="F">Female</option>
+                                    }
+                                    
                                 </select>
                             </div>
                         </div>
