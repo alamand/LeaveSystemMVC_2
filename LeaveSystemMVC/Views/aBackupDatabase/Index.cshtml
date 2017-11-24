@@ -1,5 +1,67 @@
 ﻿@Html.Partial("_LeftMenu")
+@{
+    ViewBag.Title = "Index";
+}
 
 <div class="col-md-10">
-    <h2>Backup Database</h2>
+    <h3>Backup Database</h3>
+    <hr />
+    <div class="row">
+        <div class="col-md-2">
+            @using (Html.BeginForm("DownloadBAK", "aBackupDatabase", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true)
+
+                <div class="form-horizontal">
+                    <div class="col-md-10">
+                        <input type="submit" name="Index" value="Download .BAK" class="btn btn-default" />
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="col-md-2">
+            @using (Html.BeginForm("DownloadSQL", "aBackupDatabase", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true)
+
+                <div class="form-horizontal">
+                    <div class="col-md-10">
+                        <input type="submit" name="Index" value="Download .SQL" class="btn btn-default" />
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+
+    <!--
+    <br/>
+    <h3>Restore Database</h3>
+    <hr />
+    <div class="row">
+        @using (Html.BeginForm("Upload", "aBackupDatabase", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+
+            <div class="form-horizontal">
+                <div class="col-md-4">
+                    <input type="file" id="dataFile" name="upload" />
+                    <br/>
+                    <input type="submit" name="Index" value="Upload" class="btn btn-default btn-block" />
+                    <h6 style="color:red;">@ViewBag.Message</h6>
+                </div>
+            </div>
+        }
+    </div>
+    -->
 </div>
+
+
+<div class="col-md-10">
+
+    
+</div>
+
