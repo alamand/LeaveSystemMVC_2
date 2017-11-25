@@ -20,7 +20,9 @@
             {
                 <tr style="border:1px solid black;">
                     <td style="border:1px solid black;">@Html.DisplayFor(modelItem => item.holidayName) </td>
-                    <td style="border:1px solid black;">@Html.DisplayFor(modelItem => item.startDate)</td>
+                    <td style="border:1px solid black;">
+                        @Html.DisplayFor(modelItem => item.startDate.Year)/@Html.DisplayFor(modelItem => item.startDate.Month)/@Html.DisplayFor(modelItem => item.startDate.Day)
+                    </td>
                 </tr>
             }
         </table>
