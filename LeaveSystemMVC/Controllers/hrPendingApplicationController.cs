@@ -236,13 +236,13 @@ namespace LeaveSystemMVC.Controllers
             {
                 case "Approve":
                     queryString = "UPDATE dbo.Leave SET Leave_Status_ID = '2', " +
-                        "LM_Comment = '" + SL.lmComment + "' " +
+                        "HR_Comment = '" + SL.hrComment + "' " +
                         "WHERE dbo.Leave.Leave_Application_ID = '" + lid + "' ";
                     text = "Your " + leaveName + " leave application " + "from " + SL.startDate + " to " + SL.returnDate + " has been fully approved.";
                     break;
                 case "Reject":
                     queryString = "UPDATE dbo.Leave SET Leave_Status_ID = '4', " +
-                        "LM_Comment = '" + SL.lmComment + "' " +
+                        "HR_Comment = '" + SL.hrComment + "' " +
                         "WHERE dbo.Leave.Leave_Application_ID = '" + lid + "' ";
                     text = "Your " + leaveName + " leave application " + "from " + SL.startDate + " to " + SL.returnDate + " has been rejected by Human Resources.";
                     break;

@@ -37,7 +37,7 @@ namespace LeaveSystemMVC.Controllers
                 ConfigurationManager.ConnectionStrings["DefaultConnection"].
                 ConnectionString;
 
-            //Adding applications where this user is the Substitute_LM
+            //Adding applications where this user is the LM
             string queryString = "SELECT dbo.Leave.Leave_Application_ID, dbo.Leave.Employee_ID, " +
                                 "dbo.Leave.Start_Date, dbo.Leave.End_Date, dbo.Leave.Reporting_Back_Date, " +
                                 "dbo.Leave.Leave_ID, dbo.Leave.Contact_Outside_UAE, dbo.Leave.Comment, " +
@@ -64,8 +64,6 @@ namespace LeaveSystemMVC.Controllers
                         while (reader.Read())
                         {
                             var leave = new Models.sLeaveModel();
-
-                            System.Diagnostics.Debug.WriteLine("Matched LM rows");
 
                             leave.comments = (string)reader["Comment"];
                             leave.bookAirTicket = (bool)reader["Flight_Ticket"];
