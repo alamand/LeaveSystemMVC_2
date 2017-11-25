@@ -61,6 +61,10 @@ namespace LeaveSystemMVC.Controllers
                         {
                             var leave = new Models.sLeaveModel();
 
+                            leave.comments = (string)reader["Comment"];
+                            leave.bookAirTicket = (bool)reader["Flight_Ticket"];
+                            leave.contactDetails = (string)reader["Contact_Outside_UAE"];
+
                             if (reader["Leave_ID"] != DBNull.Value)
                                 leave.leaveType = GetLeaveType((int)reader["Leave_ID"]); // Leave Type ID
                             var lidint = (int)reader["Leave_Application_ID"]; //Leave Application ID
@@ -75,6 +79,10 @@ namespace LeaveSystemMVC.Controllers
                             leave.endDate = (DateTime)reader["End_Date"];
                             string date2 = leave.endDate.ToString("yyyy-MM-dd");
                             //ViewBag.enDt = date2;
+
+                            leave.returnDate = (DateTime)reader["Reporting_Back_Date"];
+
+                            string date3 = leave.returnDate.ToString("yyyy-MM-dd");
 
                             leave.leaveDuration = (int)reader["Total_Leave_Days"];
                             if (!reader.IsDBNull(11))
@@ -173,7 +181,54 @@ namespace LeaveSystemMVC.Controllers
         [HttpPost]
         public ActionResult Select(sLeaveModel SL, string submit)
         {
+
+            var connectionString =
+                ConfigurationManager.ConnectionStrings["DefaultConnection"].
+                ConnectionString;
             string queryString = "";
+
+            queryString = "SELECT dbo.Leave.Leave_ID FROM dbo.Leave WHERE dbo.Leave.Leave_Application_ID = '" + SL.leaveID + "'";
+            int leaveID = 0;
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        System.Diagnostics.Debug.WriteLine("Found leave ID");
+                        while (reader.Read())
+                        {
+                            if (reader["Leave_ID"] != DBNull.Value)
+                                leaveID = (int)(reader["Leave_ID"]); // Leave ID
+                        }
+                    }
+                }
+                connection.Close();
+            }
+
+            queryString = "SELECT dbo.Leave_Type.Leave_Name FROM dbo.Leave_Type WHERE dbo.Leave_Type.Leave_ID = '" + leaveID + "'";
+                        
+            string leaveName = "";
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            if (reader["Leave_Name"] != DBNull.Value)
+                                leaveName = (string) (reader["Leave_Name"]); // Leave Name
+                        }
+                    }
+                }
+                connection.Close();
+            }
+
             int lid;
             int.TryParse(SL.leaveID, out lid);
             string text = "";
@@ -183,24 +238,22 @@ namespace LeaveSystemMVC.Controllers
                     queryString = "UPDATE dbo.Leave SET Leave_Status_ID = '2', " +
                         "LM_Comment = '" + SL.lmComment + "' " +
                         "WHERE dbo.Leave.Leave_Application_ID = '" + lid + "' ";
-                    text = "Your leave application had been fully approved.";
+                    text = "Your " + leaveName + " leave application " + "from " + SL.startDate + " to " + SL.returnDate + " has been fully approved.";
                     break;
                 case "Reject":
                     queryString = "UPDATE dbo.Leave SET Leave_Status_ID = '4', " +
                         "LM_Comment = '" + SL.lmComment + "' " +
                         "WHERE dbo.Leave.Leave_Application_ID = '" + lid + "' ";
-                    text = "Your leave application has been rejected by Human Resources.";
+                    text = "Your " + leaveName + " leave application " + "from " + SL.startDate + " to " + SL.returnDate + " has been rejected by Human Resources.";
                     break;
             }
-            var connectionString =
-                ConfigurationManager.ConnectionStrings["DefaultConnection"].
-                ConnectionString;
-            using (var connection = new SqlConnection(connectionString))
+            
+            using (var connection2 = new SqlConnection(connectionString))
             {
-                var command = new SqlCommand(queryString, connection);
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-                    connection.Close();
+                var command2 = new SqlCommand(queryString, connection2);
+                connection2.Open();
+                using (var reader2 = command2.ExecuteReader())
+                    connection2.Close();
             }
 
 
@@ -224,7 +277,14 @@ namespace LeaveSystemMVC.Controllers
             client.EnableSsl = true;
 
             client.Credentials = new NetworkCredential("project_ict333@murdochdubai.ac.ae", "ict@333");
-            client.Send(message);
+            try
+            {
+                client.Send(message);
+            }
+            catch (Exception e)
+            {
+                Response.Write("<script> alert('The email could not be sent due to a network error.');</script>");
+            }
 
 
             return RedirectToAction("Index");

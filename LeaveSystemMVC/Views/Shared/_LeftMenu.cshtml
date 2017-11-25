@@ -13,7 +13,7 @@
             if (User.IsInRole("HR_Responsible"))
             {
                 <li role="presentation" class="nav-divider"></li>
-                <li role="presentation" class="dropdown-header"style="font-size:14pt">HR</li>
+                <li role="presentation" class="dropdown-header"style="font-size:14pt">HR Responsible</li>
                 @Html.MenuItem("Pending Applications", "Index", "hrPendingApplication")
                 @Html.MenuItem("Holidays Calendar", "Display", "hrHolidaysCalender")                
                 @Html.MenuItem("Employee Leave History", "Index", "hrDepartmentViewLeaveHistory")
@@ -27,7 +27,7 @@
             if (User.IsInRole("HR"))
             {
                 <li role="presentation" class="nav-divider"></li>
-                <li role="presentation" class="dropdown-header"style="font-size:14pt">HR</li>
+                <li role="presentation" class="dropdown-header"style="font-size:14pt">Human Resources</li>
                 @Html.MenuItem("Holidays Calendar", "Display", "hrHolidaysCalender")
                 @Html.MenuItem("Employee Leave History", "Index", "hrDepartmentViewLeaveHistory")
                 @Html.MenuItem("View/Edit Employee Balances", "Index", "hrEditBalance")

@@ -38,11 +38,15 @@
 
                                     <dt>
                                         @Html.DisplayNameFor(model => model.startDate)
+                                        @Html.HiddenFor(model => model.startDate)
+                                        @Html.HiddenFor(model => model.returnDate)
+                                        @Html.HiddenFor(model => model.endDate)
+                                        @Html.HiddenFor(model => model.leaveType)
                                     </dt>
                                     @{
-                                        string startDateString = Model.startDate.ToString("MM/dd/yyyy");
-                                        string endDateString = Model.endDate.ToString("MM/dd/yyyy");
-                                        string returnDateString = Model.returnDate.ToString("MM/dd/yyyy");
+                                        string startDateString = Model.startDate.ToString("yyyy/MM/dd");
+                                        string endDateString = Model.endDate.ToString("yyyy/MM/dd");
+                                        string returnDateString = Model.returnDate.ToString("yyyy/MM/dd");
                                     }
                                     <dd>
                                         @Html.DisplayFor(sd => startDateString)

@@ -8,6 +8,8 @@ using System.Configuration;
 using System.Data.SqlClient;
 using System.Security.Claims;
 using System.IO;
+using System.Net.Mail;
+using System.Net;
 
 namespace LeaveSystemMVC.Controllers
 {
@@ -24,7 +26,7 @@ namespace LeaveSystemMVC.Controllers
             a = a.Substring(a.Length - 5);
 
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "Select Gender FROM dbo.Employee where Employee_ID = '" + a + "'";
+            string queryString = "Select Gender, Email FROM dbo.Employee where Employee_ID = '" + a + "'";
             using (var connection = new SqlConnection(connectionString))
             {
                 char gender = '\0';
@@ -35,12 +37,12 @@ namespace LeaveSystemMVC.Controllers
                 {
                     while (reader.Read())
                     {
-                       gender = Convert.ToChar(reader["Gender"]);
+                        gender = Convert.ToChar(reader["Gender"]);
+                        TempData["EmployeeEmail"] = (string)(reader["Email"]);
                     }
                 }
                 connection.Close();
 
-                System.Diagnostics.Debug.WriteLine("Entered get");
                 List<string> leaves = new List<string>();
                 leaves.Add("Annual");
                 leaves.Add("Sick");
@@ -65,15 +67,12 @@ namespace LeaveSystemMVC.Controllers
             string a = c.ToString();
             a = a.Substring(a.Length - 5);
             string fileN = "";
-            System.Diagnostics.Debug.WriteLine("Entered post");
             // Verify that the user selected a file
             if (file != null && file.ContentLength > 0)
             {
                 // extract only the filename
                 var fileName = Path.GetFileName(file.FileName);
                  fileName = a+fileName;
-                System.Diagnostics.Debug.WriteLine("filename  is:"+fileName);
-                System.Diagnostics.Debug.WriteLine("file Uploaded");
                 fileN = fileName;
                 // store the file inside ~/App_Data/uploads folder
                 var path = Path.Combine(Server.MapPath("~/App_Data"),fileName);
@@ -84,7 +83,9 @@ namespace LeaveSystemMVC.Controllers
 
             DateTime d2 = model.endDate;
             string endate = d2.ToString("yyyy-MM-dd");
-            System.Diagnostics.Debug.WriteLine("Endate is: " +endate);
+
+            TimeSpan difference = d2 - d1;
+            
 
             DateTime today = DateTime.Today;
 
@@ -108,17 +109,14 @@ namespace LeaveSystemMVC.Controllers
                 if (result > 0 && !(model.leaveType.Equals("Maternity"))) {
                     TimeSpan diff = d2 - d1;
                     days = diff.Days;
-                    System.Diagnostics.Debug.WriteLine("Difference is" + days);
-                    for (var i = 0; i <= days; i++)
+                    int tempDays = days;
+                    for (var i = 1; i <= tempDays; i++)
                     {
                         var testDate = d1.AddDays(i);
                         switch (testDate.DayOfWeek)
                         {
-                            case DayOfWeek.Saturday:
-                            case DayOfWeek.Friday:
-                                days--;
-                                //Console.WriteLine(testDate.ToShortDateString());
-                                break;
+                            case DayOfWeek.Saturday: days--; break;
+                            case DayOfWeek.Friday: days--; break;
                         }
                     }
 
@@ -135,7 +133,6 @@ namespace LeaveSystemMVC.Controllers
                             while (reader1.Read())
                             {
                                 DateTime day = (DateTime)reader1["Date"];
-                                System.Diagnostics.Debug.WriteLine("Day of holiday is: " + day.DayOfWeek);
                                 if (day.DayOfWeek.Equals(DayOfWeek.Saturday) || day.DayOfWeek.Equals(DayOfWeek.Friday))
                                 { System.Diagnostics.Debug.WriteLine("Holiday on weekend"); }
 
@@ -175,7 +172,7 @@ namespace LeaveSystemMVC.Controllers
 
                     TimeSpan diff = d2 - d1;
                         days = diff.Days;
-                        System.Diagnostics.Debug.WriteLine("Maternity Days: " + days);
+                        
                         var connectionString1 = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
                         string query1 = "Select * from dbo.Public_Holiday where Date between'" + stdate + "' AND '" + endate + "'";
 
@@ -201,7 +198,7 @@ namespace LeaveSystemMVC.Controllers
                     leaveId = 6;
                     if (model.startDate != model.endDate)
                     {
-                        ModelState.AddModelError("endDate", "For short leave, THe start date and return date should be same!");
+                        ModelState.AddModelError("endDate", "For short leave, the start date and return date should be same!");
                     }
                 }
 
@@ -211,6 +208,10 @@ namespace LeaveSystemMVC.Controllers
                 }
                     
                 string leaveid = leaveId.ToString();
+            if (days == 0)
+            {
+                ModelState.AddModelError("endDate", "You cannot apply for zero days of leave.");
+            }
 
             if (ModelState.IsValid)
             {
@@ -228,6 +229,76 @@ namespace LeaveSystemMVC.Controllers
                 var command = new SqlCommand(queryString, connection);
 
                 command.ExecuteNonQuery();
+
+                /*Construct an e-mail and send it to the employee.*/
+
+                queryString = "SELECT dbo.Leave.Leave_ID FROM dbo.Leave WHERE dbo.Leave.Leave_Application_ID = '" + model.leaveID + "'";
+                int leaveID = 0;
+                using (var connection2 = new SqlConnection(connectionString))
+                {
+                    var command2 = new SqlCommand(queryString, connection2);
+                    connection2.Open();
+                    using (var reader = command2.ExecuteReader())
+                    {
+                        if (reader.HasRows)
+                        {
+                            System.Diagnostics.Debug.WriteLine("Found leave ID");
+                            while (reader.Read())
+                            {
+                                if (reader["Leave_ID"] != DBNull.Value)
+                                    leaveID = (int)(reader["Leave_ID"]); // Leave ID
+                            }
+                        }
+                    }
+                    connection.Close();
+                }
+
+                queryString = "SELECT dbo.Leave_Type.Leave_Name FROM dbo.Leave_Type WHERE dbo.Leave_Type.Leave_ID = '" + leaveID + "'";
+
+                string leaveName = "";
+                using (var connection2 = new SqlConnection(connectionString))
+                {
+                    var command2 = new SqlCommand(queryString, connection2);
+                    connection2.Open();
+                    using (var reader = command2.ExecuteReader())
+                    {
+                        if (reader.HasRows)
+                        {
+                            while (reader.Read())
+                            {
+                                if (reader["Leave_Name"] != DBNull.Value)
+                                    leaveName = (string)(reader["Leave_Name"]); // Leave Name
+                            }
+                        }
+                    }
+                    connection.Close();
+                }
+
+                string temp_email = TempData["EmployeeEmail"] as string;
+                MailMessage message = new MailMessage();
+                message.From = new MailAddress("project_ict333@murdochdubai.ac.ae", "GIMEL LMS");
+
+                message.To.Add(new MailAddress(temp_email));
+
+                message.Subject = "Leave Application Update";
+                string body = "";
+                string text = "Your " + leaveName + " leave application " + "from " + model.startDate + " to " + model.returnDate + " has been sent to your line manager for approval.";
+                body = body + text + Environment.NewLine;
+
+                message.Body = body;
+                SmtpClient client = new SmtpClient();
+
+                client.EnableSsl = true;
+
+                client.Credentials = new NetworkCredential("project_ict333@murdochdubai.ac.ae", "ict@333");
+                try
+                {
+                    client.Send(message);
+                }
+                catch (Exception e)
+                {
+                    Response.Write("<script> alert('The email could not be sent due to a network error.');</script>");
+                }
                 Response.Write("<script> alert('Your leave application has been submitted.');location.href='Create'</script>");
                 connection.Close();
             }

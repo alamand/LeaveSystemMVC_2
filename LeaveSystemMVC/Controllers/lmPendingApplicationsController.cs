@@ -49,7 +49,7 @@ namespace LeaveSystemMVC.Controllers
                                 "ON dbo.Leave.Employee_ID = dbo.Employee.Employee_ID " +
                                 "FULL JOIN dbo.Department " +
                                 "ON dbo.Employee.Department_ID = dbo.Department.Department_ID " +
-                                "WHERE dbo.Department.Substitute_LM_ID = '" + userID + "' " +
+                                "WHERE dbo.Department.Line_Manager_ID = '" + userID + "' " +
                                 "AND dbo.Leave.Leave_Status_ID = '0'" +
                                 "AND dbo.Leave.Leave_ID IS NOT NULL ";
 
@@ -65,6 +65,12 @@ namespace LeaveSystemMVC.Controllers
                         {
                             var leave = new Models.sLeaveModel();
 
+                            System.Diagnostics.Debug.WriteLine("Matched LM rows");
+
+                            leave.comments = (string)reader["Comment"];
+                            leave.bookAirTicket = (bool)reader["Flight_Ticket"];
+                            leave.contactDetails = (string)reader["Contact_Outside_UAE"];
+
                             if (reader["Leave_ID"] != DBNull.Value)
                                 leave.leaveType = GetLeaveType((int)reader["Leave_ID"]); // Leave Type ID
                             var lidint = (int)reader["Leave_Application_ID"]; //Leave Application ID
@@ -79,6 +85,10 @@ namespace LeaveSystemMVC.Controllers
                             leave.endDate = (DateTime)reader["End_Date"];
                             string date2 = leave.endDate.ToString("yyyy-MM-dd");
                             //ViewBag.enDt = date2;
+
+                            leave.returnDate = (DateTime)reader["Reporting_Back_Date"];
+
+                            string date3 = leave.returnDate.ToString("yyyy-MM-dd");
 
                             leave.leaveDuration = (int)reader["Total_Leave_Days"];
                             if (!reader.IsDBNull(11))
@@ -287,6 +297,54 @@ namespace LeaveSystemMVC.Controllers
         public ActionResult Select(sLeaveModel SL, string submit)
         {
             string queryString = "";
+
+            var connectionString =
+                ConfigurationManager.ConnectionStrings["DefaultConnection"].
+                ConnectionString;
+
+            queryString = "SELECT dbo.Leave.Leave_ID FROM dbo.Leave WHERE dbo.Leave.Leave_Application_ID = '" + SL.leaveID + "'";
+            int leaveID = 0;
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        System.Diagnostics.Debug.WriteLine("Found leave ID");
+                        while (reader.Read())
+                        {
+                            if (reader["Leave_ID"] != DBNull.Value)
+                                leaveID = (int)(reader["Leave_ID"]); // Leave ID
+                        }
+                    }
+                }
+                connection.Close();
+            }
+
+            queryString = "SELECT dbo.Leave_Type.Leave_Name FROM dbo.Leave_Type WHERE dbo.Leave_Type.Leave_ID = '" + leaveID + "'";
+
+            string leaveName = "";
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            if (reader["Leave_Name"] != DBNull.Value)
+                                leaveName = (string)(reader["Leave_Name"]); // Leave Name
+                        }
+                    }
+                }
+                connection.Close();
+            }
+
+
             int lid;
             int.TryParse(SL.leaveID, out lid);
             string text = "";
@@ -296,18 +354,16 @@ namespace LeaveSystemMVC.Controllers
                     queryString = "UPDATE dbo.Leave SET Leave_Status_ID = '1', " +
                         "LM_Comment = '" + SL.lmComment + "' " +
                         "WHERE dbo.Leave.Leave_Application_ID = '" + lid + "' ";
-                    text = "Your leave application has been approved by your line manager. It is now awaiting review by Human Resources.";
+                    text = "Your " + leaveName + " leave application " + "from " + SL.startDate + " to " + SL.returnDate + " has been approved by your line manager. It is now awaiting review by Human Resources.";
                     break;
                 case "Reject":
                     queryString = "UPDATE dbo.Leave SET Leave_Status_ID = '3', " +
                         "LM_Comment = '" + SL.lmComment + "' " +
                         "WHERE dbo.Leave.Leave_Application_ID = '" + lid + "' ";
-                    text = "Your leave application has been rejected by your line manager.";
+                    text = "Your " + leaveName + " leave application " + "from " + SL.startDate + " to " + SL.returnDate + " has been rejected by your line manager.";
                     break;
             }
-            var connectionString =
-                ConfigurationManager.ConnectionStrings["DefaultConnection"].
-                ConnectionString;
+
             using (var connection = new SqlConnection(connectionString))
             {
                 var command = new SqlCommand(queryString, connection);
@@ -337,7 +393,14 @@ namespace LeaveSystemMVC.Controllers
             client.EnableSsl = true;
 
             client.Credentials = new NetworkCredential("project_ict333@murdochdubai.ac.ae", "ict@333");
-            client.Send(message);
+            try
+            {
+                client.Send(message);
+            }
+            catch (Exception e)
+            {
+                Response.Write("<script> alert('The email could not be sent due to a network error.');</script>");
+            }
 
 
             return RedirectToAction("Index");
