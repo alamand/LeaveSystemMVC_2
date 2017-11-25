@@ -2,6 +2,8 @@
 using System.Web.Mvc;
 using System.IO;
 using System.Configuration;
+using System.Data.SqlClient;
+using System.Collections.Generic;
 using Microsoft.SqlServer.Management.Common;
 using Microsoft.SqlServer.Management.Smo;
 
@@ -12,6 +14,17 @@ namespace LeaveSystemMVC.Controllers
         // GET: aBackupDatabase
         public ActionResult Index()
         {
+            // TODO: Add a dropdown to select a database
+            using (SqlConnection sqlCon = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+            {
+                ServerConnection serverCon = new ServerConnection(sqlCon);
+                Server server = new Server(serverCon);
+                List<string> dbList = new List<string>();
+                foreach (Database db in server.Databases)
+                {
+                    dbList.Add(db.Name);
+                }
+            }
             return View();
         }
 
@@ -20,34 +33,27 @@ namespace LeaveSystemMVC.Controllers
         {
             try
             {
-                string dDirectory = Server.MapPath("~/App_Data") + "\\";
-
-                // Delete previously generated backups
-                string[] fileList = Directory.GetFiles(dDirectory, "*.BAK");
-                foreach (string file in fileList)
-                {
-                    System.IO.File.Delete(file);
-                }
-
-                string defaultCon = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-                string dataSource = defaultCon.Split('=', ';')[1];      // Assure that Data Source is at first config in connectionString
+                deleteFiles("bak");             // delete all bak files in App_Data
+                string dbName = "LeaveSystem";  // change this when appropriate.
 
                 // Connect to the server and generate a backup
-                ServerConnection con = new ServerConnection(dataSource);
-                Server server = new Server(con);
-                Backup source = new Backup();
-                source.Action = BackupActionType.Database;
-                source.Database = "LeaveSystem";
+                SqlConnection sqlCon = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString);
+                ServerConnection serverCon = new ServerConnection(sqlCon);
+                Server server = new Server(serverCon);
+                Backup backup = new Backup();
+                backup.Action = BackupActionType.Database;
+                backup.Database = "LeaveSystem";
 
                 // Set the full path file name
-                string xFileName = "LeaveSystem" + DateTime.Now.ToString("yyyyMMdd-hhmmss") + ".bak";
+                string xFileName = dbName + DateTime.Now.ToString("yyyyMMdd-hhmmss") + ".bak";
                 string dlFile = Server.MapPath("~/App_Data") + "/" + xFileName;
 
                 // Perform back up from database to file
                 BackupDeviceItem destination = new BackupDeviceItem(dlFile, DeviceType.File);
-                source.Devices.Add(destination);
-                source.SqlBackup(server);
-                con.Disconnect();
+                backup.Devices.Add(destination);
+                backup.SqlBackup(server);
+                serverCon.Disconnect();
+                sqlCon.Close();
 
                 return File(dlFile, "application/force-download", xFileName);
             }
@@ -56,7 +62,7 @@ namespace LeaveSystemMVC.Controllers
                 ViewBag.Message = "ERROR:" + ex.Message.ToString();
             }
 
-            return Index();
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
@@ -64,22 +70,94 @@ namespace LeaveSystemMVC.Controllers
         {
             try
             {
-                string dDirectory = Server.MapPath("~/App_Data") + "\\";
-
-                string[] fileList = Directory.GetFiles(dDirectory, "*.SQL");
-                foreach (string file in fileList)
+                deleteFiles("sql");             // delete all sql files in App_Data
+                string dbName = "LeaveSystem";  // change this when appropriate.
+                
+                using (SqlConnection sqlCon = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
                 {
-                    System.IO.File.Delete(file);
-                }
+                    ServerConnection serverCon = new ServerConnection(sqlCon);
+                    Server server = new Server(serverCon);
+                    Database database = server.Databases[dbName];
+                    Scripter scripter = new Scripter(server)
+                    {
+                        Options = {
+                            ScriptSchema = true,
+                            ScriptData = true,
+                            WithDependencies = true,
+                            ScriptDrops = false,
+                            AnsiPadding = false,
+                            DriAll = true,
+                            Statistics = true,
+                            Triggers = true
+                        }
+                    };
 
+                    List<string> lScripts = new List<string>();
+
+                    lScripts.Add("USE [master]");
+                    lScripts.Add("GO");
+                    lScripts.Add("CREATE DATABASE [" + dbName + "]");
+                    lScripts.Add("GO");
+                    lScripts.Add("ALTER DATABASE [" + dbName + "] SET COMPATIBILITY_LEVEL = 120");
+
+                    // gather all tables and data from the database and store it in the list
+                    foreach (Table table in database.Tables)
+                    {
+                        foreach (string s in scripter.EnumScript(new Microsoft.SqlServer.Management.Sdk.Sfc.Urn[] { table.Urn }))
+                        {
+                            if (!lScripts.Contains(s))
+                            {
+                                lScripts.Add("GO");
+                                lScripts.Add(s);
+                            }
+                        }
+                    }
+
+                    lScripts.Add("GO");
+                    lScripts.Add("USE [master]");
+                    lScripts.Add("GO");
+                    lScripts.Add("ALTER DATABASE [" + dbName + "] SET READ_WRITE");
+                    lScripts.Add("GO");
+
+                    // Set the full path file name
+                    string xFileName = dbName + DateTime.Now.ToString("yyyyMMdd-hhmmss") + ".sql";
+                    string dlFile = Server.MapPath("~/App_Data") + "/" + xFileName;
+
+                    // Write to file
+                    StreamWriter sWriter = System.IO.File.CreateText(dlFile);
+                    foreach(string s in lScripts)
+                    {
+                        sWriter.Write(s + "\n");
+                    }
+
+                    sWriter.Close();
+                    serverCon.Disconnect();
+                    sqlCon.Close();
+
+                    return File(dlFile, "application/force-download", xFileName);
+                }
             }
             catch (Exception ex)
             {
                 ViewBag.Message = "ERROR:" + ex.Message.ToString();
             }
 
-            return Index();
+            return RedirectToAction("Index");
         }
+
+        private void deleteFiles(string ext)
+        {
+            string dDirectory = Server.MapPath("~/App_Data") + "\\";
+
+            // Delete previously generated backups
+            string[] fileList = Directory.GetFiles(dDirectory, "*." + ext);
+            foreach (string file in fileList)
+            {
+                System.IO.File.Delete(file);
+            }
+        }
+
+
 
         /*
         [HttpPost]
