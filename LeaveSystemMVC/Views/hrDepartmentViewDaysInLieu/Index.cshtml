@@ -29,8 +29,8 @@
 
                     <div class="col-md-4">
                         @Html.DropDownListFor(model => model.NumDays, new List<SelectListItem> { 
-                            new SelectListItem{ Text="1 hour", Value = "1" },
-                            new SelectListItem{ Text="Half hour", Value = "0.5" }
+                            new SelectListItem{ Text="1 day", Value = "1" },
+                            new SelectListItem{ Text="Half day", Value = "0.5" }
                         }) 
 
                         @Html.ValidationMessageFor(model => model.NumDays, "", new { @class = "text-danger" })
