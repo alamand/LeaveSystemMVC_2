@@ -63,8 +63,8 @@ namespace LeaveSystemMVC.Models
         public bool bookAirTicket { get; set; }
 
         [DisplayName("Phone Number")]
-        [DataType(DataType.PhoneNumber, ErrorMessage = "You must provide a phone number in international format.")]
-        [RegularExpression(@"^\+[1-9]{1}[0-9]{3,14}$", ErrorMessage = "You must provide a phone number in international format")]
+        [DataType(DataType.PhoneNumber, ErrorMessage = "You must provide a phone number in international format, starting with a + symbol.")]
+        [RegularExpression(@"^\+[1-9]{1}[0-9]{3,14}$", ErrorMessage = "You must provide a phone number in international format, starting with a + symbol.")]
         public string contactDetails { get; set; }
     }
 }
