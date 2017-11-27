@@ -1,4 +1,7 @@
-﻿using System;
+﻿// FULLY FUNCTIONAL - CLEAN - OPTIMAL
+// REVISE WHEN UPLOADED TO SERVER
+
+using System;
 using System.Web.Mvc;
 using System.IO;
 using System.Configuration;
@@ -14,17 +17,6 @@ namespace LeaveSystemMVC.Controllers
         // GET: aBackupDatabase
         public ActionResult Index()
         {
-            // TODO: Add a dropdown to select a database
-            using (SqlConnection sqlCon = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
-            {
-                ServerConnection serverCon = new ServerConnection(sqlCon);
-                Server server = new Server(serverCon);
-                List<string> dbList = new List<string>();
-                foreach (Database db in server.Databases)
-                {
-                    dbList.Add(db.Name);
-                }
-            }
             return View();
         }
 
@@ -33,29 +25,38 @@ namespace LeaveSystemMVC.Controllers
         {
             try
             {
-                deleteFiles("bak");             // delete all bak files in App_Data
-                string dbName = "LeaveSystem";  // change this when appropriate.
+                // Delete all bak files in App_Data
+                deleteFiles("bak");            
 
-                // Connect to the server and generate a backup
-                SqlConnection sqlCon = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString);
-                ServerConnection serverCon = new ServerConnection(sqlCon);
-                Server server = new Server(serverCon);
-                Backup backup = new Backup();
-                backup.Action = BackupActionType.Database;
-                backup.Database = "LeaveSystem";
+                var conString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+                using (SqlConnection sqlCon = new SqlConnection(conString))
+                {
+                    // Get Database Name
+                    SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(conString);
+                    string dbName = builder.InitialCatalog.ToString();
+                    
+                    // Connect to the server and generate a backup
+                    ServerConnection serverCon = new ServerConnection(sqlCon);
+                    Server server = new Server(serverCon);
+                    Backup backup = new Backup();
+                    backup.Action = BackupActionType.Database;
+                    backup.Database = dbName;
 
-                // Set the full path file name
-                string xFileName = dbName + DateTime.Now.ToString("yyyyMMdd-hhmmss") + ".bak";
-                string dlFile = Server.MapPath("~/App_Data") + "/" + xFileName;
+                    // Set the full path file name
+                    string xFileName = dbName + DateTime.Now.ToString("yyyyMMdd-hhmmss") + ".bak";
+                    string dlFile = Server.MapPath("~/App_Data") + "/" + xFileName;
 
-                // Perform back up from database to file
-                BackupDeviceItem destination = new BackupDeviceItem(dlFile, DeviceType.File);
-                backup.Devices.Add(destination);
-                backup.SqlBackup(server);
-                serverCon.Disconnect();
-                sqlCon.Close();
+                    // Perform back up from database to file
+                    BackupDeviceItem destination = new BackupDeviceItem(dlFile, DeviceType.File);
+                    backup.Devices.Add(destination);
+                    backup.SqlBackup(server);
 
-                return File(dlFile, "application/force-download", xFileName);
+                    // Close connections
+                    serverCon.Disconnect();
+                    sqlCon.Close();
+
+                    return File(dlFile, "application/force-download", xFileName);
+                }
             }
             catch (Exception ex)
             {
@@ -70,11 +71,17 @@ namespace LeaveSystemMVC.Controllers
         {
             try
             {
-                deleteFiles("sql");             // delete all sql files in App_Data
-                string dbName = "LeaveSystem";  // change this when appropriate.
+                // Delete all sql files in App_Data
+                deleteFiles("sql"); 
                 
-                using (SqlConnection sqlCon = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+                var conString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+                using (SqlConnection sqlCon = new SqlConnection(conString))
                 {
+                    // Get Database Name
+                    SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(conString);
+                    string dbName = builder.InitialCatalog.ToString();
+
+                    // Connect to the server and generate a scripter
                     ServerConnection serverCon = new ServerConnection(sqlCon);
                     Server server = new Server(serverCon);
                     Database database = server.Databases[dbName];
@@ -88,48 +95,51 @@ namespace LeaveSystemMVC.Controllers
                             AnsiPadding = false,
                             DriAll = true,
                             Statistics = true,
-                            Triggers = true
+                            Triggers = true,
+                            IncludeHeaders = true,
+                            IncludeDatabaseContext = true,
+                            NoCollation = true
                         }
                     };
 
+                    // List of queries
                     List<string> lScripts = new List<string>();
 
+                    // Query to create a Database
                     lScripts.Add("USE [master]");
-                    lScripts.Add("GO");
                     lScripts.Add("CREATE DATABASE [" + dbName + "]");
-                    lScripts.Add("GO");
                     lScripts.Add("ALTER DATABASE [" + dbName + "] SET COMPATIBILITY_LEVEL = 120");
+                    lScripts.Add("GO");
 
-                    // gather all tables and data from the database and store it in the list
+                    // gather all tables and data from the database and store its queries in the list
                     foreach (Table table in database.Tables)
                     {
+                        // Sfc.Urn Magic
                         foreach (string s in scripter.EnumScript(new Microsoft.SqlServer.Management.Sdk.Sfc.Urn[] { table.Urn }))
                         {
                             if (!lScripts.Contains(s))
                             {
-                                lScripts.Add("GO");
                                 lScripts.Add(s);
                             }
                         }
                     }
 
-                    lScripts.Add("GO");
+                    // add the final query to the list for enabling read/write
                     lScripts.Add("USE [master]");
-                    lScripts.Add("GO");
                     lScripts.Add("ALTER DATABASE [" + dbName + "] SET READ_WRITE");
-                    lScripts.Add("GO");
 
                     // Set the full path file name
                     string xFileName = dbName + DateTime.Now.ToString("yyyyMMdd-hhmmss") + ".sql";
                     string dlFile = Server.MapPath("~/App_Data") + "/" + xFileName;
 
-                    // Write to file
+                    // Write the list to file
                     StreamWriter sWriter = System.IO.File.CreateText(dlFile);
                     foreach(string s in lScripts)
                     {
                         sWriter.Write(s + "\n");
                     }
 
+                    // close file and connections
                     sWriter.Close();
                     serverCon.Disconnect();
                     sqlCon.Close();
@@ -156,91 +166,5 @@ namespace LeaveSystemMVC.Controllers
                 System.IO.File.Delete(file);
             }
         }
-
-
-
-        /*
-        [HttpPost]
-        public ActionResult Upload(HttpPostedFileBase upload)
-        {
-            if (upload != null && upload.ContentLength > 0)
-            {
-                if (upload.FileName.EndsWith(".bak"))
-                {
-                    try
-                    {
-                        // save the file on the server
-                        upload.SaveAs(Path.Combine(Server.MapPath("~/App_Data"), upload.FileName));
-
-                        // create a path to the file to send to the service
-                        string dbPath = Path.Combine(Server.MapPath("~/App_Data"), Path.GetFileName(upload.FileName));
-
-                        // Connect to the server and generate a restore
-                        ServerConnection con = new ServerConnection(@"MSITOWER\SQLEXPRESS");
-                        Server server = new Server(con);
-                        Restore destination = new Restore();
-                        destination.Action = RestoreActionType.Database;
-                        destination.Database = "LeaveSystem";
-
-                        // Perform restore from file to database
-                        BackupDeviceItem source = new BackupDeviceItem(dbPath, DeviceType.File);
-                        destination.Devices.Add(source);
-                        destination.ReplaceDatabase = true;
-                        destination.SqlRestore(server);
-                        con.Disconnect();
-                        
-                        // delete the file on the server
-                        FileInfo file = new FileInfo(dbPath);
-                        file.Delete();
-
-                        Response.Write("<script> alert ('Restore operation succeeded.')</script>");
-                    }
-                    catch (Exception ex)    // Need to handle other file types.
-                    {
-                        ViewBag.Message = "ERROR:" + ex.Message.ToString();
-                    }
-                } 
-                else if (upload.FileName.EndsWith(".sql"))
-                {
-                    try
-                    {
-                        // save the file on the server
-                        upload.SaveAs(Path.Combine(Server.MapPath("~/App_Data"), upload.FileName));
-
-                        // create a path to the file to send to the service
-                        string dbPath = Path.Combine(Server.MapPath("~/App_Data"), Path.GetFileName(upload.FileName));
-
-                        // Perform restore from file to database
-                        ServerConnection con = new ServerConnection(@"MSITOWER\SQLEXPRESS");
-                        string script = System.IO.File.ReadAllText(dbPath);
-                        Server server = new Server(con);
-                        server.ConnectionContext.ExecuteNonQuery(script);
-
-                        // delete the file on the server
-                        FileInfo file = new FileInfo(dbPath);
-                        file.Delete();
-
-                        Response.Write("<script> alert ('Restore operation succeeded.')</script>");
-                    }
-                    catch (Exception ex)    // Need to handle other file types.
-                    {
-                        ViewBag.Message = "ERROR:" + ex.Message.ToString();
-                    }
-                }
-                else
-                {
-                    ViewBag.Message = "File type not supported, restore using .bak or .sql.";
-                    ModelState.AddModelError("Upload", "The file type is not supported");
-                }
-            }
-            else
-            {
-                ViewBag.Message = "You have not specified a file";
-            }
-
-            return Index();
-        }
-        */
     }
-
 }

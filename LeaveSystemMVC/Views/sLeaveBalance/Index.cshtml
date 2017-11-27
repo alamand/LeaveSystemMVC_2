@@ -1,58 +1,33 @@
-﻿@model IEnumerable<LeaveSystemMVC.Models.sleaveBalanceModel>
-@Html.Partial("_LeftMenu")
+﻿@Html.Partial("_LeftMenu")
 <div class="col-md-10">
     <h3>Leave Balances</h3>
     <table class="table">
         <tr>
-            <th>
-                Annual 
-            </th>
-            <td>
-                @ViewBag.annual
-            </td>
+            <th>Annual</th>
+            <td>@ViewBag.annual</td>
         </tr>
         <tr>
-            <th>
-                Sick 
-            </th>
-            <td>
-                @ViewBag.sick
-            </td>
+            <th>Sick</th>
+            <td>@ViewBag.sick</td>
         </tr>
         <tr>
-            <th>
-                Compassionate 
-            </th>
-            <td>
-                @ViewBag.Compassionate
-            </td>
+            <th>Compassionate</th>
+            <td>@ViewBag.Compassionate</td>
         </tr>
         @if (ViewBag.gender == 'F')
         {
-        <tr>
-            <th>
-                Maternity 
-            </th>
-            <td>
-                @ViewBag.maternity
-            </td>
-        </tr>
+            <tr>
+                <th>Maternity</th>
+                <td>@ViewBag.maternity</td>
+            </tr>
         }
         <tr>
-            <th>
-                Days in Lieu 
-            </th>
-            <td>
-                @ViewBag.DIL                
-            </td>
+            <th>Days in Lieu</th>
+            <td>@ViewBag.DIL</td>
         </tr>
         <tr>
-            <th>
-                Short Leave Hours 
-            </th>
-            <td>
-                @ViewBag.shortHrs
-            </td>
+            <th>Short Leave Hours</th>
+            <td>@ViewBag.shortHrs</td>
         </tr>
     </table>
 </div>
