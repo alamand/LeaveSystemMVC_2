@@ -173,7 +173,37 @@ namespace LeaveSystemMVC.Controllers
                 }
                 connection.Close();
             }
+            var leaveHistory = new List<sLeaveModel>();
+            string queryString2 = "SELECT Leave_Name, Leave_Status_ID, Start_Date, Reporting_Back_Date, Start_Hrs, End_Hrs, Total_Leave_Days " +
+                "FROM dbo.leave l,dbo.Leave_Type t, dbo.Employee e " +
+                "WHERE e.Employee_ID = " + passingLeave.employeeID + " AND e.Employee_ID = l.Employee_ID AND l.Leave_ID = t.Leave_ID AND l.leave_Status_ID IN (2,3,4,5)" +
+                "ORDER BY Start_Date DESC";
 
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString2, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var leave = new sLeaveModel();
+
+                        leave.leaveType = (string)reader["Leave_Name"];
+                        leave.startDate = (DateTime)reader["Start_Date"];
+                        leave.endDate = (DateTime)reader["Reporting_Back_Date"];
+                        leave.leaveDuration = (int)reader["Total_Leave_Days"];
+                        leave.shortStartTime = (!DBNull.Value.Equals(reader["Start_Hrs"])) ? (TimeSpan)reader["Start_Hrs"] : new TimeSpan(0, 0, 0, 0, 0);
+                        leave.shortEndTime = (!DBNull.Value.Equals(reader["End_Hrs"])) ? (TimeSpan)reader["End_Hrs"] : new TimeSpan(0, 0, 0, 0, 0);
+                        leave.leaveStatus = (int)reader["Leave_Status_ID"];
+
+                        leaveHistory.Add(leave);
+                    }
+                }
+                connection.Close();
+            }
+
+            ViewData["LeaveHistory"] = leaveHistory;
             ViewData["BalanceStrings"] = balanceStrings;
             return View(passingLeave);
         }
