@@ -1,0 +1,78 @@
+﻿@{ViewBag.Title = "Probation";}
+
+@Html.Partial("_LeftMenu")
+<h2>@ViewBag.Title</h2>
+<div class="col-md-10">
+    <div class="panel-group">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" class="active" href="#collapse1">On Probation</a>
+                </h4>
+            </div>
+            <div id="collapse1" class="panel-collapse collapse in">
+                <table class="table">
+                    <tr>
+                        <th>Employee ID</th>
+                        <th>Name</th>
+                        <th>Start Date</th>
+                        <th>Duration (Days)</th>
+                        <th>Remaining (Days)</th>
+                        <th>Confirmation</th>
+                    </tr>
+                    @{
+                        var onProbation = ViewData["OnProbation"] as List<LeaveSystemMVC.Models.sEmployeeModel>;
+
+                        foreach (LeaveSystemMVC.Models.sEmployeeModel onP in onProbation)
+                        {
+                            <tr>
+                                <td>@onP.staffID</td>
+                                <td>@onP.firstName @onP.lastName</td>
+                                <td>@onP.empStartDate.ToString().Substring(0, 10)</td>
+                                <td>@ViewData["OnProbationDuration" + onP.staffID.ToString()]</td>
+                                <td>@ViewData["OnProbationRemaining" + onP.staffID.ToString()]</td>
+                                <td><a href="@Url.Action("SetProbation", "hrProbation", new { id = onP.staffID, probation = 0 }, null)">Confirm</a></td>
+                            </tr>
+                        }
+                    }
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-10">
+    <div class="panel-group">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" href="#collapse2">Off Probation</a>
+                </h4>
+            </div>
+            <div id="collapse2" class="panel-collapse collapse">
+                <table class="table">
+                    <tr>
+                        <th>Employee ID</th>
+                        <th>Name</th>
+                        <th>Start Date</th>
+                        <th>Duration (Days)</th>
+                        <th>Activate Probation</th>
+                    </tr>
+                    @{
+                        var offProbation = ViewData["OffProbation"] as List<LeaveSystemMVC.Models.sEmployeeModel>;
+                        foreach (LeaveSystemMVC.Models.sEmployeeModel offP in offProbation)
+                        {
+                            <tr>
+                                <td>@offP.staffID</td>
+                                <td>@offP.firstName @offP.lastName</td>
+                                <td>@offP.empStartDate.ToString().Substring(0, 10)</td>
+                                <td>@ViewData["offProbDuration" + offP.staffID.ToString()]</td>
+                                <td><a href="@Url.Action("SetProbation", "hrProbation", new { id = offP.staffID, probation = 1 }, null)">Confirm</a></td>
+                            </tr>
+                        }
+                    }
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

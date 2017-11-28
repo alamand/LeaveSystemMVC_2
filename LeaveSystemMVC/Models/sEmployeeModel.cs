@@ -94,5 +94,8 @@ namespace LeaveSystemMVC.Models
 
         [Display(Name = "Administrator User")]
         public bool isAdmin { get; set; }
+
+        [Display(Name = "Probation Status")]
+        public bool onProbation { get; set; }
     }
 }
