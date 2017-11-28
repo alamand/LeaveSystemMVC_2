@@ -17,137 +17,70 @@
                         <div class="bootstrap-admin-panel-content">
                             <div class="row">
                                 <dl class="dl-horizontal">
-
                                     @Html.HiddenFor(model => model.leaveID)
 
-                                    <dt>
-                                        @Html.DisplayNameFor(model => model.staffName)
-                                    </dt>
+                                    <dt>@Html.DisplayNameFor(model => model.staffName)</dt>
+                                    <dd>@Html.DisplayFor(model => model.staffName)</dd>
 
-                                    <dd>
-                                        @Html.DisplayFor(model => model.staffName)
-                                    </dd>
+                                    <dt>@Html.DisplayNameFor(model => model.leaveType)</dt>
+                                    <dd>@Html.DisplayFor(model => model.leaveType)</dd>
 
-                                    <dt>
-                                        @Html.DisplayNameFor(model => model.leaveType)
-                                    </dt>
-
-                                    <dd>
-                                        @Html.DisplayFor(model => model.leaveType)
-                                    </dd>
-
-                                    <dt>
-                                        @Html.DisplayNameFor(model => model.startDate)
-                                        @Html.HiddenFor(model => model.startDate)
-                                        @Html.HiddenFor(model => model.returnDate)
-                                        @Html.HiddenFor(model => model.endDate)
-                                        @Html.HiddenFor(model => model.leaveType)
-                                    </dt>
                                     @{
-                                        string startDateString = Model.startDate.ToString("yyyy/MM/dd");
-                                        string endDateString = Model.endDate.ToString("yyyy/MM/dd");
-                                        string returnDateString = Model.returnDate.ToString("yyyy/MM/dd");
+                                        string startDateString = Model.startDate.ToString("MM/dd/yyyy");
+                                        string endDateString = Model.endDate.ToString("MM/dd/yyyy");
+                                        string returnDateString = Model.returnDate.ToString("MM/dd/yyyy");
                                     }
-                                    <dd>
-                                        @Html.DisplayFor(sd => startDateString)
-                                    </dd>
 
-                                    <dt>
-                                        @Html.DisplayNameFor(model => model.endDate)
-                                    </dt>
+                                    <dt>@Html.DisplayNameFor(model => model.startDate)</dt>
+                                    <dd>@Html.DisplayFor(sd => startDateString)</dd>
 
-                                    <dd>
-                                        @Html.DisplayFor(ed => endDateString)
-                                    </dd>
+                                    <dt>@Html.DisplayNameFor(model => model.endDate)</dt>
+                                    <dd>@Html.DisplayFor(ed => endDateString)</dd>
 
-                                    <dt>
-                                        @Html.DisplayNameFor(model => model.returnDate)
-                                    </dt>
+                                    <dt>@Html.DisplayNameFor(model => model.returnDate)</dt>
+                                    <dd>@Html.DisplayFor(rd => returnDateString)</dd>
 
-                                    <dd>
-                                        @Html.DisplayFor(rd => returnDateString)
-                                    </dd>
+                                    <dt>@Html.DisplayNameFor(model => model.leaveDuration)</dt>
 
-                                    <dt>
-                                        @Html.DisplayNameFor(model => model.leaveDuration)
-                                    </dt>
-
-                                    <dd>
-                                        @Html.DisplayFor(model => model.leaveDuration)
-                                    </dd>
+                                    <dd>@Html.DisplayFor(model => model.leaveDuration)</dd>
 
                                     @if (Model.leaveType.Equals("Short_Hours"))
                                     {
-                                        <dt>
-                                            @Html.DisplayNameFor(model => model.shortStartTime)
-                                        </dt>
-
-                                        <dd>
-                                            @Html.DisplayFor(model => model.shortStartTime)
-                                        </dd>
-
-                                        <dt>
-                                            @Html.DisplayNameFor(model => model.shortEndTime)
-                                        </dt>
-
-                                        <dd>
-                                            @Html.DisplayFor(model => model.shortEndTime)
-                                        </dd>
+                                        <dt>@Html.DisplayNameFor(model => model.shortStartTime)</dt>
+                                        <dd>@Html.DisplayFor(model => model.shortStartTime)</dd>
+                                        <dt>@Html.DisplayNameFor(model => model.shortEndTime)</dt>
+                                        <dd>@Html.DisplayFor(model => model.shortEndTime)</dd>
                                     }
 
                                     @Html.HiddenFor(model => model.leaveStatus)
 
-                                    <dt>
-                                        @Html.DisplayNameFor(model => model.comments)
-                                    </dt>
+                                    <dt>@Html.DisplayNameFor(model => model.comments)</dt>
+                                    <dd>@Html.DisplayFor(model => model.comments)</dd>
 
-                                    <dd>
-                                        @Html.DisplayFor(model => model.comments)
-                                    </dd>
+                                    <dt>@Html.DisplayNameFor(model => model.supportingDocs)</dt>
+                                    <dd>@Html.DisplayFor(model => model.supportingDocs)</dd>
 
-                                    <dt>
-                                        @Html.DisplayNameFor(model => model.supportingDocs)
-                                    </dt>
+                                    <dt>@Html.DisplayNameFor(model => model.bookAirTicket)</dt>
+                                    <dd>@Html.DisplayFor(model => model.bookAirTicket)</dd>
 
-                                    <dd>
-                                        @Html.DisplayFor(model => model.supportingDocs)
-                                    </dd>
-
-                                    <dt>
-                                        @Html.DisplayNameFor(model => model.bookAirTicket)
-                                    </dt>
-
-                                    <dd>
-                                        @Html.DisplayFor(model => model.bookAirTicket)
-                                    </dd>
-
-                                    <dt>
-                                        @Html.DisplayNameFor(model => model.contactDetails)
-                                    </dt>
-
-                                    <dd>
-                                        @Html.DisplayFor(model => model.contactDetails)
-                                    </dd>
-
+                                    <dt>@Html.DisplayNameFor(model => model.contactDetails)</dt>
+                                    <dd>@Html.DisplayFor(model => model.contactDetails)</dd>
                                 </dl>
                             </div>
 
                             <hr />
                             <div class="row">
-                                @Html.LabelFor(model => model.hrComment, "Comment", htmlAttributes: new { @class = "control-label col-md-4" })
-
-                                @Html.TextAreaFor(model => model.hrComment, new { rows = "6", cols = "35" })
+                                <div class="col-md-5 col-md-offset-1">
+                                    @Html.LabelFor(model => model.hrComment, "Comment", htmlAttributes: new { @class = "control-label col-md-4" })
+                                    @Html.TextAreaFor(model => model.hrComment, new { rows = "6", cols = "35" })
+                                </div>
                             </div>
-
                             <hr />
-
                             <div class="row">
-                                <div class="col-md-2"></div>
-                                <div class="col-md-5">
+                                <div class="col-md-3 col-md-offset-2">
                                     <input type="submit" name="submit" id="submit" class="btn btn-success" value="Approve" />
                                 </div>
-                                <div class="col-md-2"></div>
-                                <div class="col-md-5">
+                                <div class="col-md-3 col-md-offset-1">
                                     <input type="submit" name="submit" id="reject" class="btn btn-danger" value="Reject" />
                                 </div>
                             </div>
@@ -177,6 +110,76 @@
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-md-10">
+                    <div class="panel-group">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" href="#collapse2">Employee Leave History</a>
+                                </h4>
+                            </div>
+                            <div id="collapse2" class="panel-collapse collapse">
+                                <table class="table">
+                                    <tr>
+                                        <th>Leave Type</th>
+                                        <th>Start Date</th>
+                                        <th>End Date</th>
+                                        <th>Duration</th>
+                                        <th>Start Time</th>
+                                        <th>End Time</th>
+                                        <th>Status</th>
+                                    </tr>
+                                    @{
+                                        var leaveHistory = ViewData["LeaveHistory"] as List<LeaveSystemMVC.Models.sLeaveModel>;
+                                        foreach (LeaveSystemMVC.Models.sLeaveModel lv in leaveHistory)
+                                        {
+                                            string stDt = lv.startDate.ToString();
+                                            stDt = stDt.Substring(0, 10);
+
+                                            string enDt = lv.endDate.ToString();
+                                            enDt = enDt.Substring(0, 10);
+
+                                            string status = "";
+
+                                            switch (lv.leaveStatus)
+                                            {
+                                                case 2:
+                                                    status = "Approved";
+                                                    break;
+                                                case 3:
+                                                case 4:
+                                                    status = "Rejected";
+                                                    break;
+                                                case 5:
+                                                    status = "Canceled";
+                                                    break;
+                                            }
+                                            <tr>
+                                                <td>@lv.leaveType</td>
+                                                <td>@stDt</td>
+                                                <td>@enDt</td>
+                                                <td>@lv.leaveDuration</td>
+                                                @if (lv.leaveType != "Short_Hours")
+                                                {
+                                                    <td></td>
+                                                    <td></td>
+                                                }
+                                                else
+                                                {
+                                                    <td>@lv.shortStartTime</td>
+                                                    <td>@lv.shortEndTime</td>
+                                                }
+                                                <td>@status</td>
+                                            </tr>
+                                        }
+                                    }
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-                                        }
+}
