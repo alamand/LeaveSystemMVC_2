@@ -28,7 +28,7 @@ namespace LeaveSystemMVC.Controllers
             var connectionString =
                 ConfigurationManager.ConnectionStrings["DefaultConnection"].
                 ConnectionString;
-
+            
             //In case an employee has multiple employment dates, get the one with the latest start date from the Employment_Period table.
             string queryString = "SELECT dbo.Employment_Period.Emp_Start_Date " +
                "FROM dbo.Employment_Period " +
@@ -72,9 +72,11 @@ namespace LeaveSystemMVC.Controllers
                         while (reader.Read())
                         {
                             EmptyEmployee.empStartDate = (DateTime)reader[0];
+                            System.Diagnostics.Debug.WriteLine("Setting empStartDate to: " + (DateTime)reader[0]);
                             EmptyEmployee.empOldStartDate = (DateTime)reader[0]; //For detecting changes to the start date.
                             if (reader[1] != DBNull.Value)
                             {
+                                System.Diagnostics.Debug.WriteLine("Setting empEndDate to: " + (DateTime)reader[1]);
                                 EmptyEmployee.empEndDate = (DateTime)reader[1];
                                 EmptyEmployee.empOldEndDate = (DateTime)reader[1]; //For detecting changes to the end date.
                             }                    
@@ -84,10 +86,36 @@ namespace LeaveSystemMVC.Controllers
                 connection.Close();
             }
 
-            
+            //Get all line managers for "Reports To"
+            queryString = "SELECT dbo.Employee.Employee_ID, dbo.Employee.First_Name, dbo.Employee.Last_Name " +
+                "FROM dbo.Employee, dbo.Employee_Role " +
+                "WHERE dbo.Employee.Employee_ID = dbo.Employee_Role.Employee_ID AND dbo.Employee_Role.Role_ID = 4";
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            string fullName = (string)reader[1] + " " + (string)reader[2];
+                            if (!EmptyEmployee.lineManagerSelectionOptions.ContainsKey((int)reader[0]))
+                            {
+                                EmptyEmployee.lineManagerSelectionOptions.Add((int)reader[0], fullName);
+                            }
+                        }
+                    }
+                }
+                connection.Close();
+            }
+            //End get all line managers
+
+
             queryString = "SELECT Employee_ID, First_Name, Last_Name, " +
                 "Gender, Ph_No, Email, User_Name, Designation, dbo.Employee.Department_ID, " +
-                "Account_Status " + 
+                "Account_Status, Reporting_ID " + 
                 "FROM dbo.Employee " + 
                 "WHERE dbo.Employee.Employee_ID = '" + empID + "' " +
                 "AND dbo.Employee.Employee_ID IS NOT NULL";
@@ -107,8 +135,10 @@ namespace LeaveSystemMVC.Controllers
                             EmptyEmployee.lastName = (string)reader[2];
                             string gender = (string)reader[3];
                             EmptyEmployee.gender = gender[0];
-                            System.Diagnostics.Debug.WriteLine("Gender is: " + EmptyEmployee.gender);                               
-                            EmptyEmployee.phoneNo = (string)reader[4];
+                            if (reader[4] != DBNull.Value)
+                            {
+                                EmptyEmployee.phoneNo = (string)reader[4];
+                            }
                             EmptyEmployee.email = (string)reader[5];
                             EmptyEmployee.userName = (string)reader[6];
                             EmptyEmployee.designation = (string)reader[7];
@@ -121,6 +151,10 @@ namespace LeaveSystemMVC.Controllers
                             else
                                 EmptyEmployee.deptName = "";
                             EmptyEmployee.accountStatus = (bool)reader[9];
+                            if (reader[10] != DBNull.Value)
+                            {                                
+                                EmptyEmployee.reportsToLineManagerString = ((int)reader[10]).ToString();
+                            }
                         }
                     }
                 }
@@ -284,7 +318,7 @@ namespace LeaveSystemMVC.Controllers
                 connection.Close();
             }*/
 
-            TempData["Gender"] = EmptyEmployee.gender;
+            //TempData["Gender"] = EmptyEmployee.gender;
             TempData["EmptyEmployee"] = EmptyEmployee;
             TempData["nonDisplayRoleOptions"] = nonDisplayRoleOptions;
             return View(EmptyEmployee);
@@ -455,7 +489,6 @@ namespace LeaveSystemMVC.Controllers
             //An employment end date has been added or the employment end date has been modified and the start date is unmodified
             else if ((SE.empOldEndDate == DateTime.MinValue && SE.empEndDate != DateTime.MinValue) || !SE.empEndDate.Equals(SE.empOldEndDate))
             {
-                System.Diagnostics.Debug.WriteLine("inside else");
                 queryString = "UPDATE dbo.Employment_Period SET Emp_End_Date = '" + SE.empEndDate.ToString("yyyy-MM-dd") +
                 "' WHERE dbo.Employment_Period.Employee_ID = '" + SE.staffID +
                 "' AND dbo.Employment_Period.Emp_Start_Date = '" + SE.empOldStartDate.ToString("yyyy-MM-dd") + "'";
@@ -491,7 +524,27 @@ namespace LeaveSystemMVC.Controllers
                 using (var reader = command.ExecuteReader())
                     connection.Close();
             }
-            
+
+            //Update employee's reporting line manager
+            queryString = "UPDATE dbo.Reporting SET Reporting_ID = '" + SE.reportsToLineManagerString + "' WHERE Employee_ID = '" + SE.staffID + "'";
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                    connection.Close();
+            }
+
+            queryString = "UPDATE dbo.Employee SET Reporting_ID = '" + SE.reportsToLineManagerString + "' WHERE Employee_ID = '" + SE.staffID + "'";
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                    connection.Close();
+            }
+
             /*Clear the employee's roles before adding the updated ones.
              Easiest way to make sure that only the updated roles remain.*/
             queryString = "DELETE FROM dbo.Employee_Role " +

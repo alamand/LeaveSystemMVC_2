@@ -85,17 +85,17 @@ namespace LeaveSystemMVC.Models
         /*Will hold a list of options of staff roles/types for the 
          user to choose from*/
         public Dictionary<int, string> staffTypeSelectionOptions { get; set; } = new Dictionary<int, string>();
-        //public IEnumerable<SelectListItem> staffTypeSelectionOptions { get; set; }
-        //
 
         public bool accountStatus { get; set; }
-
-        public int Reports_To { get; set; }
 
         [Display(Name = "Administrator User")]
         public bool isAdmin { get; set; }
 
         [Display(Name = "Probation Status")]
         public bool onProbation { get; set; }
+
+        public Dictionary<int, string> lineManagerSelectionOptions { get; set; } = new Dictionary<int, string>();
+
+        public string reportsToLineManagerString { get; set; }
     }
 }

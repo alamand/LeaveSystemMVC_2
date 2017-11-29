@@ -139,8 +139,32 @@ namespace LeaveSystemMVC.Controllers
                 connection.Close();
             }*/
 
+            //Get all line managers for "Reports To"
+            queryString = "SELECT dbo.Employee.Employee_ID, dbo.Employee.First_Name, dbo.Employee.Last_Name " +
+                "FROM dbo.Employee, dbo.Employee_Role " +
+                "WHERE dbo.Employee.Employee_ID = dbo.Employee_Role.Employee_ID AND dbo.Employee_Role.Role_ID = 4";
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            string fullName = (string)reader[1] + " " + (string)reader[2];
+                            if (!EmptyEmployee.lineManagerSelectionOptions.ContainsKey((int)reader[0]))
+                            {
+                                EmptyEmployee.lineManagerSelectionOptions.Add((int)reader[0], fullName);
+                            }
+                        }
+                    }
+                }
+                connection.Close();
+            }
+            //End get all line managers
 
-            //End get line manager list
             TempData["EmptyEmployee"] = EmptyEmployee;
             TempData["nonDisplayRoleOptions"] = nonDisplayRoleOptions;
             return View(EmptyEmployee);
@@ -233,6 +257,27 @@ namespace LeaveSystemMVC.Controllers
                     "', '" + SE.password + "', '" + SE.designation + "', '" + SE.email +
                     "', '" + SE.gender + "', '" + SE.phoneNo + "', '" + "True" + "', '" + SE.deptName + "')";
             }
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                    connection.Close();
+            }
+
+            //Add employee's reporting line manager
+            queryString = "INSERT INTO dbo.Reporting (Employee_ID, Reporting_ID, Start_Date) VALUES('" + SE.staffID +
+                    "', '" + SE.reportsToLineManagerString + "', '" + SE.empStartDate.ToString("yyyy-MM-dd") + "')";
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                    connection.Close();
+            }
+
+            queryString = "UPDATE dbo.Employee SET Reporting_ID = '" + SE.reportsToLineManagerString + "' WHERE Employee_ID = '" + SE.staffID + "'";
             using (var connection = new SqlConnection(connectionString))
             {
                 var command = new SqlCommand(queryString, connection);

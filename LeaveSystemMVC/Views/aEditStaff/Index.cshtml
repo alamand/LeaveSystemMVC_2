@@ -87,7 +87,7 @@
 
                             <div class="col-md-4">
                                 <select class="form-control" id="gender" name="gender">
-                                    @if (TempData["Gender"].Equals('F'))
+                                    @if (Model.gender.Equals('F'))
                                     {
                                         <option value="M">Male</option>
                                         <option value="F" selected>Female</option>
@@ -187,12 +187,12 @@
                         </div>
 
                             <div class="col-sm-5" style="white-space:nowrap">
-                                @Html.LabelFor(model => model.Reports_To, "Reports To", htmlAttributes: new { @class = "control-label col-md-2", type = "Date" })
+                                @Html.LabelFor(model => model.reportsToLineManagerString, "Reports To", htmlAttributes: new { @class = "control-label col-md-4" })
                             </div>
 
                             <div class="col-md-4">
-                                @Html.DropDownListFor(model => model.staffType, new SelectList(Model.staffTypeSelectionOptions, "Key", "Value"), "- Select Employee -", new { @class = "form-control" })
-                                @Html.ValidationMessageFor(model => model.staffType, "", new { @class = "text-danger" })
+                                @Html.DropDownListFor(model => model.reportsToLineManagerString, new SelectList(Model.lineManagerSelectionOptions, "Key", "Value"), "- Select Line Manager -", new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.reportsToLineManagerString, "", new { @class = "text-danger" })
                             </div>
                     </div>
                     <hr />
