@@ -1,0 +1,42 @@
+﻿@{ViewBag.Title = "Probation Administration";}
+
+@Html.Partial("_LeftMenu")
+<h2>@ViewBag.Title</h2>
+<div class="col-md-10">
+    <div class="panel-group">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" class="active" href="#collapse1">On Probation</a>
+                </h4>
+            </div>
+            <div id="collapse1" class="panel-collapse collapse in">
+                <table class="table">
+                    <tr>
+                        <th>Employee ID</th>
+                        <th>Name</th>
+                        <th>Department</th>
+                        <th>Start Date</th>
+                        <th>Duration (Days)</th>
+                        <th>Confirmation</th>
+                    </tr>
+                    @{
+                        var onProbation = ViewData["OnProbation"] as List<LeaveSystemMVC.Models.sEmployeeModel>;
+
+                        foreach (LeaveSystemMVC.Models.sEmployeeModel onP in onProbation)
+                        {
+                            <tr>
+                                <td>@onP.staffID</td>
+                                <td>@onP.firstName @onP.lastName</td>
+                                <td>@onP.deptName</td>
+                                <td>@onP.empStartDate.ToString().Substring(0, 10)</td>
+                                <td>@ViewData["Duration" + onP.staffID.ToString()]</td>
+                                <td><a href="@Url.Action("SetProbation", "hrProbationAdministration", new { id = onP.staffID }, null)">Confirm</a></td>
+                            </tr>
+                        }
+                    }
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

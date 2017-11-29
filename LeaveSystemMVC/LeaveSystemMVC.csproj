@@ -207,7 +207,7 @@
     <Compile Include="Controllers\hrCreateLeaveTypeController.cs" />
     <Compile Include="Controllers\hrCreditLeaveBalanceController.cs" />
     <Compile Include="Controllers\hrDepartmentViewDaysInLieuController.cs" />
-    <Compile Include="Controllers\hrProbationController.cs" />
+    <Compile Include="Controllers\hrProbationAdministrationController.cs" />
     <Compile Include="Controllers\hrEditBalanceController.cs" />
     <Compile Include="Controllers\hrEditDefaultLeaveDurationController.cs" />
     <Compile Include="Controllers\hrHolidaysCalenderController.cs" />
@@ -1808,7 +1808,7 @@
     <Content Include="Views\hrEditBalance\Edit.cshtml" />
     <Content Include="Views\hrDepartmentViewDaysInLieu\Select.cshtml" />
     <Content Include="Views\aBackupDatabase\Index.cshtml" />
-    <Content Include="Views\hrProbation\Index.cshtml" />
+    <Content Include="Views\hrProbationAdministration\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
