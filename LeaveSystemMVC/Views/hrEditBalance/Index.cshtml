@@ -4,9 +4,31 @@
 }
 
 @Html.Partial("_LeftMenu")
+
 <h2>@ViewBag.Title</h2>
 <div class="col-md-10">
-    <!-- TODO: ADD FILTER BY DEPARTMENT DROPDOWN -->
+    @{
+        var departmentList = ViewData["DepartmentList"] as Dictionary<int, string>;
+        var selectedDepartment = @ViewData["SelectedDepartment"];
+
+    }
+    @using (Html.BeginForm("FilterListByDepartment", "hrEditBalance", FormMethod.Post))
+    {
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-horizontal">
+            <div class="row ">
+                <div class="col-md-2">
+                    <p style="padding-top: 8px;">Filter by Department:</p>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-horizontal">
+                        @Html.DropDownList("selectedDepartment", new SelectList(departmentList, "Key", "Value"), new { @selected = selectedDepartment, @class = "form-control", @onchange = "this.form.submit();" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+    }
     <table class="table">
         <tr>
             <th>Employee ID</th>
