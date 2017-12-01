@@ -46,9 +46,12 @@ namespace LeaveSystemMVC.Controllers
                     {
                         while (reader.Read())
                         {
-                            if((DateTime)reader[0] > tempStartDate)
+                            if (reader[0] != DBNull.Value)
                             {
-                                tempStartDate = (DateTime)reader[0];
+                                if ((DateTime)reader[0] > tempStartDate)
+                                {
+                                    tempStartDate = (DateTime)reader[0];
+                                }
                             }
                         }
                     }
@@ -56,6 +59,7 @@ namespace LeaveSystemMVC.Controllers
                 connection.Close();
             }
             
+            //Now select the row with the corresponding latest start date 
             queryString = "SELECT dbo.Employment_Period.Emp_Start_Date, dbo.Employment_Period.Emp_End_Date " +
                "FROM dbo.Employment_Period " +
                "WHERE dbo.Employment_Period.Employee_ID = '" + empID + "' AND dbo.Employment_Period.Emp_Start_Date = '"
@@ -72,11 +76,9 @@ namespace LeaveSystemMVC.Controllers
                         while (reader.Read())
                         {
                             EmptyEmployee.empStartDate = (DateTime)reader[0];
-                            System.Diagnostics.Debug.WriteLine("Setting empStartDate to: " + (DateTime)reader[0]);
                             EmptyEmployee.empOldStartDate = (DateTime)reader[0]; //For detecting changes to the start date.
                             if (reader[1] != DBNull.Value)
                             {
-                                System.Diagnostics.Debug.WriteLine("Setting empEndDate to: " + (DateTime)reader[1]);
                                 EmptyEmployee.empEndDate = (DateTime)reader[1];
                                 EmptyEmployee.empOldEndDate = (DateTime)reader[1]; //For detecting changes to the end date.
                             }                    
