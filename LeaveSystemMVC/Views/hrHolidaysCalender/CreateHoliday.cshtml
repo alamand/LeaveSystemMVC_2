@@ -1,77 +1,69 @@
 ﻿@model LeaveSystemMVC.Models.hrHolidaysCalender
 
-
-
+@{
+    ViewBag.Title = "Create Holiday";
+}
 
 @Html.Partial("_LeftMenu")
-<div class="col-md-10">
-    <h2>Create Holiday</h2>
-    <div class="col-md-10">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <div class="text-muted bootstrap-admin-box-title">Application Details</div>
-            </div>
-            <div class="bootstrap-admin-panel-content">
-                <div class="form-horizontal">
-                <p>
-                    @Html.ActionLink("Display Holidays", "Display")
-                </p>
 
-                @using (Html.BeginForm())
-                {
-                    @Html.AntiForgeryToken()
-                   
-                    <div class="form-horizontal">
-                        <h4>@ViewBag.title</h4>
-                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                        <hr />
-                        @if (TempData["Success"] != null)
-                        {
-                            <div class="green">
-                                <p><strong>Success:</strong> @TempData["Success"].ToString()</p>
-                            </div>
-                        }
-                        <div class="row">
-                         @Html.ValidationMessage("errorMessage") 
-                        <div class="col-md-2" style="white-space:nowrap">
-                            @Html.LabelFor(calender => calender.holidayName)
-                            </div>
-                            <div class="col-md-4">
-                            @Html.TextBoxFor(calender => calender.holidayName, new { maxlength = 50 })
-                            @Html.ValidationMessageFor(calender => calender.holidayName)
-                        </div>
-                        </div>
-                        <hr />
-                        <div class="container-fluid form-group">
-                        <div class="row">
-                            <div class="col-xs-2" style="white-space:nowrap">
-                                @Html.LabelFor(calender => calender.startDate)
-                                </div>
-                            <div class="col-md-4">
-                                @Html.EditorFor(calender => calender.startDate, new { type = "Date" })
-                                @Html.ValidationMessageFor(calender => calender.startDate)
-                            </div>
-                            <div class="col-xs-2" style="white-space:nowrap">
-                                @Html.LabelFor(calender => calender.endDate)
-                                </div>
-                            <div class="col-md-4">
-                                @Html.TextBoxFor(calender => calender.endDate, new { type = "date" })
-                                @Html.ValidationMessageFor(calender => calender.endDate)
-                            </div>
-                            </div>
-                        </div>
-                        <hr />
-                        <div class="form-group">
-                            <div class="col-md-offset-5 col-md-12">
-                                <input type="submit" value="Save" class="btn btn-default" />
-                            </div>
-                        </div>
-                    </div>
-                    
-                    
-                }
-            </div>
-
-            @section Scripts {
-                @Scripts.Render("~/bundles/jqueryval")
+<div class="col-md-8">
+    <h4>@ViewBag.Title</h4>
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <hr />
+            @if (TempData["Success"] != null)
+            {
+                <div class="green">
+                    <p><strong>Success:</strong> @TempData["Success"].ToString()</p>
+                </div>
             }
+            <div class="row">
+                @Html.ValidationMessage("errorMessage")
+                <div class="col-md-2" style="white-space:nowrap">
+                    @Html.LabelFor(calender => calender.holidayName)
+                </div>
+                <div class="col-md-4">
+                    @Html.TextBoxFor(calender => calender.holidayName, new { maxlength = 50 })
+                    @Html.ValidationMessageFor(calender => calender.holidayName)
+                </div>
+            </div>
+            <br />
+            <div class="container-fluid form-group">
+                <div class="row">
+                    <div class="col-xs-2" style="white-space:nowrap">
+                        @Html.LabelFor(calender => calender.startDate)
+                    </div>
+                    <div class="col-md-4">
+                        @Html.EditorFor(calender => calender.startDate, new { type = "Date" })
+                        @Html.ValidationMessageFor(calender => calender.startDate)
+                    </div>
+                    <div class="col-xs-2" style="white-space:nowrap">
+                        @Html.LabelFor(calender => calender.endDate)
+                    </div>
+                    <div class="col-md-4">
+                        @Html.TextBoxFor(calender => calender.endDate, new { type = "date" })
+                        @Html.ValidationMessageFor(calender => calender.endDate)
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <div class="col-md-offset-4 col-md-12">
+                <a href="@Url.Action("Index", "hrHolidaysCalender")" class="btn btn-default">
+                    <span class="glyphicon glyphicon-circle-arrow-left" aria-hidden="true"></span>
+                    Back
+                </a>
+
+                <button type="submit" value="Save" class="btn btn-default">
+                    <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span> Save
+                </button>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

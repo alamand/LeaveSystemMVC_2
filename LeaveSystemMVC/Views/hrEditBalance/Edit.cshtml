@@ -1,10 +1,13 @@
 ﻿@model LeaveSystemMVC.Models.sleaveBalanceModel
+@{
+    ViewBag.Title = "Edit Leave Balances";
+}
 
 @Html.Partial("_LeftMenu")
 
 <div class="col-md-8">
 
-    <h4>Edit Leave Balances</h4>
+    <h4>@ViewBag.Title</h4>
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()

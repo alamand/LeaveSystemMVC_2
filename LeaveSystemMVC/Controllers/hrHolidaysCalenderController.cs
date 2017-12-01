@@ -14,12 +14,73 @@ namespace LeaveSystemMVC.Controllers
     public class hrHolidaysCalenderController : Controller
     {
         // GET: hrHolidaysCalender
-
-        public ActionResult Index()
+        public ActionResult Index(int? filterYear = null)
         {
-            var calender = new LeaveSystemMVC.Models.hrHolidaysCalender();
-            return RedirectToAction("Display");
+            var model = new List<Models.hrHolidaysCalender>();
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+
+            if (filterYear == null)
+            {
+                filterYear = DateTime.Now.Year;
+            }
+
+            string queryString = "SELECT * FROM dbo.Public_Holiday WHERE year(Date) = " + filterYear;
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var calender = new Models.hrHolidaysCalender();
+                        calender.holidayName = (string)reader["Name"];
+                        calender.startDate = (DateTime)reader["Date"];
+                        model.Add(calender);
+                    }
+                }
+
+                connection.Close();
+            }
+
+            ViewData["YearList"] = YearList();
+            ViewData["SelectedYear"] = filterYear;
+
+            return View(model);
         }
+
+        [HttpPost]
+        public ActionResult FilterListByYear(FormCollection form)
+        {
+            int year = Convert.ToInt32(form["selectedYear"]);
+            return RedirectToAction("Index", new { filterYear = year });
+        }
+
+        public Dictionary<int, string> YearList()
+        {
+            Dictionary<int, string> years = new Dictionary<int, string>();
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            string queryString = "SELECT DISTINCT year(Date) as Year FROM dbo.Public_Holiday";
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        years.Add((int)reader["Year"], reader["Year"].ToString());
+                    }
+                }
+                connection.Close();
+            }
+            
+            return years;
+        }
+
         [HttpGet]
         public ActionResult CreateHoliday()
         {
@@ -48,6 +109,7 @@ namespace LeaveSystemMVC.Controllers
 
             return View();
         }
+
         [HttpPost]
         public ActionResult CreateHoliday([Bind(Exclude = "description")] Models.hrHolidaysCalender calender)
         {
@@ -112,33 +174,7 @@ namespace LeaveSystemMVC.Controllers
             }
             return CreateHoliday();
         }
-        public ActionResult Display()
-        {
-            var model = new List<Models.hrHolidaysCalender>();
-            //var connectionString = ConfigurationManager.ConnectionStrings["CustomConnection"].ConnectionString;
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "Select * FROM dbo.Public_Holiday";
-            using (var connection = new SqlConnection(connectionString))
-            {
-                var command = new SqlCommand(queryString, connection);
 
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        var calender = new Models.hrHolidaysCalender();
-                        calender.holidayName = (string)reader["Name"];
-                        calender.startDate = (DateTime)reader["Date"];
-                        model.Add(calender);
-                    }
-                }
-
-                connection.Close();
-            }
-
-            return View(model);
-        }
         public bool isDateSame(DateTime date)
         {
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
@@ -161,6 +197,7 @@ namespace LeaveSystemMVC.Controllers
 
             return false;
         }
+
         public bool isDateSame(DateTime start, DateTime end)
         {
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
@@ -177,11 +214,13 @@ namespace LeaveSystemMVC.Controllers
             }
             return false;
         }
+
         public int totalDays(DateTime start, DateTime end)
         {
             TimeSpan ts = start - end;
             return Math.Abs(ts.Days);
         }
+
         public bool AddCredit(DateTime date)
         {
             int empid, appid, lid, status;
@@ -225,6 +264,7 @@ namespace LeaveSystemMVC.Controllers
             }
             return false;
         }
+
         public struct Emp
         {
             public Emp(int apid, int eid, int lid, DateTime strt, DateTime endDate, int stat) { app_id = apid; leave_id = lid; emp_id = eid; start = strt; end = endDate; status = stat; }
@@ -235,6 +275,7 @@ namespace LeaveSystemMVC.Controllers
             public DateTime start { get; set; }
             public DateTime end { get; set; }
         }
+
         public bool isDateCheck(DateTime a, DateTime b_start, DateTime b_end)
         {
             int total = totalDays(b_start, b_end);
@@ -244,6 +285,7 @@ namespace LeaveSystemMVC.Controllers
             }//else return false;
             return false;
         }
+
         public void AddHolidayBalance(int appid, int eid, int lid, int bal, DateTime sdate)
         {
             //bal += getBalance(eid, lid);
@@ -264,6 +306,7 @@ namespace LeaveSystemMVC.Controllers
             { DecrementTotalDays(appid, 1, eid, lid); }
 
         }
+
         public void DecrementTotalDays(int apid, int duration, int eid, int lid)
         {
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
@@ -280,6 +323,7 @@ namespace LeaveSystemMVC.Controllers
                     connection.Close();
             }
         }
+
         public decimal getBalance(int eid, int lid)
         {
             decimal balance = 0;
@@ -304,6 +348,7 @@ namespace LeaveSystemMVC.Controllers
             }
             return balance;
         }
+
         public string GetSqlString(string fieldvalue)
         {
             if (fieldvalue != null)
