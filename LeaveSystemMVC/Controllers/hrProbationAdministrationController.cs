@@ -16,7 +16,7 @@ namespace LeaveSystemMVC.Controllers
             
             // select all employees who are on probation
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "Select e.Employee_ID, First_Name, Last_Name, Department_Name, DATEDIFF(day,Emp_Start_Date,GETDATE()) as Dif_Date, Emp_Start_Date, Emp_End_Date, Probation " +
+            string queryString = "SELECT e.Employee_ID, First_Name, Last_Name, Department_Name, DATEDIFF(day,Emp_Start_Date,GETDATE()) as Dif_Date, Emp_Start_Date, Emp_End_Date, Probation " +
                 "FROM dbo.Employee e, dbo.Employment_Period p, dbo.Department d " +
                 "WHERE e.Employee_ID = p.Employee_ID AND e.Department_ID = d.Department_ID AND (Probation=1 OR Probation IS NULL) " +
                 "ORDER BY Emp_Start_Date";
@@ -69,14 +69,19 @@ namespace LeaveSystemMVC.Controllers
             return RedirectToAction("Index");
         }
 
+        // sets the default balances for staffs who are confirmed off probation
         private void SetBalance(int staff_id)
         {
             // holds default durations for all leave types
             Models.sleaveBalanceModel leaveTypes = ConstructLeaveTypes();
 
+            // calculate annual leave balance
+            // ((Total days of employement duration + remaining days of the years) / days in a month) * 1.833
+            // where 1.833 is the given balance for each month
             DateTime startDate = GetStartDate(staff_id);
-            double annualBalance = (12 - startDate.Month) * 1.833;
-
+            DateTime endYearDate = new DateTime(startDate.Year, 12, 30);
+            double annualBalance = (endYearDate.Subtract(startDate).TotalDays / 30) * 1.833;
+       
             // holds the query to be executed, whether it is insert or update
             string queryString;
 
@@ -189,7 +194,7 @@ namespace LeaveSystemMVC.Controllers
         {
             bool exists = false;
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "SELECT Count(*) as Num From dbo.Leave_Balance WHERE Employee_ID = " + staff_id + " AND Leave_ID = " + leave_id;
+            string queryString = "SELECT Count(*) From dbo.Leave_Balance WHERE Employee_ID = " + staff_id + " AND Leave_ID = " + leave_id;
             using (var connection = new SqlConnection(connectionString))
             {
                 var command = new SqlCommand(queryString, connection);

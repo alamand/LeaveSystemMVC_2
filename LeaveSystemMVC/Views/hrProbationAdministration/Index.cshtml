@@ -17,7 +17,7 @@
                         <th>Name</th>
                         <th>Department</th>
                         <th>Start Date</th>
-                        <th>Duration (Days)</th>
+                        <th>Employment Duration</th>
                         <th>Confirmation</th>
                     </tr>
                     @{
@@ -30,7 +30,29 @@
                                 <td>@onP.firstName @onP.lastName</td>
                                 <td>@onP.deptName</td>
                                 <td>@onP.empStartDate.ToString().Substring(0, 10)</td>
-                                <td>@ViewData["Duration" + onP.staffID.ToString()]</td>
+                                @{
+                                    var totalDays = (int)@ViewData["Duration" + onP.staffID.ToString()];
+                                    var months = Math.Truncate((double)totalDays / 30);
+                                    var days = Math.Truncate((double)totalDays % 30);
+                                }
+                                    @if (months == 0)
+                                    {
+                                        if (days == 0) { <td>Joined Today</td> }
+                                        else if (days == 1) { <td>@days day</td> }
+                                        else { <td>@days days</td> }
+                                    }
+                                    else if (months == 1)
+                                    {
+                                        if (days == 0) { <td>@months month</td> }
+                                        else if (days == 1) { <td>@months month, @days day</td> }
+                                        else { <td>@months month, @days days</td> }
+                                    }
+                                    else
+                                    {
+                                        if (days == 0) { <td>@months months</td> }
+                                        else if (days == 1) { <td>@months months, @days day</td> }
+                                        else { <td>@months months, @days days</td> }
+                                    }
                                 <td><a href="@Url.Action("SetProbation", "hrProbationAdministration", new { id = onP.staffID }, null)">Confirm</a></td>
                             </tr>
                         }
