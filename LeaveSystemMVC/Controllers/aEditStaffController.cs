@@ -445,28 +445,30 @@ namespace LeaveSystemMVC.Controllers
                 connection.Close();
             }
 
-            int result = DateTime.Compare(SE.empEndDate, SE.empStartDate);
-            if (result < 0)
+            if (SE.empEndDate.Year != 1)
             {
-                ModelState.AddModelError("empEndDate", "The end date cannot be earlier than the start date.");
-                hasValidationErrors = true;
-            }
+                int result = DateTime.Compare(SE.empEndDate, SE.empStartDate);
+                if (result < 0)
+                {
+                    ModelState.AddModelError("empEndDate", "The end date cannot be earlier than the start date.");
+                    hasValidationErrors = true;
+                }
 
-            /*Make sure the selection lists for departments, roles
-             and the non-display role options are persisted. And then redirect to
-             back to the view.*/
-            if (hasValidationErrors)
-            {
-                sEmployeeModel EmptyEmployee = (sEmployeeModel)TempData["EmptyEmployee"];
-                SE.staffTypeSelectionOptions = EmptyEmployee.staffTypeSelectionOptions;
-                SE.departmentList = EmptyEmployee.departmentList;
-                //SE.SecondLMSelectionOptions = EmptyEmployee.SecondLMSelectionOptions;
-                TempData["EmptyEmployee"] = EmptyEmployee;
-                TempData["nonDisplayRoleOptions"] = TempData["nonDisplayRoleOptions"];
-                return View(SE);
+                /*Make sure the selection lists for departments, roles
+                 and the non-display role options are persisted. And then redirect to
+                 back to the view.*/
+                if (hasValidationErrors)
+                {
+                    sEmployeeModel EmptyEmployee = (sEmployeeModel)TempData["EmptyEmployee"];
+                    SE.staffTypeSelectionOptions = EmptyEmployee.staffTypeSelectionOptions;
+                    SE.departmentList = EmptyEmployee.departmentList;
+                    //SE.SecondLMSelectionOptions = EmptyEmployee.SecondLMSelectionOptions;
+                    TempData["EmptyEmployee"] = EmptyEmployee;
+                    TempData["nonDisplayRoleOptions"] = TempData["nonDisplayRoleOptions"];
+                    return View(SE);
+                }
+                // End validations
             }
-            // End validations
-
 
             //Table insertions
             SE.password = RandomPassword.Generate(7, 7);
@@ -474,11 +476,12 @@ namespace LeaveSystemMVC.Controllers
             //string secondLmValueText = "";
 
             //Update the Employment_Period table
-            //Start date has been modified, so create a new entry in the Employment_Period table
+            //Start date has been modified, so MODIFY the entry in the Employment_Period table
             if (!SE.empStartDate.Equals(SE.empOldStartDate))
             {
-                queryString = "INSERT INTO dbo.Employment_Period (Employee_ID, Emp_Start_Date, Emp_End_Date) VALUES('" + SE.staffID +
-                   "', '" + SE.empStartDate.ToString("yyyy-MM-dd") + "', '" + SE.empEndDate.ToString("yyyy-MM-dd") + "')";
+                queryString = "UPDATE dbo.Employment_Period SET Emp_Start_Date = '" + SE.empStartDate.ToString("yyyy-MM-dd") +
+               "' WHERE dbo.Employment_Period.Employee_ID = '" + SE.staffID +
+               "' AND dbo.Employment_Period.Emp_Start_Date = '" + SE.empOldStartDate.ToString("yyyy-MM-dd") + "'";
 
                 using (var connection = new SqlConnection(connectionString))
                 {
@@ -488,8 +491,8 @@ namespace LeaveSystemMVC.Controllers
                         connection.Close();
                 }
             }
-            //An employment end date has been added or the employment end date has been modified and the start date is unmodified
-            else if ((SE.empOldEndDate == DateTime.MinValue && SE.empEndDate != DateTime.MinValue) || !SE.empEndDate.Equals(SE.empOldEndDate))
+            //An employment end date has been added
+            else if (SE.empEndDate.Year != 1)
             {
                 queryString = "UPDATE dbo.Employment_Period SET Emp_End_Date = '" + SE.empEndDate.ToString("yyyy-MM-dd") +
                 "' WHERE dbo.Employment_Period.Employee_ID = '" + SE.staffID +
