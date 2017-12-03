@@ -97,5 +97,17 @@ namespace LeaveSystemMVC.Models
         public Dictionary<int, string> lineManagerSelectionOptions { get; set; } = new Dictionary<int, string>();
 
         public string reportsToLineManagerString { get; set; }
+
+        public Dictionary<int, string> religionSelectionOptions { get; set; } = new Dictionary<int, string>();
+
+        public string religionString { get; set; }
+
+        public Dictionary<int, string> nationalitySelectionOptions { get; set; } = new Dictionary<int, string>();
+
+        public string nationalityString { get; set; }
+
+        [DataType(DataType.Date)]
+        public DateTime empDateOfBirth { get; set; }
+
     }
 }

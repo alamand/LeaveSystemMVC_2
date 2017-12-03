@@ -335,49 +335,11 @@ namespace LeaveSystemMVC.Controllers
                     connection.Close();
             }
 
+            //Todo: calculate and credit the leave balances instead of routing to hrEditBalance below.
+
             //End table insertions
 
-            /*Construct and send a success e-mail to the newly created staff member*/
-            string temp_email = SE.email;
-            string temp_username = SE.userName;
-
-            MailMessage message = new MailMessage();
-            message.From = new MailAddress("project_ict333@murdochdubai.ac.ae", "GIMEL LMS");
-
-
-
-            message.To.Add(new MailAddress(temp_email));
-
-            message.Subject = "Your User Details";
-            string body = "";
-            body = body + "Your user details are:" + Environment.NewLine +
-                "Username: " + temp_username + Environment.NewLine +
-                "Password is: " + SE.password + Environment.NewLine;
-
-            message.Body = body;
-            SmtpClient client = new SmtpClient();
-
-            client.EnableSsl = true;
-
-            //@todo: use a different email account 
-            client.Credentials = new NetworkCredential("project_ict333@murdochdubai.ac.ae", "ict@333");
-            try
-            {
-                client.Send(message);
-            }
-            catch (Exception e)
-            {
-                Response.Write("<script> alert('The email could not be sent due to a network error.');</script>");
-            }
-            string gendertext = "";
-            if (SE.gender.Equals("M"))
-                gendertext = "him";
-            else
-                gendertext = "her";
-            //End email construction
-
-            //Message string for the success case. Message will appear in popup window
-            ViewBag.SuccessMessage = SE.firstName + " " + SE.lastName + " has been added to the database and an e-mail containing the account details sent to " + gendertext;
+            ViewBag.SuccessMessage = SE.firstName + " " + SE.lastName + " has been successfully added to the database.";
             ModelState.Clear();
             /*Redirect the user to the hr edit balances page.*/
             return RedirectToAction("Index", "hrEditBalance");
