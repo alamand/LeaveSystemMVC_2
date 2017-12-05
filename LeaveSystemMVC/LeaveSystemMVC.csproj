@@ -194,6 +194,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.cs" />
+    <Compile Include="Controllers\ControllerBase.cs" />
     <Compile Include="Controllers\aAddDepartmentController.cs" />
     <Compile Include="Controllers\aAddStaffController.cs" />
     <Compile Include="Controllers\aAddStaffRoleController.cs" />
@@ -206,7 +207,7 @@
     <Compile Include="Controllers\hrChangeApplicationStatusController.cs" />
     <Compile Include="Controllers\hrCreateLeaveTypeController.cs" />
     <Compile Include="Controllers\hrCreditLeaveBalanceController.cs" />
-    <Compile Include="Controllers\hrDepartmentViewDaysInLieuController.cs" />
+    <Compile Include="Controllers\hrDaysInLieuController.cs" />
     <Compile Include="Controllers\hrProbationAdministrationController.cs" />
     <Compile Include="Controllers\hrEditBalanceController.cs" />
     <Compile Include="Controllers\hrEditDefaultLeaveDurationController.cs" />
@@ -214,13 +215,12 @@
     <Compile Include="Controllers\hrPendingApplicationController.cs" />
     <Compile Include="Controllers\hrDepartmentViewController.cs" />
     <Compile Include="Controllers\hrDepartmentViewLeaveBalanceController.cs" />
-    <Compile Include="Controllers\hrDepartmentViewLeaveHistoryController.cs" />
+    <Compile Include="Controllers\hrEmployeeLeaveHistoryController.cs" />
     <Compile Include="Controllers\hrSelectSubstituteController.cs" />
     <Compile Include="Controllers\lmChangeApplicationStatusController.cs" />
     <Compile Include="Controllers\lmPendingApplicationsController.cs" />
-    <Compile Include="Controllers\lmSubordinateViewBalanceController.cs" />
-    <Compile Include="Controllers\lmSubordinateViewController.cs" />
-    <Compile Include="Controllers\lmSubordinateViewHistoryController.cs" />
+    <Compile Include="Controllers\lmSubordinateBalanceController.cs" />
+    <Compile Include="Controllers\lmSubordinateLeaveHistoryController.cs" />
     <Compile Include="Controllers\lmSelectSubstituteController.cs" />
     <Compile Include="Controllers\LApplicationController.cs" />
     <Compile Include="Controllers\RandomPasswordController.cs" />
@@ -1773,17 +1773,17 @@
     <Content Include="Views\aEditStaff\Index.cshtml" />
     <Content Include="Views\hrCreateLeaveType\Index.cshtml" />
     <Content Include="Views\hrCreditLeaveBalance\Index.cshtml" />
-    <Content Include="Views\hrDepartmentViewDaysInLieu\Index.cshtml" />
-    <Content Include="Views\hrDepartmentViewLeaveBalance\Index.cshtml" />
-    <Content Include="Views\hrDepartmentViewLeaveHistory\Index.cshtml" />
+    <Content Include="Views\hrDaysInLieu\Index.cshtml" />
+    <Content Include="Views\hrEmployeeLeaveBalance\Index.cshtml" />
+    <Content Include="Views\hrEmployeeLeaveHistory\Index.cshtml" />
     <Content Include="Views\hrHolidaysCalender\Index.cshtml" />
     <Content Include="Views\hrPendingApplication\Index.cshtml" />
     <Content Include="Views\hrSelectSubstitute\Index.cshtml" />
     <Content Include="Views\lmChangeApplicationStatus\Index.cshtml" />
     <Content Include="Views\lmPendingApplications\Index.cshtml" />
     <Content Include="Views\lmSelectSubstitute\Index.cshtml" />
-    <Content Include="Views\lmSubordinateViewBalance\Index.cshtml" />
-    <Content Include="Views\lmSubordinateViewHistory\Index.cshtml" />
+    <Content Include="Views\lmSubordinateBalance\Index.cshtml" />
+    <Content Include="Views\lmSubordinateLeaveHistory\Index.cshtml" />
     <Content Include="Views\sChangePassword\Index.cshtml" />
     <Content Include="Views\sLeaveBalance\Index.cshtml" />
     <Content Include="Views\sLeaveHistory\Index.cshtml" />
@@ -1805,13 +1805,12 @@
     <Content Include="Views\hrEditDefaultLeaveDuration\Display.cshtml" />
     <Content Include="Views\hrEditBalance\Index.cshtml" />
     <Content Include="Views\hrEditBalance\Edit.cshtml" />
-    <Content Include="Views\hrDepartmentViewDaysInLieu\Select.cshtml" />
+    <Content Include="Views\hrDaysInLieu\Select.cshtml" />
     <Content Include="Views\aBackupDatabase\Index.cshtml" />
     <Content Include="Views\hrProbationAdministration\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\lmSubordinateView\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">

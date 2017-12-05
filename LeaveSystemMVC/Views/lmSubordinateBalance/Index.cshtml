@@ -1,17 +1,18 @@
 ﻿@model IEnumerable<LeaveSystemMVC.Models.hrEmpLeaveBalModel>
 @{
-    ViewBag.Title = "Employee Balances";
+    ViewBag.Title = "Subordinate Balances";
 }
 
 @Html.Partial("_LeftMenu")
 <div class="col-md-10">
     <h2>@ViewBag.Title</h2>
+
     @{
         var departmentList = ViewData["DepartmentList"] as Dictionary<int, string>;
         var selectedDepartment = @ViewData["SelectedDepartment"];
 
     }
-    @using (Html.BeginForm("FilterListByDepartment", "hrEditBalance", FormMethod.Post))
+    @using (Html.BeginForm("FilterListByDepartment", "lmSubordinateBalance", FormMethod.Post))
     {
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <div class="form-horizontal">
@@ -38,7 +39,7 @@
             <th>Short Leave</th>
             <th>Maternity Leave</th>
             <th>Days in Lieu</th>
-            
+
         </tr>
         @foreach (var item in Model)
         {
@@ -58,7 +59,6 @@
                     <td></td>
                 }
                 <td>@item.leaveBalance.daysInLieue</td>
-                <td>@Html.ActionLink("Edit", "Edit", "hrEditBalance", new { id = item.employee.staffID }, null)</td>
             </tr>
         }
     </table>

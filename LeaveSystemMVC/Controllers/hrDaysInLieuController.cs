@@ -9,9 +9,9 @@ using System.Data.SqlClient;
 
 namespace LeaveSystemMVC.Controllers
 {
-    public class hrDepartmentViewDaysInLieuController : Controller
+    public class hrDaysInLieuController : Controller
     {
-        // GET: hrDepartmentDaysInLieu
+        // GET: hrDaysInLieu
         [HttpGet]
         public ActionResult Index()
         {

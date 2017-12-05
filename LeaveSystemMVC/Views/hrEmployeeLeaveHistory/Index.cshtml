@@ -1,8 +1,14 @@
 ﻿@model List<Tuple<LeaveSystemMVC.Models.sEmployeeModel, LeaveSystemMVC.Models.sLeaveModel>>
 
+@{
+    ViewBag.Title = "Employee Leave History";
+}
+
 @Html.Partial("_LeftMenu")
+
+
 <div class="col-md-10">
-    <h3>Employee Leave History</h3>
+    <h2>@ViewBag.Title</h2>
     <div class="row">
         <table class="table">
             <tr>

@@ -8,10 +8,9 @@ using System.Data.SqlClient;
 
 namespace LeaveSystemMVC.Controllers
 {
-    public class hrDepartmentViewLeaveHistoryController : Controller
+    public class hrEmployeeLeaveHistoryController : Controller
     {
-        // GET: hrViewLeaveHistory
-      
+        // GET: hrEmployeeLeaveHistory
         public ActionResult Index()
         {
             // TODO: ADD FILTERS BY DEPARTMENT, EMPLOYEE and DATE (START-END).
@@ -41,7 +40,6 @@ namespace LeaveSystemMVC.Controllers
 
                         leave.leaveID = reader["Leave_Application_ID"].ToString();
                         leave.leaveType = (string)reader["Leave_Name"];
-                        
                         leave.startDate = (DateTime)reader["Start_Date"];
                         leave.endDate = (DateTime)reader["Reporting_Back_Date"];
                         leave.leaveDuration = (int)reader["Total_Leave_Days"];

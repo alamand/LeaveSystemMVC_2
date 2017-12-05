@@ -8,7 +8,7 @@ using System.Web.Mvc;
 
 namespace LeaveSystemMVC.Controllers
 {
-    public class hrEditBalanceController : Controller
+    public class hrEditBalanceController : ControllerBase
     {
         // GET: hrEditBalance
         public ActionResult Index(int filterDepartmentID = 0)
@@ -96,77 +96,6 @@ namespace LeaveSystemMVC.Controllers
             return RedirectToAction("Index", new { filterDepartmentID = id });
         }
 
-        public Dictionary<int, string> DepartmentList()
-        {
-            Dictionary<int, string> departments = new Dictionary<int, string>();
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "Select Department_ID, Department_Name FROM dbo.Department";
-
-            // adds all available departments to the dictionary, including 0, as All Departments
-            departments.Add(0, "All Departments");
-            using (var connection = new SqlConnection(connectionString))
-            {
-                var command = new SqlCommand(queryString, connection);
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        departments.Add((int)reader["Department_ID"], (string)reader["Department_Name"]);
-                    }
-                }
-                connection.Close();
-            }
-            return departments;
-        }
-
-        private Models.sleaveBalanceModel ConstructLeaveBalance()
-        {
-            var lv = new Models.sleaveBalanceModel();
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "Select * FROM dbo.Leave_Type";
-
-            using (var connection = new SqlConnection(connectionString))
-            {
-                var command = new SqlCommand(queryString, connection);      // retrieve leave id and type
-
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-                {
-                    // iterate through all leave types in the database and update sleaveModel 
-                    while (reader.Read())
-                    {
-                        if (reader["Leave_Name"].Equals("Annual"))
-                        {
-                            lv.annualID = (int)reader["Leave_ID"];
-                        }
-                        else if (reader["Leave_Name"].Equals("Maternity"))
-                        {
-                            lv.maternityID = (int)reader["Leave_ID"];
-                        }
-                        else if (reader["Leave_Name"].Equals("Sick"))
-                        {
-                            lv.sickID = (int)reader["Leave_ID"];
-                        }
-                        else if (reader["Leave_Name"].Equals("DIL"))
-                        {
-                            lv.daysInLieueID = (int)reader["Leave_ID"];
-                        }
-                        else if (reader["Leave_Name"].Equals("Compassionate"))
-                        {
-                            lv.compassionateID = (int)reader["Leave_ID"];
-                        }
-                        else if (reader["Leave_Name"].Equals("Short_Hours"))
-                        {
-                            lv.shortID = (int)reader["Leave_ID"];
-                        }
-                    }
-                }
-                connection.Close();
-            }
-            return lv;
-        }
-
         public ActionResult Edit(string id)
         {
             try { if (id.Equals(null)) { return RedirectToAction("Index"); } } catch (Exception e) { return RedirectToAction("Index"); }
@@ -204,7 +133,7 @@ namespace LeaveSystemMVC.Controllers
         {
             System.Diagnostics.Debug.WriteLine("leaveID is: " + leaveID);
             decimal balance = 0;                    // actual balance
-            Boolean existingBalance = false;    // in case's where the record does not exist
+            Boolean existingBalance = false;        // in case's where the record does not exist
 
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
             string queryString = "Select Balance FROM dbo.Leave_Balance Where Employee_ID ='" + employeeID + "' And Leave_ID= '" + leaveID + "'";
@@ -233,55 +162,25 @@ namespace LeaveSystemMVC.Controllers
             return balance;
         }
 
-        private void InsertBalance(int employeeID, int leaveID, decimal balance)
-        {
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string insertQuery = "Insert into dbo.Leave_Balance (Employee_ID, Leave_ID, Balance) Values('" + employeeID + "','" + leaveID + "','" + balance + "')";
-            System.Diagnostics.Debug.WriteLine("Trying to insert: " + leaveID + " with balance: " + balance );
-            using (var connection = new SqlConnection(connectionString))
-            {
-                var command = new SqlCommand(insertQuery, connection);
-
-                connection.Open();
-                using (var reader = command.ExecuteReader()){}
-                connection.Close();
-            }
-        }
-
         [HttpPost]
         public ActionResult Edit(Models.sleaveBalanceModel m)
         {
-            int id = m.empId;
-
             if (ModelState.IsValid)
             {
-                UpdateBalance(m.annualID, id, m.annual);
-                UpdateBalance(m.maternityID, id, m.maternity);
-                UpdateBalance(m.sickID, id, m.sick);
-                UpdateBalance(m.compassionateID, id, m.compassionate);
-                UpdateBalance(m.daysInLieueID, id, m.daysInLieue);
-                UpdateBalance(m.shortID, id, m.shortLeaveHours);
+                UpdateBalance(m.empId, m.annualID, m.annual);
+                UpdateBalance(m.empId, m.maternityID, m.maternity);
+                UpdateBalance(m.empId, m.sickID, m.sick);
+                UpdateBalance(m.empId, m.compassionateID, m.compassionate);
+                UpdateBalance(m.empId, m.daysInLieueID, m.daysInLieue);
+                UpdateBalance(m.empId, m.shortID, m.shortLeaveHours);
                 Response.Write("<script> alert('Success. The information has been updated.');</script>");
             }
             else
             {
                 ModelState.AddModelError("errmsg", "Failed: An error occured. Please check your input and try again.");
             }
-            return Edit(id.ToString());
+            return Edit(m.empId.ToString());
         }
 
-        private void UpdateBalance(int leaveID, int employeeID, decimal duration)
-        {
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryUpdate = "Update dbo.Leave_Balance SET Balance='" + duration + "' WHERE Leave_ID='" + leaveID + "' And Employee_ID='" + employeeID + "'";
-
-            using (var connection = new SqlConnection(connectionString))
-            {
-                var command = new SqlCommand(queryUpdate, connection);
-                connection.Open();
-                using (var reader = command.ExecuteReader()) { }
-                connection.Close();
-            }
-        }
     }
 }
