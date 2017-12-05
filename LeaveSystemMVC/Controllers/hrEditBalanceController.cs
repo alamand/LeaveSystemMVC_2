@@ -202,6 +202,7 @@ namespace LeaveSystemMVC.Controllers
 
         private decimal GetBalance(int employeeID, int leaveID)
         {
+            System.Diagnostics.Debug.WriteLine("leaveID is: " + leaveID);
             decimal balance = 0;                    // actual balance
             Boolean existingBalance = false;    // in case's where the record does not exist
 
@@ -236,7 +237,7 @@ namespace LeaveSystemMVC.Controllers
         {
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
             string insertQuery = "Insert into dbo.Leave_Balance (Employee_ID, Leave_ID, Balance) Values('" + employeeID + "','" + leaveID + "','" + balance + "')";
-
+            System.Diagnostics.Debug.WriteLine("Trying to insert: " + leaveID + " with balance: " + balance );
             using (var connection = new SqlConnection(connectionString))
             {
                 var command = new SqlCommand(insertQuery, connection);

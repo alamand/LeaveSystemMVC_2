@@ -38,7 +38,7 @@ namespace LeaveSystemMVC.Controllers
                             var id = (int)reader["Leave_ID"];
                             var name = (string)reader["Leave_Name"];
                             var duration = (int)reader["Duration"];
-                            if (!name.Equals("Annual")) { list.Add(new Leave(id, name, duration)); }
+                            if (!name.Equals("Annual") && !name.Equals("DIL")) { list.Add(new Leave(id, name, duration)); }
                         }
                     }
 
@@ -64,11 +64,11 @@ namespace LeaveSystemMVC.Controllers
     }
     public struct Emp
     {
-        public Emp(int lbid, int eid, int lid, int pbal, int dur) { lb_ID = lbid; e_id = eid; l_id = lid; prevbalance = pbal; duration = dur; }
+        public Emp(int lbid, int eid, int lid, decimal pbal, int dur) { lb_ID = lbid; e_id = eid; l_id = lid; prevbalance = pbal; duration = dur; }
         public int lb_ID { get; set; }
         public int e_id { get; set; }
         public int l_id { get; set; }
-        public int prevbalance { get; set; }
+        public decimal prevbalance { get; set; }
         public int duration { get; set; }
     }
     public void CreditBalance(int leaveID, decimal balance)
@@ -90,44 +90,7 @@ namespace LeaveSystemMVC.Controllers
         }
 
     }
-    public bool isDriver(int id)
-    {
-        string desig = "";
-        var driverID = getDriverID();
-        var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-        string queryString = "Select Designation From dbo.Employee Where Employee_ID='" + id + "'";
-        using (var connection = new SqlConnection(connectionString))
-        {
-            var command = new SqlCommand(queryString, connection);
-            connection.Open();
-            using (var reader = command.ExecuteReader())
-            {
-                while (reader.Read()) { desig = (string)reader["Designation"]; }
-            }
-            connection.Close();
-        }
-        if (desig.Equals("Driver")) { return true; }
-        else { return false; }
 
-    }
-    public int getDriverID()
-    {
-        int id = 0;
-        var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-        string queryString = "Select Employee_ID From dbo.Employee Where Designation ='Driver'";
-        using (var connection = new SqlConnection(connectionString))
-        {
-            var command = new SqlCommand(queryString, connection);
-            connection.Open();
-            using (var reader = command.ExecuteReader())
-            {
-                while (reader.Read()) { id = (int)reader["Employee_ID"]; }
-            }
-            connection.Close();
-        }
-
-        return id;
-    }
     public void CreditAnnual()
     {
         int annualid = getAnnualID();
@@ -148,7 +111,7 @@ namespace LeaveSystemMVC.Controllers
                     var lbid = (int)reader["Leave_Balance_ID"];
                     var empid = (int)reader["Employee_ID"];
                     var lid = (int)reader["Leave_ID"];
-                    var prevbal = (int)reader["Balance"];
+                    var prevbal = (decimal)reader["Balance"];
                     employee.Add(new Emp(lbid, empid, lid, prevbal, duration));
                 }
             }
