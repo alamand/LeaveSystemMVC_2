@@ -31,21 +31,24 @@ namespace LeaveSystemMVC.Controllers
                 {
                     while (reader.Read())
                     {
-                        var leave = new Models.sLeaveModel();
-                        var employee = new Models.sEmployeeModel();
+                        var employee = new Models.sEmployeeModel
+                        {
+                            staffID = (int)reader["Employee_ID"],
+                            firstName = (string)reader["First_Name"],
+                            lastName = (string)reader["Last_Name"]
+                        };
 
-                        employee.staffID = (int)reader["Employee_ID"];
-                        employee.firstName = (string)reader["First_Name"];
-                        employee.lastName = (string)reader["Last_Name"];
-
-                        leave.leaveID = reader["Leave_Application_ID"].ToString();
-                        leave.leaveType = (string)reader["Leave_Name"];
-                        leave.startDate = (DateTime)reader["Start_Date"];
-                        leave.endDate = (DateTime)reader["Reporting_Back_Date"];
-                        leave.leaveDuration = (int)reader["Total_Leave_Days"];
-                        leave.shortStartTime = (!DBNull.Value.Equals(reader["Start_Hrs"])) ? (TimeSpan)reader["Start_Hrs"] : new TimeSpan(0, 0, 0, 0, 0);
-                        leave.shortEndTime = (!DBNull.Value.Equals(reader["End_Hrs"])) ? (TimeSpan)reader["End_Hrs"] : new TimeSpan(0, 0, 0, 0, 0);
-                        leave.leaveStatus = (int)reader["Leave_Status_ID"];
+                        var leave = new Models.sLeaveModel
+                        {
+                            leaveID = reader["Leave_Application_ID"].ToString(),
+                            leaveType = (string)reader["Leave_Name"],
+                            startDate = (DateTime)reader["Start_Date"],
+                            endDate = (DateTime)reader["Reporting_Back_Date"],
+                            leaveDuration = (int)reader["Total_Leave_Days"],
+                            shortStartTime = (!DBNull.Value.Equals(reader["Start_Hrs"])) ? (TimeSpan)reader["Start_Hrs"] : new TimeSpan(0, 0, 0, 0, 0),
+                            shortEndTime = (!DBNull.Value.Equals(reader["End_Hrs"])) ? (TimeSpan)reader["End_Hrs"] : new TimeSpan(0, 0, 0, 0, 0),
+                            leaveStatus = (int)reader["Leave_Status_ID"]
+                        };
 
                         model.Add(new Tuple<Models.sEmployeeModel, Models.sLeaveModel>(employee,leave));
                     }

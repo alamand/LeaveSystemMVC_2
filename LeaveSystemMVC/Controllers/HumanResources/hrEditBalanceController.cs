@@ -83,7 +83,7 @@ namespace LeaveSystemMVC.Controllers
                 connection.Close();
             }
 
-            ViewData["DepartmentList"] = DepartmentList();
+            ViewData["DepartmentList"] = DBDepartmentList();
             ViewData["SelectedDepartment"] = filterDepartmentID;
 
             return View(model);
@@ -155,7 +155,7 @@ namespace LeaveSystemMVC.Controllers
 
                 if (!existingBalance)           // was the balance found?
                 {
-                    InsertBalance(employeeID, leaveID, 0);     // if not, create a new one and set it to 0 by default
+                    DBInsertBalance(employeeID, leaveID, 0);     // if not, create a new one and set it to 0 by default
                 }
             }
 
@@ -167,12 +167,12 @@ namespace LeaveSystemMVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                UpdateBalance(m.empId, m.annualID, m.annual);
-                UpdateBalance(m.empId, m.maternityID, m.maternity);
-                UpdateBalance(m.empId, m.sickID, m.sick);
-                UpdateBalance(m.empId, m.compassionateID, m.compassionate);
-                UpdateBalance(m.empId, m.daysInLieueID, m.daysInLieue);
-                UpdateBalance(m.empId, m.shortID, m.shortLeaveHours);
+                DBUpdateBalance(m.empId, m.annualID, m.annual);
+                DBUpdateBalance(m.empId, m.maternityID, m.maternity);
+                DBUpdateBalance(m.empId, m.sickID, m.sick);
+                DBUpdateBalance(m.empId, m.compassionateID, m.compassionate);
+                DBUpdateBalance(m.empId, m.daysInLieueID, m.daysInLieue);
+                DBUpdateBalance(m.empId, m.shortID, m.shortLeaveHours);
                 Response.Write("<script> alert('Success. The information has been updated.');</script>");
             }
             else

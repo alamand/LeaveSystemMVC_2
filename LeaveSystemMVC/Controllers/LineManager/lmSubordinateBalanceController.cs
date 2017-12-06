@@ -11,18 +11,12 @@ namespace LeaveSystemMVC.Controllers
     public class lmSubordinateBalanceController : ControllerBase
     {
         // GET: lmSubordinateBalance
-        public ActionResult Index(int filterDepartmentID = 0)
+        public ActionResult Index()
         {
             var model = new List<Models.hrEmpLeaveBalModel>();
 
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
             string queryString = "Select Employee_ID, First_Name, Last_Name, Gender FROM dbo.Employee WHERE Reporting_ID = " + GetLoggedInID();
-
-            // adds a filter query if a department is selected from the dropdown, note that 0 represents All Departments
-            if (filterDepartmentID > 0)
-            {
-                queryString += " AND Department_ID = " + filterDepartmentID;
-            }
 
             using (var connection = new SqlConnection(connectionString))
             {
@@ -84,17 +78,9 @@ namespace LeaveSystemMVC.Controllers
                 connection.Close();
             }
 
-            ViewData["DepartmentList"] = DepartmentList();
-            ViewData["SelectedDepartment"] = filterDepartmentID;
+            ViewData["DepartmentList"] = DBDepartmentList();
 
             return View(model);
-        }
-
-        [HttpPost]
-        public ActionResult FilterListByDepartment(FormCollection form)
-        {
-            int id = Convert.ToInt32(form["selectedDepartment"]);
-            return RedirectToAction("Index", new { filterDepartmentID = id });
         }
     }
 }
