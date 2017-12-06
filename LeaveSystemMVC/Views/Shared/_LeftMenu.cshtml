@@ -14,15 +14,15 @@
             {
                 <li role="presentation" class="nav-divider"></li>
                 <li role="presentation" class="dropdown-header"style="font-size:14pt">HR Responsible</li>
-                @Html.MenuItem("Pending Applications", "Index", "hrPendingApplication")
-                @Html.MenuItem("Holidays Calendar", "Index", "hrHolidaysCalender")                
+                @Html.MenuItem("Pending Approvals", "Index", "hrPendingApplication")
+                @Html.MenuItem("Public Holidays", "Index", "hrHolidaysCalender")                
                 @Html.MenuItem("Employee Leave History", "Index", "hrEmployeeLeaveHistory")
                 @Html.MenuItem("View/Edit Employee Balances", "Index", "hrEditBalance")
                 @Html.MenuItem("Select Substitute", "Index", "hrSelectSubstitute")
                 @Html.MenuItem("Credit Days In Lieu", "Select", "hrDaysInLieu")
                 @Html.MenuItem("Edit Leave Durations", "Display", "hrEditDefaultLeaveDuration")
                 @Html.MenuItem("Credit Leave Balances", "Index", "hrCreditLeaveBalance")
-                @Html.MenuItem("Probation Administration", "Index", "hrProbationAdministration")
+                @Html.MenuItem("Staff on Probation", "Index", "hrProbationAdministration")
 
                 //@Html.MenuItem("Create New Leave Type", "Index", "hrCreateLeaveType")
             }
@@ -30,7 +30,7 @@
             {
                 <li role="presentation" class="nav-divider"></li>
                 <li role="presentation" class="dropdown-header"style="font-size:14pt">Human Resources</li>
-                @Html.MenuItem("Holidays Calendar", "Display", "hrHolidaysCalender")
+                @Html.MenuItem("Public Holidays", "Display", "hrHolidaysCalender")
                 @Html.MenuItem("Employee Leave History", "Index", "hrEmployeeLeaveHistory")
                 @Html.MenuItem("View/Edit Employee Balances", "Index", "hrEditBalance")
                 @Html.MenuItem("Credit Days In Lieu", "Select", "hrDaysInLieu")
@@ -43,7 +43,7 @@
             {
                 <li role="presentation" class="nav-divider"></li>
                 <li role="presentation" class="dropdown-header"style="font-size:14pt">Line Manager</li>
-                @Html.MenuItem("Pending Applications", "Index", "lmPendingApplications")
+                @Html.MenuItem("Pending Approvals", "Index", "lmPendingApplications")
                 @Html.MenuItem("Select Substitute", "Index", "lmSelectSubstitute")
                 @Html.MenuItem("Subordinate Balances", "Index", "lmSubordinateBalance")
                 @Html.MenuItem("Subordinate Leave History", "Index", "lmSubordinateLeaveHistory")
