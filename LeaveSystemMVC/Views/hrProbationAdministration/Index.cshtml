@@ -28,7 +28,7 @@
                             <tr>
                                 <td>@onP.staffID</td>
                                 <td>@onP.firstName @onP.lastName</td>
-                                <td>@onP.deptName</td>
+                                <td>@ViewData["Department" + onP.staffID.ToString()]</td>
                                 <td>@onP.empStartDate.ToString().Substring(0, 10)</td>
                                 @{
                                     var totalDays = (int)@ViewData["Duration" + onP.staffID.ToString()];

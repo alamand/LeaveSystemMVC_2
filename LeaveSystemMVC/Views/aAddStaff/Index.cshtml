@@ -26,8 +26,8 @@
                                 @Html.LabelFor(model => model.staffID, "Staff ID", htmlAttributes: new { @class = "control-label col-md-2" })
                             </div>
                             <div class="col-md-4">
-                                @Html.EditorFor(model => model.staffIDInString, new { htmlAttributes = new { @class = "form-control" } })
-                                @Html.ValidationMessageFor(model => model.staffIDInString, "", new { @class = "text-danger" })
+                                @Html.EditorFor(model => model.staffID, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.staffID, "", new { @class = "text-danger" })
                             </div>
                         </div>
                         <hr />
@@ -96,12 +96,12 @@
                             </div>
 
                             <div class="col-sm-2" style="white-space:nowrap">
-                                @Html.LabelFor(model => model.empDateOfBirth, "Date of Birth", htmlAttributes: new { @class = "control-label col-md-2", type = "Date" })
+                                @Html.LabelFor(model => model.dateOfBirth, "Date of Birth", htmlAttributes: new { @class = "control-label col-md-2", type = "Date" })
                             </div>
 
                             <div class="col-md-4">
-                                @Html.EditorFor(model => model.empDateOfBirth, new { htmlAttributes = new { @class = "form-control" } })
-                                @Html.ValidationMessageFor(model => model.empDateOfBirth, "", new { @class = "text-danger" })
+                                @Html.EditorFor(model => model.dateOfBirth, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.dateOfBirth, "", new { @class = "text-danger" })
                             </div>
                         </div>
                         <hr />
@@ -123,21 +123,21 @@
                         <div class="container-fluid form-group">
                             <div class="row">
                                 <div class="col-sm-2" style="white-space:nowrap">
-                                    @Html.LabelFor(model => model.nationalityString, "Nationality", htmlAttributes: new { @class = "control-label col-md-2" })
+                                    @Html.LabelFor(model => model.nationalityID, "Nationality", htmlAttributes: new { @class = "control-label col-md-2" })
                                 </div>
 
                                 <div class="col-md-4">
-                                    @Html.DropDownListFor(model => model.nationalityString, new SelectList(@ViewData["NationalityList"] as Dictionary<int, string>, "Key", "Value"), "- Select Nationality -", new { @class = "form-control" })
-                                    @Html.ValidationMessageFor(model => model.nationalityString, "", new { @class = "text-danger" })
+                                    @Html.DropDownListFor(model => model.nationalityID, new SelectList(@ViewData["NationalityList"] as Dictionary<int, string>, "Key", "Value"), "- Select Nationality -", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.nationalityID, "", new { @class = "text-danger" })
                                 </div>
 
                                 <div class="col-sm-2" style="white-space:nowrap">
-                                    @Html.LabelFor(model => model.religionString, "Religion", htmlAttributes: new { @class = "control-label col-md-2" })
+                                    @Html.LabelFor(model => model.religionID, "Religion", htmlAttributes: new { @class = "control-label col-md-2" })
                                 </div>
 
                                 <div class="col-md-4">
-                                    @Html.DropDownListFor(model => model.religionString, new SelectList(@ViewData["ReligionList"] as Dictionary<int, string>, "Key", "Value"), "- Select Religion -", new { @class = "form-control" })
-                                    @Html.ValidationMessageFor(model => model.religionString, "", new { @class = "text-danger" })
+                                    @Html.DropDownListFor(model => model.religionID, new SelectList(@ViewData["ReligionList"] as Dictionary<int, string>, "Key", "Value"), "- Select Religion -", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.religionID, "", new { @class = "text-danger" })
                                 </div>
                             </div>
                         </div>
@@ -156,18 +156,18 @@
                                 </div>
 
                                 <div class="col-sm-2" style="white-space:nowrap">
-                                    @Html.LabelFor(model => model.deptName, "Department", htmlAttributes: new { @class = "control-label col-md-2" })
+                                    @Html.LabelFor(model => model.deptID, "Department", htmlAttributes: new { @class = "control-label col-md-2" })
                                 </div>
 
                                 <div class="col-md-4">
-                                    @Html.DropDownListFor(model => model.deptName, new SelectList(@ViewData["DepartmentList"] as Dictionary<int,string>, "Key", "Value"), "- Select Department -", new { @class = "form-control" })
-                                    @Html.ValidationMessageFor(model => model.deptName, "", new { @class = "text-danger" })
+                                    @Html.DropDownListFor(model => model.deptID, new SelectList(@ViewData["DepartmentList"] as Dictionary<int,string>, "Key", "Value"), new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.deptID, "", new { @class = "text-danger" })
                                 </div>
                             </div>
                         </div>
                         <hr />
 
-                        <!--contains empy. start date-->
+                        <!--contains start date and report to-->
                         <div class="row">
                             <div class="col-sm-2" style="white-space:nowrap">
                                 @Html.LabelFor(model => model.empStartDate, "Start Date", htmlAttributes: new { @class = "control-label col-md-2", type = "Date" })
@@ -179,52 +179,53 @@
                             </div>
 
                             <div class="col-sm-2" style="white-space:nowrap">
-                                @Html.LabelFor(model => model.reportsToLineManagerString, "Reports To", htmlAttributes: new { @class = "control-label col-md-4" })
+                                @Html.LabelFor(model => model.reportsToLineManagerID, "Reports To", htmlAttributes: new { @class = "control-label col-md-4" })
                             </div>
 
                             <div class="col-md-4">
-                                @Html.DropDownListFor(model => model.reportsToLineManagerString, new SelectList(@ViewData["LineManagerList"] as Dictionary<int,string>, "Key", "Value"), "- Select Line Manager -", new { @class = "form-control" })
-                                @Html.ValidationMessageFor(model => model.reportsToLineManagerString, "", new { @class = "text-danger" })
+                                @Html.DropDownListFor(model => model.reportsToLineManagerID, new SelectList(@ViewData["LineManagerList"] as Dictionary<int,string>, "Key", "Value"), new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.reportsToLineManagerID, "", new { @class = "text-danger" })
                             </div>
                         </div>
                         <hr />
 
-                        <!--admin role-->
+                        <!--roles-->
                         <div class="row">
-                            <div class="col-xs-2" style="white-space:nowrap">
-                                @Html.LabelFor(model => model.isAdmin, "Administrator", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-sm-2" style="white-space:nowrap">
+                                @Html.Label("Role(s)", htmlAttributes: new { @class = "control-label col-md-4" })
                             </div>
+                            <div class="col-md-10">
+                                <span class="button-checkbox">
+                                    @Html.CheckBoxFor(model => model.isStaff, htmlAttributes: new { @class = "hidden" })
+                                    <button id="isStaffBtn" type="button" class="btn" data-color="primary">Staff</button>
+                                </span>
 
-                            <div class="col-md-4">
-                                @Html.CheckBoxFor(model => model.isAdmin)
-                                @Html.ValidationMessageFor(model => model.isAdmin, "", new { @class = "text-danger" })
-                            </div>                            
+                                <span class="button-checkbox">
+                                    @Html.CheckBoxFor(model => model.isLM, htmlAttributes: new { @class = "hidden" })
+                                    <button id="isLMBtn" type="button" class="btn" data-color="primary">Line Manager</button>
+                                </span>
+
+                                <span class="button-checkbox">
+                                    @Html.CheckBoxFor(model => model.isHR, htmlAttributes: new { @class = "hidden" })
+                                    <button id="isHRBtn" type="button" class="btn" data-color="primary">HR</button>
+                                </span>
+
+                                <span class="button-checkbox">
+                                    @Html.CheckBoxFor(model => model.isAdmin, htmlAttributes: new { @class = "hidden" })
+                                    <button id="isAdminBtn" type="button" class="btn" data-color="primary">Admin</button>
+                                </span>
+
+                                @if (false.Equals(@ViewData["HRRExists"]) || true.Equals(Model.isHRResponsible))
+                                {
+                                    <span class="button-checkbox">
+                                        @Html.CheckBoxFor(model => model.isHRResponsible, htmlAttributes: new { @class = "hidden" })
+                                        <button id="isHRRBtn" type="button" class="btn" data-color="primary">HR Responsible</button>
+                                    </span>
+                                }
+                            </div>
                         </div>
                         <hr />
 
-                        <!--contains staff role and optional staff role-->
-                        <div class="container-fluid form-group">
-                            <div class="row">
-                                <div class="col-sm-2" style="white-space:nowrap">
-                                    @Html.LabelFor(model => model.staffType, "Opt. Staff Role", htmlAttributes: new { @class = "control-label col-md-1" })
-                                </div>
-        
-                                <div class="col-md-4">
-                                    @Html.DropDownListFor(model => model.staffType, new SelectList(@ViewData["RoleList"] as Dictionary<int,string>, "Key", "Value"), "- Select type -", new { @class = "form-control" })
-                                    @Html.ValidationMessageFor(model => model.staffType, "", new { @class = "text-danger" })
-                                </div>
-        
-                                <div class="col-sm-2" style="white-space:nowrap">
-                                    @Html.LabelFor(model => model.optionalStaffType, "Opt. Staff Role", htmlAttributes: new { @class = "control-label col-md-4" })
-                                </div>
-        
-                                <div class="col-md-4">
-                                    @Html.DropDownListFor(model => model.optionalStaffType, new SelectList(@ViewData["RoleList"] as Dictionary<int,string>, "Key", "Value"), "- Select type -", new { @class = "form-control" })
-                                    @Html.ValidationMessageFor(model => model.optionalStaffType, "", new { @class = "text-danger" })
-                                </div>
-                            </div>
-                        </div>
-                        <hr />
                         <div class="form-group">
                             <div class="col-md-offset-4 col-md-10">
                                 <input type="submit" value="Submit" class="btn btn-default" />
@@ -239,35 +240,98 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    @if (ViewBag.SuccessMessage != null)
+    {
+        <script>
+            $(document).ready(function () {
+                alert('@ViewBag.SuccessMessage');
+            });
+        </script>
+    }
+
     <script>
         $(document).ready(function () {
-            var $this = $("#isAdmin");
-
-            if ($this.is(':checked')) {
-                $('#staffType').attr("disabled", "disabled")
-                $('#optionalStaffType').attr("disabled", "disabled")
-            }
+            $('#isLMBtn, #isHRBtn, #isHRRBtn').prop("disabled", true);
         });
-        $('#isAdmin').click(function () {
-            var $this = $(this);
 
-            if ($this.is(':unchecked')) {
-                $('#staffType').removeAttr("disabled");
-                $('#optionalStaffType').removeAttr("disabled");
+        $('#isStaff').change(function () {
+            if ($(this).is(':checked')) {
+                $('#isLMBtn, #isHRBtn, #isHRRBtn').prop("disabled", false);
             }
             else {
-                $('#staffType').attr("disabled", "disabled")
-                $('#optionalStaffType').attr("disabled", "disabled")
+                $('#isLMBtn, #isHRBtn, #isHRRBtn').prop("checked", false);
+                $('#isLMBtn, #isHRBtn, #isHRRBtn').prop("disabled", true);
             }
         });
     </script>
 
-@if (ViewBag.SuccessMessage != null)
-{
     <script>
-        $(document).ready(function () {
-            alert('@ViewBag.SuccessMessage');
+        $(function () {
+            $('.button-checkbox').each(function () {
+
+                // Settings
+                var $widget = $(this),
+                    $button = $widget.find('button'),
+                    $checkbox = $widget.find('input:checkbox'),
+                    color = $button.data('color'),
+                    settings = {
+                        on: {
+                            icon: 'glyphicon glyphicon-check'
+                        },
+                        off: {
+                            icon: 'glyphicon glyphicon-unchecked'
+                        }
+                    };
+
+                // Event Handlers
+                $button.on('click', function () {
+                    $checkbox.prop('checked', !$checkbox.is(':checked'));
+                    $checkbox.triggerHandler('change');
+                    updateDisplay();
+                });
+                $checkbox.on('change', function () {
+                    updateDisplay();
+                });
+
+                // Actions
+                function updateDisplay() {
+                    var isChecked = $checkbox.is(':checked');
+
+                    // Set the button's state
+                    $button.data('state', (isChecked) ? "on" : "off");
+
+                    // Set the button's icon
+                    $button.find('.state-icon')
+                        .removeClass()
+                        .addClass('state-icon ' + settings[$button.data('state')].icon);
+
+                    // Update the button's color
+                    if (isChecked) {
+                        $button
+                            .removeClass('btn-default')
+                            .addClass('btn-' + color + ' active');
+                    }
+                    else {
+                        $button
+                            .removeClass('btn-' + color + ' active')
+                            .addClass('btn-default');
+                    }
+                }
+
+                // Initialization
+                function init() {
+
+                    updateDisplay();
+
+                    // Inject the icon if applicable
+                    if ($button.find('.state-icon').length === 0) {
+                        $button.prepend('<i class="state-icon ' + settings[$button.data('state')].icon + '"></i> ');
+                    }
+                }
+                init();
+            });
         });
     </script>
 }
-}
+
+

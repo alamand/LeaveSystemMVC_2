@@ -16,11 +16,8 @@ namespace LeaveSystemMVC.Controllers
             // employee model that will be passed into the view
             sEmployeeModel EmptyEmployee = new sEmployeeModel();
 
-            ViewData["DepartmentList"] = DBDepartmentList();
-            ViewData["RoleList"] = AvailableRoles();
-            ViewData["LineManagerList"] = DBLineManagerList();
-            ViewData["NationalityList"] = DBNationalityList();
-            ViewData["ReligionList"] = DBReligionList();
+            // sets ViewData for dropdowns
+            SetViewDatas();
 
             return View(EmptyEmployee);
         }
@@ -28,24 +25,17 @@ namespace LeaveSystemMVC.Controllers
         [HttpPost]
         public ActionResult Index(sEmployeeModel emp)
         {
-            int actualStaffID;
-            int.TryParse(emp.staffIDInString, out actualStaffID);
-            emp.staffID = actualStaffID;
-
+            // checks if the entered staff ID or Username already exists
             if(IsStaffExist(emp))
             {
-                ViewData["DepartmentList"] = DBDepartmentList();
-                ViewData["RoleList"] = AvailableRoles();
-                ViewData["LineManagerList"] = DBLineManagerList();
-                ViewData["NationalityList"] = DBNationalityList();
-                ViewData["ReligionList"] = DBReligionList();
+                SetViewDatas();
                 return View(emp);
             }
 
-            AddEmployee(emp);
-            AddReportingTo(emp);
-            AddEmploymentPeriod(emp);
-            AddEmployeeRole(emp);
+            AddEmployee(emp);               // adds data to dbo.Employee table
+            AddReportingTo(emp);            // adds data to dbo.Reporting table
+            AddEmploymentPeriod(emp);       // adds data to dbo.Employment_Period table
+            AddEmployeeRole(emp);           // adds data to dbo.Employee_Role table
 
             //Todo: calculate and credit the leave balances instead of routing to hrEditBalance below.
 
@@ -55,14 +45,106 @@ namespace LeaveSystemMVC.Controllers
             return Index();
         }
 
+        private void SetViewDatas()
+        {
+            // gets and stores to the ViewData all available Departments from the DB and adds a default key of 0 for de-selecting 
+            ViewData["DepartmentList"] = AddDefaultToDictionary(DBDepartmentList(), 0, "- Select Department -");
+
+            // gets and stores to the ViewData all available Line Managers from the DB and adds a default key of 0 for de-selecting 
+            ViewData["LineManagerList"] = AddDefaultToDictionary(DBLineManagerList(), 0, "- Select Line Manager -");
+
+            // gets and stores to the ViewData all available Nationalities from the DB
+            ViewData["NationalityList"] = DBNationalityList();
+
+            // gets and stores to the ViewData all available Religions from the DB
+            ViewData["ReligionList"] = DBReligionList();
+
+            // gets True or False if the DB contains a staff with an HRR role
+            ViewData["HRRExists"] = IsHRResponsibleExist();
+        }
+
+        private void AddEmployee(sEmployeeModel emp)
+        {
+            // basic information insertion
+            var queryString = "INSERT INTO dbo.Employee (Employee_ID, First_Name, Last_Name, User_Name, Password, " +
+                "Designation, Email, Gender, PH_No, Account_Status, Nationality_ID, Religion_ID, Date_Of_Birth, Probation) " +
+                "VALUES('" + emp.staffID + "', '" + emp.firstName + "', '" + emp.lastName + "', '" + emp.userName + "', '" + emp.password + "', '" + 
+                emp.designation + "', '" + emp.email + "', '" + emp.gender + "', '" + emp.phoneNo  + "', 'True', '" + emp.nationalityID + "', '" + 
+                emp.religionID + "', '" + emp.dateOfBirth.ToString("yyyy-MM-dd") + "', 'True')";
+            DBExecuteQuery(queryString);
+
+            // updates the employee's record if a department was selected or de-selected
+            if (emp.deptID != 0 && emp.deptID != null)
+                queryString = "UPDATE dbo.Employee SET Department_ID = " + emp.deptID + " WHERE Employee_ID = " + emp.staffID;
+            else
+                queryString = "UPDATE dbo.Employee SET Department_ID = NULL WHERE Employee_ID = " + emp.staffID;
+            DBExecuteQuery(queryString);
+
+            // updates the employee's record if a reporting to line manager was selected or de-selected
+            if (emp.reportsToLineManagerID != 0 && emp.reportsToLineManagerID != null)
+                queryString = "UPDATE dbo.Employee SET Reporting_ID = " + emp.reportsToLineManagerID + " WHERE Employee_ID = " + emp.staffID;
+            else
+                queryString = "UPDATE dbo.Employee SET Reporting_ID = NULL WHERE Employee_ID = " + emp.staffID;
+            DBExecuteQuery(queryString);
+
+        }
+
+        private void AddReportingTo(sEmployeeModel emp)
+        {
+            // @TODO: need to fix the dates
+            var queryString = "INSERT INTO dbo.Reporting (Employee_ID, Reporting_ID, Start_Date) " +
+                "VALUES('" + emp.staffID + "', '" + emp.reportsToLineManagerID + "', '" + emp.empStartDate.ToString("yyyy-MM-dd") + "')";
+            DBExecuteQuery(queryString);
+        }
+
+        private void AddEmploymentPeriod(sEmployeeModel emp)
+        {
+            var queryString = "INSERT INTO dbo.Employment_Period (Employee_ID, Emp_Start_Date) " +
+                "VALUES('" + emp.staffID + "', '" + emp.empStartDate.ToString("yyyy-MM-dd") + "')";
+            DBExecuteQuery(queryString);
+        }
+
+        private void AddEmployeeRole(sEmployeeModel emp)
+        {
+            if (emp.isStaff)
+            {
+                int staffRoleID = DBRoleList().FirstOrDefault(obj => obj.Value == "Staff").Key;
+                DBInsertRole((int)emp.staffID, staffRoleID);
+            }
+
+            if (emp.isLM)
+            {
+                int lmRoleID = DBRoleList().FirstOrDefault(obj => obj.Value == "LM").Key;
+                DBInsertRole((int)emp.staffID, lmRoleID);
+            }
+
+            if (emp.isHR)
+            {
+                int hrRoleID = DBRoleList().FirstOrDefault(obj => obj.Value == "HR").Key;
+                DBInsertRole((int)emp.staffID, hrRoleID);
+            }
+
+            if (emp.isHRResponsible)
+            {
+                int hrrRoleID = DBRoleList().FirstOrDefault(obj => obj.Value == "HR_Responsible").Key;
+                DBInsertRole((int)emp.staffID, hrrRoleID);
+            }
+
+            if (emp.isAdmin)
+            {
+                int adminRoleID = DBRoleList().FirstOrDefault(obj => obj.Value == "Admin").Key;
+                DBInsertRole((int)emp.staffID, adminRoleID);
+            }
+        }
+
         private bool IsStaffExist(sEmployeeModel emp)
         {
             bool isExist = false;
+            string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
 
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
             var queryString = "SELECT Employee_ID, User_Name " +
                 "FROM dbo.Employee " +
-                "WHERE Employee.User_Name = '" + emp.userName + "' OR Employee.Employee_ID = '" + emp.staffID + "'";
+                "WHERE User_Name = '" + emp.userName + "' OR Employee_ID = '" + emp.staffID + "'";
 
             using (var connection = new SqlConnection(connectionString))
             {
@@ -89,121 +171,5 @@ namespace LeaveSystemMVC.Controllers
             return isExist;
         }
 
-        private void AddEmployee(sEmployeeModel emp)
-        {
-            var queryString = "INSERT INTO dbo.Employee (Employee_ID, First_Name, Last_Name, User_Name, " +
-                "Password, Designation, Email, Gender, PH_No, Account_Status, Date_Of_Birth, Probation) " +
-                "VALUES('" + emp.staffID + "', '" + emp.firstName + "', '" + emp.lastName + "', '" + emp.userName +
-                "', '" + emp.password + "', '" + emp.designation + "', '" + emp.email + "', '" + emp.gender + 
-                "', '" + emp.phoneNo + "', 'True', '" + emp.empDateOfBirth.ToString("yyyy-MM-dd") + "', 'True')";
-
-            DBExecuteQuery(queryString);
-
-            if (emp.deptName != null)
-            {
-                queryString = "UPDATE dbo.Employee SET Department_ID = " + emp.deptName + " WHERE Employee_ID = " + emp.staffID;
-                DBExecuteQuery(queryString);
-            }
-
-            if (emp.reportsToLineManagerString != null)
-            {
-                queryString = "UPDATE dbo.Employee SET Reporting_ID = " + emp.reportsToLineManagerString + " WHERE Employee_ID = " + emp.staffID;
-                DBExecuteQuery(queryString);
-            }
-
-            if (emp.religionString != null)
-            {
-                queryString = "UPDATE dbo.Employee SET Religion_ID = " + emp.religionString + " WHERE Employee_ID = " + emp.staffID;
-                DBExecuteQuery(queryString);
-            }
-
-            if (emp.nationalityString != null)
-            {
-                queryString = "UPDATE dbo.Employee SET Nationality_ID = " + emp.nationalityString + " WHERE Employee_ID = " + emp.staffID;
-                DBExecuteQuery(queryString);
-            }
-        }
-
-        private void AddReportingTo(sEmployeeModel emp)
-        {
-            var queryString = "INSERT INTO dbo.Reporting (Employee_ID, Reporting_ID, Start_Date) " +
-                "VALUES('" + emp.staffID + "', '" + emp.reportsToLineManagerString + "', '" + emp.empStartDate.ToString("yyyy-MM-dd") + "')";
-            DBExecuteQuery(queryString);
-        }
-
-        private void AddEmploymentPeriod(sEmployeeModel emp)
-        {
-            var queryString = "INSERT INTO dbo.Employment_Period (Employee_ID, Emp_Start_Date) " +
-                "VALUES('" + emp.staffID + "', '" + emp.empStartDate.ToString("yyyy-MM-dd") + "')";
-            DBExecuteQuery(queryString);
-        }
-
-        private void AddEmployeeRole(sEmployeeModel emp)
-        {
-            if (emp.isAdmin)
-            {
-                int adminRoleID = DBRoleList().FirstOrDefault(obj => obj.Value == "Admin").Key;
-                DBInsertRole(emp.staffID, adminRoleID);
-            }
-            else
-            {
-                int staffRoleID = DBRoleList().FirstOrDefault(obj => obj.Value == "Staff").Key;
-                DBInsertRole(emp.staffID, staffRoleID);
-
-                bool isStaffType = (emp.staffType != null) ? true : false;
-                bool isOptionalType = (emp.optionalStaffType != null) ? true : false;
-
-                if (isStaffType)
-                {
-                    staffRoleID = DBRoleList().FirstOrDefault(obj => obj.Value == emp.staffType).Key;
-                    DBInsertRole(emp.staffID, staffRoleID);
-                }
-
-                if (isOptionalType && !emp.staffType.Equals(emp.optionalStaffType))
-                {
-                    staffRoleID = DBRoleList().FirstOrDefault(obj => obj.Value == emp.optionalStaffType).Key;
-                    DBInsertRole(emp.staffID, staffRoleID);
-                }
-            }
-        }
-
-        private Dictionary<int, string> AvailableRoles()
-        {
-            Dictionary<int, string> roleList = new Dictionary<int, string>();
-            foreach (var entry in DBRoleList())
-            {
-                if (entry.Value.Equals("LM") || entry.Value.Equals("HR") || (!HRResponsibleExists() && entry.Value.Equals("HR_Responsible")))
-                {
-                    roleList.Add(entry.Key, entry.Value);
-                }
-            }
-
-            return roleList;
-        }
-
-        private bool HRResponsibleExists()
-        {
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-
-            bool isExist = true;
-            var queryString = "SELECT Employee_ID" +
-                " FROM dbo.Employee_Role, dbo.Role" +
-                " WHERE Role.Role_ID = Employee_Role.Role_ID" +
-                " AND Role.Role_Name = 'HR_Responsible'" +
-                " AND Employee_Role.Employee_ID IS NOT NULL";
-
-            using (var connection = new SqlConnection(connectionString))
-            {
-                var command = new SqlCommand(queryString, connection);
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-                {
-                    isExist = reader.HasRows;
-                }
-                connection.Close();
-            }
-
-            return isExist;
-        }
     }
 }

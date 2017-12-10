@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace LeaveSystemMVC.Controllers
 {
-    public class hrProbationAdministrationController : Controller
+    public class hrProbationAdministrationController : ControllerBase
     {
         // GET: hrProbationAdministration
         public ActionResult Index()
@@ -33,7 +33,7 @@ namespace LeaveSystemMVC.Controllers
                         employee.staffID = (int)reader["Employee_ID"];
                         employee.firstName = (string)reader["First_Name"];
                         employee.lastName = (string)reader["Last_Name"];
-                        employee.deptName = (string)reader["Department_Name"];
+                        ViewData["Department" + employee.staffID.ToString()] = (string)reader["Department_Name"];
                         employee.empStartDate = (DateTime)reader["Emp_Start_Date"];
                         ViewData["Duration" + employee.staffID.ToString()] = (int)reader["Dif_Date"];
                         onProbation.Add(employee);
@@ -52,16 +52,8 @@ namespace LeaveSystemMVC.Controllers
             try { if (id.Equals(null)) { return RedirectToAction("Index"); } } catch (Exception e) { return RedirectToAction("Index"); }
             int staff_id = int.Parse(id);
 
-            // set the staff as off probation
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
             string queryString = "UPDATE dbo.Employee SET Probation = 0 WHERE Employee_ID = " + staff_id;
-            using (var connection = new SqlConnection(connectionString))
-            {
-                var command = new SqlCommand(queryString, connection);
-                connection.Open();
-                using (var reader = command.ExecuteReader()){}
-                connection.Close();
-            }
+            DBExecuteQuery(queryString);
 
             // calculate balance
             SetBalance(staff_id);
@@ -73,7 +65,7 @@ namespace LeaveSystemMVC.Controllers
         private void SetBalance(int staff_id)
         {
             // holds default durations for all leave types
-            Models.sleaveBalanceModel leaveTypes = ConstructLeaveTypes();
+            Models.sleaveBalanceModel leaveTypes = GetLeaveBalanceModel();
 
             // calculate annual leave balance
             // ((Total days of employement duration + remaining days of the years) / days in a month) * 1.833
@@ -92,73 +84,19 @@ namespace LeaveSystemMVC.Controllers
                 queryString = "UPDATE dbo.Leave_Balance SET Balance = " + (decimal)annualBalance + " WHERE Employee_ID = " + staff_id + " AND Leave_ID = " + leaveTypes.annualID;
             else
                 queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_ID, Balance) Values('" + staff_id + "','" + leaveTypes.annualID + "','" + (decimal)annualBalance + "')";
-            ExecuteQuery(queryString);
+            DBExecuteQuery(queryString);
 
             if (IsLeaveBalanceExist(leaveTypes.sickID, staff_id))
                 queryString = "UPDATE dbo.Leave_Balance SET Balance = " + leaveTypes.sick + " WHERE Employee_ID = " + staff_id + " AND Leave_ID = " + leaveTypes.sickID;
             else
                 queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_ID, Balance) Values('" + staff_id + "','" + leaveTypes.sickID + "','" + leaveTypes.sick + "')";
-            ExecuteQuery(queryString);
+            DBExecuteQuery(queryString);
 
             if (IsLeaveBalanceExist(leaveTypes.compassionateID, staff_id))
                 queryString = "UPDATE dbo.Leave_Balance SET Balance = " + leaveTypes.compassionate + " WHERE Employee_ID = " + staff_id + " AND Leave_ID = " + leaveTypes.compassionateID;
             else
                 queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_ID, Balance) Values('" + staff_id + "','" + leaveTypes.compassionateID + "','" + leaveTypes.compassionate + "')";
-            ExecuteQuery(queryString);
-        }
-
-        // fills in a leaveBalanceModel with its appropriate id and duration
-        private Models.sleaveBalanceModel ConstructLeaveTypes()
-        {
-            var lv = new Models.sleaveBalanceModel();
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "Select * FROM dbo.Leave_Type";
-
-            using (var connection = new SqlConnection(connectionString))
-            {
-                var command = new SqlCommand(queryString, connection);      // retrieve leave id and type
-
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-                {
-                    // iterate through all leave types in the database and update sleaveModel 
-                    while (reader.Read())
-                    {
-                        if (reader["Leave_Name"].Equals("Annual"))
-                        {
-                            lv.annualID = (int)reader["Leave_ID"];
-                            lv.annual = Convert.ToDecimal(reader["Duration"]);
-                        }
-                        else if (reader["Leave_Name"].Equals("Maternity"))
-                        {
-                            lv.maternityID = (int)reader["Leave_ID"];
-                            lv.maternity = Convert.ToDecimal(reader["Duration"]);
-                        }
-                        else if (reader["Leave_Name"].Equals("Sick"))
-                        {
-                            lv.sickID = (int)reader["Leave_ID"];
-                            lv.sick = Convert.ToDecimal(reader["Duration"]);
-                        }
-                        else if (reader["Leave_Name"].Equals("DIL"))
-                        {
-                            lv.daysInLieueID = (int)reader["Leave_ID"];
-                            lv.daysInLieue = Convert.ToDecimal(reader["Duration"]);
-                        }
-                        else if (reader["Leave_Name"].Equals("Compassionate"))
-                        {
-                            lv.compassionateID = (int)reader["Leave_ID"];
-                            lv.compassionate = Convert.ToDecimal(reader["Duration"]);
-                        }
-                        else if (reader["Leave_Name"].Equals("Short_Hours"))
-                        {
-                            lv.shortID = (int)reader["Leave_ID"];
-                            lv.shortLeaveHours = Convert.ToDecimal(reader["Duration"]);
-                        }
-                    }
-                }
-                connection.Close();
-            }
-            return lv;
+            DBExecuteQuery(queryString);
         }
 
         // gets the staffs start date from the database
@@ -209,17 +147,5 @@ namespace LeaveSystemMVC.Controllers
             return exists;
         }
 
-        // execute insert/update commands
-        private void ExecuteQuery(string queryString)
-        {
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            using (var connection = new SqlConnection(connectionString))
-            {
-                var command = new SqlCommand(queryString, connection);
-                connection.Open();
-                using (var reader = command.ExecuteReader()) { }
-                connection.Close();
-            }
-        }
     }
 }

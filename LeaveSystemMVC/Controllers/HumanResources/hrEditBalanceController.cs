@@ -83,7 +83,7 @@ namespace LeaveSystemMVC.Controllers
                 connection.Close();
             }
 
-            ViewData["DepartmentList"] = DBDepartmentList();
+            ViewData["DepartmentList"] = AddDefaultToDictionary(DBDepartmentList(), 0, "All Departments");
             ViewData["SelectedDepartment"] = filterDepartmentID;
 
             return View(model);
@@ -100,7 +100,7 @@ namespace LeaveSystemMVC.Controllers
         {
             try { if (id.Equals(null)) { return RedirectToAction("Index"); } } catch (Exception e) { return RedirectToAction("Index"); }
             int staff_id = int.Parse(id);
-            var lv = ConstructLeaveBalance();
+            var lv = GetLeaveBalanceModel();
 
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
             string queryString = "Select Gender FROM dbo.Employee WHERE Employee_ID = '" + staff_id + "'";
@@ -155,7 +155,7 @@ namespace LeaveSystemMVC.Controllers
 
                 if (!existingBalance)           // was the balance found?
                 {
-                    DBInsertBalance(employeeID, leaveID, 0);     // if not, create a new one and set it to 0 by default
+                    InsertBalance(employeeID, leaveID, 0);     // if not, create a new one and set it to 0 by default
                 }
             }
 
@@ -180,6 +180,18 @@ namespace LeaveSystemMVC.Controllers
                 ModelState.AddModelError("errmsg", "Failed: An error occured. Please check your input and try again.");
             }
             return Edit(m.empId.ToString());
+        }
+
+        private void InsertBalance(int employeeID, int leaveID, decimal balance)
+        {
+            string insertQuery = "Insert into dbo.Leave_Balance (Employee_ID, Leave_ID, Balance) Values('" + employeeID + "','" + leaveID + "','" + balance + "')";
+            DBExecuteQuery(insertQuery);
+        }
+
+        protected void DBUpdateBalance(int employeeID, int leaveID, decimal duration)
+        {
+            string updateQuery = "Update dbo.Leave_Balance SET Balance='" + duration + "' WHERE Leave_ID='" + leaveID + "' And Employee_ID='" + employeeID + "'";
+            DBExecuteQuery(updateQuery);
         }
 
     }

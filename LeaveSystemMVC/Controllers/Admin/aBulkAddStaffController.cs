@@ -92,7 +92,7 @@ namespace LeaveSystemMVC.Controllers
                                         newEmployee.employeeObject.designation = tableColumn;
                                         break;
                                     case 5:
-                                        newEmployee.employeeObject.deptName = tableColumn;
+                                        //newEmployee.employeeObject.deptName = tableColumn;    // deptName no longer exists
                                         break;
                                     case 6:
                                         newEmployee.employeeObject.gender = tableColumn[0];
@@ -217,7 +217,7 @@ namespace LeaveSystemMVC.Controllers
                             for(int i = 0; i <= 5; i++)
                             {
                                 decimal balance = 0;
-                                int employeeID = employee.employeeObject.staffID;
+                                int employeeID = (int)employee.employeeObject.staffID;
                                 int leaveID = 0;
                                 switch(i)
                                 {
