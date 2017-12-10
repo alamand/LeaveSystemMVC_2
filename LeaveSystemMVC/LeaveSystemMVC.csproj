@@ -1799,7 +1799,6 @@
     <Content Include="Views\hrHolidaysCalender\CreateHoliday.cshtml" />
     <Content Include="Views\Shared\_MinDepartmentList.cshtml" />
     <Content Include="Views\LApplication\IndexTest.cshtml" />
-    <Content Include="Views\aEditStaff\Select.cshtml" />
     <Content Include="Views\lmPendingApplications\Select.cshtml" />
     <Content Include="Views\hrPendingApplication\Select.cshtml" />
     <Content Include="Views\hrEditDefaultLeaveDuration\Display.cshtml" />

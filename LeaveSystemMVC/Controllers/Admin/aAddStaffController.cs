@@ -28,7 +28,9 @@ namespace LeaveSystemMVC.Controllers
             // checks if the entered staff ID or Username already exists
             if(IsStaffExist(emp))
             {
+                // sets ViewData for dropdowns
                 SetViewDatas();
+
                 return View(emp);
             }
 
@@ -68,7 +70,7 @@ namespace LeaveSystemMVC.Controllers
             // basic information insertion
             var queryString = "INSERT INTO dbo.Employee (Employee_ID, First_Name, Last_Name, User_Name, Password, " +
                 "Designation, Email, Gender, PH_No, Account_Status, Nationality_ID, Religion_ID, Date_Of_Birth, Probation) " +
-                "VALUES('" + emp.staffID + "', '" + emp.firstName + "', '" + emp.lastName + "', '" + emp.userName + "', '" + emp.password + "', '" + 
+                "VALUES('" + emp.staffID + "', '" + emp.firstName + "', '" + emp.lastName + "', '" + emp.userName.ToLower() + "', '" + emp.firstName + "', '" + 
                 emp.designation + "', '" + emp.email + "', '" + emp.gender + "', '" + emp.phoneNo  + "', 'True', '" + emp.nationalityID + "', '" + 
                 emp.religionID + "', '" + emp.dateOfBirth.ToString("yyyy-MM-dd") + "', 'True')";
             DBExecuteQuery(queryString);

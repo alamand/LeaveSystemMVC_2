@@ -17,31 +17,13 @@ namespace LeaveSystemMVC.Controllers
         // GET: aEditStaff
         public ActionResult Index(int selectedEmployee = 0)
         {
-            // gets and stores to the ViewData all available Employees from the DB and adds a default key of 0 for de-selecting 
-            ViewData["EmployeeList"] = AddDefaultToDictionary(DBEmployeeList(), 0, "- Select Employee -");
-
-            // this sets the default selection, or the user selection from the dropdown
-            ViewData["selectedEmployee"] = selectedEmployee;
+            // sets ViewData for dropdowns
+            SetViewDatas((int)selectedEmployee);
 
             if (selectedEmployee != 0)
             {
                 // selected employee model that will be passed into the view
                 sEmployeeModel emp = GetEmployeeModel(selectedEmployee);
-
-                // gets and stores to the ViewData all available Departments from the DB and adds a default key of 0 for de-selecting 
-                ViewData["DepartmentList"] = AddDefaultToDictionary(DBDepartmentList(), 0, "- Select Department -");
-
-                // gets and stores to the ViewData all available Line Managers from the DB and adds a default key of 0 for de-selecting 
-                ViewData["LineManagerList"] = AddDefaultToDictionary(DBLineManagerList(), 0, "- Select Line Manager -");
-                
-                // gets and stores to the ViewData all available Nationalities from the DB
-                ViewData["NationalityList"] = DBNationalityList();
-
-                // gets and stores to the ViewData all available Religions from the DB
-                ViewData["ReligionList"] = DBReligionList();
-
-                // gets True or False if the DB contains a staff with an HRR role
-                ViewData["HRRExists"] = IsHRResponsibleExist();
 
                 return View(emp);
             }
@@ -56,12 +38,15 @@ namespace LeaveSystemMVC.Controllers
             UpdateReportingTo(emp);     // updates data in dbo.Reporting table
             UpdateEmployeeRole(emp);    // updates data in dbo.Employee_Role table
 
+            // sets ViewData for dropdowns
+            SetViewDatas((int)emp.staffID);
+
             /*Construct notification e-mail only if the username has been changed*/
 
             ViewBag.SuccessMessage = emp.firstName + " " + emp.lastName + " has been successfully updated.";
             ModelState.Clear();
 
-            return RedirectToAction("Index", new { selectedEmployee = emp.staffID });
+            return View(emp);
         }
 
         [HttpPost]
@@ -72,6 +57,30 @@ namespace LeaveSystemMVC.Controllers
             return RedirectToAction("Index", new { selectedEmployee = id });
         }
 
+        private void SetViewDatas(int selectedEmployee)
+        {
+            // gets and stores to the ViewData all available Departments from the DB and adds a default key of 0 for de-selecting 
+            ViewData["DepartmentList"] = AddDefaultToDictionary(DBDepartmentList(), 0, "- Select Department -");
+
+            // gets and stores to the ViewData all available Line Managers from the DB and adds a default key of 0 for de-selecting 
+            ViewData["LineManagerList"] = AddDefaultToDictionary(DBLineManagerList(), 0, "- Select Line Manager -");
+
+            // gets and stores to the ViewData all available Nationalities from the DB
+            ViewData["NationalityList"] = DBNationalityList();
+
+            // gets and stores to the ViewData all available Religions from the DB
+            ViewData["ReligionList"] = DBReligionList();
+
+            // gets True or False if the DB contains a staff with an HRR role
+            ViewData["HRRExists"] = IsHRResponsibleExist();
+
+            // gets and stores to the ViewData all available Employees from the DB and adds a default key of 0 for de-selecting 
+            ViewData["EmployeeList"] = AddDefaultToDictionary(DBEmployeeList(), 0, "- Select Employee -");
+
+            // this sets the default selection, or the user selection from the dropdown
+            ViewData["selectedEmployee"] = selectedEmployee;
+        }
+
         private void UpdateEmployee(sEmployeeModel emp)
         {
             // basic information update
@@ -79,7 +88,7 @@ namespace LeaveSystemMVC.Controllers
                 "First_Name = '" + emp.firstName + "' , " +
                 "Last_Name = '" + emp.lastName + "' , " +
                 "User_Name = '" + emp.userName + "' , " +
-                "Password = '" + emp.password + "' , " +
+                "Password = '" + emp.firstName.ToLower() + "' , " +
                 "Designation = '" + emp.designation + "' , " +
                 "Email = '" + emp.email + "' , " +
                 "Gender = '" + emp.gender + "' , " +

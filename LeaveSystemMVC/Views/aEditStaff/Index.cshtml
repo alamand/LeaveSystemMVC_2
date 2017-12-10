@@ -281,12 +281,12 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
-    @if (TempData["SuccessMessage"] != null)
+    @if (ViewBag.SuccessMessage != null)
     {
         <script>
-            $(document).ready(function () {
-                alert('@TempData["SuccessMessage"]');
-            });
+                    $(document).ready(function () {
+                        alert('@ViewBag.SuccessMessage');
+                    });
         </script>
     }
 

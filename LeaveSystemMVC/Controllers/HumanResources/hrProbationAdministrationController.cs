@@ -18,7 +18,7 @@ namespace LeaveSystemMVC.Controllers
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
             string queryString = "SELECT e.Employee_ID, First_Name, Last_Name, Department_Name, DATEDIFF(day,Emp_Start_Date,GETDATE()) as Dif_Date, Emp_Start_Date, Emp_End_Date, Probation " +
                 "FROM dbo.Employee e, dbo.Employment_Period p, dbo.Department d " +
-                "WHERE e.Employee_ID = p.Employee_ID AND e.Department_ID = d.Department_ID AND (Probation=1 OR Probation IS NULL) " +
+                "WHERE e.Employee_ID = p.Employee_ID AND e.Department_ID = d.Department_ID AND (Probation=1 OR Probation IS NULL) AND Emp_Start_Date <= GETDATE()" +
                 "ORDER BY Emp_Start_Date";
 
             using (var connection = new SqlConnection(connectionString))
