@@ -71,8 +71,11 @@ namespace LeaveSystemMVC.Controllers
             // gets and stores to the ViewData all available Religions from the DB
             ViewData["ReligionList"] = DBReligionList();
 
-            // gets True or False if the DB contains a staff with an HRR role
+            // gets True or False if the DB contains a staff with a HRR role
             ViewData["HRRExists"] = IsHRResponsibleExist();
+
+            // gets True or False if the DB contains 2 staffs with an Admin role
+            ViewData["AdminExists"] = IsAdminExist(2);
 
             // gets and stores to the ViewData all available Employees from the DB and adds a default key of 0 for de-selecting 
             ViewData["EmployeeList"] = AddDefaultToDictionary(DBEmployeeList(), 0, "- Select Employee -");

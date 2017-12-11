@@ -8,59 +8,118 @@
     <h2>@ViewBag.Title</h2>
     @{
         var departmentList = ViewData["DepartmentList"] as Dictionary<int, string>;
+        var statusList = ViewData["AccountStatusList"] as Dictionary<int, string>;
         var selectedDepartment = @ViewData["SelectedDepartment"];
-
+        var selectedAccStatus = @ViewData["SelectedAccStatus"];
+        var enteredSearch = ViewData["EnteredSearch"];
     }
-    @using (Html.BeginForm("FilterListByDepartment", "hrEditBalance", FormMethod.Post))
-    {
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <div class="form-horizontal">
-            <div class="row ">
-                <div class="col-md-2">
-                    <p style="padding-top: 8px;">Filter by Department:</p>
-                </div>
-                <div class="col-md-3">
+    <div class="panel-group">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" class="active" href="#collapse1">Filters</a>
+                </h4>
+            </div>
+            <br />
+
+            <div id="collapse1" class="panel-collapse collapse in">
+                @using (Html.BeginForm("Filter", "hrEditBalance", FormMethod.Post))
+                {
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
                     <div class="form-horizontal">
-                        @Html.DropDownList("selectedDepartment", new SelectList(departmentList, "Key", "Value"), new { @selected = selectedDepartment, @class = "form-control", @onchange = "this.form.submit();" })
+                        <div class="row">
+                            <div class="col-md-1 col-md-offset-1">
+                                <p style="padding-top: 8px;">Search</p>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="input-group">
+                                    @Html.TextBox("enteredSearch", "", new { @Value = enteredSearch, @class ="form-control", @placeholder= "Search by ID or name..." })
+                                    <span class="input-group-btn">
+                                        <button type="submit" class="btn btn-default">
+                                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row ">
+                            <div class="col-md-1 col-md-offset-1">
+                                <p style="padding-top: 8px;">Department</p>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-horizontal">
+                                    @Html.DropDownList("selectedDepartment", new SelectList(departmentList, "Key", "Value"), new { @selected = selectedDepartment, @class = "form-control", @onchange = "this.form.submit();" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-2">
+                                <p style="padding-top: 8px;">Account Status</p>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-horizontal">
+                                    @Html.DropDownList("selectedAccStatus", new SelectList(statusList, "Key", "Value"), new { @selected = selectedAccStatus, @class = "form-control", @onchange = "this.form.submit();" })
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                    <br />
+                }
             </div>
         </div>
-        <br />
-    }
-    <table class="table">
-        <tr>
-            <th>Employee ID</th>
-            <th>Name</th>
-            <th>Annual Leave</th>
-            <th>Sick Leave</th>
-            <th>Compassionate Leave</th>
-            <th>Short Leave</th>
-            <th>Maternity Leave</th>
-            <th>Days in Lieu</th>
-            
-        </tr>
-        @foreach (var item in Model)
-        {
+    </div>
+           
+    <table class="table table-striped">
+        <thead>
             <tr>
-                <td>@item.employee.staffID </td>
-                <td>@item.employee.firstName @item.employee.lastName</td>
-                <td>@item.leaveBalance.annual</td>
-                <td>@item.leaveBalance.sick</td>
-                <td>@item.leaveBalance.compassionate</td>
-                <td>@item.leaveBalance.shortLeaveHours</td>
-                @if (item.employee.gender == 'F')
-                {
-                    <td>@item.leaveBalance.maternity</td>
-                }
-                else
-                {
-                    <td></td>
-                }
-                <td>@item.leaveBalance.daysInLieue</td>
-                <td>@Html.ActionLink("Edit", "Edit", "hrEditBalance", new { id = item.employee.staffID }, null)</td>
+                <th>Employee ID</th>
+                <th>Name</th>
+                <th colspan="3"></th>
+                <th>Leave Type</th>
             </tr>
-        }
+            <tr>
+                <th colspan="2"></th>
+                <th>Annual</th>
+                <th>Sick</th>
+                <th>Compassionate</th>
+                <th>Short</th>
+                <th>Maternity</th>
+                <th>Days in Lieu</th>
+                <th>Pilgrimage</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.employee.staffID </td>
+                    <td>@item.employee.firstName @item.employee.lastName</td>
+                    <td>@item.leaveBalance.annual</td>
+                    <td>@item.leaveBalance.sick</td>
+                    <td>@item.leaveBalance.compassionate</td>
+                    <td>@item.leaveBalance.shortLeaveHours</td>
+                    @if (item.employee.gender == 'F')
+                    {
+                        <td>@item.leaveBalance.maternity</td>
+                    }
+                    else
+                    {
+                        <td></td>
+                    }
+                    <td>@item.leaveBalance.daysInLieue</td>
+                    @if (item.religionString.Equals("Muslim"))
+                    {
+                        <td>@item.leaveBalance.pilgrimage</td>
+                    }
+                    else
+                    {
+                        <td></td>
+                    }
+                    <td>@Html.ActionLink("Edit", "Edit", "hrEditBalance", new { empID = item.employee.staffID }, null)</td>
+                </tr>
+            }
+        </tbody>
     </table>
 </div>
 

@@ -234,18 +234,30 @@
                                         <button id="isHRBtn" type="button" class="btn" data-color="primary">HR</button>
                                     </span>
 
+                                    
                                     <span class="button-checkbox">
                                         @Html.CheckBoxFor(model => model.isAdmin, htmlAttributes: new { @class = "hidden" })
-                                        <button id="isAdminBtn" type="button" class="btn" data-color="primary">Admin</button>
+                                        @if (false.Equals(@ViewData["AdminExists"]) && Model.isAdmin)
+                                        {
+                                            <button id="isAdminBtn" type="button" class="btn" data-color="primary" title='You are the last Admin standing' disabled>Admin</button>
+                                        }
+                                        else
+                                        {
+                                            <button id="isAdminBtn" type="button" class="btn" data-color="primary">Admin</button>
+                                        }
                                     </span>
-
-                                    @if (false.Equals(@ViewData["HRRExists"]) || true.Equals(Model.isHRResponsible))
-                                    {
-                                        <span class="button-checkbox">
-                                            @Html.CheckBoxFor(model => model.isHRResponsible, htmlAttributes: new { @class = "hidden" })
+                                    
+                                    <span class="button-checkbox">
+                                        @Html.CheckBoxFor(model => model.isHRResponsible, htmlAttributes: new { @class = "hidden" })
+                                        @if (false.Equals(@ViewData["HRRExists"]) || Model.isHRResponsible)
+                                        {
                                             <button id="isHRRBtn" type="button" class="btn" data-color="primary">HR Responsible</button>
-                                        </span>
-                                    }
+                                        }
+                                        else
+                                        {
+                                            <button id="isHRRBtn" type="button" class="btn" data-color="primary" title='There can be only one HR Responsible' disabled >HR Responsible</button>
+                                        }
+                                    </span>
                                 </div>
                             </div>
                             <hr />
@@ -289,24 +301,6 @@
                     });
         </script>
     }
-
-    <script>
-        $(document).ready(function () {
-            if (!$('#isStaffBtn').is(':checked')) {
-                $('#isLMBtn, #isHRBtn, #isHRRBtn').prop("disabled", false);
-            }
-        });
-
-        $('#isStaff').change(function () {
-            if ($(this).is(':checked')) {
-                $('#isLMBtn, #isHRBtn, #isHRRBtn').prop("disabled", false);
-            }
-            else {
-                $('#isLM, #isHR, #isHRR').prop("checked", false);
-                $('#isLMBtn, #isHRBtn, #isHRRBtn').prop("disabled", true);
-            }
-        });
-    </script>
 
     <script>
         $(function () {

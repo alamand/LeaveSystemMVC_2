@@ -11,17 +11,13 @@ namespace LeaveSystemMVC.Controllers
     public class hrEditBalanceController : ControllerBase
     {
         // GET: hrEditBalance
-        public ActionResult Index(int filterDepartmentID = 0)
+        public ActionResult Index(int filterDepartmentID = 0, int filterAccStatus = -1, string filterSearch = "")
         {
             var model = new List<Models.hrEmpLeaveBalModel>();
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "Select Employee_ID, First_Name, Last_Name, Gender FROM dbo.Employee";
 
-            // adds a filter query if a department is selected from the dropdown, note that 0 represents All Departments
-            if (filterDepartmentID > 0)
-            {
-                queryString += " WHERE Department_ID = " + filterDepartmentID;
-            }
+            // Gets the employee's id and name
+            string queryString = GetFilteredQuery(filterDepartmentID, filterAccStatus, filterSearch);
 
             using (var connection = new SqlConnection(connectionString))
             {
@@ -39,8 +35,11 @@ namespace LeaveSystemMVC.Controllers
                         empBal.employee.lastName = (string)reader["Last_Name"];
                         empBal.employee.staffID = (int)reader["Employee_ID"];
                         empBal.employee.gender = Convert.ToChar(reader["Gender"]);
+                        empBal.employee.religionID = (!DBNull.Value.Equals(reader["Religion_ID"])) ? (int)reader["Religion_ID"] : 0;    // @TODO: remove DBNULL checker when the DB is filled accuretly
+                        empBal.religionString = GetReligion((int)empBal.employee.staffID);
 
-                        string queryString2 = "Select Balance,Leave_Name FROM dbo.Leave_Balance, dbo.Leave_Type where Leave_Balance.Employee_ID = '" + empBal.employee.staffID + "' AND Leave_Balance.Leave_ID = Leave_Type.Leave_ID";
+                        string queryString2 = "SELECT Balance,Leave_Name FROM dbo.Leave_Balance, dbo.Leave_Type " +
+                            "WHERE Leave_Balance.Employee_ID = '" + empBal.employee.staffID + "' AND Leave_Balance.Leave_ID = Leave_Type.Leave_ID";
 
                         using (var connection2 = new SqlConnection(connectionString))
                         {
@@ -50,33 +49,39 @@ namespace LeaveSystemMVC.Controllers
                             {
                                 while (reader2.Read())
                                 {
-                                    string leave = (string)reader2["Leave_Name"];
-                                    if (leave.Equals("Annual"))
-                                        empBal.leaveBalance.annual = (decimal)reader2["Balance"];
-
-                                    if (leave.Equals("Sick"))
-                                        empBal.leaveBalance.sick = (decimal)reader2["Balance"];
-
-                                    if (leave.Equals("Compassionate"))
-                                        empBal.leaveBalance.compassionate = (decimal)reader2["Balance"];
-
-                                    if (leave.Equals("Maternity"))
-                                        empBal.leaveBalance.maternity = (decimal)reader2["Balance"];
-
-                                    if (leave.Equals("Short_Hours"))
-                                        empBal.leaveBalance.shortLeaveHours = (decimal)reader2["Balance"];
-
-                                    if (leave.Equals("Unpaid"))
-                                        empBal.leaveBalance.unpaidTotal = (decimal)reader2["Balance"];
-
-                                    if (leave.Equals("DIL"))
-                                        empBal.leaveBalance.daysInLieue = (decimal)reader2["Balance"];
+                                    switch ((string)reader2["Leave_Name"])
+                                    {
+                                        case "Annual":
+                                            empBal.leaveBalance.annual = (decimal)reader2["Balance"];
+                                            break;
+                                        case "Sick":
+                                            empBal.leaveBalance.sick = (decimal)reader2["Balance"];
+                                            break;
+                                        case "Compassionate":
+                                            empBal.leaveBalance.compassionate = (decimal)reader2["Balance"];
+                                            break;
+                                        case "Maternity":
+                                            empBal.leaveBalance.maternity = (decimal)reader2["Balance"];
+                                            break;
+                                        case "Short_Hours":
+                                            empBal.leaveBalance.shortLeaveHours = (decimal)reader2["Balance"];
+                                            break;
+                                        case "Unpaid":
+                                            empBal.leaveBalance.unpaidTotal = (decimal)reader2["Balance"];
+                                            break;
+                                        case "DIL":
+                                            empBal.leaveBalance.daysInLieue = (decimal)reader2["Balance"];
+                                            break;
+                                        case "Pilgrimage":
+                                            empBal.leaveBalance.pilgrimage = (decimal)reader2["Balance"];
+                                            break;
+                                        default:
+                                            break; ;
+                                    }
                                 }
                             }
-
                             connection2.Close();
                         }
-                        
                         model.Add(empBal);
                     }
                 }
@@ -84,82 +89,68 @@ namespace LeaveSystemMVC.Controllers
             }
 
             ViewData["DepartmentList"] = AddDefaultToDictionary(DBDepartmentList(), 0, "All Departments");
+            ViewData["AccountStatusList"] = AccountStatusList();
             ViewData["SelectedDepartment"] = filterDepartmentID;
+            ViewData["SelectedAccStatus"] = filterAccStatus;
+            ViewData["EnteredSearch"] = filterSearch;
 
             return View(model);
         }
 
         [HttpPost]
-        public ActionResult FilterListByDepartment(FormCollection form)
+        public ActionResult Filter(FormCollection form)
         {
-            int id = Convert.ToInt32(form["selectedDepartment"]);
-            return RedirectToAction("Index", new { filterDepartmentID = id });
+            int deptID = Convert.ToInt32(form["selectedDepartment"]);
+            int accStatID = Convert.ToInt32(form["SelectedAccStatus"]);
+            string search = form["EnteredSearch"];
+            return RedirectToAction("Index", new { filterDepartmentID = deptID, filterAccStatus = accStatID, filterSearch = search });
         }
 
-        public ActionResult Edit(string id)
+        private string GetFilteredQuery(int deptID, int accStat, string search)
         {
-            try { if (id.Equals(null)) { return RedirectToAction("Index"); } } catch (Exception e) { return RedirectToAction("Index"); }
-            int staff_id = int.Parse(id);
+            string queryString = "Select Employee_ID, First_Name, Last_Name, Gender, Religion_ID FROM dbo.Employee";
+
+            // adds a filter query if a department is selected from the dropdown, note that 0 represents All Departments
+            if (deptID > 0)
+            {
+                queryString += " WHERE Department_ID = " + deptID;
+            }
+
+            // adds a filter query if a account status is selected from the dropdown, note that -1 represents Active/InActive
+            if (accStat >= 0)
+            {
+                queryString += (queryString.Contains("WHERE")) ? " AND " : " WHERE ";
+                queryString += "Account_Status = " + accStat;
+            }
+
+            // adds a filter query if search box contains character(s), note that 0 length means the search box is empty
+            if (search.Length > 0)
+            {
+                queryString += (queryString.Contains("WHERE")) ? " AND " : " WHERE ";
+                queryString += "(Employee_ID LIKE '%" + search + "%' " +
+                    "OR First_Name LIKE '%" + search + "%' " +
+                    "OR Last_Name LIKE '%" + search + "%')";
+            }
+
+            return queryString;
+        }
+
+        public ActionResult Edit(int empID)
+        {
             var lv = GetLeaveBalanceModel();
 
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "Select Gender FROM dbo.Employee WHERE Employee_ID = '" + staff_id + "'";
-            using (var connection = new SqlConnection(connectionString))
-            {
-                var command = new SqlCommand(queryString, connection);
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        ViewBag.gender = Convert.ToChar(reader["Gender"]);
-                    }
-                }
-                connection.Close();
-            }
-            
-            ViewBag.sid = staff_id;                                             // pass the staff id to view
-            ViewBag.annual = GetBalance(staff_id, lv.annualID);                 // retrieve staff's annual balance and pass it to view
-            ViewBag.maternity = GetBalance(staff_id, lv.maternityID);           // retrieve staff's maternity balance and pass it to view
-            ViewBag.sick = GetBalance(staff_id, lv.sickID);                     // retrieve staff's sick balance and pass it to view
-            ViewBag.daysInLieue = GetBalance(staff_id, lv.daysInLieueID);       // retrieve staff's days in lieu balance and pass it to view
-            ViewBag.compassionate = GetBalance(staff_id, lv.compassionateID);   // retrieve staff's compassionate balance and pass it to view
-            ViewBag.shortLeaveHours = GetBalance(staff_id, lv.shortID);         // retrieve staff's short leave hours balance and pass it to view
-
+            ViewBag.sid = empID;                                             // pass the staff id to view
+            ViewBag.name = GetFullName(empID);
+            ViewBag.gender = GetGender(empID);                               // retrieve staff's gender and pass it to view
+            ViewBag.religion = GetReligion(empID);                           // retrieve staff's religion and pass it to view
+            ViewBag.annual = GetBalance(empID, lv.annualID);                 // retrieve staff's annual balance and pass it to view
+            ViewBag.maternity = GetBalance(empID, lv.maternityID);           // retrieve staff's maternity balance and pass it to view
+            ViewBag.sick = GetBalance(empID, lv.sickID);                     // retrieve staff's sick balance and pass it to view
+            ViewBag.daysInLieue = GetBalance(empID, lv.daysInLieueID);       // retrieve staff's days in lieu balance and pass it to view
+            ViewBag.compassionate = GetBalance(empID, lv.compassionateID);   // retrieve staff's compassionate balance and pass it to view
+            ViewBag.shortLeaveHours = GetBalance(empID, lv.shortID);         // retrieve staff's short leave hours balance and pass it to view
+            ViewBag.pilgrimage = GetBalance(empID, lv.pilgrimageID);         // retrieve staff's short leave hours balance and pass it to view
             return View(lv);
-        }
-
-        private decimal GetBalance(int employeeID, int leaveID)
-        {
-            System.Diagnostics.Debug.WriteLine("leaveID is: " + leaveID);
-            decimal balance = 0;                    // actual balance
-            Boolean existingBalance = false;        // in case's where the record does not exist
-
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "Select Balance FROM dbo.Leave_Balance Where Employee_ID ='" + employeeID + "' And Leave_ID= '" + leaveID + "'";
-
-            using (var connection = new SqlConnection(connectionString))
-            {
-                var command = new SqlCommand(queryString, connection);
-
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-                {
-                    while(reader.Read()) 
-                    {
-                        balance = (decimal)reader["Balance"];
-                        existingBalance = true;
-                    }
-                }
-                connection.Close();
-
-                if (!existingBalance)           // was the balance found?
-                {
-                    InsertBalance(employeeID, leaveID, 0);     // if not, create a new one and set it to 0 by default
-                }
-            }
-
-            return balance;
         }
 
         [HttpPost]
@@ -179,7 +170,110 @@ namespace LeaveSystemMVC.Controllers
             {
                 ModelState.AddModelError("errmsg", "Failed: An error occured. Please check your input and try again.");
             }
-            return Edit(m.empId.ToString());
+            return Edit(m.empId);
+        }
+
+        private string GetFullName(int empID)
+        {
+            string name = "";
+
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            string queryString = "Select First_Name, Last_Name FROM dbo.Employee WHERE Employee_ID = " + empID;
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        name = (string)reader["First_Name"] + " " + (string)reader["Last_Name"];
+                    }
+                }
+                connection.Close();
+            }
+
+            return name;
+        }
+
+        private string GetReligion(int empID)
+        {
+            string religion = "";
+
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            string queryString = "Select Religion_Name FROM dbo.Employee, dbo.Religion WHERE Employee_ID = " + empID + " AND Employee.Religion_ID = Religion.Religion_ID";
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        religion = (string)reader["Religion_Name"];
+                    }
+                }
+                connection.Close();
+            }
+
+            return religion;
+        }
+
+        private char GetGender(int empID)
+        {
+            char gender = '\0';
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            string queryString = "Select Gender FROM dbo.Employee WHERE Employee_ID = '" + empID + "'";
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        gender = Convert.ToChar(reader["Gender"]);
+                    }
+                }
+                connection.Close();
+            }
+
+            return gender;
+        }
+
+        private decimal GetBalance(int employeeID, int leaveID)
+        {
+            decimal balance = 0;                    // actual balance
+            Boolean existingBalance = false;        // in case's where the record does not exist
+
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            string queryString = "Select Balance FROM dbo.Leave_Balance Where Employee_ID ='" + employeeID + "' And Leave_ID= '" + leaveID + "'";
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        balance = (decimal)reader["Balance"];
+                        existingBalance = true;
+                    }
+                }
+                connection.Close();
+
+                if (!existingBalance)           // was the balance found?
+                {
+                    InsertBalance(employeeID, leaveID, 0);     // if not, create a new one and set it to 0 by default
+                }
+            }
+
+            return balance;
         }
 
         private void InsertBalance(int employeeID, int leaveID, decimal balance)
@@ -188,7 +282,7 @@ namespace LeaveSystemMVC.Controllers
             DBExecuteQuery(insertQuery);
         }
 
-        protected void DBUpdateBalance(int employeeID, int leaveID, decimal duration)
+        private void DBUpdateBalance(int employeeID, int leaveID, decimal duration)
         {
             string updateQuery = "Update dbo.Leave_Balance SET Balance='" + duration + "' WHERE Leave_ID='" + leaveID + "' And Employee_ID='" + employeeID + "'";
             DBExecuteQuery(updateQuery);

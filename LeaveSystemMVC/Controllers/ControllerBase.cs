@@ -90,6 +90,7 @@ namespace LeaveSystemMVC.Controllers
                 {
                     while (reader.Read())
                     {
+                        // @TODO: fix the DBNull checking after the DB has been updated
                         employeeModel.staffID = (int)reader["Employee_ID"];
                         employeeModel.firstName = (string)reader["First_Name"];
                         employeeModel.lastName = (string)reader["Last_Name"];
@@ -101,9 +102,9 @@ namespace LeaveSystemMVC.Controllers
                         employeeModel.phoneNo = (reader["Ph_No"] != DBNull.Value) ? (string)reader["Ph_No"] : "";
                         employeeModel.accountStatus = (bool)reader["Account_Status"];
                         employeeModel.reportsToLineManagerID = (reader["Reporting_ID"] != DBNull.Value) ? (int)reader["Reporting_ID"] : (int?)null;
-                        employeeModel.religionID = (int)reader["Religion_ID"];
+                        employeeModel.religionID = (reader["Religion_ID"] != DBNull.Value) ? (int)reader["Religion_ID"] : 0;
                         employeeModel.dateOfBirth = (!DBNull.Value.Equals(reader["Date_Of_Birth"])) ? ((DateTime)reader["Date_Of_Birth"]) : new DateTime();
-                        employeeModel.nationalityID = (int)reader["Nationality_ID"];
+                        employeeModel.nationalityID = (reader["Nationality_ID"] != DBNull.Value) ? (int)reader["Nationality_ID"] : 0;
                         employeeModel.onProbation = (reader["Probation"] != DBNull.Value) ? ((bool)reader["Probation"]) : false;
                     }
                 }
@@ -152,19 +153,32 @@ namespace LeaveSystemMVC.Controllers
             bool isExist = false;
             int hrrRoleID = DBRoleList().FirstOrDefault(obj => obj.Value == "HR_Responsible").Key;
 
-            var queryString = "SELECT Employee_ID, Role_ID FROM dbo.Employee_Role WHERE Role_ID = " + hrrRoleID;
+            var queryString = "SELECT COUNT(*) FROM dbo.Employee_Role WHERE Role_ID = " + hrrRoleID;
 
             using (var connection = new SqlConnection(connectionString))
             {
                 var command = new SqlCommand(queryString, connection);
                 connection.Open();
-                using (var reader = command.ExecuteReader())
-                {
-                    if (reader.HasRows)
-                    {
-                        isExist = true;
-                    }
-                }
+                if ((int)command.ExecuteScalar() > 0)
+                    isExist = true;
+                connection.Close();
+            }
+            return isExist;
+        }
+
+        public bool IsAdminExist(int numOfAdmins = 1)
+        {
+            bool isExist = false;
+            int adminRole = DBRoleList().FirstOrDefault(obj => obj.Value == "Admin").Key;
+
+            var queryString = "SELECT COUNT(*) FROM dbo.Employee_Role WHERE Role_ID = " + adminRole;
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                if ((int)command.ExecuteScalar() >= numOfAdmins)
+                    isExist = true;
                 connection.Close();
             }
             return isExist;
@@ -187,10 +201,22 @@ namespace LeaveSystemMVC.Controllers
             }
         }
 
-        protected Dictionary<int, string> DBEmployeeList()
+        protected Dictionary<int, string> AccountStatusList()
+        {
+            Dictionary<int, string> accStatus = new Dictionary<int, string>();
+            accStatus.Add(-1, "Active/Inactive");
+            accStatus.Add(1, "Active Only");
+            accStatus.Add(0, "Inactive Only");
+            return accStatus;
+        }
+
+        protected Dictionary<int, string> DBEmployeeList(int accountStatus = -1)
         {
             Dictionary<int, string> list = new Dictionary<int, string>();
             var queryString = "SELECT Employee_ID, First_Name, Last_Name FROM dbo.Employee";
+
+            if (accountStatus == 1 || accountStatus == 0)
+                queryString += " WHERE Account_Status = " + accountStatus;
 
             using (var connection = new SqlConnection(connectionString))
             {
