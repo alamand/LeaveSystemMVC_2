@@ -41,7 +41,7 @@ namespace LeaveSystemMVC.Controllers
             string queryString = "SELECT dbo.Leave.Leave_Application_ID, dbo.Leave.Employee_ID, " +
                                 "dbo.Leave.Start_Date, dbo.Leave.End_Date, dbo.Leave.Reporting_Back_Date, " +
                                 "dbo.Leave.Leave_ID, dbo.Leave.Contact_Outside_UAE, dbo.Leave.Comment, " +
-                                "dbo.Leave.Document, dbo.Leave.Flight_Ticket, dbo.Leave.Total_Leave_Days, " +
+                                "dbo.Leave.Document, dbo.Leave.Flight_Ticket, dbo.Leave.Total_Leave, " +
                                 "dbo.Leave.Start_Hrs, dbo.Leave.End_Hrs, dbo.Leave.Leave_Status_ID, " +
                                 "dbo.Leave.LM_Comment, dbo.Leave.HR_Comment, dbo.Employee.First_Name, dbo.Employee.Last_Name " +
                                 "FROM dbo.Leave " +
@@ -88,7 +88,7 @@ namespace LeaveSystemMVC.Controllers
 
                             string date3 = leave.returnDate.ToString("yyyy-MM-dd");
 
-                            leave.leaveDuration = (int)reader["Total_Leave_Days"];
+                            leave.leaveDuration = (decimal)reader["Total_Leave"];
                             if (!reader.IsDBNull(11))
                             {
                                 leave.shortStartTime = (TimeSpan)reader["Start_Hrs"];
@@ -155,7 +155,7 @@ namespace LeaveSystemMVC.Controllers
                 queryString = "SELECT dbo.Leave.Leave_Application_ID, dbo.Leave.Employee_ID, " +
                     "dbo.Leave.Start_Date, dbo.Leave.End_Date, dbo.Leave.Reporting_Back_Date, " +
                     "dbo.Leave.Leave_ID, dbo.Leave.Contact_Outside_UAE, dbo.Leave.Comment, " +
-                    "dbo.Leave.Document, dbo.Leave.Flight_Ticket, dbo.Leave.Total_Leave_Days, " +
+                    "dbo.Leave.Document, dbo.Leave.Flight_Ticket, dbo.Leave.Total_Leave, " +
                     "dbo.Leave.Start_Hrs, dbo.Leave.End_Hrs, dbo.Leave.Leave_Status_ID, " +
                     "dbo.Leave.LM_Comment, dbo.Leave.HR_Comment, dbo.Employee.First_Name, dbo.Employee.Last_Name " +
                     "FROM dbo.Leave " +
@@ -194,7 +194,7 @@ namespace LeaveSystemMVC.Controllers
                                 string date2 = leave.endDate.ToString("yyyy-MM-dd");
                                 //ViewBag.enDt = date2;
 
-                                leave.leaveDuration = (int)reader2["Total_Leave_Days"];
+                                leave.leaveDuration = (decimal)reader2["Total_Leave"];
                                 if (!reader2.IsDBNull(11))
                                 {
                                     leave.shortStartTime = (TimeSpan)reader2["Start_Hrs"];
@@ -288,7 +288,7 @@ namespace LeaveSystemMVC.Controllers
             }
 
             var leaveHistory = new List<sLeaveModel>();
-            string queryString2 = "SELECT Leave_Name, Leave_Status_ID, Start_Date, Reporting_Back_Date, Start_Hrs, End_Hrs, Total_Leave_Days " +
+            string queryString2 = "SELECT Leave_Name, Leave_Status_ID, Start_Date, Reporting_Back_Date, Start_Hrs, End_Hrs, Total_Leave " +
                 "FROM dbo.leave l,dbo.Leave_Type t, dbo.Employee e " +
                 "WHERE e.Employee_ID = " + passingLeave.employeeID + " AND e.Employee_ID = l.Employee_ID AND l.Leave_ID = t.Leave_ID AND l.leave_Status_ID IN (2,3,4,5)" +
                 "ORDER BY Start_Date DESC";
@@ -306,7 +306,7 @@ namespace LeaveSystemMVC.Controllers
                         leave.leaveType = (string)reader["Leave_Name"];
                         leave.startDate = (DateTime)reader["Start_Date"];
                         leave.endDate = (DateTime)reader["Reporting_Back_Date"];
-                        leave.leaveDuration = (int)reader["Total_Leave_Days"];
+                        leave.leaveDuration = (decimal)reader["Total_Leave"];
                         leave.shortStartTime = (!DBNull.Value.Equals(reader["Start_Hrs"])) ? (TimeSpan)reader["Start_Hrs"] : new TimeSpan(0, 0, 0, 0, 0);
                         leave.shortEndTime = (!DBNull.Value.Equals(reader["End_Hrs"])) ? (TimeSpan)reader["End_Hrs"] : new TimeSpan(0, 0, 0, 0, 0);
                         leave.leaveStatus = (int)reader["Leave_Status_ID"];
