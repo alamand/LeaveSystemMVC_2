@@ -108,26 +108,24 @@ namespace LeaveSystemMVC.Controllers
 
         private string GetFilteredQuery(int deptID, int accStat, string search)
         {
-            string queryString = "Select Employee_ID, First_Name, Last_Name, Gender, Religion_ID FROM dbo.Employee";
+            string queryString = "SELECT Employee_ID, First_Name, Last_Name, Gender, Religion_ID FROM dbo.Employee WHERE Probation='False'";
 
             // adds a filter query if a department is selected from the dropdown, note that 0 represents All Departments
             if (deptID > 0)
             {
-                queryString += " WHERE Department_ID = " + deptID;
+                queryString += " AND Department_ID = " + deptID;
             }
 
             // adds a filter query if a account status is selected from the dropdown, note that -1 represents Active/InActive
             if (accStat >= 0)
             {
-                queryString += (queryString.Contains("WHERE")) ? " AND " : " WHERE ";
-                queryString += "Account_Status = " + accStat;
+                queryString += " AND Account_Status = " + accStat;
             }
 
             // adds a filter query if search box contains character(s), note that 0 length means the search box is empty
             if (search.Length > 0)
             {
-                queryString += (queryString.Contains("WHERE")) ? " AND " : " WHERE ";
-                queryString += "(Employee_ID LIKE '%" + search + "%' " +
+                queryString += " AND (Employee_ID LIKE '%" + search + "%' " +
                     "OR First_Name LIKE '%" + search + "%' " +
                     "OR Last_Name LIKE '%" + search + "%')";
             }

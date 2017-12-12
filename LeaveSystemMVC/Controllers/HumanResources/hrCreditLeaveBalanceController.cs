@@ -1,151 +1,57 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Configuration;
+using System.Data.SqlClient;
+using LeaveSystemMVC.Models;
+
 
 namespace LeaveSystemMVC.Controllers
 {
-    public class hrCreditLeaveBalanceController : Controller
+    public class hrCreditLeaveBalanceController : ControllerBase
     {
         // GET: hrCreditLeaveBalance
-        [HttpGet]
         public ActionResult Index()
         {
             return View();
         }
+
         [HttpPost]
-        public ActionResult Index(int? value)
+        public ActionResult Credit()
         {
+            var lb = GetLeaveBalanceModel();
             if (ModelState.IsValid)
             {
-                var list = new List<Leave>();
-                var driver = new List<Leave>();
-                var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-                //var connectionString = ConfigurationManager.ConnectionStrings["CustomConnection"].ConnectionString;
-                string queryString = "Select * from LeaveSystem.dbo.Leave_Type";
-                using (var connection = new SqlConnection(connectionString))
-                {
-                    var command = new SqlCommand(queryString, connection);
+                CreditBalance(lb.compassionateID, lb.compassionate);
+                CreditBalance(lb.maternityID, lb.maternity);
+                CreditBalance(lb.shortID, lb.shortLeaveHours);
+                CreditBalance(lb.sickID, lb.sick);
+                CreditBalance(lb.unpaidID, lb.unpaidTotal);
+                CreditAnnual(lb.annualID, lb.annual);
+                //CreditPilgrimage();
 
-                    connection.Open();
-                    using (var reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            var id = (int)reader["Leave_ID"];
-                            var name = (string)reader["Leave_Name"];
-                            var duration = (int)reader["Duration"];
-                            if (!name.Equals("Annual") && !name.Equals("DIL")) { list.Add(new Leave(id, name, duration)); }
-                        }
-                    }
-
-                    connection.Close();
-                }
-                foreach (var item in list)
-                {
-                    CreditBalance(item.id, item.duration);
-                }
+                Response.Write("<script> alert('Success. The balance has been reset.');</script>");
             }
-            CreditAnnual();
-            Response.Write("<script> alert('Success. The balance has been reset.');</script>");
+
             return View();
         }
 
-    
-    public struct Leave
-    {
-        public Leave(int a, string ab, int b) { id = a; name = ab; duration = b; }
-        public int id { get; set; }
-        public string name { get; set; }
-        public int duration { get; set; }
-    }
-    public struct Emp
-    {
-        public Emp(int lbid, int eid, int lid, decimal pbal, int dur) { lb_ID = lbid; e_id = eid; l_id = lid; prevbalance = pbal; duration = dur; }
-        public int lb_ID { get; set; }
-        public int e_id { get; set; }
-        public int l_id { get; set; }
-        public decimal prevbalance { get; set; }
-        public int duration { get; set; }
-    }
-    public void CreditBalance(int leaveID, decimal balance)
-    {
-        var model = new List<Models.hrHolidaysCalender>();
-        var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-        //var connectionString = ConfigurationManager.ConnectionStrings["CustomConnection"].ConnectionString;
-        string queryString = "Update dbo.Leave_Balance SET Balance='" + balance + "' WHERE Leave_ID='" + leaveID + "'";
-        using (var connection = new SqlConnection(connectionString))
+        public void CreditBalance(int leaveID, decimal duration)
         {
-            var command = new SqlCommand(queryString, connection);
-
-            connection.Open();
-            using (var reader = command.ExecuteReader())
-            {
-            }
-
-            connection.Close();
+            string queryString = "UPDATE dbo.Leave_Balance SET Balance='" + duration + "' WHERE Leave_ID='" + leaveID + "'";
+            DBExecuteQuery(queryString);
         }
 
-    }
-
-    public void CreditAnnual()
-    {
-        int annualid = getAnnualID();
-        int duration = getAnnualDuration(annualid);
-        var employee = new List<Emp>();
-        var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-        string queryString = "Select * from LeaveSystem.dbo.Leave_Balance Where Leave_ID=" + annualid;
-        using (var connection = new SqlConnection(connectionString))
+        public void CreditAnnual(int leaveID, decimal duration)
         {
-
-            var command = new SqlCommand(queryString, connection);
-
-            connection.Open();
-            using (var reader = command.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    var lbid = (int)reader["Leave_Balance_ID"];
-                    var empid = (int)reader["Employee_ID"];
-                    var lid = (int)reader["Leave_ID"];
-                    var prevbal = (decimal)reader["Balance"];
-                    employee.Add(new Emp(lbid, empid, lid, prevbal, duration));
-                }
-            }
-            connection.Close();
-            foreach (var item in employee)
-            {
-                var balance = item.prevbalance + item.duration;
-                CreditAnnual(item.l_id, item.e_id, balance);
-            }
-        }
-
-    }
-    public void CreditAnnual(int lid, int eid, decimal balance)
-    {
+            var empList = new List<sleaveBalanceModel>();
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryUpdate = "Update dbo.Leave_Balance SET Balance='" + balance + "' WHERE Leave_ID='" + lid + "' AND  Employee_ID = '" + eid + "'";
+            string queryString = "SELECT Employee_ID, Balance FROM dbo.Leave_Balance WHERE Leave_ID = " + leaveID;
+
             using (var connection = new SqlConnection(connectionString))
             {
-                var command = new SqlCommand(queryUpdate, connection);
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-                {
-                }
-                connection.Close();
-            }
-        }
-    public int getAnnualDuration(int leave_ID)
-        {
-            int duration = 0;
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "Select * From dbo.Leave_Type Where Leave_ID ='" + leave_ID + "'";
-            using (var connection = new SqlConnection(connectionString))
-            {
-
                 var command = new SqlCommand(queryString, connection);
 
                 connection.Open();
@@ -153,42 +59,20 @@ namespace LeaveSystemMVC.Controllers
                 {
                     while (reader.Read())
                     {
-                        duration = ((int)reader["Duration"]);
-
+                        var empID = (int)reader["Employee_ID"];
+                        var balance = (decimal)reader["Balance"];
+                        empList.Add(new sleaveBalanceModel{ empId = empID, annual = balance });
                     }
                 }
-
                 connection.Close();
-            }
-            return duration;
-        }
-    public int getAnnualID()
-    {
-            var annualID = 0;
 
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "Select * from LeaveSystem.dbo.Leave_Type";
-            using (var connection = new SqlConnection(connectionString))
-            {
-
-                var command = new SqlCommand(queryString, connection);
-
-                connection.Open();
-                using (var reader = command.ExecuteReader())
+                foreach (var item in empList)
                 {
-                    while (reader.Read())
-                    {
-                        var id = (int)reader["Leave_ID"];
-                        var name = (string)reader["Leave_Name"];
-                        var duration = (int)reader["Duration"];
-                        if (name.Equals("Annual")) { annualID = id; }
-                        
-                    }
+                    string queryUpdate = "UPDATE dbo.Leave_Balance SET Balance = '" + duration + item.annual + "' WHERE Leave_ID='" + leaveID + "' AND  Employee_ID = '" + item.empId + "'";
+                    DBExecuteQuery(queryUpdate);
                 }
-
-                connection.Close();
             }
-            return annualID;
         }
-}
+        
+    }
 }
