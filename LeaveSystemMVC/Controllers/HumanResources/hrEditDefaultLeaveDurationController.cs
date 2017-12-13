@@ -92,38 +92,38 @@ namespace LeaveSystemMVC.Controllers
 
                         if (reader["Leave_Name"].Equals("Annual"))
                         {
-                            ViewBag.annualDuration = (decimal)reader["Duration"];
+                            ViewBag.annualDuration = (int)reader["Duration"];
                             ViewBag.annualID = (int)reader["Leave_ID"];
                             ViewBag.annualName = (string)reader["Leave_Name"];
                         }
                         else if (reader["Leave_Name"].Equals("Maternity"))
                         {
-                            ViewBag.matDuration = (decimal)reader["Duration"];
+                            ViewBag.matDuration = (int)reader["Duration"];
                             ViewBag.matID = (int)reader["Leave_ID"];
                             ViewBag.matName = (string)reader["Leave_Name"];
                         }
 
                         else if (reader["Leave_Name"].Equals("Sick"))
                         {
-                            ViewBag.sickDuration = (decimal)reader["Duration"];
+                            ViewBag.sickDuration = (int)reader["Duration"];
                             ViewBag.sickID = (int)reader["Leave_ID"];
                             ViewBag.sickName = (string)reader["Leave_Name"];
                         }
                         else if (reader["Leave_Name"].Equals("DIL"))
                         {
-                            ViewBag.dilDuration = (decimal)reader["Duration"];
+                            ViewBag.dilDuration = (int)reader["Duration"];
                             ViewBag.dilID = (int)reader["Leave_ID"];
                             ViewBag.dilName = (string)reader["Leave_Name"];
                         }
                         else if (reader["Leave_Name"].Equals("Compassionate"))
                         {
-                            ViewBag.compDuration = (decimal)reader["Duration"];
+                            ViewBag.compDuration = (int)reader["Duration"];
                             ViewBag.compID = (int)reader["Leave_ID"];
                             ViewBag.compName = (string)reader["Leave_Name"];
                         }
                         else if (reader["Leave_Name"].Equals("Short_Hours"))
                         {
-                            ViewBag.shortDuration = (decimal)reader["Duration"];
+                            ViewBag.shortDuration = (int)reader["Duration"];
                             ViewBag.shortID = (int)reader["Leave_ID"];
                             ViewBag.shortName = (string)reader["Leave_Name"];
                         }

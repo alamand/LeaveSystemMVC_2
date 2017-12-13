@@ -36,7 +36,7 @@ namespace LeaveSystemMVC.Models
         [Display(Name = "Return Date")]
         public DateTime returnDate { get; set; }
 
-        public decimal leaveDuration { get; set; }
+        public int leaveDuration { get; set; }
 
         [DisplayName("Start Time")]
         public TimeSpan? shortStartTime { get; set; }

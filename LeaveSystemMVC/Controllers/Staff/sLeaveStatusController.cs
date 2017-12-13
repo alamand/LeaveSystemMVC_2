@@ -63,7 +63,7 @@ namespace LeaveSystemMVC.Controllers
                         
                         leave.endDate = (DateTime)reader["End_Date"];
                         
-                        leave.leaveDuration = (decimal)reader["Total_Leave"];
+                        leave.leaveDuration = (int)reader["Total_Leave_Days"];
                         
                         if (!reader.IsDBNull(11))
                         {
