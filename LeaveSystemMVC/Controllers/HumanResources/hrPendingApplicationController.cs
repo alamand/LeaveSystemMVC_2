@@ -38,7 +38,7 @@ namespace LeaveSystemMVC.Controllers
             string queryString = "SELECT dbo.Leave.Leave_Application_ID, dbo.Leave.Employee_ID, " +
                 "dbo.Leave.Start_Date, dbo.Leave.End_Date, dbo.Leave.Reporting_Back_Date, " +
                 "dbo.Leave.Leave_ID, dbo.Leave.Contact_Outside_UAE, dbo.Leave.Comment, " +
-                "dbo.Leave.Document, dbo.Leave.Flight_Ticket, dbo.Leave.Total_Leave, " +
+                "dbo.Leave.Documentation, dbo.Leave.Flight_Ticket, dbo.Leave.Total_Leave, " +
                 "dbo.Leave.Start_Hrs, dbo.Leave.End_Hrs, dbo.Leave.Leave_Status_ID, " +
                 "dbo.Leave.LM_Comment, dbo.Leave.HR_Comment, dbo.Employee.First_Name, dbo.Employee.Last_Name " +
                 "FROM dbo.Leave " +
