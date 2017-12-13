@@ -13,296 +13,243 @@ using System.Net;
 
 namespace LeaveSystemMVC.Controllers
 {
-    public class LApplicationController : Controller
+    public class LApplicationController : ControllerBase
     {
         // GET: LApplication
         [HttpGet]
-        public ActionResult Create()
+        public ActionResult Index(int leaveTypeID = 0)
         {
-            var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
-            var c = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
-            ViewBag.claim = c;
-            string a = c.ToString();
-            a = a.Substring(a.Length - 5);
+            sEmployeeModel emp = GetEmployeeModel(GetLoggedInID());
+            SetViewDatas(emp, leaveTypeID);
 
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Select(FormCollection form)
+        {
+            int leaveID = Convert.ToInt32(form["selectedLeaveTypeID"]);
+            return RedirectToAction("Index", new { leaveTypeID = leaveID });
+        }
+
+        [HttpPost]
+        public ActionResult Index(sLeaveModel model)
+        {
+            sEmployeeModel emp = GetEmployeeModel(GetLoggedInID());
+            sleaveBalanceModel leaveBalance = GetLeaveBalanceModel(GetLoggedInID());
+            string leaveType = DBLeaveTypeList()[model.leaveID];
+            ModelState.Clear();
+
+            switch (leaveType)
+            {
+                case "Annual":
+                    CompareDates(model.startDate, model.endDate);
+
+                    if ((model.startDate - DateTime.Today).TotalDays < 30)
+                        ModelState.AddModelError("startDate", "Leave must be applied 30 days in advance");
+
+                    int numOfDays = GetNumOfDays(model.startDate, model.endDate);
+
+                    if (leaveBalance.annual < numOfDays)
+                        ModelState.AddModelError("endDate", "You do not have enough annual balance to apply for this duration.");
+
+                    if (ModelState.IsValid)
+                    {
+                        string fileName = UploadFile(model.supportingDocs); // does not upload
+                        ApplyAnnualLeave(model, numOfDays, fileName);   
+                        SendMail(model, emp, leaveType);                    // not sure if it sends
+                    }
+                    break;
+                
+                    // need to add the rest of the leave types
+                default:
+                    break; ;
+
+            }
+
+
+            SetViewDatas(emp, model.leaveID);
+            return View(model);
+        }
+
+        private void SetViewDatas(sEmployeeModel emp, int leaveID)
+        {
+            var leaveTypes = GetAvailableLeaveTypes(emp);
+            ViewData["LeaveTypes"] = leaveTypes;
+            ViewData["SelectedLeaveTypeID"] = leaveID;
+            ViewData["SelectedLeaveTypeName"] = leaveTypes[leaveID];
+        }
+
+        private Dictionary<int, string> GetAvailableLeaveTypes(sEmployeeModel emp)
+        {
+            var leaveTypes = AddDefaultToDictionary(DBLeaveTypeList(), 0, "- Select Leave Type -");
+
+            if (emp.gender != 'F')
+            {
+                int maternityID = leaveTypes.FirstOrDefault(obj => obj.Value == "Maternity").Key;
+                leaveTypes.Remove(maternityID);
+            }
+
+            if (!emp.religionID.Equals("Muslim"))
+            {
+                int pilgrimageID = leaveTypes.FirstOrDefault(obj => obj.Value == "Pilgrimage").Key;
+                leaveTypes.Remove(pilgrimageID);
+            }
+
+            return leaveTypes;
+        }
+
+        private void SendMail(sLeaveModel lm, sEmployeeModel emp, string leaveType)
+        {
+            string message = "Your " + leaveType + " leave application from " + lm.startDate + " to " + lm.returnDate + " has been sent to your line manager for approval.";
+
+            MailMessage mail = new MailMessage();
+            mail.From = new MailAddress("project_ict333@murdochdubai.ac.ae", "GIMEL LMS");
+            mail.To.Add(new MailAddress(emp.email));
+            mail.Subject = "Leave Application Update";
+            mail.Body = message + Environment.NewLine;
+
+            SmtpClient client = new SmtpClient();
+            client.EnableSsl = true;
+            client.Credentials = new NetworkCredential("project_ict333@murdochdubai.ac.ae", "ict@333");
+            try
+            {
+                client.Send(mail);
+            }
+            catch (Exception e)
+            {
+                Response.Write("<script> alert('The email could not be sent due to a network error.');</script>");
+            }
+            Response.Write("<script> alert('Your leave application has been submitted.');location.href='Index'</script>");
+        }
+
+        private void ApplyAnnualLeave(sLeaveModel lm, int numOfDays, string fName)
+        {
+            string queryString = "INSERT INTO dbo.Leave (Employee_ID, Document, Start_Date, End_Date, Leave_ID, " +
+                "Contact_Outside_UAE, Comment, Flight_Ticket, Total_Leave_Days, Leave_Status_ID) " +
+                "VALUES ('" + GetLoggedInID() + "','" + fName + "','" + lm.startDate.ToString("yyyy-MM-dd") + "','" + lm.endDate.ToString("yyyy-MM-dd") +
+                "','" + lm.leaveID + "','" + lm.contactDetails + "','" + lm.comments + "','" + lm.bookAirTicket + "','" + numOfDays + "','0');";
+            DBExecuteQuery(queryString);
+            }
+
+        private string UploadFile(HttpPostedFileBase file)
+        {
+            string fName = "";
+            System.Diagnostics.Debug.WriteLine("UPLOADING...");
+            var fileName = Path.GetFileName(file.FileName);
+            fName = GetNextApplicationID() + "-" + fileName;
+            System.Diagnostics.Debug.WriteLine("File Name: " + fName);
+            // Verify that the user selected a file
+            if (file != null && file.ContentLength > 0)
+            {
+                // extract only the filename
+                System.Diagnostics.Debug.WriteLine("NOT NULL...");
+
+
+                // store the file inside ~/App_Data/uploads folder
+                var path = Path.Combine(Server.MapPath("~/App_Data/Application_Documents"), fName);
+                file.SaveAs(path);
+                System.Diagnostics.Debug.WriteLine("DONE");
+
+            }
+
+            return fName;
+        }
+
+        private int GetNextApplicationID()
+        {
+            int nextApplicationID = 0;
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "Select Gender, Email FROM dbo.Employee where Employee_ID = '" + a + "'";
+            string queryString = "SELECT Leave_Application_ID FROM dbo.Leave";
+
             using (var connection = new SqlConnection(connectionString))
             {
-                char gender = '\0';
                 var command = new SqlCommand(queryString, connection);
-
                 connection.Open();
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        gender = Convert.ToChar(reader["Gender"]);
-                        TempData["EmployeeEmail"] = (string)(reader["Email"]);
+                        if ((int)reader["Leave_Application_ID"] > nextApplicationID)
+                            nextApplicationID = (int)reader["Leave_Application_ID"];
                     }
                 }
                 connection.Close();
-
-                List<string> leaves = new List<string>();
-                leaves.Add("Annual");
-                leaves.Add("Sick");
-                leaves.Add("Compassionate");
-                if (gender == 'F')
-                {
-                    leaves.Add("Maternity");
-                }
-                leaves.Add("Short");
-                leaves.Add("Unpaid");
-                ViewBag.leave = leaves;
             }
-           
-            return View();
+
+            return nextApplicationID;
         }
 
-        [HttpPost]
-        public ActionResult Create(Models.sLeaveModel model, HttpPostedFileBase file) {
-            var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
-            var c = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
-            ViewBag.claim = c;
-            string a = c.ToString();
-            a = a.Substring(a.Length - 5);
-            string fileN = "";
-            // Verify that the user selected a file
-            if (file != null && file.ContentLength > 0)
+        private void CompareDates(DateTime sDate, DateTime rDate)
+        {
+            int result = DateTime.Compare(sDate, rDate);
+            if (result > 0)
+                ModelState.AddModelError("endDate", "Reporting Back date cannot be earlier than Start Date.");
+            else if (result == 0)
+                ModelState.AddModelError("endDate", "Start and Reporting Back dates cannot be the same.");
+        }
+
+        private int GetNumOfDays(DateTime sDate, DateTime eDate)
+        {
+            // @TODO: Test for all cases
+            bool isWeekend = false;
+            bool isPublicHoliday = false;
+            TimeSpan diff = eDate - sDate;
+            int numOfDays = diff.Days;
+            int fullNumOfDays = numOfDays;
+
+            for (var i = 0; i < fullNumOfDays; i++)
             {
-                // extract only the filename
-                var fileName = Path.GetFileName(file.FileName);
-                 fileName = a+fileName;
-                fileN = fileName;
-                // store the file inside ~/App_Data/uploads folder
-                var path = Path.Combine(Server.MapPath("~/App_Data"),fileName);
-                file.SaveAs(path);
-            }
-            DateTime d1 = model.startDate;
-            string stdate = d1.ToString("yyyy-MM-dd");
-
-            DateTime d2 = model.endDate;
-            string endate = d2.ToString("yyyy-MM-dd");
-
-            TimeSpan difference = d2 - d1;
-            
-
-            DateTime today = DateTime.Today;
-
-            int result = DateTime.Compare(d2, d1);
-
-            /* Can apply e.g. for sick leave in the past
-            if (d1 < today) {
-                ModelState.AddModelError("startDate", "The Start Date cannot be in the Past");
-            }*/
-
-            if (result < 0) {
-                ModelState.AddModelError("endDate", "The reporting back date cannot be earlier than the start date.");                
+                switch (sDate.AddDays(i).DayOfWeek)
+                {
+                    case DayOfWeek.Saturday:
+                        numOfDays--;
+                        isWeekend = true;
+                        break;
+                    case DayOfWeek.Friday:
+                        numOfDays--;
+                        isWeekend = true;
+                        break;
+                }
             }
 
-            if(result == 0)
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            string queryString = "SELECT * FROM dbo.Public_Holiday WHERE Date BETWEEN'" + sDate.ToString("yyyy-MM-dd") + "' AND '" + eDate.ToString("yyyy-MM-dd") + "'";
+
+            using (var connection = new SqlConnection(connectionString))
             {
-                ModelState.AddModelError("endDate", "The start and reporting back dates cannot be the same.");
-            }
-
-                int days = 0;
-                if (result > 0 && !(model.leaveType.Equals("Maternity"))) {
-                    TimeSpan diff = d2 - d1;
-                    days = diff.Days;
-                    int tempDays = days;
-                    for (var i = 1; i <= tempDays; i++)
-                    {
-                        var testDate = d1.AddDays(i);
-                        switch (testDate.DayOfWeek)
-                        {
-                            case DayOfWeek.Saturday: days--; break;
-                            case DayOfWeek.Friday: days--; break;
-                        }
-                    }
-
-                    var connectionString1 = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-                    string query1 = "Select * from dbo.Public_Holiday where Date between'" + stdate + "' AND '" + endate + "'";
-
-                    using (var connection1 = new SqlConnection(connectionString1))
-                    {
-                        var command1 = new SqlCommand(query1, connection1);
-
-                        connection1.Open();
-                        using (var reader1 = command1.ExecuteReader())
-                        {
-                            while (reader1.Read())
-                            {
-                                DateTime day = (DateTime)reader1["Date"];
-                                if (day.DayOfWeek.Equals(DayOfWeek.Saturday) || day.DayOfWeek.Equals(DayOfWeek.Friday))
-                                { System.Diagnostics.Debug.WriteLine("Holiday on weekend"); }
-
-                                else
-                                {
-                                    days--;
-                                }
-                            }
-                        }
-                        connection1.Close();
-                     }
-                }
-                
-
-                int leaveId = 0;
-                if (model.leaveType.Equals("Annual"))
-                {
-                    leaveId = 1;
-                    //30 days beforehand need not be enforced by the system
-                    /*double difference = (d1 - today).TotalDays;
-                    if(difference<30)
-                    ModelState.AddModelError("startDate", "Leave must be applied 30 days in advance");*/
-                }
-                if (model.leaveType.Equals("Sick"))
-                {
-                    leaveId = 3;
-                }
-                if (model.leaveType.Equals("Compassionate"))
-                {
-                    leaveId = 4;
-                }
-                if (model.leaveType.Equals("Maternity"))
-                {
-                    leaveId = 2;
-
-                //    ModelState.AddModelError("startDate", "Maternity is disabled;");
-
-                    TimeSpan diff = d2 - d1;
-                        days = diff.Days;
-                        
-                        var connectionString1 = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-                        string query1 = "Select * from dbo.Public_Holiday where Date between'" + stdate + "' AND '" + endate + "'";
-
-                        using (var connection1 = new SqlConnection(connectionString1))
-                        {
-                            var command1 = new SqlCommand(query1, connection1);
-
-                            connection1.Open();
-                            using (var reader1 = command1.ExecuteReader())
-                            {
-                                while (reader1.Read())
-                                {
-                                    days--;
-                                }
-                            }
-                            connection1.Close();
-                            System.Diagnostics.Debug.WriteLine("Maternity Days: After holiday Deduction" + days);
-                        }
-                    
-                }
-                if (model.leaveType.Equals("Short"))
-                {
-                    leaveId = 6;
-                    if (model.startDate != model.endDate)
-                    {
-                        ModelState.AddModelError("endDate", "For short leave, the start date and return date should be same!");
-                    }
-                }
-
-                if (model.leaveType.Equals("Unpaid"))
-                {
-                    leaveId = 6;
-                }
-                    
-                string leaveid = leaveId.ToString();
-            if (days == 0)
-            {
-                ModelState.AddModelError("endDate", "You cannot apply for zero days of leave.");
-            }
-
-            if (ModelState.IsValid)
-            {
-                bool ticket = model.bookAirTicket;
-                
-                string abc = model.comments;
-
-                var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-
-                string queryString = "Insert INTO Leave (Employee_ID,Document,Start_Date,End_Date,Reporting_Back_Date,Leave_ID,Contact_Outside_UAE,Comment,Flight_Ticket,Total_Leave_Days,Start_Hrs,End_Hrs,Leave_Status_ID) VALUES ('" + a + "','"+fileN+"','" + stdate + "','" + endate + "','" + endate + "','" + leaveid + "','" + model.contactDetails + "','" + model.comments + "','" + ticket + "','"+days+"','" + model.shortStartTime + "','" + model.shortEndTime + "','0');";
-
-                var connection = new SqlConnection(connectionString);
-
-                connection.Open();
                 var command = new SqlCommand(queryString, connection);
+                connection.Open();
 
-                command.ExecuteNonQuery();
-
-                /*Construct an e-mail and send it to the employee.*/
-
-                queryString = "SELECT dbo.Leave.Leave_ID FROM dbo.Leave WHERE dbo.Leave.Leave_Application_ID = '" + model.leaveID + "'";
-                int leaveID = 0;
-                using (var connection2 = new SqlConnection(connectionString))
+                using (var reader = command.ExecuteReader())
                 {
-                    var command2 = new SqlCommand(queryString, connection2);
-                    connection2.Open();
-                    using (var reader = command2.ExecuteReader())
+                    while (reader.Read())
                     {
-                        if (reader.HasRows)
+                        DateTime day = (DateTime)reader["Date"];
+                        for (var i = 0; i < fullNumOfDays; i++)
                         {
-                            System.Diagnostics.Debug.WriteLine("Found leave ID");
-                            while (reader.Read())
+                            if (sDate.AddDays(i).Equals(day))
                             {
-                                if (reader["Leave_ID"] != DBNull.Value)
-                                    leaveID = (int)(reader["Leave_ID"]); // Leave ID
+                                numOfDays--;
+                                isPublicHoliday = true;
                             }
                         }
                     }
-                    connection.Close();
                 }
-
-                queryString = "SELECT dbo.Leave_Type.Leave_Name FROM dbo.Leave_Type WHERE dbo.Leave_Type.Leave_ID = '" + leaveID + "'";
-
-                string leaveName = "";
-                using (var connection2 = new SqlConnection(connectionString))
-                {
-                    var command2 = new SqlCommand(queryString, connection2);
-                    connection2.Open();
-                    using (var reader = command2.ExecuteReader())
-                    {
-                        if (reader.HasRows)
-                        {
-                            while (reader.Read())
-                            {
-                                if (reader["Leave_Name"] != DBNull.Value)
-                                    leaveName = (string)(reader["Leave_Name"]); // Leave Name
-                            }
-                        }
-                    }
-                    connection.Close();
-                }
-
-                string temp_email = TempData["EmployeeEmail"] as string;
-                MailMessage message = new MailMessage();
-                message.From = new MailAddress("project_ict333@murdochdubai.ac.ae", "GIMEL LMS");
-
-                message.To.Add(new MailAddress(temp_email));
-
-                message.Subject = "Leave Application Update";
-                string body = "";
-                string text = "Your " + leaveName + " leave application " + "from " + model.startDate + " to " + model.returnDate + " has been sent to your line manager for approval.";
-                body = body + text + Environment.NewLine;
-
-                message.Body = body;
-                SmtpClient client = new SmtpClient();
-
-                client.EnableSsl = true;
-
-                client.Credentials = new NetworkCredential("project_ict333@murdochdubai.ac.ae", "ict@333");
-                try
-                {
-                    client.Send(message);
-                }
-                catch (Exception e)
-                {
-                    Response.Write("<script> alert('The email could not be sent due to a network error.');</script>");
-                }
-                Response.Write("<script> alert('Your leave application has been submitted.');location.href='Create'</script>");
                 connection.Close();
             }
-            return Create();
+
+            if (numOfDays == 0 && isWeekend)
+                ModelState.AddModelError("startDate", "This date is a weekend.");
+
+            if (numOfDays == 0 && isPublicHoliday)
+                ModelState.AddModelError("startDate", "This date is a public holiday.");
+
+            if (numOfDays > 30)
+                ModelState.AddModelError("endDate", "You cannot apply for more than 30 days duration.");
+
+            return numOfDays;
         }
+
     }
 }

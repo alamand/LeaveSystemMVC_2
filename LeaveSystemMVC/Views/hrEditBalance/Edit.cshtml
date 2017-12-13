@@ -25,8 +25,7 @@
             }
         </div>
         @Html.ValidationMessage("errmsg")
-
-        @Html.HiddenFor(modelItem => modelItem.empId, new { @Value = ViewBag.sid })
+        @Html.HiddenFor(Model => Model.empId)
         <div class="col-md-12">
             <table class="table">
                 <tr>
@@ -36,49 +35,49 @@
                 </tr>
                 <tr>
                     <td>Annual</td>
-                    <td>@ViewBag.annual</td>
-                    <td>@Html.TextBoxFor(modelItem => modelItem.annual, new { @Value = ViewBag.annual, @class="form-control" })</td>
-                    @Html.HiddenFor(modelItem => modelItem.annualID)
+                    <td>@Model.annual</td>
+                    <td>@Html.TextBoxFor(Model => Model.annual, new { @Value = Model.annual, @class="form-control" })</td>
+                    @Html.HiddenFor(Model => Model.annualID)
                 </tr>
                 @if (ViewBag.gender == 'F') {
                 <tr>
                     <td>Maternity</td>
-                    <td>@ViewBag.maternity </td>
-                    <td>@Html.TextBoxFor(modelItem => modelItem.maternity, new { @Value = ViewBag.maternity, @class = "form-control" })</td>
-                    @Html.HiddenFor(modelItem => modelItem.maternityID)
+                    <td>@Model.maternity </td>
+                    <td>@Html.TextBoxFor(Model => Model.maternity, new { @Value = Model.maternity, @class = "form-control" })</td>
+                    @Html.HiddenFor(Model => Model.maternityID)
                 </tr>
                 }
                 <tr>
                     <td>Sick</td>
-                    <td>@ViewBag.sick</td>
-                    <td>@Html.TextBoxFor(modelItem => modelItem.sick, new { @Value = ViewBag.sick, @class = "form-control" })</td>
-                    @Html.HiddenFor(modelItem => modelItem.sickID)
+                    <td>@Model.sick</td>
+                    <td>@Html.TextBoxFor(Model => Model.sick, new { @Value = Model.sick, @class = "form-control" })</td>
+                    @Html.HiddenFor(Model => Model.sickID)
                 </tr>
                 <tr>
                     <td>Days In Lieu</td>
-                    <td>@ViewBag.daysInLieue</td>
-                    <td>@Html.TextBoxFor(modelItem => modelItem.daysInLieue, new { @Value = ViewBag.daysInLieue, @class = "form-control" })</td>
-                    @Html.HiddenFor(modelItem => modelItem.daysInLieueID)
+                    <td>@Model.daysInLieue</td>
+                    <td>@Html.TextBoxFor(Model => Model.daysInLieue, new { @Value = Model.daysInLieue, @class = "form-control" })</td>
+                    @Html.HiddenFor(Model => Model.daysInLieueID)
                 </tr>
                 <tr>
                     <td>Compassionate</td>
-                    <td>@ViewBag.compassionate</td>
-                    <td>@Html.TextBoxFor(modelItem => modelItem.compassionate, new { @Value = ViewBag.compassionate, @class = "form-control" })</td>
-                    @Html.HiddenFor(modelItem => modelItem.compassionateID)
+                    <td>@Model.compassionate</td>
+                    <td>@Html.TextBoxFor(Model => Model.compassionate, new { @Value = Model.compassionate, @class = "form-control" })</td>
+                    @Html.HiddenFor(Model => Model.compassionateID)
                 </tr>
                 <tr>
                     <td>Short</td>
-                    <td>@ViewBag.shortLeaveHours</td>
-                    <td>@Html.TextBoxFor(modelItem => modelItem.shortLeaveHours, new { @Value = ViewBag.shortLeaveHours, @class = "form-control" })</td>
-                    @Html.HiddenFor(modelItem => modelItem.shortID)
+                    <td>@Model.shortLeaveHours</td>
+                    <td>@Html.TextBoxFor(Model => Model.shortLeaveHours, new { @Value = Model.shortLeaveHours, @class = "form-control" })</td>
+                    @Html.HiddenFor(Model => Model.shortID)
                 </tr>
                @if (ViewBag.religion.Equals("Muslim"))
                {
                 <tr>
                     <td>Pilgrimage</td>
-                    <td>@ViewBag.pilgrimage</td>
-                    <td>@Html.TextBoxFor(modelItem => modelItem.pilgrimage, new { @Value = ViewBag.pilgrimage, @class = "form-control" })</td>
-                    @Html.HiddenFor(modelItem => modelItem.pilgrimageID)
+                    <td>@Model.pilgrimage</td>
+                    <td>@Html.TextBoxFor(Model => Model.pilgrimage, new { @Value = Model.pilgrimage, @class = "form-control" })</td>
+                    @Html.HiddenFor(Model => Model.pilgrimageID)
                 </tr>
                }
             </table>

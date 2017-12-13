@@ -11,8 +11,8 @@ namespace LeaveSystemMVC.Models
     {
         public int iter { get; set; }
         [Display(Name = "Leave ID: ")]
-        public string leaveID { get; set; }
-        public string employeeID { get; set; }
+        public int leaveID { get; set; }
+        public int employeeID { get; set; }
 
         [Display(Name = "Name")]
         public string staffName { get; set; }
@@ -26,17 +26,19 @@ namespace LeaveSystemMVC.Models
         public DateTime applicationDate { get; set; } //Date of application creation
 
         [DisplayName("Start Date")]
-        [Required(ErrorMessage = "Please select leave start date")]
+        [Required(ErrorMessage = "Start Date is required.")]
         public DateTime startDate { get; set; }
 
+        // @TODO: Remove on of the two (end date or return date)
         [DisplayName("End Date")]
-        [Required(ErrorMessage = "Please select leave end date")]
+        [Required(ErrorMessage = "Reporting Back Date is required.")]
         public DateTime endDate { get; set; }
 
         [Display(Name = "Return Date")]
+        [Required(ErrorMessage = "Reporting Back Date is required.")]
         public DateTime returnDate { get; set; }
 
-        public int leaveDuration { get; set; }
+        public decimal leaveDuration { get; set; }
 
         [DisplayName("Start Time")]
         public TimeSpan? shortStartTime { get; set; }
@@ -57,12 +59,13 @@ namespace LeaveSystemMVC.Models
         public string comments { get; set; }
 
         [DisplayName("Supporting Docs")]
-        public string supportingDocs { get; set; }
+        public HttpPostedFileBase supportingDocs { get; set; }
 
         [DisplayName("Book Air Ticket?")]
         public bool bookAirTicket { get; set; }
 
         [DisplayName("Phone Number")]
+        [Required(ErrorMessage = "Phone Number is required.")]
         [DataType(DataType.PhoneNumber, ErrorMessage = "You must provide a phone number in international format, starting with a + symbol.")]
         [RegularExpression(@"^\+[1-9]{1}[0-9]{3,14}$", ErrorMessage = "You must provide a phone number in international format, starting with a + symbol.")]
         public string contactDetails { get; set; }

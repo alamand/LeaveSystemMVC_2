@@ -44,7 +44,7 @@ namespace LeaveSystemMVC.Controllers
 
                     // Set the full path file name
                     string xFileName = dbName + DateTime.Now.ToString("yyyyMMdd-hhmmss") + ".bak";
-                    string dlFile = Server.MapPath("~/App_Data") + "/" + xFileName;
+                    string dlFile = Server.MapPath("~/App_Data/DB_Backup") + "/" + xFileName;
 
                     // Perform back up from database to file
                     BackupDeviceItem destination = new BackupDeviceItem(dlFile, DeviceType.File);
@@ -130,7 +130,7 @@ namespace LeaveSystemMVC.Controllers
 
                     // Set the full path file name
                     string xFileName = dbName + DateTime.Now.ToString("yyyyMMdd-hhmmss") + ".sql";
-                    string dlFile = Server.MapPath("~/App_Data") + "/" + xFileName;
+                    string dlFile = Server.MapPath("~/App_Data/DB_Backup") + "/" + xFileName;
 
                     // Write the list to file
                     StreamWriter sWriter = System.IO.File.CreateText(dlFile);
@@ -157,7 +157,7 @@ namespace LeaveSystemMVC.Controllers
 
         private void deleteFiles(string ext)
         {
-            string dDirectory = Server.MapPath("~/App_Data") + "\\";
+            string dDirectory = Server.MapPath("~/App_Data/DB_Backup") + "\\";
 
             // Delete previously generated backups
             string[] fileList = Directory.GetFiles(dDirectory, "*." + ext);

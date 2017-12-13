@@ -13,18 +13,42 @@ namespace LeaveSystemMVC.Controllers
     {
         string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
 
-        protected string GetLoggedInID()
+        protected int GetLoggedInID()
         {
             var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
             var identity = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
             string loggedInID = identity.ToString();
-            return loggedInID.Substring(loggedInID.Length - 5);
+            loggedInID = loggedInID.Substring(loggedInID.Length - 5);
+            return Convert.ToInt32(loggedInID);
         }
 
-        protected sleaveBalanceModel GetLeaveBalanceModel()
+        protected sleaveBalanceModel GetLeaveBalanceModel(int empID = 0)
         {
-            var lv = new sleaveBalanceModel();
-            string queryString = "Select * FROM dbo.Leave_Type";
+            var lb = new sleaveBalanceModel();
+
+            // this query will be used to get the default durations on all leave types
+            string queryString = "Select * FROM dbo.Leave_Type";        
+
+            // the word Duration is the column name in dbo.Leave_Types
+            string balanceColName = "Duration";
+
+            // change the query, gets balances on all leave types for a specific employee
+            if (empID > 0)
+            {
+                // recalls this method to get the leave IDs and default balances
+                lb = GetLeaveBalanceModel();
+                lb.empId = empID;
+
+                // sets all balances to 0, so that if the database does not containt a record, it won't use the default balance
+                lb.annual = lb.compassionate = lb.daysInLieue = lb.maternity = lb.sick = lb.unpaidTotal = lb.pilgrimage = 0;
+
+                // the word Balance is the column name in dbo.Leave_Balance
+                balanceColName = "Balance";     
+
+                queryString = "SELECT Leave_Type.Leave_ID, Leave_Name, Balance " +
+                "FROM dbo.Leave_Balance, dbo.Leave_Type " +
+                "Where Leave_Type.Leave_ID = Leave_Balance.Leave_ID AND Employee_ID =" + empID;
+            }
 
             using (var connection = new SqlConnection(connectionString))
             {
@@ -35,46 +59,51 @@ namespace LeaveSystemMVC.Controllers
                 {
                     while (reader.Read())
                     {
-                        if (reader["Leave_Name"].Equals("Annual"))
+                        switch ((string)reader["Leave_Name"])
                         {
-                            lv.annualID = (int)reader["Leave_ID"];
-                            lv.annual = (int)reader["Duration"];
-                        }
-                        else if (reader["Leave_Name"].Equals("Maternity"))
-                        {
-                            lv.maternityID = (int)reader["Leave_ID"];
-                            lv.maternity = (int)reader["Duration"];
-                        }
-                        else if (reader["Leave_Name"].Equals("Sick"))
-                        {
-                            lv.sickID = (int)reader["Leave_ID"];
-                            lv.sick = (int)reader["Duration"];
-                        }
-                        else if (reader["Leave_Name"].Equals("DIL"))
-                        {
-                            lv.daysInLieueID = (int)reader["Leave_ID"];
-                            lv.daysInLieue = (int)reader["Duration"];
-                        }
-                        else if (reader["Leave_Name"].Equals("Compassionate"))
-                        {
-                            lv.compassionateID = (int)reader["Leave_ID"];
-                            lv.compassionate = (int)reader["Duration"];
-                        }
-                        else if (reader["Leave_Name"].Equals("Short_Hours"))
-                        {
-                            lv.shortID = (int)reader["Leave_ID"];
-                            lv.shortLeaveHours = (int)reader["Duration"];
-                        }
-                        else if (reader["Leave_Name"].Equals("Pilgrimage"))
-                        {
-                            lv.pilgrimageID = (int)reader["Leave_ID"];
-                            lv.pilgrimage = (int)reader["Duration"];
+                            case "Annual":
+                                lb.annualID = (int)reader["Leave_ID"];
+                                lb.annual = (decimal)reader[balanceColName];
+                                break;
+
+                            case "Maternity":
+                                lb.maternityID = (int)reader["Leave_ID"];
+                                lb.maternity = (decimal)reader[balanceColName];
+                                break;
+
+                            case "Sick":
+                                lb.sickID = (int)reader["Leave_ID"];
+                                lb.sick = (decimal)reader[balanceColName];
+                                break;
+
+                            case "DIL":
+                                lb.daysInLieueID = (int)reader["Leave_ID"];
+                                lb.daysInLieue = (decimal)reader[balanceColName];
+                                break;
+
+                            case "Compassionate":
+                                lb.compassionateID = (int)reader["Leave_ID"];
+                                lb.compassionate = (decimal)reader[balanceColName];
+                                break;
+
+                            case "Short_Hours":
+                                lb.shortID = (int)reader["Leave_ID"];
+                                lb.shortLeaveHours = (decimal)reader[balanceColName];
+                                break;
+
+                            case "Pilgrimage":
+                                lb.pilgrimageID = (int)reader["Leave_ID"];
+                                lb.pilgrimage = (decimal)reader[balanceColName];
+                                break;
+
+                            default:
+                                break; ;
                         }
                     }
                 }
                 connection.Close();
             }
-            return lv;
+            return lb;
         }
 
         protected sEmployeeModel GetEmployeeModel(int empID)
@@ -111,12 +140,7 @@ namespace LeaveSystemMVC.Controllers
                 connection.Close();
             }
 
-            int staffRoleID = DBRoleList().FirstOrDefault(obj => obj.Value == "Staff").Key;
-            int lmRoleID = DBRoleList().FirstOrDefault(obj => obj.Value == "LM").Key;
-            int hrRoleID = DBRoleList().FirstOrDefault(obj => obj.Value == "HR").Key;
-            int hrrRoleID = DBRoleList().FirstOrDefault(obj => obj.Value == "HR_Responsible").Key;
-            int adminRoleID = DBRoleList().FirstOrDefault(obj => obj.Value == "Admin").Key;
-
+            var roleDictionary = DBRoleList();
             var queryString2 = "SELECT Role_ID FROM dbo.Employee_Role WHERE Employee_ID = " + empID;
             using (var connection = new SqlConnection(connectionString))
             {
@@ -126,19 +150,19 @@ namespace LeaveSystemMVC.Controllers
                 {
                     while (reader.Read())
                     {
-                        if ((int)reader["Role_ID"] == staffRoleID)
+                        if (roleDictionary[(int)reader["Role_ID"]].Equals("Staff"))
                             employeeModel.isStaff = true;
 
-                        if ((int)reader["Role_ID"] == lmRoleID )
+                        if (roleDictionary[(int)reader["Role_ID"]].Equals("LM"))
                             employeeModel.isLM = true;
 
-                        if ((int)reader["Role_ID"] == hrRoleID)
+                        if (roleDictionary[(int)reader["Role_ID"]].Equals("HR"))
                             employeeModel.isHR = true;
 
-                        if ((int)reader["Role_ID"] == hrrRoleID)
+                        if (roleDictionary[(int)reader["Role_ID"]].Equals("HR_Responsible"))
                             employeeModel.isHRResponsible = true;
 
-                        if ((int)reader["Role_ID"] == adminRoleID)
+                        if (roleDictionary[(int)reader["Role_ID"]].Equals("Admin"))
                             employeeModel.isAdmin = true;
                     }
                 }
@@ -148,7 +172,24 @@ namespace LeaveSystemMVC.Controllers
             return employeeModel;
         }
 
-        public bool IsHRResponsibleExist()
+        protected bool IsLeaveBalanceExists(int empID, int leaveID)
+        {
+            bool isExist = false;
+
+            var queryString = "SELECT COUNT(*) FROM dbo.Leave_Balance WHERE Employee_ID = " + empID + " AND Leave_ID = " + leaveID;
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                if ((int)command.ExecuteScalar() > 0)
+                    isExist = true;
+                connection.Close();
+            }
+            return isExist;
+        }
+
+        protected bool IsHRResponsibleExist()
         {
             bool isExist = false;
             int hrrRoleID = DBRoleList().FirstOrDefault(obj => obj.Value == "HR_Responsible").Key;
@@ -166,7 +207,7 @@ namespace LeaveSystemMVC.Controllers
             return isExist;
         }
 
-        public bool IsAdminExist(int numOfAdmins = 1)
+        protected bool IsAdminExist(int numOfAdmins = 1)
         {
             bool isExist = false;
             int adminRole = DBRoleList().FirstOrDefault(obj => obj.Value == "Admin").Key;

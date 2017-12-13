@@ -57,13 +57,13 @@ namespace LeaveSystemMVC.Controllers
 
                         int id = (int)reader["Leave_Application_ID"];
 
-                        leave.leaveID = id.ToString();
+                        leave.leaveID = id;
 
                         leave.startDate = (DateTime)reader["Start_Date"];
                         
                         leave.endDate = (DateTime)reader["End_Date"];
                         
-                        leave.leaveDuration = (int)reader["Total_Leave_Days"];
+                        leave.leaveDuration = (decimal)reader["Total_Leave"];
                         
                         if (!reader.IsDBNull(11))
                         {

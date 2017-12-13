@@ -9,8 +9,8 @@
     @{
         var departmentList = ViewData["DepartmentList"] as Dictionary<int, string>;
         var statusList = ViewData["AccountStatusList"] as Dictionary<int, string>;
-        var selectedDepartment = @ViewData["SelectedDepartment"];
-        var selectedAccStatus = @ViewData["SelectedAccStatus"];
+        var selectedDepartment = ViewData["SelectedDepartment"];
+        var selectedAccStatus = ViewData["SelectedAccStatus"];
         var enteredSearch = ViewData["EnteredSearch"];
     }
     <div class="panel-group">

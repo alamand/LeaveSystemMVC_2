@@ -310,7 +310,7 @@ namespace LeaveSystemMVC.Controllers
         public void DecrementTotalDays(int apid, int duration, int eid, int lid)
         {
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "Update dbo.Leave SET Total_Leave_Days= Total_Leave_Days -" + duration + " WHERE Leave_Application_ID =" + apid + "";
+            string queryString = "Update dbo.Leave SET Total_Leave= Total_Leave -" + duration + " WHERE Leave_Application_ID =" + apid + "";
             using (var connection = new SqlConnection(connectionString))
             {
                 if (connection.State != ConnectionState.Open)
