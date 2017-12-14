@@ -20,6 +20,7 @@ namespace LeaveSystemMVC.Controllers
         public ActionResult Index(int leaveTypeID = 0)
         {
             sEmployeeModel emp = GetEmployeeModel(GetLoggedInID());
+            TempData["Employee"] = emp;
             SetViewDatas(emp, leaveTypeID);
 
             return View();
@@ -33,39 +34,56 @@ namespace LeaveSystemMVC.Controllers
         }
 
         [HttpPost]
-        public ActionResult Index(sLeaveModel model)
+        public ActionResult Index(sLeaveModel model, HttpPostedFileBase file)
         {
-            sEmployeeModel emp = GetEmployeeModel(GetLoggedInID());
+            sEmployeeModel emp = TempData["Employee"] as sEmployeeModel;
             sleaveBalanceModel leaveBalance = GetLeaveBalanceModel(GetLoggedInID());
-            string leaveType = DBLeaveTypeList()[model.leaveID];
-            ModelState.Clear();
+            model.leaveTypeName = DBLeaveTypeList()[model.leaveTypeID];
 
-            switch (leaveType)
+            ModelState.Clear();
+            int numOfDays = 0;
+            System.Diagnostics.Debug.WriteLine(model.leaveTypeName);
+
+            switch (model.leaveTypeName)
             {
                 case "Annual":
                     CompareDates(model.startDate, model.endDate);
+                    numOfDays = GetNumOfDays(model.startDate, model.endDate);
 
-                    int numOfDays = GetNumOfDays(model.startDate, model.endDate);
+                    if (numOfDays > 30)
+                        ModelState.AddModelError("endDate", "You cannot apply for more than 30 days duration.");
 
                     if (leaveBalance.annual < numOfDays)
                         ModelState.AddModelError("endDate", "You do not have enough annual balance to apply for this duration.");
 
                     if (ModelState.IsValid)
                     {
-                        string fileName = UploadFile(model.supportingDocs); // does not upload
-                        ApplyAnnualLeave(model, numOfDays, fileName);   
-                        SendMail(model, emp, leaveType);                    // not sure if it sends
+                        //string fileName = UploadFile(file); // does not upload
+                        ApplyAnnualLeave(model, numOfDays);   
+                        SendMail(model, emp);                    // not sure if it sends
                     }
                     break;
-                
-                    // need to add the rest of the leave types
+
+                case "Sick":
+                    numOfDays = GetNumOfDays(model.startDate, model.endDate);
+
+                    if (leaveBalance.sick < numOfDays)
+                        ModelState.AddModelError("endDate", "You do not have enough sick leave balance to apply for this duration.");
+
+                    if (ModelState.IsValid)
+                    {
+                        //string fileName = UploadFile(file); // does not upload
+                        ApplySickLeave(model, numOfDays);
+                        SendMail(model, emp);                    // not sure if it sends
+                    }
+                    break;
+                // need to add the rest of the leave types
                 default:
                     break; ;
 
             }
 
-
-            SetViewDatas(emp, model.leaveID);
+            SetViewDatas(emp, model.leaveTypeID);
             return View(model);
         }
 
@@ -96,9 +114,9 @@ namespace LeaveSystemMVC.Controllers
             return leaveTypes;
         }
 
-        private void SendMail(sLeaveModel lm, sEmployeeModel emp, string leaveType)
+        private void SendMail(sLeaveModel lm, sEmployeeModel emp)
         {
-            string message = "Your " + leaveType + " leave application from " + lm.startDate + " to " + lm.returnDate + " has been sent to your line manager for approval.";
+            string message = "Your " + lm.leaveTypeName + " leave application from " + lm.startDate + " to " + lm.returnDate + " has been sent to your line manager for approval.";
 
             MailMessage mail = new MailMessage();
             mail.From = new MailAddress("project_ict333@murdochdubai.ac.ae", "GIMEL LMS");
@@ -120,14 +138,23 @@ namespace LeaveSystemMVC.Controllers
             Response.Write("<script> alert('Your leave application has been submitted.');location.href='Index'</script>");
         }
 
-        private void ApplyAnnualLeave(sLeaveModel lm, int numOfDays, string fName)
+        private void ApplyAnnualLeave(sLeaveModel lm, int numOfDays, string fName = "")
         {
-            string queryString = "INSERT INTO dbo.Leave (Employee_ID, Document, Start_Date, End_Date, Leave_ID, " +
-                "Contact_Outside_UAE, Comment, Flight_Ticket, Total_Leave_Days, Leave_Status_ID) " +
+            string queryString = "INSERT INTO dbo.Leave (Employee_ID, Documentation, Start_Date, End_Date, Leave_ID, " +
+                "Contact_Outside_UAE, Comment, Flight_Ticket, Total_Leave, Leave_Status_ID) " +
                 "VALUES ('" + GetLoggedInID() + "','" + fName + "','" + lm.startDate.ToString("yyyy-MM-dd") + "','" + lm.endDate.ToString("yyyy-MM-dd") +
-                "','" + lm.leaveID + "','" + lm.contactDetails + "','" + lm.comments + "','" + lm.bookAirTicket + "','" + numOfDays + "','0');";
+                "','" + lm.leaveTypeID + "','" + lm.contactDetails + "','" + lm.comments + "','" + lm.bookAirTicket + "','" + numOfDays + "','0');";
             DBExecuteQuery(queryString);
-            }
+        }
+
+        private void ApplySickLeave(sLeaveModel lm, int numOfDays, string fName = "")
+        {
+            string queryString = "INSERT INTO dbo.Leave (Employee_ID, Documentation, Start_Date, End_Date, Leave_ID, " +
+                "Comment, Total_Leave, Leave_Status_ID) " +
+                "VALUES ('" + GetLoggedInID() + "','" + fName + "','" + lm.startDate.ToString("yyyy-MM-dd") + "','" + lm.endDate.ToString("yyyy-MM-dd") +
+                "','" + lm.leaveTypeID + "','" + lm.comments + "','" + numOfDays + "','0');";
+            DBExecuteQuery(queryString);
+        }
 
         private string UploadFile(HttpPostedFileBase file)
         {
@@ -241,9 +268,6 @@ namespace LeaveSystemMVC.Controllers
 
             if (numOfDays == 0 && isPublicHoliday)
                 ModelState.AddModelError("startDate", "This date is a public holiday.");
-
-            if (numOfDays > 30)
-                ModelState.AddModelError("endDate", "You cannot apply for more than 30 days duration.");
 
             return numOfDays;
         }

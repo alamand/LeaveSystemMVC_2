@@ -1807,7 +1807,7 @@
     <Content Include="Views\hrProbationAdministration\Index.cshtml" />
     <Content Include="Views\LApplication\_AnnualPartial.cshtml" />
     <Content Include="Views\LApplication\_MaternityPartial.cshtml" />
-    <Content Include="Views\LApplication\_Short_HoursPartial.cshtml" />
+    <Content Include="Views\LApplication\_Short_Hours_Per_MonthPartial.cshtml" />
     <Content Include="Views\LApplication\_DILPartial.cshtml" />
     <Content Include="Views\LApplication\_CompassionatePartial.cshtml" />
     <Content Include="Views\LApplication\_SickPartial.cshtml" />

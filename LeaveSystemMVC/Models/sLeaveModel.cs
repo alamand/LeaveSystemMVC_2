@@ -9,18 +9,20 @@ namespace LeaveSystemMVC.Models
 {
     public class sLeaveModel
     {
-        public int iter { get; set; }
-        [Display(Name = "Leave ID: ")]
-        public int leaveID { get; set; }
+        [Display(Name = "Leave Application ID")]
+        public int leaveAppID { get; set; }
+
+        [Display(Name = "Leave Type ID")]
+        public int leaveTypeID { get; set; }
+
+        [Display(Name = "Leave Type Name")]
+        public string leaveTypeName { get; set; }
+
+        [Display(Name = "Employee ID")]
         public int employeeID { get; set; }
 
-        [Display(Name = "Name")]
-        public string staffName { get; set; }
-
-        [Display(Name = "Leave Type")]
-        // [DisplayName("Select Leave Type")]
-        [Required(ErrorMessage = "Please select leave type")]
-        public string leaveType { get; set; }
+        [Display(Name = "Employee Name")]
+        public string employeeName { get; set; }
 
         //[DisplayName("Select Application Date")]
         public DateTime applicationDate { get; set; } //Date of application creation
@@ -52,14 +54,17 @@ namespace LeaveSystemMVC.Models
         [DisplayName("HR Comment")]
         public string hrComment { get; set; }
 
-        [DisplayName("Leave Status")]
-        public int leaveStatus { get; set; }
+        [DisplayName("Leave Status ID")]
+        public int leaveStatusID { get; set; }
+
+        [DisplayName("Leave Status ID")]
+        public string leaveStatusName { get; set; }
 
         [DisplayName("Comments")]
         public string comments { get; set; }
 
-        [DisplayName("Supporting Docs")]
-        public HttpPostedFileBase supportingDocs { get; set; }
+        [DisplayName("Documentation")]
+        public string documentation { get; set; }
 
         [DisplayName("Book Air Ticket?")]
         public bool bookAirTicket { get; set; }

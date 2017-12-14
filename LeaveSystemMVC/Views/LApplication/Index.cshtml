@@ -42,7 +42,7 @@
                         if (selectedLeaveTypeID != 0)
                         {
                             <hr />
-                            @Html.HiddenFor(model => model.leaveID, new { @Value = selectedLeaveTypeID })
+                            @Html.HiddenFor(model => model.leaveTypeID, new { @Value = selectedLeaveTypeID })
                             @Html.Partial("_" + selectedLeaveTypeName + "Partial", Model)
 
                             <hr />

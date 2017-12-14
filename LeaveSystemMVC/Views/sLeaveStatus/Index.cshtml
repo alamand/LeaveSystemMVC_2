@@ -6,110 +6,41 @@
 @Html.Partial("_LeftMenu")
 <div class="col-md-10">
     <h3>Pending Applications</h3>
-
     <table class="table" style="white-space:nowrap">
         <tr>
-            <th>
-                Leave Application ID
-            </th>
-            <th>
-                Leave Type
-            </th>
-            <th>
-                Start Date
-            </th>
-            <th>
-                End Date
-            </th>
-            <th>
-                Leave Duration
-            </th>
-            <th>
-                Start Time
-            </th>
-            <th>
-                End Time
-            </th>
-            <th>
-                Leave Status
-            </th>
-            <th>
-                HR Comment
-            </th>
-            <th>
-                LM Comment
-            </th>
-            <th>
-                Cancel
-            </th>
+            <th>App. ID</th>
+            <th>Type</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Duration</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Status</th>
+            <th>HR Comment</th>
+            <th>LM Comment</th>
+            <th>Cancel</th>
         </tr>
-
         @foreach (var item in Model)
         {
-
             string stDt = item.startDate.ToString();
             stDt = stDt.Substring(0, 9);
 
             string enDt = item.endDate.ToString();
             enDt = enDt.Substring(0, 9);
 
-            int stats = item.leaveStatus;
-
-            string status = "";
-
-            switch (stats)
-            {
-                case 0:
-                    status = "Pending LM";
-                    break;
-                case 1:
-                    status = "Pending HR";
-                    break;
-                case 2:
-                    status = "Approved";
-                    break;
-                case 3:
-                    status = "Rejected LM";
-                    break;
-                case 4:
-                    status = "Rejected HR";
-                    break;
-                case 5:
-                    status = "Cancelled";
-                    break;
-                case 6:
-                    status = "2nd Line Manager Pending";
-                    break;
-                case 7:
-                    status = "2nd Line Manager Rejected";
-                    break;
-
-                
-            }
             <tr>
-                <td>@Html.DisplayFor(modelItem => item.leaveID)</td>
-
-                <td>@Html.DisplayFor(modelItem => item.leaveType)</td>
-
+                <td>@Html.DisplayFor(modelItem => item.leaveAppID)</td>
+                <td>@Html.DisplayFor(modelItem => item.leaveTypeName)</td>
                 <td>@Html.DisplayFor(modelItem => stDt)</td>
-
                 <td>@Html.DisplayFor(modelItem => enDt)</td>
-
                 <td>@Html.DisplayFor(modelItem => item.leaveDuration)</td>
-
                 <td>@Html.DisplayFor(modelItem => item.shortStartTime)</td>
-
                 <td>@Html.DisplayFor(modelItem => item.shortEndTime)</td>
-
-                <td>@Html.DisplayFor(modelItem => status)</td>
-
+                <td>@Html.DisplayFor(modelItem => item.leaveStatusName)</td>
                 <td>@Html.DisplayFor(modelItem => item.hrComment)</td>
-
                 <td>@Html.DisplayFor(modelItem => item.lmComment)</td>
-                                
-                <td>@Html.ActionLink("Cancel", "Delete","sLeaveStatus" ,new { id = item.leaveID},null)</td>
+                <td>@Html.ActionLink("Cancel", "Delete", "sLeaveStatus" , new { id = item.leaveAppID}, null)</td>
             </tr>
-
         }
     </table>
 </div>

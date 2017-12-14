@@ -9,7 +9,7 @@
 
     <table class="table">
         <tr>
-            <th>Leave ID</th>
+            <th>App. ID</th>
             <th>Leave Type</th>
             <th>Start Date</th>
             <th>End Date</th>
@@ -28,36 +28,16 @@
 
                     string enDt = item.endDate.ToString();
                     enDt = enDt.Substring(0, 10);
-
-                    string status = "";
-
-                    switch (item.leaveStatus) {
-                        case 0:
-                        case 1:
-                            status = "Pending";
-                            break;
-                        case 2:
-                            status = "Approved";
-                            break;
-                        case 3:
-                        case 4:
-                            status = "Rejected";
-                            break;
-                        case 5:
-                            status = "Cancelled";
-                            break;
-                    }
-         }
-                <td>@Html.DisplayFor(modelItem => item.leaveID)</td>
-                <td>@Html.DisplayFor(modelItem => item.leaveType)</td>
+                }
+                <td>@Html.DisplayFor(modelItem => item.leaveAppID)</td>
+                <td>@Html.DisplayFor(modelItem => item.leaveTypeName)</td>
                 <td>@Html.DisplayFor(modelItem => stDt)</td>
                 <td>@Html.DisplayFor(modelItem => enDt)</td>
                 <td>@Html.DisplayFor(modelItem => item.leaveDuration)</td>
                 <td>@Html.DisplayFor(modelItem => item.shortStartTime)</td>
                 <td>@Html.DisplayFor(modelItem => item.shortEndTime)</td>
-                <td>@Html.DisplayFor(modelItem => status)</td>
+                <td>@Html.DisplayFor(modelItem => item.leaveStatusName)</td>
             </tr>
         }
-
     </table>
-    </div>
+</div>

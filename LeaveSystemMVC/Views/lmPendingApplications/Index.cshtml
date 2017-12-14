@@ -7,8 +7,8 @@
             <div class="panel-group" id="accordion">
                 @foreach (var leave in Model)
                 {
-                    string buttonText = leave.staffName + " <" + leave.leaveType + ">";
-                    @Html.ActionLink(buttonText, "Select", new { id = leave.leaveID }, new { @class = "btn btn-primary btn-block", @style = "color:white" })
+                    string buttonText = leave.employeeName + " <" + leave.leaveTypeName + ">";
+                    @Html.ActionLink(buttonText, "Select", new { id = leave.leaveAppID }, new { @class = "btn btn-primary btn-block", @style = "color:white" })
                     
                 }
             </div>

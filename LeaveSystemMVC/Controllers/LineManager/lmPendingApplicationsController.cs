@@ -19,26 +19,14 @@ namespace LeaveSystemMVC.Controllers
         // GET: lmPendingApplications
         public ActionResult Index()
         {
-            string userID = "";
             List<sLeaveModel> RetrievedApplications = new List<sLeaveModel>();
-
-            //to get the id of the person logged in 
-            var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
-            if (claimsIdentity != null)
-            {
-                var c = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
-                if (c != null)
-                {
-                    userID = c.Value;
-                }
-            }
 
             var connectionString =
                 ConfigurationManager.ConnectionStrings["DefaultConnection"].
                 ConnectionString;
 
             //Check if this user has nominated a substitute.
-            string queryString2 = "SELECT dbo.Department.Substitute_LM_ID FROM dbo.Department WHERE dbo.Department.Line_Manager_ID = '" + userID + "'";
+            string queryString2 = "SELECT dbo.Department.Substitute_LM_ID FROM dbo.Department WHERE dbo.Department.Line_Manager_ID = '" + GetLoggedInID() + "'";
             Boolean substituteExists = false;
             int subsID = 0;
             using (var connection = new SqlConnection(connectionString))
@@ -64,95 +52,17 @@ namespace LeaveSystemMVC.Controllers
             //No substitute nominated, so add the leave applications of staff members who report to this user
             if (!substituteExists)
             {
-                string queryString = "SELECT dbo.Leave.Leave_Application_ID, dbo.Leave.Employee_ID, " +
-                                    "dbo.Leave.Start_Date, dbo.Leave.End_Date, dbo.Leave.Reporting_Back_Date, " +
-                                    "dbo.Leave.Leave_ID, dbo.Leave.Contact_Outside_UAE, dbo.Leave.Comment, " +
-                                    "dbo.Leave.Documentation, dbo.Leave.Flight_Ticket, dbo.Leave.Total_Leave, " +
-                                    "dbo.Leave.Start_Hrs, dbo.Leave.End_Hrs, dbo.Leave.Leave_Status_ID, " +
-                                    "dbo.Leave.LM_Comment, dbo.Leave.HR_Comment, dbo.Employee.First_Name, dbo.Employee.Last_Name " +
-                                    "FROM dbo.Leave " +
-                                    "FULL JOIN dbo.Employee " +
-                                    "ON dbo.Leave.Employee_ID = dbo.Employee.Employee_ID " +
-                                    "FULL JOIN dbo.Reporting " +
-                                    "ON dbo.Employee.Employee_ID = dbo.Reporting.Employee_ID " +
-                                    "WHERE dbo.Reporting.Reporting_ID = '" + userID + "' " +
-                                    "AND dbo.Leave.Leave_Status_ID = '0'" +
-                                    "AND dbo.Leave.Leave_ID IS NOT NULL ";
+                var leaveList = GetLeaveModel("Reporting.Reporting_ID", GetLoggedInID());
 
-                using (var connection = new SqlConnection(connectionString))
+                foreach (var leave in leaveList)
                 {
-                    var command = new SqlCommand(queryString, connection);
-                    connection.Open();
-                    using (var reader = command.ExecuteReader())
-                    {
-                        if (reader.HasRows)
-                        {
-                            while (reader.Read())
-                            {
-                                var leave = new Models.sLeaveModel();
-
-                                leave.comments = (string)reader["Comment"];
-                                leave.bookAirTicket = (bool)reader["Flight_Ticket"];
-                                leave.contactDetails = (string)reader["Contact_Outside_UAE"];
-
-                                if (reader["Leave_ID"] != DBNull.Value)
-                                    leave.leaveType = GetLeaveType((int)reader["Leave_ID"]); // Leave Type ID
-                                var lidint = (int)reader["Leave_Application_ID"]; //Leave Application ID
-                                leave.leaveID = lidint;
-
-                                leave.startDate = (DateTime)reader["Start_Date"];
-
-                                string date1 = leave.startDate.ToString("yyyy-MM-dd");
-
-                                leave.endDate = (DateTime)reader["End_Date"];
-                                string date2 = leave.endDate.ToString("yyyy-MM-dd");
-
-                                leave.returnDate = (DateTime)reader["Reporting_Back_Date"];
-
-                                string date3 = leave.returnDate.ToString("yyyy-MM-dd");
-
-                                leave.leaveDuration = (decimal)reader["Total_Leave"];
-                                if (!reader.IsDBNull(11))
-                                {
-                                    leave.shortStartTime = (TimeSpan)reader["Start_Hrs"];
-                                }
-                                else
-                                {
-                                    leave.shortStartTime = new TimeSpan(0, 0, 0, 0, 0);
-                                }
-                                if (!reader.IsDBNull(12))
-                                {
-                                    leave.shortEndTime = (TimeSpan)reader["End_Hrs"];
-                                }
-                                else
-                                {
-                                    leave.shortEndTime = new TimeSpan(0, 0, 0, 0, 0);
-                                }
-
-                                leave.leaveStatus = (int)reader["Leave_Status_ID"];
-                                if (!reader.IsDBNull(15))
-                                    leave.hrComment = (string)reader["HR_Comment"];
-                                else
-                                    leave.hrComment = "";
-                                if (!reader.IsDBNull(14))
-                                    leave.lmComment = (string)reader["LM_Comment"];
-                                else
-                                    leave.hrComment = "";
-
-                                string empFirstName = (string)reader["First_Name"];
-                                string empLastName = (string)reader["Last_Name"];
-                                leave.staffName = empFirstName + " " + empLastName;
-                                int empID = (int)reader["Employee_ID"];
-                                leave.employeeID = empID;
-                                RetrievedApplications.Add(leave);
-                            }
-                        }
-                    }
+                    if (leave.leaveStatusName.Equals("Pending_LM"))
+                        RetrievedApplications.Add(leave);
                 }
             }
 
             //Check if this user is a substitute.
-            queryString2 = "SELECT dbo.Department.Line_Manager_ID FROM dbo.Department WHERE dbo.Department.Substitute_LM_ID = '" + userID + "'";
+            queryString2 = "SELECT dbo.Department.Line_Manager_ID FROM dbo.Department WHERE dbo.Department.Substitute_LM_ID = '" + GetLoggedInID() + "'";
             Boolean isSubstitute = false;
             int LM_ID = 0;
             using (var connection = new SqlConnection(connectionString))
@@ -177,84 +87,15 @@ namespace LeaveSystemMVC.Controllers
             //Adding the leave applications to the substitute instead
             if (isSubstitute)                        
             {
-                string queryString = "SELECT dbo.Leave.Leave_Application_ID, dbo.Leave.Employee_ID, " +
-                    "dbo.Leave.Start_Date, dbo.Leave.End_Date, dbo.Leave.Reporting_Back_Date, " +
-                    "dbo.Leave.Leave_ID, dbo.Leave.Contact_Outside_UAE, dbo.Leave.Comment, " +
-                    "dbo.Leave.Documentation, dbo.Leave.Flight_Ticket, dbo.Leave.Total_Leave, " +
-                    "dbo.Leave.Start_Hrs, dbo.Leave.End_Hrs, dbo.Leave.Leave_Status_ID, " +
-                    "dbo.Leave.LM_Comment, dbo.Leave.HR_Comment, dbo.Employee.First_Name, dbo.Employee.Last_Name " +
-                    "FROM dbo.Leave " +
-                    "FULL JOIN dbo.Employee " +
-                    "ON dbo.Leave.Employee_ID = dbo.Employee.Employee_ID " +
-                    "FULL JOIN dbo.Reporting " +
-                    "ON dbo.Employee.Employee_ID = dbo.Reporting.Employee_ID " +
-                    "WHERE dbo.Reporting.Reporting_ID = '" + LM_ID + "' " +
-                    "AND dbo.Leave.Leave_Status_ID = '0'" +
-                    "AND dbo.Leave.Leave_ID IS NOT NULL ";
+                var leaveList = GetLeaveModel("Reporting.Reporting_ID", LM_ID);
 
-                using (var connection2 = new SqlConnection(connectionString))
+                foreach (var leave in leaveList)
                 {
-                    var command2 = new SqlCommand(queryString, connection2);
-                    connection2.Open();
-                    using (var reader2 = command2.ExecuteReader())
-                    {
-                        if (reader2.HasRows)
-                        {
-                            while (reader2.Read())
-                            {
-                                var leave = new Models.sLeaveModel();
-
-                                if (reader2["Leave_ID"] != DBNull.Value)
-                                    leave.leaveType = GetLeaveType((int)reader2["Leave_ID"]); // Leave Type ID
-                                var lidint = (int)reader2["Leave_Application_ID"]; //Leave Application ID
-                                leave.leaveID = lidint;
-
-                                leave.startDate = (DateTime)reader2["Start_Date"];
-
-                                string date1 = leave.startDate.ToString("yyyy-MM-dd");
-
-                                leave.endDate = (DateTime)reader2["End_Date"];
-                                string date2 = leave.endDate.ToString("yyyy-MM-dd");
-
-                                leave.leaveDuration = (decimal)reader2["Total_Leave"];
-                                if (!reader2.IsDBNull(11))
-                                {
-                                    leave.shortStartTime = (TimeSpan)reader2["Start_Hrs"];
-                                }
-                                else
-                                {
-                                    leave.shortStartTime = new TimeSpan(0, 0, 0, 0, 0);
-                                }
-                                if (!reader2.IsDBNull(12))
-                                {
-                                    leave.shortEndTime = (TimeSpan)reader2["End_Hrs"];
-                                }
-                                else
-                                {
-                                    leave.shortEndTime = new TimeSpan(0, 0, 0, 0, 0);
-                                }
-
-                                leave.leaveStatus = (int)reader2["Leave_Status_ID"];
-                                if (!reader2.IsDBNull(15))
-                                    leave.hrComment = (string)reader2["HR_Comment"];
-                                else
-                                    leave.hrComment = "";
-                                if (!reader2.IsDBNull(14))
-                                    leave.lmComment = (string)reader2["LM_Comment"];
-                                else
-                                    leave.hrComment = "";
-
-                                string empFirstName = (string)reader2["First_Name"];
-                                string empLastName = (string)reader2["Last_Name"];
-                                leave.staffName = empFirstName + " " + empLastName;
-                                int empID = (int)reader2["Employee_ID"];
-                                leave.employeeID = empID;
-                                RetrievedApplications.Add(leave);
-                            }
-                        }
-                    }
+                    if (leave.leaveStatusName.Equals("Pending_LM"))
+                        RetrievedApplications.Add(leave);
                 }
             }
+
             /*Get the list of applications due for the line manager to approve*/
             TempData["RetrievedApplications"] = RetrievedApplications;
             return View(RetrievedApplications);
@@ -267,10 +108,10 @@ namespace LeaveSystemMVC.Controllers
         }
 
         [HttpGet]
-        public ActionResult Select(string Id)
+        public ActionResult Select(int Id)
         {
             List<sLeaveModel> passedApplications = TempData["RetrievedApplications"] as List<sLeaveModel>;
-            sLeaveModel passingLeave = passedApplications.First(leave => leave.leaveID.Equals(Convert.ToInt32(Id)));
+            sLeaveModel passingLeave = passedApplications.First(leave => leave.leaveAppID.Equals(Id));
             List<string> balanceStrings = new List<string>();
             var connectionString =
                 ConfigurationManager.ConnectionStrings["DefaultConnection"].
@@ -321,13 +162,13 @@ namespace LeaveSystemMVC.Controllers
                     {
                         var leave = new sLeaveModel();
 
-                        leave.leaveType = (string)reader["Leave_Name"];
+                        leave.leaveTypeName = (string)reader["Leave_Name"];
                         leave.startDate = (DateTime)reader["Start_Date"];
                         leave.endDate = (DateTime)reader["Reporting_Back_Date"];
                         leave.leaveDuration = (decimal)reader["Total_Leave"];
                         leave.shortStartTime = (!DBNull.Value.Equals(reader["Start_Hrs"])) ? (TimeSpan)reader["Start_Hrs"] : new TimeSpan(0, 0, 0, 0, 0);
                         leave.shortEndTime = (!DBNull.Value.Equals(reader["End_Hrs"])) ? (TimeSpan)reader["End_Hrs"] : new TimeSpan(0, 0, 0, 0, 0);
-                        leave.leaveStatus = (int)reader["Leave_Status_ID"];
+                        leave.leaveStatusID = (int)reader["Leave_Status_ID"];
 
                         leaveHistory.Add(leave);
                     }
@@ -349,7 +190,7 @@ namespace LeaveSystemMVC.Controllers
                 ConfigurationManager.ConnectionStrings["DefaultConnection"].
                 ConnectionString;
 
-            queryString = "SELECT dbo.Leave.Leave_ID FROM dbo.Leave WHERE dbo.Leave.Leave_Application_ID = '" + SL.leaveID + "'";
+            queryString = "SELECT dbo.Leave.Leave_ID FROM dbo.Leave WHERE dbo.Leave.Leave_Application_ID = '" + SL.leaveAppID + "'";
             int leaveID = 0;
             using (var connection = new SqlConnection(connectionString))
             {
@@ -397,13 +238,13 @@ namespace LeaveSystemMVC.Controllers
                 case "Approve":
                     queryString = "UPDATE dbo.Leave SET Leave_Status_ID = '1', " +
                         "LM_Comment = '" + SL.lmComment + "' " +
-                        "WHERE dbo.Leave.Leave_Application_ID = '" + SL.leaveID + "' ";
+                        "WHERE dbo.Leave.Leave_Application_ID = '" + SL.leaveAppID + "' ";
                     text = "Your " + leaveName + " leave application " + "from " + SL.startDate + " to " + SL.returnDate + " has been approved by your line manager. It is now awaiting review by Human Resources.";
                     break;
                 case "Reject":
                     queryString = "UPDATE dbo.Leave SET Leave_Status_ID = '3', " +
                         "LM_Comment = '" + SL.lmComment + "' " +
-                        "WHERE dbo.Leave.Leave_Application_ID = '" + SL.leaveID + "' ";
+                        "WHERE dbo.Leave.Leave_Application_ID = '" + SL.leaveAppID + "' ";
                     text = "Your " + leaveName + " leave application " + "from " + SL.startDate + " to " + SL.returnDate + " has been rejected by your line manager.";
                     break;
             }

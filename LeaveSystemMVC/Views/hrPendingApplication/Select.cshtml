@@ -17,13 +17,13 @@
                         <div class="bootstrap-admin-panel-content">
                             <div class="row">
                                 <dl class="dl-horizontal">
-                                    @Html.HiddenFor(model => model.leaveID)
+                                    @Html.HiddenFor(model => model.leaveAppID)
 
-                                    <dt>@Html.DisplayNameFor(model => model.staffName)</dt>
-                                    <dd>@Html.DisplayFor(model => model.staffName)</dd>
+                                    <dt>@Html.DisplayNameFor(model => model.employeeName)</dt>
+                                    <dd>@Html.DisplayFor(model => model.employeeName)</dd>
 
-                                    <dt>@Html.DisplayNameFor(model => model.leaveType)</dt>
-                                    <dd>@Html.DisplayFor(model => model.leaveType)</dd>
+                                    <dt>@Html.DisplayNameFor(model => model.leaveTypeName)</dt>
+                                    <dd>@Html.DisplayFor(model => model.leaveTypeName)</dd>
 
                                     @{
                                         string startDateString = Model.startDate.ToString("MM/dd/yyyy");
@@ -44,7 +44,7 @@
 
                                     <dd>@Html.DisplayFor(model => model.leaveDuration)</dd>
 
-                                    @if (Model.leaveType.Equals("Short_Hours"))
+                                    @if (Model.leaveTypeName.Equals("Short_Hours_Per_Month"))
                                     {
                                         <dt>@Html.DisplayNameFor(model => model.shortStartTime)</dt>
                                         <dd>@Html.DisplayFor(model => model.shortStartTime)</dd>
@@ -52,13 +52,13 @@
                                         <dd>@Html.DisplayFor(model => model.shortEndTime)</dd>
                                     }
 
-                                    @Html.HiddenFor(model => model.leaveStatus)
+                                    @Html.HiddenFor(model => model.leaveStatusName)
 
                                     <dt>@Html.DisplayNameFor(model => model.comments)</dt>
                                     <dd>@Html.DisplayFor(model => model.comments)</dd>
 
-                                    <dt>@Html.DisplayNameFor(model => model.supportingDocs)</dt>
-                                    <dd>@Html.DisplayFor(model => model.supportingDocs)</dd>
+                                    <dt>@Html.DisplayNameFor(model => model.documentation)</dt>
+                                    <dd>@Html.DisplayFor(model => model.documentation)</dd>
 
                                     <dt>@Html.DisplayNameFor(model => model.bookAirTicket)</dt>
                                     <dd>@Html.DisplayFor(model => model.bookAirTicket)</dd>
@@ -139,28 +139,13 @@
 
                                             string enDt = lv.endDate.ToString();
                                             enDt = enDt.Substring(0, 10);
-
-                                            string status = "";
-
-                                            switch (lv.leaveStatus)
-                                            {
-                                                case 2:
-                                                    status = "Approved";
-                                                    break;
-                                                case 3:
-                                                case 4:
-                                                    status = "Rejected";
-                                                    break;
-                                                case 5:
-                                                    status = "Canceled";
-                                                    break;
-                                            }
+                                        
                                             <tr>
-                                                <td>@lv.leaveType</td>
+                                                <td>@lv.leaveTypeName</td>
                                                 <td>@stDt</td>
                                                 <td>@enDt</td>
                                                 <td>@lv.leaveDuration</td>
-                                                @if (lv.leaveType != "Short_Hours")
+                                                @if (lv.leaveTypeName != "Short_Hours_Per_Month")
                                                 {
                                                     <td></td>
                                                     <td></td>
@@ -170,7 +155,7 @@
                                                     <td>@lv.shortStartTime</td>
                                                     <td>@lv.shortEndTime</td>
                                                 }
-                                                <td>@status</td>
+                                                <td>@lv.leaveStatusName</td>
                                             </tr>
                                         }
                                     }

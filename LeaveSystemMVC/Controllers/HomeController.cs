@@ -8,18 +8,13 @@ using System.Data.SqlClient;
 
 namespace LeaveSystemMVC.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : ControllerBase
     {
         // GET: Home
         public ActionResult Index()
         {
-            var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
-            var identity = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
-            string loggedInID = identity.ToString();
-            loggedInID = loggedInID.Substring(loggedInID.Length - 5);
-
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string query = "Select First_Name, Last_Name FROM dbo.Employee WHERE Employee_ID = " + loggedInID;
+            string query = "SELECT First_Name, Last_Name FROM dbo.Employee WHERE Employee_ID = " + GetLoggedInID();
             string name = "";
             using (var connection = new SqlConnection(connectionString))
             {

@@ -38,12 +38,11 @@
 <!--support docs-->
 <div class="row">
     <div class="col-md-3" style="white-space:nowrap">
-        @Html.LabelFor(model => model.supportingDocs, "Supporting Documents", htmlAttributes: new { @class = "control-label col-md-4" })
+        @Html.LabelFor(model => model.documentation, "Supporting Documents", htmlAttributes: new { @class = "control-label col-md-4" })
     </div>
 
     <div class="col-md-6">
         <input type="file" name="file" />
-        @Html.ValidationMessageFor(model => model.supportingDocs, "", new { @class = "text-danger" })
     </div>
 </div>
 <hr />

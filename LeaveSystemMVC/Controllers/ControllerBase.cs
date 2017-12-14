@@ -86,7 +86,7 @@ namespace LeaveSystemMVC.Controllers
                                 lb.compassionate = (decimal)reader[balanceColName];
                                 break;
 
-                            case "Short_Hours":
+                            case "Short_Hours_Per_Month":
                                 lb.shortID = (int)reader["Leave_ID"];
                                 lb.shortLeaveHours = (decimal)reader[balanceColName];
                                 break;
@@ -109,7 +109,7 @@ namespace LeaveSystemMVC.Controllers
         protected sEmployeeModel GetEmployeeModel(int empID)
         {
             sEmployeeModel employeeModel = new sEmployeeModel();
-            var queryString = "SELECT * FROM dbo.Employee WHERE Employee_ID = " + empID + " AND Employee_ID IS NOT NULL";
+            var queryString = "SELECT * FROM dbo.Employee WHERE Employee_ID = " + empID;
 
             using (var connection = new SqlConnection(connectionString))
             {
@@ -132,9 +132,9 @@ namespace LeaveSystemMVC.Controllers
                         employeeModel.accountStatus = (bool)reader["Account_Status"];
                         employeeModel.reportsToLineManagerID = (reader["Reporting_ID"] != DBNull.Value) ? (int)reader["Reporting_ID"] : (int?)null;
                         employeeModel.religionID = (reader["Religion_ID"] != DBNull.Value) ? (int)reader["Religion_ID"] : 0;
-                        employeeModel.dateOfBirth = (!DBNull.Value.Equals(reader["Date_Of_Birth"])) ? ((DateTime)reader["Date_Of_Birth"]) : new DateTime();
+                        employeeModel.dateOfBirth = (!DBNull.Value.Equals(reader["Date_Of_Birth"])) ? (DateTime)reader["Date_Of_Birth"] : new DateTime();
                         employeeModel.nationalityID = (reader["Nationality_ID"] != DBNull.Value) ? (int)reader["Nationality_ID"] : 0;
-                        employeeModel.onProbation = (reader["Probation"] != DBNull.Value) ? ((bool)reader["Probation"]) : false;
+                        employeeModel.onProbation = (reader["Probation"] != DBNull.Value) ? (bool)reader["Probation"] : false;
                     }
                 }
                 connection.Close();
@@ -170,6 +170,61 @@ namespace LeaveSystemMVC.Controllers
             }
 
             return employeeModel;
+        }
+
+        protected List<sLeaveModel> GetLeaveModel(string listFor="", int empID=0)
+        {
+            var leaveList = new List<sLeaveModel>();
+            var leaveType = DBLeaveTypeList();
+
+            var queryString = "SELECT Leave_Application_ID, Employee.Employee_ID, First_Name, Last_Name, Leave.Start_Date, Leave.End_Date, Leave.Leave_ID, Leave_Name, " +
+                "Contact_Outside_UAE, Comment, Documentation, Flight_Ticket, Total_Leave, Start_Hrs, End_Hrs, Leave.Leave_Status_ID, Status_Name, HR_Comment, LM_Comment " +
+                "FROM dbo.Leave, dbo.Employee, dbo.Leave_Type, dbo.Leave_Status, dbo.Department, dbo.Reporting " +
+                "WHERE Leave.Employee_ID = Employee.Employee_ID AND Leave.Leave_ID = Leave_Type.Leave_ID AND " +
+                "Leave.Leave_Status_ID = Leave_Status.Leave_Status_ID AND Department.Department_ID = Employee.Department_ID AND Employee.Employee_ID = Reporting.Employee_ID";
+
+            if (empID != 0)
+            {
+                 queryString += " AND " + listFor + " = " + empID;
+            }
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var leave = new sLeaveModel
+                        {
+                            leaveAppID = (int)reader["Leave_Application_ID"],
+                            employeeID = (int)reader["Employee_ID"],
+                            employeeName = (string)reader["First_Name"] + " " + (string)reader["Last_Name"],
+                            startDate = (!DBNull.Value.Equals(reader["Start_Date"])) ? (DateTime)reader["Start_Date"] : new DateTime(0, 0, 0),
+                            endDate = (!DBNull.Value.Equals(reader["End_Date"])) ? (DateTime)reader["End_Date"] : new DateTime(0,0,0),
+                            leaveTypeID = (int)reader["Leave_ID"],
+                            leaveTypeName = (string)reader["Leave_Name"],
+                            contactDetails = (!DBNull.Value.Equals(reader["Contact_Outside_UAE"])) ? (string)reader["Contact_Outside_UAE"] : "",
+                            comments = (!DBNull.Value.Equals(reader["Comment"])) ? (string)reader["Comment"] : "",
+                            documentation = (!DBNull.Value.Equals(reader["Documentation"])) ? (string)reader["Documentation"] : "",
+                            bookAirTicket = (!DBNull.Value.Equals(reader["Flight_Ticket"])) ? (bool)reader["Flight_Ticket"] : false,
+                            leaveDuration = (decimal)reader["Total_Leave"],
+                            shortStartTime = (!DBNull.Value.Equals(reader["Start_Hrs"])) ? (TimeSpan)reader["Start_Hrs"] : new TimeSpan(0, 0, 0, 0, 0),
+                            shortEndTime = (!DBNull.Value.Equals(reader["End_Hrs"])) ? (TimeSpan)reader["End_Hrs"] : new TimeSpan(0, 0, 0, 0, 0),
+                            leaveStatusID = (int)reader["Leave_Status_ID"],
+                            leaveStatusName = (string)reader["Status_Name"],
+                            hrComment = (!DBNull.Value.Equals(reader["HR_Comment"])) ? (string)reader["HR_Comment"] : "",
+                            lmComment = (!DBNull.Value.Equals(reader["LM_Comment"])) ? (string)reader["LM_Comment"] : ""
+                        };
+                        leaveList.Add(leave);
+                    }
+                }
+                connection.Close();
+            }
+
+            return leaveList;
         }
 
         protected bool IsLeaveBalanceExists(int empID, int leaveID)
@@ -244,11 +299,19 @@ namespace LeaveSystemMVC.Controllers
 
         protected Dictionary<int, string> AccountStatusList()
         {
-            Dictionary<int, string> accStatus = new Dictionary<int, string>();
-            accStatus.Add(-1, "Active/Inactive");
-            accStatus.Add(1, "Active Only");
-            accStatus.Add(0, "Inactive Only");
+            Dictionary<int, string> accStatus = new Dictionary<int, string>
+            {
+                { -1, "Active/Inactive" },
+                { 1, "Active Only" },
+                { 0, "Inactive Only" }
+            };
             return accStatus;
+        }
+
+        protected Dictionary<int, string> DBLeaveStatusList()
+        {
+            var queryString = "SELECT Leave_Status_ID, Status_Name FROM dbo.Leave_Status";
+            return DBListing(queryString, "Leave_Status_ID", "Status_Name");
         }
 
         protected Dictionary<int, string> DBEmployeeList(int accountStatus = -1)
@@ -320,7 +383,7 @@ namespace LeaveSystemMVC.Controllers
 
         protected Dictionary<int, string> DBDepartmentList()
         {
-            var queryString = "Select Department_ID, Department_Name FROM dbo.Department";
+            var queryString = "SELECT Department_ID, Department_Name FROM dbo.Department";
             return DBListing(queryString, "Department_ID", "Department_Name");
         }
 
@@ -366,8 +429,6 @@ namespace LeaveSystemMVC.Controllers
             }
             return list;
         }
-
-      
 
     }
 }
