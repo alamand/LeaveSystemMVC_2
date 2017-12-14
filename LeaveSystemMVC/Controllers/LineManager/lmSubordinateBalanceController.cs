@@ -8,6 +8,7 @@ using System.Web.Mvc;
 
 namespace LeaveSystemMVC.Controllers
 {
+    // @TODO: OPTIMIZE THIS
     public class lmSubordinateBalanceController : ControllerBase
     {
         // GET: lmSubordinateBalance
@@ -16,7 +17,7 @@ namespace LeaveSystemMVC.Controllers
             var model = new List<Models.hrEmpLeaveBalModel>();
 
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "Select Employee_ID, First_Name, Last_Name, Gender FROM dbo.Employee WHERE Reporting_ID = " + GetLoggedInID();
+            string queryString = "Select Employee_ID, First_Name, Last_Name, Gender, Religion_ID FROM dbo.Employee WHERE Reporting_ID = " + GetLoggedInID();
 
             using (var connection = new SqlConnection(connectionString))
             {
@@ -34,6 +35,7 @@ namespace LeaveSystemMVC.Controllers
                         empBal.employee.lastName = (string)reader["Last_Name"];
                         empBal.employee.staffID = (int)reader["Employee_ID"];
                         empBal.employee.gender = Convert.ToChar(reader["Gender"]);
+                        empBal.religionString = DBReligionList()[(int)reader["Religion_ID"]];
 
                         string queryString2 = "Select Balance,Leave_Name FROM dbo.Leave_Balance, dbo.Leave_Type where Leave_Balance.Employee_ID = '" + empBal.employee.staffID + "' AND Leave_Balance.Leave_ID = Leave_Type.Leave_ID";
 
@@ -58,14 +60,14 @@ namespace LeaveSystemMVC.Controllers
                                     if (leave.Equals("Maternity"))
                                         empBal.leaveBalance.maternity = (decimal)reader2["Balance"];
 
-                                    if (leave.Equals("Short_Hours"))
-                                        empBal.leaveBalance.shortLeaveHours = (decimal)reader2["Balance"];
+                                    if (leave.Equals("Short_Hours_Per"))
+                                        empBal.leaveBalance.shortHours = (decimal)reader2["Balance"];
 
                                     if (leave.Equals("Unpaid"))
-                                        empBal.leaveBalance.unpaidTotal = (decimal)reader2["Balance"];
+                                        empBal.leaveBalance.unpaid = (decimal)reader2["Balance"];
 
                                     if (leave.Equals("DIL"))
-                                        empBal.leaveBalance.daysInLieue = (decimal)reader2["Balance"];
+                                        empBal.leaveBalance.daysInLieu = (decimal)reader2["Balance"];
                                 }
                             }
 

@@ -1814,7 +1814,8 @@
     <Content Include="Views\LApplication\_PilgrimagePartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Data\" />
+    <Folder Include="App_Data\DB_Backup\" />
+    <Folder Include="App_Data\Documentation\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">

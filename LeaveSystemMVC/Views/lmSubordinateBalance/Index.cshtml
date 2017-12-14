@@ -16,7 +16,7 @@
             <th>Short Leave</th>
             <th>Maternity Leave</th>
             <th>Days in Lieu</th>
-
+            <th>Pilgrimage</th>
         </tr>
         @foreach (var item in Model)
         {
@@ -26,7 +26,7 @@
                 <td>@item.leaveBalance.annual</td>
                 <td>@item.leaveBalance.sick</td>
                 <td>@item.leaveBalance.compassionate</td>
-                <td>@item.leaveBalance.shortLeaveHours</td>
+                <td>@item.leaveBalance.shortHours</td>
                 @if (item.employee.gender == 'F')
                 {
                     <td>@item.leaveBalance.maternity</td>
@@ -35,7 +35,15 @@
                 {
                     <td></td>
                 }
-                <td>@item.leaveBalance.daysInLieue</td>
+                <td>@item.leaveBalance.daysInLieu</td>
+                @if (item.religionString.Equals("Muslim"))
+                {
+                    <td>@item.leaveBalance.pilgrimage</td>
+                }
+                else
+                {
+                    <td></td>
+                }
             </tr>
         }
     </table>

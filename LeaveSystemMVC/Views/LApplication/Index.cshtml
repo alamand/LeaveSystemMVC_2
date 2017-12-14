@@ -34,11 +34,11 @@
                         </div>
                     }
 
-                    @using (Html.BeginForm())
+                    @using (Html.BeginForm("Index", "LApplication", FormMethod.Post, new { enctype = "multipart/form-data" }))
                     {
                         @Html.AntiForgeryToken()
                         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-
+                        
                         if (selectedLeaveTypeID != 0)
                         {
                             <hr />

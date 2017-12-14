@@ -1,33 +1,45 @@
-﻿@Html.Partial("_LeftMenu")
-<div class="col-md-10">
-    <h3>Leave Balances</h3>
+﻿@model LeaveSystemMVC.Models.sleaveBalanceModel
+
+@{
+    ViewBag.Title = "Leave Balances";
+}
+@Html.Partial("_LeftMenu")
+<div class="col-md-4">
+    <h3>@ViewBag.Title</h3>
     <table class="table">
         <tr>
-            <th>Annual</th>
-            <td>@ViewBag.annual</td>
+            <th>@Html.DisplayNameFor(Model => Model.annual)</th>
+            <td>@Html.DisplayFor(Model => Model.annual)</td>
         </tr>
         <tr>
-            <th>Sick</th>
-            <td>@ViewBag.sick</td>
+            <th>@Html.DisplayNameFor(Model => Model.sick)</th>
+            <td>@Html.DisplayFor(Model => Model.sick)</td>
         </tr>
         <tr>
-            <th>Compassionate</th>
-            <td>@ViewBag.Compassionate</td>
+            <th>@Html.DisplayNameFor(Model => Model.compassionate)</th>
+            <td>@Html.DisplayFor(Model => Model.compassionate)</td>
         </tr>
-        @if (ViewBag.gender == 'F')
+        @if ((char)ViewData["Gender"] == 'F')
         {
             <tr>
-                <th>Maternity</th>
-                <td>@ViewBag.maternity</td>
+                <th>@Html.DisplayNameFor(Model => Model.maternity)</th>
+                <td>@Html.DisplayFor(Model => Model.maternity)</td>
             </tr>
         }
         <tr>
-            <th>Days in Lieu</th>
-            <td>@ViewBag.DIL</td>
+            <th>@Html.DisplayNameFor(Model => Model.daysInLieu)</th>
+            <td>@Html.DisplayFor(Model => Model.daysInLieu)</td>
         </tr>
         <tr>
-            <th>Short Leave Hours</th>
-            <td>@ViewBag.shortHrs</td>
+            <th>@Html.DisplayNameFor(Model => Model.shortHours)</th>
+            <td>@Html.DisplayFor(Model => Model.shortHours)</td>
         </tr>
+        @if (ViewData["Religion"].Equals("Muslim"))
+        {
+        <tr>
+            <th>@Html.DisplayNameFor(Model => Model.pilgrimage)</th>
+            <td>@Html.DisplayFor(Model => Model.pilgrimage)</td>
+        </tr>
+        }
     </table>
 </div>

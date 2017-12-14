@@ -40,7 +40,7 @@ namespace LeaveSystemMVC.Controllers
                 lb.empId = empID;
 
                 // sets all balances to 0, so that if the database does not containt a record, it won't use the default balance
-                lb.annual = lb.compassionate = lb.daysInLieue = lb.maternity = lb.sick = lb.unpaidTotal = lb.pilgrimage = 0;
+                lb.annual = lb.compassionate = lb.daysInLieu = lb.maternity = lb.sick = lb.unpaid = lb.pilgrimage = 0;
 
                 // the word Balance is the column name in dbo.Leave_Balance
                 balanceColName = "Balance";     
@@ -77,8 +77,8 @@ namespace LeaveSystemMVC.Controllers
                                 break;
 
                             case "DIL":
-                                lb.daysInLieueID = (int)reader["Leave_ID"];
-                                lb.daysInLieue = (decimal)reader[balanceColName];
+                                lb.daysInLieuID = (int)reader["Leave_ID"];
+                                lb.daysInLieu = (decimal)reader[balanceColName];
                                 break;
 
                             case "Compassionate":
@@ -87,8 +87,8 @@ namespace LeaveSystemMVC.Controllers
                                 break;
 
                             case "Short_Hours_Per_Month":
-                                lb.shortID = (int)reader["Leave_ID"];
-                                lb.shortLeaveHours = (decimal)reader[balanceColName];
+                                lb.shortHoursID = (int)reader["Leave_ID"];
+                                lb.shortHours = (decimal)reader[balanceColName];
                                 break;
 
                             case "Pilgrimage":

@@ -72,8 +72,8 @@
                         @ViewBag.dilDuration
                     </td>
                     <td>
-                        @Html.TextBoxFor(modelItem => modelItem.daysInLieue, new { @Value = ViewBag.dilDuration })
-                        @Html.HiddenFor(modelItem => modelItem.daysInLieueID, new { @Value = ViewBag.dilID })
+                        @Html.TextBoxFor(modelItem => modelItem.daysInLieu, new { @Value = ViewBag.dilDuration })
+                        @Html.HiddenFor(modelItem => modelItem.daysInLieuID, new { @Value = ViewBag.dilID })
                     </td>
                 </tr>
                 <tr>
@@ -96,8 +96,8 @@
                         @ViewBag.shortDuration
                     </td>
                     <td>
-                        @Html.TextBoxFor(modelItem => modelItem.shortLeaveHours, new { @Value = ViewBag.shortDuration })
-                        @Html.HiddenFor(modelItem => modelItem.shortID, new { @Value = ViewBag.shortID })
+                        @Html.TextBoxFor(modelItem => modelItem.shortHours, new { @Value = ViewBag.shortDuration })
+                        @Html.HiddenFor(modelItem => modelItem.shortHoursID, new { @Value = ViewBag.shortID })
                     </td>
                 </tr>
 

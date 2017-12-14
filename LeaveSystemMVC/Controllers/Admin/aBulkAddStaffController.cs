@@ -143,12 +143,12 @@ namespace LeaveSystemMVC.Controllers
                                     case 17:
                                         int dil;
                                         int.TryParse(tableColumn, out dil);
-                                        newEmployee.balances.daysInLieue = dil;
+                                        newEmployee.balances.daysInLieu = dil;
                                         break;
                                     case 18:
                                         int hours;
                                         int.TryParse(tableColumn, out hours);
-                                        newEmployee.balances.shortLeaveHours = hours;
+                                        newEmployee.balances.shortHours = hours;
                                         break;
 
                                 } // end of switch
@@ -238,11 +238,11 @@ namespace LeaveSystemMVC.Controllers
                                         leaveID = 4;
                                         break;
                                     case 4:
-                                        balance = employee.balances.daysInLieue;
+                                        balance = employee.balances.daysInLieu;
                                         leaveID = 5;
                                         break;
                                     case 5:
-                                        balance = employee.balances.shortLeaveHours;
+                                        balance = employee.balances.shortHours;
                                         leaveID = 6;
                                         break;
                                 } // end of switch

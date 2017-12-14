@@ -55,9 +55,9 @@
                 </tr>
                 <tr>
                     <td>Days In Lieu</td>
-                    <td>@Model.daysInLieue</td>
-                    <td>@Html.TextBoxFor(Model => Model.daysInLieue, new { @Value = Model.daysInLieue, @class = "form-control" })</td>
-                    @Html.HiddenFor(Model => Model.daysInLieueID)
+                    <td>@Model.daysInLieu</td>
+                    <td>@Html.TextBoxFor(Model => Model.daysInLieu, new { @Value = Model.daysInLieu, @class = "form-control" })</td>
+                    @Html.HiddenFor(Model => Model.daysInLieuID)
                 </tr>
                 <tr>
                     <td>Compassionate</td>
@@ -67,9 +67,9 @@
                 </tr>
                 <tr>
                     <td>Short</td>
-                    <td>@Model.shortLeaveHours</td>
-                    <td>@Html.TextBoxFor(Model => Model.shortLeaveHours, new { @Value = Model.shortLeaveHours, @class = "form-control" })</td>
-                    @Html.HiddenFor(Model => Model.shortID)
+                    <td>@Model.shortHours</td>
+                    <td>@Html.TextBoxFor(Model => Model.shortHours, new { @Value = Model.shortHours, @class = "form-control" })</td>
+                    @Html.HiddenFor(Model => Model.shortHoursID)
                 </tr>
                @if (ViewBag.religion.Equals("Muslim"))
                {

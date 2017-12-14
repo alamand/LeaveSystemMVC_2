@@ -26,9 +26,9 @@ namespace LeaveSystemMVC.Controllers
             {
                 CreditBalance(lb.compassionateID, lb.compassionate);
                 CreditBalance(lb.maternityID, lb.maternity);
-                CreditBalance(lb.shortID, lb.shortLeaveHours);
+                CreditBalance(lb.shortHoursID, lb.shortHours);
                 CreditBalance(lb.sickID, lb.sick);
-                CreditBalance(lb.unpaidID, lb.unpaidTotal);
+                CreditBalance(lb.unpaidID, lb.unpaid);
                 CreditAnnual(lb.annualID, lb.annual);
                 //CreditPilgrimage();
 

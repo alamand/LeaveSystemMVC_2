@@ -34,7 +34,7 @@ namespace LeaveSystemMVC.Controllers
         }
 
         [HttpPost]
-        public ActionResult Index(sLeaveModel model, HttpPostedFileBase file)
+        public ActionResult Index(HttpPostedFileBase file, sLeaveModel model)
         {
             sEmployeeModel emp = TempData["Employee"] as sEmployeeModel;
             sleaveBalanceModel leaveBalance = GetLeaveBalanceModel(GetLoggedInID());
@@ -58,13 +58,15 @@ namespace LeaveSystemMVC.Controllers
 
                     if (ModelState.IsValid)
                     {
-                        //string fileName = UploadFile(file); // does not upload
-                        ApplyAnnualLeave(model, numOfDays);   
+                        string fileName = UploadFile(file);
+                        ApplyAnnualLeave(model, numOfDays, fileName);   
                         SendMail(model, emp);                    // not sure if it sends
+                        return RedirectToAction("Index");   
                     }
                     break;
 
                 case "Sick":
+                    CompareDates(model.startDate, model.endDate);
                     numOfDays = GetNumOfDays(model.startDate, model.endDate);
 
                     if (leaveBalance.sick < numOfDays)
@@ -72,11 +74,32 @@ namespace LeaveSystemMVC.Controllers
 
                     if (ModelState.IsValid)
                     {
-                        //string fileName = UploadFile(file); // does not upload
-                        ApplySickLeave(model, numOfDays);
+                        string fileName = UploadFile(file); 
+                        ApplySickLeave(model, numOfDays, fileName);
                         SendMail(model, emp);                    // not sure if it sends
                     }
                     break;
+
+                case "Maternity":
+                    
+                    break;
+
+                case "Compassionate":
+
+                    break;
+
+                case "DIL":
+
+                    break;
+
+                case "Short_Hours_Per_Month":
+
+                    break;
+
+                case "Pilgrimage":
+
+                    break;
+
                 // need to add the rest of the leave types
                 default:
                     break; ;
@@ -138,7 +161,7 @@ namespace LeaveSystemMVC.Controllers
             Response.Write("<script> alert('Your leave application has been submitted.');location.href='Index'</script>");
         }
 
-        private void ApplyAnnualLeave(sLeaveModel lm, int numOfDays, string fName = "")
+        private void ApplyAnnualLeave(sLeaveModel lm, int numOfDays, string fName)
         {
             string queryString = "INSERT INTO dbo.Leave (Employee_ID, Documentation, Start_Date, End_Date, Leave_ID, " +
                 "Contact_Outside_UAE, Comment, Flight_Ticket, Total_Leave, Leave_Status_ID) " +
@@ -147,7 +170,7 @@ namespace LeaveSystemMVC.Controllers
             DBExecuteQuery(queryString);
         }
 
-        private void ApplySickLeave(sLeaveModel lm, int numOfDays, string fName = "")
+        private void ApplySickLeave(sLeaveModel lm, int numOfDays, string fName)
         {
             string queryString = "INSERT INTO dbo.Leave (Employee_ID, Documentation, Start_Date, End_Date, Leave_ID, " +
                 "Comment, Total_Leave, Leave_Status_ID) " +
@@ -159,24 +182,25 @@ namespace LeaveSystemMVC.Controllers
         private string UploadFile(HttpPostedFileBase file)
         {
             string fName = "";
-            System.Diagnostics.Debug.WriteLine("UPLOADING...");
-            var fileName = Path.GetFileName(file.FileName);
-            fName = GetNextApplicationID() + "-" + fileName;
-            System.Diagnostics.Debug.WriteLine("File Name: " + fName);
+
             // Verify that the user selected a file
             if (file != null && file.ContentLength > 0)
             {
-                // extract only the filename
-                System.Diagnostics.Debug.WriteLine("NOT NULL...");
+                try
+                {
+                    // extract only the filename
+                    var fileName = Path.GetFileName(file.FileName);
+                    fName = GetNextApplicationID() + "-" + fileName;
 
-
-                // store the file inside ~/App_Data/uploads folder
-                var path = Path.Combine(Server.MapPath("~/App_Data/Application_Documents"), fName);
-                file.SaveAs(path);
-                System.Diagnostics.Debug.WriteLine("DONE");
-
+                    // store the file inside ~/App_Data/uploads folder
+                    var path = Path.Combine(Server.MapPath("~/App_Data/Documentation"), fName);
+                    file.SaveAs(path);
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.ErrorMessage = "ERROR:" + ex.Message.ToString();
+                }
             }
-
             return fName;
         }
 

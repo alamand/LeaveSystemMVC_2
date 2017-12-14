@@ -2,7 +2,7 @@
 
 @Html.Partial("_LeftMenu")
 
-@using (Html.BeginForm("Select", "hrPendingApplication", FormMethod.Post, new { SL = Model }))
+@using (Html.BeginForm("Select", "hrPendingApplication", FormMethod.Post, new { model = Model }))
 {
     <div class="col-md-10">
         <div>
@@ -88,6 +88,9 @@
                     </div>
                 </div>
                 <div class="col-md-5">
+                    @{ 
+                        var balance = ViewData["Balances"] as LeaveSystemMVC.Models.sleaveBalanceModel;
+                    }
                     <div class="panel-group">
                         <div class="panel panel-default">
                             <div class="panel-heading">
@@ -96,15 +99,42 @@
                                 </h4>
                             </div>
                             <div id="collapse1" class="panel-collapse collapse">
-                                <ul class="list-group">
-                                    @{
-                                        var BalanceStrings = ViewData["BalanceStrings"] as List<string>;
-                                        foreach (string balanceString in BalanceStrings)
-                                        {
-                                            <li class="list-group-item">@balanceString</li>
-                                        }
+                                <table class="table">
+                                    <tr>
+                                        <th>Annual</th>
+                                        <td>@balance.annual.ToString()</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Sick</th>
+                                        <td>@balance.sick.ToString()</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Compassionate</th>
+                                        <td>@balance.compassionate.ToString()</td>
+                                    </tr>
+                                    @if ((char)ViewData["Gender"] == 'F')
+                                    {
+                                        <tr>
+                                            <th>Maternity</th>
+                                            <td>@balance.maternity.ToString()</td>
+                                        </tr>
                                     }
-                                </ul>
+                                    <tr>
+                                        <th>Days In Lieu</th>
+                                        <td>@balance.daysInLieu.ToString()</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Short Hours</th>
+                                        <td>@balance.shortHours.ToString()</td>
+                                    </tr>
+                                    @if (ViewData["Religion"].Equals("Muslim"))
+                                    {
+                                        <tr>
+                                            <th>Pilgrimage</th>
+                                            <td>@balance.pilgrimage.ToString()</td>
+                                        </tr>
+                                    }
+                                </table>
                             </div>
                         </div>
                     </div>
