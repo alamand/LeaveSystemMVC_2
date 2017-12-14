@@ -45,9 +45,6 @@ namespace LeaveSystemMVC.Controllers
                 case "Annual":
                     CompareDates(model.startDate, model.endDate);
 
-                    if ((model.startDate - DateTime.Today).TotalDays < 30)
-                        ModelState.AddModelError("startDate", "Leave must be applied 30 days in advance");
-
                     int numOfDays = GetNumOfDays(model.startDate, model.endDate);
 
                     if (leaveBalance.annual < numOfDays)
