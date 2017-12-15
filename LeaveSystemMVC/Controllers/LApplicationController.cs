@@ -38,7 +38,6 @@ namespace LeaveSystemMVC.Controllers
         {
             sEmployeeModel emp = TempData["Employee"] as sEmployeeModel;
             sleaveBalanceModel leaveBalance = GetLeaveBalanceModel(GetLoggedInID());
-            model.leaveTypeName = DBLeaveTypeList()[model.leaveTypeID];
 
             ModelState.Clear();
             int numOfDays = 0;
@@ -50,11 +49,8 @@ namespace LeaveSystemMVC.Controllers
                     CompareDates(model.startDate, model.endDate);
                     numOfDays = GetNumOfDays(model.startDate, model.endDate);
 
-                    if (numOfDays > 30)
-                        ModelState.AddModelError("endDate", "You cannot apply for more than 30 days duration.");
-
-                    if (leaveBalance.annual < numOfDays)
-                        ModelState.AddModelError("endDate", "You do not have enough annual balance to apply for this duration.");
+                    if ((leaveBalance.daysInLieu + leaveBalance.annual + leaveBalance.unpaid) < numOfDays)
+                        ModelState.AddModelError("endDate", "You do not have enough balance to apply for this duration.");
 
                     if (ModelState.IsValid)
                     {
@@ -70,7 +66,7 @@ namespace LeaveSystemMVC.Controllers
                     numOfDays = GetNumOfDays(model.startDate, model.endDate);
 
                     if (leaveBalance.sick < numOfDays)
-                        ModelState.AddModelError("endDate", "You do not have enough sick leave balance to apply for this duration.");
+                        ModelState.AddModelError("endDate", "You do not have enough balance to apply for this duration.");
 
                     if (ModelState.IsValid)
                     {
@@ -81,16 +77,13 @@ namespace LeaveSystemMVC.Controllers
                     break;
 
                 case "Maternity":
-                    
+    
                     break;
 
                 case "Compassionate":
 
                     break;
 
-                case "DIL":
-
-                    break;
 
                 case "Short_Hours_Per_Month":
 
@@ -133,6 +126,8 @@ namespace LeaveSystemMVC.Controllers
                 int pilgrimageID = leaveTypes.FirstOrDefault(obj => obj.Value == "Pilgrimage").Key;
                 leaveTypes.Remove(pilgrimageID);
             }
+
+            leaveTypes.Remove(leaveTypes.FirstOrDefault(obj => obj.Value == "DIL").Key);
 
             return leaveTypes;
         }
