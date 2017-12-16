@@ -3,7 +3,7 @@
 @model LeaveSystemMVC.Models.aDepartment
 @Html.Partial("_LeftMenu")
 <div class="col-md-10">
-    <h2>Adding a Department</h2>
+    <h4>Add Department</h4>
     <hr />
     @using (Html.BeginForm())
     {
@@ -38,19 +38,6 @@
                             <div class="col-md-6">
                                 @Html.EditorFor(model => model.departmentName, new { htmlAttributes = new { @class = "form-control" } })
                                 @Html.ValidationMessageFor(model => model.departmentName, "", new { @class = "text-danger" })
-                            </div>
-                        </div>
-
-                        <br /><br />
-
-                        <div class="row">
-                            <!--Prompts user to select one of the line managers for the newly entered department -->
-                            <div class="col-md-6" style="white-space:nowrap">
-                                @Html.LabelFor(model => model.primaryLMID, "Existing Line Managers", htmlAttributes: new { @class = "control-label col-md-2" })
-                            </div>
-                            <div class="col-md-6">
-                                @Html.DropDownListFor(model => model.primaryLMID, new SelectList(Model.linemanagerSelectionListOptions, "Key", "Value"), new { @class = "form-control" })
-                                @Html.ValidationMessageFor(model => model.primaryLMID, "", new { @class = "text-danger" })
                             </div>
                         </div>
 

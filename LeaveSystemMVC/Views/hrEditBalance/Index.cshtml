@@ -5,7 +5,7 @@
 
 @Html.Partial("_LeftMenu")
 <div class="col-md-10">
-    <h2>@ViewBag.Title</h2>
+    <h4>@ViewBag.Title</h4>
     @{
         var departmentList = ViewData["DepartmentList"] as Dictionary<int, string>;
         var statusList = ViewData["AccountStatusList"] as Dictionary<int, string>;

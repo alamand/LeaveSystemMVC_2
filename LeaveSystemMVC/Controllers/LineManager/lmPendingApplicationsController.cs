@@ -26,7 +26,7 @@ namespace LeaveSystemMVC.Controllers
                 ConnectionString;
 
             //Check if this user has nominated a substitute.
-            string queryString2 = "SELECT dbo.Department.Substitute_LM_ID FROM dbo.Department WHERE dbo.Department.Line_Manager_ID = '" + GetLoggedInID() + "'";
+            string queryString2 = "SELECT dbo.Employee.Substitute_ID FROM dbo.Employee WHERE dbo.Employee.Employee_ID = '" + GetLoggedInID() + "'";
             Boolean substituteExists = false;
             int subsID = 0;
             using (var connection = new SqlConnection(connectionString))
@@ -39,10 +39,10 @@ namespace LeaveSystemMVC.Controllers
                     {
                         while (reader.Read())
                         {
-                            if (reader["Substitute_LM_ID"] != DBNull.Value)
+                            if (reader["Substitute_ID"] != DBNull.Value)
                             {
                                 substituteExists = true;
-                                subsID = (int)reader["Substitute_LM_ID"];
+                                subsID = (int)reader["Substitute_ID"];
                             }
                         }
                     }
@@ -62,9 +62,9 @@ namespace LeaveSystemMVC.Controllers
             }
 
             //Check if this user is a substitute.
-            queryString2 = "SELECT dbo.Department.Line_Manager_ID FROM dbo.Department WHERE dbo.Department.Substitute_LM_ID = '" + GetLoggedInID() + "'";
+            queryString2 = "SELECT dbo.Employee.Employee_ID FROM dbo.Employee WHERE dbo.Employee.Substitute_ID = '" + GetLoggedInID() + "'";
             Boolean isSubstitute = false;
-            int LM_ID = 0;
+            int empID = 0;
             using (var connection = new SqlConnection(connectionString))
             {
                 var command = new SqlCommand(queryString2, connection);
@@ -75,10 +75,10 @@ namespace LeaveSystemMVC.Controllers
                     {
                         while (reader.Read())
                         {
-                            if (reader["Line_Manager_ID"] != DBNull.Value)
+                            if (reader["Employee_ID"] != DBNull.Value)
                             {
                                 isSubstitute = true;
-                                LM_ID = (int)reader["Line_Manager_ID"];
+                                empID = (int)reader["Employee_ID"];
                             }
                         }
                     }
@@ -87,7 +87,7 @@ namespace LeaveSystemMVC.Controllers
             //Adding the leave applications to the substitute instead
             if (isSubstitute)                        
             {
-                var leaveList = GetLeaveModel("Reporting.Reporting_ID", LM_ID);
+                var leaveList = GetLeaveModel("Reporting.Reporting_ID", empID);
 
                 foreach (var leave in leaveList)
                 {

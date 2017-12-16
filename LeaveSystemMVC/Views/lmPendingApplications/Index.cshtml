@@ -1,13 +1,13 @@
 ﻿@model IEnumerable<LeaveSystemMVC.Models.sLeaveModel>
 @Html.Partial("_LeftMenu")
 <div class="col-md-10">
-    <h2>Pending Applications</h2>
+    <h4>Pending Applications</h4>
     <hr />
         <div class="col-md-5">
             <div class="panel-group" id="accordion">
                 @foreach (var leave in Model)
                 {
-                    string buttonText = leave.employeeName + " <" + leave.leaveTypeName + ">";
+                    string buttonText = leave.employeeName + " <" + leave.leaveTypeName + ": " + leave.startDate.ToString("dd/MM/yy") + " - " + leave.endDate.ToString("dd/MM/yy") + ">";
                     @Html.ActionLink(buttonText, "Select", new { appID = leave.leaveAppID }, new { @class = "btn btn-primary btn-block", @style = "color:white" })
                     
                 }
