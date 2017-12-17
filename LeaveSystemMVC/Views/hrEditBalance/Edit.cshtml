@@ -80,6 +80,12 @@
                     @Html.HiddenFor(Model => Model.pilgrimageID)
                 </tr>
                }
+                <tr>
+                    <td>Unpaid</td>
+                    <td>@Model.unpaid</td>
+                    <td>@Html.TextBoxFor(Model => Model.unpaid, new { @Value = Model.unpaid, @class = "form-control" })</td>
+                    @Html.HiddenFor(Model => Model.unpaidID)
+                </tr>
             </table>
         </div>
        

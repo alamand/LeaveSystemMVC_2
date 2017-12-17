@@ -39,7 +39,7 @@ namespace LeaveSystemMVC.Controllers
                 lb = GetLeaveBalanceModel();
                 lb.empId = empID;
 
-                // sets all balances to 0, so that if the database does not containt a record, it won't use the default balance
+                // sets all balances to 0, so that if the database does not containt a record for the employee, it won't use the default balance
                 lb.annual = lb.compassionate = lb.daysInLieu = lb.maternity = lb.sick = lb.unpaid = lb.pilgrimage = 0;
 
                 // the word Balance is the column name in dbo.Leave_Balance
@@ -94,6 +94,11 @@ namespace LeaveSystemMVC.Controllers
                             case "Pilgrimage":
                                 lb.pilgrimageID = (int)reader["Leave_ID"];
                                 lb.pilgrimage = (decimal)reader[balanceColName];
+                                break;
+
+                            case "Unpaid":
+                                lb.unpaidID = (int)reader["Leave_ID"];
+                                lb.unpaid = (decimal)reader[balanceColName];
                                 break;
 
                             default:

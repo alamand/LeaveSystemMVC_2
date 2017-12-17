@@ -43,10 +43,12 @@ namespace LeaveSystemMVC.Models
         public decimal leaveDuration { get; set; }
 
         [DisplayName("Start Time")]
-        public TimeSpan? shortStartTime { get; set; }
+        [Required(ErrorMessage = "Start Time is required.")]
+        public TimeSpan shortStartTime { get; set; }
 
         [DisplayName("End Time")]
-        public TimeSpan? shortEndTime { get; set; }
+        [Required(ErrorMessage = "End Time is required.")]
+        public TimeSpan shortEndTime { get; set; }
 
         [DisplayName("Line Manager Comment")]
         public string lmComment { get; set; }

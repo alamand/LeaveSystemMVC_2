@@ -87,6 +87,7 @@
                 <th>Maternity</th>
                 <th>Days in Lieu</th>
                 <th>Pilgrimage</th>
+                <th>Unpaid</th>
             </tr>
         </thead>
         <tbody>
@@ -116,6 +117,7 @@
                     {
                         <td></td>
                     }
+                    <td>@item.leaveBalance.unpaid</td>
                     <td>@Html.ActionLink("Edit", "Edit", "hrEditBalance", new { empID = item.employee.staffID }, null)</td>
                 </tr>
             }

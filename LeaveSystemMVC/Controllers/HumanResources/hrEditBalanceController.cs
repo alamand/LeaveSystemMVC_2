@@ -109,6 +109,7 @@ namespace LeaveSystemMVC.Controllers
                 DBUpdateBalance(lb.empId, lb.daysInLieuID, lb.daysInLieu);
                 DBUpdateBalance(lb.empId, lb.shortHoursID, lb.shortHours);
                 DBUpdateBalance(lb.empId, lb.pilgrimageID, lb.pilgrimage);
+                DBUpdateBalance(lb.empId, lb.unpaidID, lb.unpaid);
                 Response.Write("<script> alert('Success. The information has been updated.');</script>");
             }
             else

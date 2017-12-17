@@ -19,24 +19,27 @@ namespace LeaveSystemMVC.Controllers
         // GET: hrPendingApplication
         public ActionResult Index()
         {
-            List<sLeaveModel> RetrievedApplications = new List<sLeaveModel>();
+            return View(GetApplications());
+        }
+
+        private List<sLeaveModel> GetApplications()
+        {
+            List<sLeaveModel> retrievedApplications = new List<sLeaveModel>();
 
             foreach (var leave in GetLeaveModel())
             {
                 if (leave.leaveStatusName.Equals("Pending_HR"))
-                    RetrievedApplications.Add(leave);
+                    retrievedApplications.Add(leave);
             }
-            
-            /*Get the list of applications due for the line manager to approve*/
-            TempData["RetrievedApplications"] = RetrievedApplications;
-            return View(RetrievedApplications);
+
+            return retrievedApplications;
         }
+
 
         [HttpGet]
         public ActionResult Select(int appID)
         {
-            List<sLeaveModel> passedApplications = TempData["RetrievedApplications"] as List<sLeaveModel>;
-            sLeaveModel passingLeave = passedApplications.First(leave => leave.leaveAppID == appID);
+            sLeaveModel passingLeave = GetApplications().First(leave => leave.leaveAppID == appID);
 
             var balanceModel = GetLeaveBalanceModel(passingLeave.employeeID);
             var leaveModel = new List<sLeaveModel>();

@@ -7,6 +7,13 @@
 <div class="col-md-10">
     <h4>@ViewBag.Title</h4>
     <hr />
+    @if (ViewBag.SuccessMessage != null)
+    {
+        <div class="alert alert-success fade in">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <strong>@ViewBag.SuccessMessage</strong>
+        </div>
+    }
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
@@ -240,31 +247,6 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
-    @if (ViewBag.SuccessMessage != null)
-    {
-        <script>
-            $(document).ready(function () {
-                alert('@ViewBag.SuccessMessage');
-            });
-        </script>
-    }
-
-    <script>
-        $(document).ready(function () {
-            $('#isLMBtn, #isHRBtn, #isHRRBtn').prop("disabled", true);
-        });
-
-        $('#isStaff').change(function () {
-            if ($(this).is(':checked')) {
-                $('#isLMBtn, #isHRBtn, #isHRRBtn').prop("disabled", false);
-            }
-            else {
-                $('#isLMBtn, #isHRBtn, #isHRRBtn').prop("checked", false);
-                $('#isLMBtn, #isHRBtn, #isHRRBtn').prop("disabled", true);
-            }
-        });
-    </script>
-
     <script>
         $(function () {
             $('.button-checkbox').each(function () {
