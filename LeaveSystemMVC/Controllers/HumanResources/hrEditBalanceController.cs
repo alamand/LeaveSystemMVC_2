@@ -12,42 +12,41 @@ namespace LeaveSystemMVC.Controllers
     public class hrEditBalanceController : ControllerBase
     {
         // GET: hrEditBalance
-        public ActionResult Index(int filterDepartmentID = 0, int filterAccStatus = -1, string filterSearch = "")
+        public ActionResult Index(int filterDepartmentID = 0, int filterAccStatus = -1, string filterSearch = "", string filterOrderBy = "")
         {
-            var model = new List<Models.hrEmpLeaveBalModel>();
+            var model = new List<Tuple<sEmployeeModel, sleaveBalanceModel>>();
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-
-            // Gets the employee's id and name
-            string queryString = GetFilteredQuery(filterDepartmentID, filterAccStatus, filterSearch);
+            string queryString = GetFilteredQuery(filterDepartmentID, filterAccStatus, filterSearch, filterOrderBy);
 
             using (var connection = new SqlConnection(connectionString))
             {
-                var command = new SqlCommand(queryString, connection);      // retrieve employee id, first and last name
+                var command = new SqlCommand(queryString, connection);  
                 connection.Open();
                 using (var reader = command.ExecuteReader())
                 {
                     // iterate through all employees in the database and add them all to the list
                     while (reader.Read())
                     {
-                        var empBal = new hrEmpLeaveBalModel();
-                        empBal.employee = GetEmployeeModel((int)reader["Employee_ID"]);
-                        empBal.leaveBalance = GetLeaveBalanceModel((int)reader["Employee_ID"]);
-                        empBal.religionString = DBReligionList()[empBal.employee.religionID];
-
-                        model.Add(empBal);
+                        var employee = GetEmployeeModel((int)reader["Employee_ID"]);
+                        var leaveBalance = GetLeaveBalanceModel((int)reader["Employee_ID"]);
+                        model.Add(new Tuple<sEmployeeModel, sleaveBalanceModel>(employee, leaveBalance));
                     }
                 }
                 connection.Close();
             }
 
             ViewData["DepartmentList"] = AddDefaultToDictionary(DBDepartmentList(), 0, "All Departments");
-            ViewData["AccountStatusList"] = AccountStatusList();
             ViewData["SelectedDepartment"] = filterDepartmentID;
+            ViewData["AccountStatusList"] = AccountStatusList();
             ViewData["SelectedAccStatus"] = filterAccStatus;
+            ViewData["OrderByList"] = OrderByList();
+            ViewData["SelectedOrderBy"] = filterOrderBy;
             ViewData["EnteredSearch"] = filterSearch;
+            ViewData["ReligionList"] = DBReligionList();
 
             return View(model);
         }
+
 
         [HttpPost]
         public ActionResult Filter(FormCollection form)
@@ -55,10 +54,11 @@ namespace LeaveSystemMVC.Controllers
             int deptID = Convert.ToInt32(form["selectedDepartment"]);
             int accStatID = Convert.ToInt32(form["SelectedAccStatus"]);
             string search = form["enteredSearch"];
-            return RedirectToAction("Index", new { filterDepartmentID = deptID, filterAccStatus = accStatID, filterSearch = search });
+            string orderBy = form["selectedOrderBy"];
+            return RedirectToAction("Index", new { filterDepartmentID = deptID, filterAccStatus = accStatID, filterSearch = search, filterOrderBy = orderBy });
         }
 
-        private string GetFilteredQuery(int deptID, int accStat, string search)
+        private string GetFilteredQuery(int deptID, int accStat, string search, string order)
         {
             string queryString = "SELECT Employee_ID FROM dbo.Employee WHERE Probation='False'";
 
@@ -82,8 +82,28 @@ namespace LeaveSystemMVC.Controllers
                     "OR Last_Name LIKE '%" + search + "%')";
             }
 
+            if (order.Length > 0)
+            {
+                queryString += " ORDER BY " + order;
+            }
+
             return queryString;
         }
+
+        private Dictionary<string, string> OrderByList()
+        {
+            var orderByList = new Dictionary<string, string>
+            {
+                { "Employee.First_Name ASC", "First Name | Ascending" },
+                { "Employee.First_Name DESC", "First Name | Descending" },
+                { "Employee.Last_Name ASC", "Last Name | Ascending" },
+                { "Employee.Last_Name DESC", "Last Name | Descending" },
+                { "Employee.Employee_ID ASC", "Employee ID | Ascending" },
+                { "Employee.Employee_ID DESC", "Employee ID | Descending" }
+            };
+            return orderByList;
+        }
+
 
         public ActionResult Edit(int empID)
         {
@@ -110,11 +130,11 @@ namespace LeaveSystemMVC.Controllers
                 DBUpdateBalance(lb.empId, lb.shortHoursID, lb.shortHours);
                 DBUpdateBalance(lb.empId, lb.pilgrimageID, lb.pilgrimage);
                 DBUpdateBalance(lb.empId, lb.unpaidID, lb.unpaid);
-                Response.Write("<script> alert('Success. The information has been updated.');</script>");
+                ViewBag.SuccessMessage = " The information has been updated successfully.";
             }
             else
             {
-                ModelState.AddModelError("errmsg", "Failed: An error occured. Please check your input and try again.");
+                ViewBag.ErrorMessage = " An error occured, please check your input and try again.";
             }
 
             return Edit(lb.empId);

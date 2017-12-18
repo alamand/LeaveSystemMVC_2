@@ -1,4 +1,5 @@
-﻿@model IEnumerable<LeaveSystemMVC.Models.hrEmpLeaveBalModel>
+﻿@model List<Tuple<LeaveSystemMVC.Models.sEmployeeModel, LeaveSystemMVC.Models.sleaveBalanceModel>>
+
 @{
     ViewBag.Title = "Employee Balances";
 }
@@ -8,10 +9,13 @@
     <h4>@ViewBag.Title</h4>
     @{
         var departmentList = ViewData["DepartmentList"] as Dictionary<int, string>;
-        var statusList = ViewData["AccountStatusList"] as Dictionary<int, string>;
         var selectedDepartment = ViewData["SelectedDepartment"];
+        var statusList = ViewData["AccountStatusList"] as Dictionary<int, string>;
         var selectedAccStatus = ViewData["SelectedAccStatus"];
+        var orderByList = ViewData["OrderByList"] as Dictionary<string, string>;
+        var selectedOrderBy = ViewData["SelectedOrderBy"];
         var enteredSearch = ViewData["EnteredSearch"];
+        var religionList = ViewData["ReligionList"] as Dictionary<int,string>;
     }
     <div class="panel-group">
         <div class="panel panel-default">
@@ -42,6 +46,14 @@
                                     </span>
                                 </div>
                             </div>
+                            <div class="col-md-1 col-md-offset-1">
+                                <p style="padding-top: 8px;">Sort By</p>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-horizontal">
+                                    @Html.DropDownList("selectedOrderBy", new SelectList(orderByList, "Key", "Value"), new { @selected = selectedOrderBy, @class = "form-control", @onchange = "this.form.submit();" })
+                                </div>
+                            </div>
                         </div>
                         <br />
                         <div class="row ">
@@ -54,8 +66,8 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-2">
-                                <p style="padding-top: 8px;">Account Status</p>
+                            <div class="col-md-1 col-md-offset-1">
+                                <p style="padding-top: 8px;">Status</p>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-horizontal">
@@ -91,34 +103,26 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model)
+            @foreach (var tuple in Model)
             {
                 <tr>
-                    <td>@item.employee.staffID </td>
-                    <td>@item.employee.firstName @item.employee.lastName</td>
-                    <td>@item.leaveBalance.annual</td>
-                    <td>@item.leaveBalance.sick</td>
-                    <td>@item.leaveBalance.compassionate</td>
-                    <td>@item.leaveBalance.shortHours</td>
-                    @if (item.employee.gender == 'F')
-                    {
-                        <td>@item.leaveBalance.maternity</td>
-                    }
+                    <td>@tuple.Item1.staffID </td>
+                    <td>@tuple.Item1.firstName @tuple.Item1.lastName</td>
+                    <td>@tuple.Item2.annual</td>
+                    <td>@tuple.Item2.sick</td>
+                    <td>@tuple.Item2.compassionate</td>
+                    <td>@tuple.Item2.shortHours</td>
+                    @if (tuple.Item1.gender == 'F')
+                    { <td>@tuple.Item2.maternity</td> }
                     else
-                    {
-                        <td></td>
-                    }
-                    <td>@item.leaveBalance.daysInLieu</td>
-                    @if (item.religionString.Equals("Muslim"))
-                    {
-                        <td>@item.leaveBalance.pilgrimage</td>
-                    }
+                    { <td></td> }
+                    <td>@tuple.Item2.daysInLieu</td>
+                    @if (religionList[tuple.Item1.religionID].Equals("Muslim"))
+                    { <td>@tuple.Item2.pilgrimage</td> }
                     else
-                    {
-                        <td></td>
-                    }
-                    <td>@item.leaveBalance.unpaid</td>
-                    <td>@Html.ActionLink("Edit", "Edit", "hrEditBalance", new { empID = item.employee.staffID }, null)</td>
+                    { <td></td> }
+                    <td>@tuple.Item2.unpaid</td>
+                    <td>@Html.ActionLink("Edit", "Edit", "hrEditBalance", new { empID = tuple.Item1.staffID }, null)</td>
                 </tr>
             }
         </tbody>

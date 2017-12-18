@@ -5,98 +5,84 @@
 
 @Html.Partial("_LeftMenu")
 
-<div class="col-md-8">
-
+<div class="col-md-10">
     <h4>@ViewBag.Title <b>@ViewBag.name</b></h4>
+    <hr />
+    @Html.Partial("../_Message")
+
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
-
-        <div class="form-horizontal">
-
-
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            
-            @if (TempData["Success"] != null)
-            {
-                <div class="green">
-                    <p><strong>Success:</strong> @TempData["Success"].ToString()</p>
-                </div>
-            }
-        </div>
-        @Html.ValidationMessage("errmsg")
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         @Html.HiddenFor(Model => Model.empId)
-        <div class="col-md-12">
-            <table class="table">
-                <tr>
-                    <th>Balance Type</th>
-                    <th>Current Balance</th>
-                    <th>New Balance</th>
-                </tr>
-                <tr>
-                    <td>Annual</td>
-                    <td>@Model.annual</td>
-                    <td>@Html.TextBoxFor(Model => Model.annual, new { @Value = Model.annual, @class="form-control" })</td>
-                    @Html.HiddenFor(Model => Model.annualID)
-                </tr>
-                @if (ViewBag.gender == 'F') {
-                <tr>
-                    <td>Maternity</td>
-                    <td>@Model.maternity </td>
-                    <td>@Html.TextBoxFor(Model => Model.maternity, new { @Value = Model.maternity, @class = "form-control" })</td>
-                    @Html.HiddenFor(Model => Model.maternityID)
-                </tr>
-                }
-                <tr>
-                    <td>Sick</td>
-                    <td>@Model.sick</td>
-                    <td>@Html.TextBoxFor(Model => Model.sick, new { @Value = Model.sick, @class = "form-control" })</td>
-                    @Html.HiddenFor(Model => Model.sickID)
-                </tr>
-                <tr>
-                    <td>Days In Lieu</td>
-                    <td>@Model.daysInLieu</td>
-                    <td>@Html.TextBoxFor(Model => Model.daysInLieu, new { @Value = Model.daysInLieu, @class = "form-control" })</td>
-                    @Html.HiddenFor(Model => Model.daysInLieuID)
-                </tr>
-                <tr>
-                    <td>Compassionate</td>
-                    <td>@Model.compassionate</td>
-                    <td>@Html.TextBoxFor(Model => Model.compassionate, new { @Value = Model.compassionate, @class = "form-control" })</td>
-                    @Html.HiddenFor(Model => Model.compassionateID)
-                </tr>
-                <tr>
-                    <td>Short</td>
-                    <td>@Model.shortHours</td>
-                    <td>@Html.TextBoxFor(Model => Model.shortHours, new { @Value = Model.shortHours, @class = "form-control" })</td>
-                    @Html.HiddenFor(Model => Model.shortHoursID)
-                </tr>
-               @if (ViewBag.religion.Equals("Muslim"))
-               {
-                <tr>
-                    <td>Pilgrimage</td>
-                    <td>@Model.pilgrimage</td>
-                    <td>@Html.TextBoxFor(Model => Model.pilgrimage, new { @Value = Model.pilgrimage, @class = "form-control" })</td>
-                    @Html.HiddenFor(Model => Model.pilgrimageID)
-                </tr>
-               }
-                <tr>
-                    <td>Unpaid</td>
-                    <td>@Model.unpaid</td>
-                    <td>@Html.TextBoxFor(Model => Model.unpaid, new { @Value = Model.unpaid, @class = "form-control" })</td>
-                    @Html.HiddenFor(Model => Model.unpaidID)
-                </tr>
-            </table>
-        </div>
+        <table class="table">
+            <tr>
+                <th>Balance Type</th>
+                <th>Current Balance</th>
+                <th>New Balance</th>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(model => model.annual)</td>
+                <td>@Model.annual</td>
+                <td>@Html.TextBoxFor(Model => Model.annual, new { @Value = Model.annual, @class="form-control" })</td>
+                @Html.HiddenFor(Model => Model.annualID)
+            </tr>
+            @if (ViewBag.gender == 'F') {
+            <tr>
+                <td>@Html.LabelFor(model => model.maternity)</td>
+                <td>@Model.maternity </td>
+                <td>@Html.TextBoxFor(Model => Model.maternity, new { @Value = Model.maternity, @class = "form-control" })</td>
+                @Html.HiddenFor(Model => Model.maternityID)
+            </tr>
+            }
+            <tr>
+                <td>@Html.LabelFor(model => model.sick)</td>
+                <td>@Model.sick</td>
+                <td>@Html.TextBoxFor(Model => Model.sick, new { @Value = Model.sick, @class = "form-control" })</td>
+                @Html.HiddenFor(Model => Model.sickID)
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(model => model.daysInLieu)</td>
+                <td>@Model.daysInLieu</td>
+                <td>@Html.TextBoxFor(Model => Model.daysInLieu, new { @Value = Model.daysInLieu, @class = "form-control" })</td>
+                @Html.HiddenFor(Model => Model.daysInLieuID)
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(model => model.compassionate)</td>
+                <td>@Model.compassionate</td>
+                <td>@Html.TextBoxFor(Model => Model.compassionate, new { @Value = Model.compassionate, @class = "form-control" })</td>
+                @Html.HiddenFor(Model => Model.compassionateID)
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(model => model.shortHours)</td>
+                <td>@Model.shortHours</td>
+                <td>@Html.TextBoxFor(Model => Model.shortHours, new { @Value = Model.shortHours, @class = "form-control" })</td>
+                @Html.HiddenFor(Model => Model.shortHoursID)
+            </tr>
+            @if (ViewBag.religion.Equals("Muslim"))
+            {
+            <tr>
+                <td>@Html.LabelFor(model => model.pilgrimage)</td>
+                <td>@Model.pilgrimage</td>
+                <td>@Html.TextBoxFor(Model => Model.pilgrimage, new { @Value = Model.pilgrimage, @class = "form-control" })</td>
+                @Html.HiddenFor(Model => Model.pilgrimageID)
+            </tr>
+            }
+            <tr>
+                <td>@Html.LabelFor(model => model.unpaid)</td>
+                <td>@Model.unpaid</td>
+                <td>@Html.TextBoxFor(Model => Model.unpaid, new { @Value = Model.unpaid, @class = "form-control" })</td>
+                @Html.HiddenFor(Model => Model.unpaidID)
+            </tr>
+        </table>
        
-        <div class="col-md-offset-4 col-md-12">
-            <a href="@Url.Action("Index", "hrEditBalance")" class="btn btn-default">
+        <div class="col-md-offset-3">
+            <a href="@Url.Action("Index", "hrEditBalance")" class="btn btn-default col-md-3">
                 <span class="glyphicon glyphicon-circle-arrow-left" aria-hidden="true"></span>
                 Back
             </a>
 
-
-            <button type="submit" value="Save" class="btn btn-default">
+            <button type="submit" value="Save" class="btn btn-default col-md-offset-1 col-md-3">
                 <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span> Save
             </button>
         </div>

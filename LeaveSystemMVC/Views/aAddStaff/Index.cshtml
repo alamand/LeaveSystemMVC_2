@@ -7,18 +7,12 @@
 <div class="col-md-10">
     <h4>@ViewBag.Title</h4>
     <hr />
-    @if (ViewBag.SuccessMessage != null)
-    {
-        <div class="alert alert-success fade in">
-            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-            <strong>@ViewBag.SuccessMessage</strong>
-        </div>
-    }
+    @Html.Partial("../_Message")
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
         
-        <div class="col-md-10">
+        <div class="col-md-12">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <div class="text-muted bootstrap-admin-box-title">Staff Member Details</div>

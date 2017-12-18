@@ -245,12 +245,10 @@
     <Compile Include="Models\sChangePasswordModel.cs" />
     <Compile Include="Models\aStaffRole.cs" />
     <Compile Include="Models\sleaveBalanceModel.cs" />
-    <Compile Include="Models\hrLmApplications.cs" />
     <Compile Include="Models\selectSubstitute.cs" />
     <Compile Include="Models\sLeaveModel.cs" />
     <Compile Include="Models\sEmployeeModel.cs" />
     <Compile Include="Models\minStaff.cs" />
-    <Compile Include="Models\hrEmpLeaveBalModel.cs" />
     <Compile Include="Models\Users.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -1799,7 +1797,7 @@
     <Content Include="Views\Shared\_MinDepartmentList.cshtml" />
     <Content Include="Views\lmPendingApplications\Select.cshtml" />
     <Content Include="Views\hrPendingApplication\Select.cshtml" />
-    <Content Include="Views\hrEditDefaultLeaveDuration\Display.cshtml" />
+    <Content Include="Views\hrEditDefaultLeaveDuration\Index.cshtml" />
     <Content Include="Views\hrEditBalance\Index.cshtml" />
     <Content Include="Views\hrEditBalance\Edit.cshtml" />
     <Content Include="Views\hrDaysInLieu\Select.cshtml" />
