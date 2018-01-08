@@ -122,6 +122,10 @@
                                         <th>Short Hours</th>
                                         <td>@balance.shortHours.ToString()</td>
                                     </tr>
+                                    <tr>
+                                        <th>Unpaid</th>
+                                        <td>@balance.unpaid.ToString()</td>
+                                    </tr>
                                     @if (ViewData["Religion"].Equals("Muslim"))
                                     {
                                         <tr>
@@ -182,7 +186,7 @@
                                                     <td>@lv.shortStartTime</td>
                                                     <td>@lv.shortEndTime</td>
                                                 }
-                                                <td>@status</td>
+                                                <td>@lv.leaveStatusName</td>
                                             </tr>
 
                                         }
