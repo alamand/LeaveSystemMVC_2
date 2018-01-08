@@ -23,7 +23,7 @@ namespace LeaveSystemMVC.Controllers
         public ActionResult Index(int leaveTypeID = 0)
         {
             sEmployeeModel emp = GetEmployeeModel(GetLoggedInID());
-            SetViewDatas(emp, leaveTypeID);
+            SetViewData(emp, leaveTypeID);
             ViewBag.SuccessMessage = TempData["SuccessMessage"];
             return View();
         }
@@ -89,7 +89,7 @@ namespace LeaveSystemMVC.Controllers
                 ViewBag.WarningMessage = "The selected date(s) is/are weekend(s), and/or public holiday(s)";
             }
 
-            SetViewDatas(emp, model.leaveTypeID);
+            SetViewData(emp, model.leaveTypeID);
 
             // if the application was submitted successfully, then display success message, else show the application page again.
             if (TempData["SuccessMessage"] != null)
@@ -133,7 +133,7 @@ namespace LeaveSystemMVC.Controllers
                 string fileName = UploadFile(file);
                 
                 // inserts the data to the database
-                ApplyAnnualLeave(model, numOfDays, fileName);
+                ApplyLeave(model, numOfDays, fileName);
 
                 // sends a notification email to the applicant
                 SendMail(model, emp);
@@ -297,7 +297,7 @@ namespace LeaveSystemMVC.Controllers
                             if (span.Hours < lb.shortHours)
                             {
                                 // inserts the data to the database
-                                ApplyShortLeave(model);
+                                ApplyLeave(model);
                                 
                                 // sends a notification email to the applicant
                                 SendMail(model, emp);
@@ -372,7 +372,7 @@ namespace LeaveSystemMVC.Controllers
             }
         }
 
-        private void SetViewDatas(sEmployeeModel emp, int leaveID)
+        private void SetViewData(sEmployeeModel emp, int leaveID)
         {
             var leaveTypes = GetAvailableLeaveTypes(emp);
             ViewData["LeaveTypes"] = leaveTypes;
@@ -444,36 +444,19 @@ namespace LeaveSystemMVC.Controllers
             Response.Write("<script> alert('Your leave application has been submitted.');location.href='Index'</script>");
         }
 
-        private void ApplyLeave(sLeaveModel lm, int numOfDays, string fName)
+        private void ApplyLeave(sLeaveModel lm, int numOfDays=0, string fName="")
         {
-            string queryString = "INSERT INTO dbo.Leave (Employee_ID, Documentation, Start_Date, End_Date, Leave_ID, " +
-                "Comment, Total_Leave, Leave_Status_ID) " +
-                "VALUES ('" + GetLoggedInID() + "','" + fName + "','" + lm.startDate.ToString("yyyy-MM-dd") + "','" + lm.endDate.ToString("yyyy-MM-dd") +
-                "','" + lm.leaveTypeID + "','" + lm.comments + "','" + numOfDays + "','0');";
-            DBExecuteQuery(queryString);
-        }
-
-        private void ApplyAnnualLeave(sLeaveModel lm, int numOfDays, string fName)
-        {
-            string queryString = "INSERT INTO dbo.Leave (Employee_ID, Documentation, Start_Date, End_Date, Leave_ID, " +
+            string queryString = "INSERT INTO dbo.Leave (Employee_ID, Documentation, Start_Date, End_Date, Start_Hrs, End_Hrs, Leave_ID, " +
                 "Contact_Outside_UAE, Comment, Flight_Ticket, Total_Leave, Leave_Status_ID) " +
-                "VALUES ('" + GetLoggedInID() + "','" + fName + "','" + lm.startDate.ToString("yyyy-MM-dd") + "','" + lm.endDate.ToString("yyyy-MM-dd") +
-                "','" + lm.leaveTypeID + "','" + lm.contactDetails + "','" + lm.comments + "','" + lm.bookAirTicket + "','" + numOfDays + "','0');";
-            DBExecuteQuery(queryString);
-        }
-
-        private void ApplyShortLeave(sLeaveModel lm)
-        {
-            string queryString = "INSERT INTO dbo.Leave (Employee_ID, Start_Date, End_Date, Start_Hrs, End_Hrs, Leave_ID, " +
-                "Comment, Total_Leave, Leave_Status_ID) " +
-                "VALUES ('" + GetLoggedInID() + "','" + lm.startDate.ToString("yyyy-MM-dd") + "','" + lm.endDate.ToString("yyyy-MM-dd") +
-                "','" + lm.shortStartTime.ToString() + "','" + lm.shortEndTime.ToString() + "','" + lm.leaveTypeID + "','" + lm.comments + "','0','0');";
+                "VALUES ('" + GetLoggedInID() + "','" + fName + "','" + lm.startDate.ToString("yyyy-MM-dd") + "','" + lm.endDate.ToString("yyyy-MM-dd") + 
+                "','" + lm.shortStartTime.ToString() + "','" + lm.shortEndTime.ToString() + "','" + lm.leaveTypeID + "','" + lm.contactDetails + "','" + 
+                lm.comments + "','" + lm.bookAirTicket + "','" + numOfDays + "','0');";
             DBExecuteQuery(queryString);
         }
 
         private string UploadFile(HttpPostedFileBase file)
         {
-            string fName = "";
+            string fileName = "";
 
             // Verify that the user selected a file
             if (file != null && file.ContentLength > 0)
@@ -481,8 +464,8 @@ namespace LeaveSystemMVC.Controllers
                 try
                 {
                     // extract only the filename
-                    var fileName = Path.GetFileName(file.FileName);
-                    fName = GetNextApplicationID() + "-" + fileName;
+                    fileName = Path.GetFileName(file.FileName);
+                    string fName = GetNextApplicationID() + "-" + fileName;
 
                     // store the file inside ~/App_Data/Documentation folder
                     var path = Path.Combine(Server.MapPath("~/App_Data/Documentation"), fName);
@@ -493,12 +476,12 @@ namespace LeaveSystemMVC.Controllers
                     ViewBag.ErrorMessage = "ERROR:" + ex.Message.ToString();
                 }
             }
-            return fName;
+            return fileName;
         }
 
         private int GetNextApplicationID()
         {
-            // this is manly used for naming the uploaded file
+            // this is used for naming the uploaded file
             int nextApplicationID = 0;
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
             string queryString = "SELECT Leave_Application_ID FROM dbo.Leave";
@@ -518,7 +501,7 @@ namespace LeaveSystemMVC.Controllers
                 connection.Close();
             }
 
-            return nextApplicationID;
+            return nextApplicationID+1;
         }
 
         private void CompareDates(DateTime sDate, DateTime rDate)
