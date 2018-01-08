@@ -180,7 +180,6 @@ namespace LeaveSystemMVC.Controllers
         protected List<sLeaveModel> GetLeaveModel(string listFor="", int empID=0)
         {
             var leaveList = new List<sLeaveModel>();
-            var leaveType = DBLeaveTypeList();
 
             var queryString = "SELECT Leave_Application_ID, Employee.Employee_ID, First_Name, Last_Name, Leave.Start_Date, Leave.End_Date, Leave.Leave_ID, Leave_Name, " +
                 "Contact_Outside_UAE, Comment, Documentation, Flight_Ticket, Total_Leave, Start_Hrs, End_Hrs, Leave.Leave_Status_ID, Status_Name, HR_Comment, LM_Comment " +

@@ -7,6 +7,90 @@
 @Html.Partial("_LeftMenu")
 <div class="col-md-10">
     <h4>@ViewBag.Title</h4>
+    @{
+        var departmentList = ViewData["DepartmentList"] as Dictionary<int, string>;
+        var statusList = ViewData["AccountStatusList"] as Dictionary<int, string>;
+        var orderByList = ViewData["OrderByList"] as Dictionary<string, string>;
+    }
+    <div class="panel-group">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" class="active" href="#collapse1">Filters</a>
+                </h4>
+            </div>
+            <br />
+
+            <div id="collapse1" class="panel-collapse collapse in">
+                @using (Html.BeginForm("Filter", "hrEmployeeLeaveHistory", FormMethod.Post))
+                {
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                    <div class="form-horizontal">
+                        <div class="row">
+                            <div class="col-md-1 col-md-offset-1">
+                                <p style="padding-top: 8px;">Search</p>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="input-group">
+                                    @Html.TextBox("enteredSearch", "", new { @Value = ViewData["EnteredSearch"], @class = "form-control", @placeholder = "Search by ID or name..." })
+                                    <span class="input-group-btn">
+                                        <button type="submit" class="btn btn-default">
+                                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-1 col-md-offset-1">
+                                <p style="padding-top: 8px;">Sort By</p>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-horizontal">
+                                    @Html.DropDownList("selectedOrderBy", new SelectList(orderByList, "Key", "Value"), new { @selected = ViewData["SelectedOrderBy"], @class = "form-control", @onchange = "this.form.submit();" })
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row ">
+                            <div class="col-md-1 col-md-offset-1">
+                                <p style="padding-top: 8px;">Department</p>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-horizontal">
+                                    @Html.DropDownList("selectedDepartment", new SelectList(departmentList, "Key", "Value"), new { @selected = ViewData["SelectedDepartment"], @class = "form-control", @onchange = "this.form.submit();" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-1 col-md-offset-1">
+                                <p style="padding-top: 8px;">Status</p>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-horizontal">
+                                    @Html.DropDownList("selectedAccStatus", new SelectList(statusList, "Key", "Value"), new { @selected = ViewData["SelectedAccStatus"], @class = "form-control", @onchange = "this.form.submit();" })
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+
+                        <div class="row">
+                            <div class="col-md-1 col-md-offset-1">
+                                <p style="padding-top: 8px;">Between</p>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="input-group input-daterange">
+                                    @Html.Editor("selectedStartDate", new { htmlAttributes = new { @class = "form-control", @type = "date", @Value = ViewData["SelectedStartDate"], @onchange = "this.form.submit();" } })
+                                    <div class="input-group-addon">and</div>
+                                    @Html.Editor("selectedEndDate", new { htmlAttributes = new { @class = "form-control", @type = "date", @Value = ViewData["SelectedEndDate"], @onchange = "this.form.submit();" } })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+                }
+            </div>
+        </div>
+    </div>
+
     <div class="row">
         <table class="table">
             <tr>
@@ -40,6 +124,8 @@
                     <td>@Html.DisplayFor(modelItem => item.shortStartTime)</td>
                     <td>@Html.DisplayFor(modelItem => item.shortEndTime)</td>
                     <td>@Html.DisplayFor(modelItem => item.leaveStatusName)</td>
+                    <td>@Html.ActionLink("View", "Edit", "hrEmployeeLeaveHistory", new { empID = item.leaveAppID }, null)</td>
+
                 </tr>
              }
         </table>
@@ -48,4 +134,6 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+
+
 }
