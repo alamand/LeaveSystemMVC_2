@@ -312,7 +312,7 @@ namespace LeaveSystemMVC.Controllers
                         }
                         else
                         {
-                            ViewBag.ErrorMessage = "You can not apply for more than 2:30 hrs.";
+                            ViewBag.ErrorMessage = "You cannot apply for more than 2:30 hrs.";
                         }
                     }
                     else

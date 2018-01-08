@@ -36,10 +36,11 @@ namespace LeaveSystemMVC.Models
         [Required(ErrorMessage = "Reporting Back Date is required.")]
         public DateTime endDate { get; set; }
 
-        [Display(Name = "Return Date")]
+        [Display(Name = "Reporting Back Date")]
         [Required(ErrorMessage = "Reporting Back Date is required.")]
         public DateTime returnDate { get; set; }
 
+        [Display(Name = "Duration")]
         public decimal leaveDuration { get; set; }
 
         [DisplayName("Start Time")]

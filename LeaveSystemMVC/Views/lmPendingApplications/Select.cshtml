@@ -33,9 +33,6 @@
                                     <dt>@Html.DisplayNameFor(model => model.startDate)</dt>
                                     <dd>@Html.DisplayFor(sd => startDateString)</dd>
 
-                                    <dt>@Html.DisplayNameFor(model => model.endDate)</dt>
-                                    <dd>@Html.DisplayFor(ed => endDateString)</dd>
-
                                     <dt>@Html.DisplayNameFor(model => model.returnDate)</dt>
                                     <dd>@Html.DisplayFor(rd => returnDateString)</dd>
 
@@ -54,8 +51,8 @@
                                     <dt>@Html.DisplayNameFor(model => model.comments)</dt>
                                     <dd>@Html.DisplayFor(model => model.comments)</dd>
 
-                                    <dt>@Html.DisplayNameFor(model => model.documentation)</dt>
-                                    <dd>@Html.DisplayFor(model => model.documentation)</dd>
+                                    <dt>@Html.DisplayNameFor(model => model.documentation)</dt>                                    
+                                    <dd><a href=\App_Data\Documentation\@Html.DisplayFor(model => model.documentation)>@Html.DisplayFor(model => model.documentation)</a></dd>
 
                                     <dt>@Html.DisplayNameFor(model => model.bookAirTicket)</dt>
                                     <dd>@Html.DisplayFor(model => model.bookAirTicket)</dd>
