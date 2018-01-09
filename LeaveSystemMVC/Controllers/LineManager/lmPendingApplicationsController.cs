@@ -21,9 +21,7 @@ namespace LeaveSystemMVC.Controllers
         {
             List<sLeaveModel> RetrievedApplications = new List<sLeaveModel>();
 
-            var connectionString =
-                ConfigurationManager.ConnectionStrings["DefaultConnection"].
-                ConnectionString;
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
 
             //Check if this user has nominated a substitute.
             string queryString2 = "SELECT dbo.Employee.Substitute_ID FROM dbo.Employee WHERE dbo.Employee.Employee_ID = '" + GetLoggedInID() + "'";
@@ -85,7 +83,7 @@ namespace LeaveSystemMVC.Controllers
                 }
             }
             //Adding the leave applications to the substitute instead
-            if (isSubstitute)                        
+            if (isSubstitute)
             {
                 var leaveList = GetLeaveModel("Reporting.Reporting_ID", empID);
 
@@ -107,23 +105,13 @@ namespace LeaveSystemMVC.Controllers
             List<sLeaveModel> passedApplications = TempData["RetrievedApplications"] as List<sLeaveModel>;
             sLeaveModel passingLeave = passedApplications.First(leave => leave.leaveAppID == appID);
 
-            var balanceModel = GetLeaveBalanceModel(passingLeave.employeeID);
-            var leaveModel = new List<sLeaveModel>();
-            var leaveHistory = GetLeaveModel("Employee.Employee_ID", passingLeave.employeeID);
-
-            foreach (var leave in leaveHistory)
-            {
-                if (!leave.leaveStatusName.Equals("Pending_LM") && !leave.leaveStatusName.Equals("Pending_HR"))
-                    leaveModel.Add(leave);
-            }
-
-            ViewData["LeaveHistory"] = leaveModel;
-            ViewData["Balances"] = balanceModel;
-
             var employee = GetEmployeeModel(passingLeave.employeeID);
+
+            ViewData["Message"] = CalculatedBalance(passingLeave);
+            ViewData["LeaveHistory"] = GetLeaveHistory(passingLeave.employeeID);
+            ViewData["Balances"] = GetLeaveBalanceModel(passingLeave.employeeID);
             ViewData["Gender"] = employee.gender;
             ViewData["Religion"] = DBReligionList()[employee.religionID];
-
             TempData["Employee"] = employee;
 
             return View(passingLeave);
@@ -163,6 +151,188 @@ namespace LeaveSystemMVC.Controllers
             return RedirectToAction("Index");
         }
 
+        private string CalculatedBalance(sLeaveModel leave)
+        {
+            string message = "";
+
+            sleaveBalanceModel leaveBalance = GetLeaveBalanceModel(leave.employeeID);
+
+            // gets the total number of days, this involves excluding weekends and public holidays
+            int numOfDays = GetNumOfDays(leave.startDate, leave.endDate);
+
+            switch (leave.leaveTypeName)
+            {
+                case "Annual":
+                    message = LeaveAppAnnual(leaveBalance, numOfDays);
+                    break;
+
+                case "Sick":
+                    message = LeaveAppSick(leaveBalance, numOfDays);
+                    break;
+
+                case "Maternity":
+                    TimeSpan diff = leave.endDate - leave.startDate;
+                    message = (leaveBalance.maternity < diff.Days) ? "Not enough credit balance." : "<b>" + numOfDays + " day(s)</b> will be accumulated.";
+                    break;
+
+                case "Compassionate":
+                    message = (leaveBalance.compassionate < numOfDays) ? "Not enough credit balance." : "<b>" + numOfDays + " day(s)</b> will be accumulated.";
+                    break;
+
+                case "Short_Hours_Per_Month":
+                    TimeSpan span = (TimeSpan)leave.shortEndTime - (TimeSpan)leave.shortStartTime;
+                    message = (leaveBalance.compassionate < numOfDays) ? "Not enough credit balance." : "<b>" + span.TotalMinutes + " minutes(s)</b> will be accumulated.";
+                    break;
+
+                case "Pilgrimage":
+                    message = (leaveBalance.pilgrimage < numOfDays) ? "Not enough credit balance." : "<b>" + numOfDays + " day(s)</b> will be accumulated.";
+                    break;
+
+                default:
+                    break; ;
+            }
+            
+
+            return message;
+        }
+
+        private int GetNumOfDays(DateTime sDate, DateTime eDate)
+        {
+            // @TODO: Test for all cases
+            TimeSpan diff = eDate - sDate;
+            int numOfDays = diff.Days;
+            int fullNumOfDays = numOfDays;
+
+            for (var i = 0; i < fullNumOfDays; i++)
+            {
+                switch (sDate.AddDays(i).DayOfWeek)
+                {
+                    case DayOfWeek.Saturday:
+                        numOfDays--;
+                        break;
+                    case DayOfWeek.Friday:
+                        numOfDays--;
+                        break;
+                }
+            }
+
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            string queryString = "SELECT * FROM dbo.Public_Holiday WHERE Date BETWEEN'" + sDate.ToString("yyyy-MM-dd") + "' AND '" + eDate.ToString("yyyy-MM-dd") + "'";
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        DateTime day = (DateTime)reader["Date"];
+                        for (var i = 0; i < fullNumOfDays; i++)
+                        {
+                            if (sDate.AddDays(i).Equals(day))
+                            {
+                                numOfDays--;
+                            }
+                        }
+                    }
+                }
+                connection.Close();
+            }
+
+            return numOfDays;
+        }
+
+        private string LeaveAppAnnual(sleaveBalanceModel lb, int numOfDays)
+        {
+            string message = "";
+
+            // keeps track of how much credit points should be deducted from each balance type
+            decimal deductDIL = 0;
+            decimal deductAnnual = 0;
+            decimal addUnpaid = 0;
+
+            // deduction order: DIL --> Annual --> Unpaid
+            // checks if the applicant has enough balance in DIL, if yes, then simply deduct from DIL, 
+            // if not, deduct all the balance from DIL and the remainder from annual balance. if annual balance 
+            // is insufficient, then add the remaining number of days to unpaid balance.
+            if (lb.daysInLieu < numOfDays)
+            {
+                deductDIL = lb.daysInLieu;
+                if (lb.daysInLieu + lb.annual < numOfDays)
+                {
+                    deductAnnual = lb.annual;
+                    addUnpaid = numOfDays - deductDIL - deductAnnual;
+                }
+                else
+                {
+                    deductAnnual = numOfDays - deductDIL;
+                }
+            }
+            else
+            {
+                deductDIL = numOfDays;
+            }
+
+            // sets the notification message to be displayed to the applicant
+            message += (deductDIL > 0) ? deductDIL + " day(s) will be deducted from Days In Lieu balance.<br/>" : "";
+            message += (deductAnnual > 0) ? deductAnnual + " day(s) will be deducted from Annual balance.<br/>" : "";
+            message += (addUnpaid > 0) ? addUnpaid + " day(s) will be added to Unpaid balance.<br/>" : "";
+            return message;
+        }
+
+        private string LeaveAppSick(sleaveBalanceModel lb, int numOfDays)
+        {
+            string message = "";
+
+            // keeps track of how much credit points should be deducted from each balance type
+            decimal deductDIL = 0;
+            decimal deductSick = 0;
+            decimal deductAnnual = 0;
+            decimal addUnpaid = 0;
+
+            // deduction order: Sick --> DIL --> Annual --> Unpaid
+            // checks if the applicant has enough balance in sick, if yes, then simply deduct from sick, 
+            // if not, deduct all the balance from sick and the remainder from DIL balance. if DIL balance 
+            // is insufficient, deduct all the balance from DIL and the remainder from annual balance. 
+            // if annual balance is insufficient, deduct all from annual and then add the remaining number 
+            // of days to unpaid balance.
+            if (lb.sick < numOfDays)
+            {
+                deductSick = lb.sick;
+                if (lb.sick + lb.daysInLieu < numOfDays)
+                {
+                    deductDIL = lb.daysInLieu;
+                    if (lb.sick + lb.daysInLieu + lb.annual < numOfDays)
+                    {
+                        deductAnnual = lb.annual;
+                        addUnpaid = numOfDays - deductSick - deductDIL - deductAnnual;
+                    }
+                    else
+                    {
+                        deductAnnual = numOfDays - deductSick - deductDIL;
+                    }
+                }
+                else
+                {
+                    deductDIL = numOfDays - deductSick;
+                }
+            }
+            else
+            {
+                deductSick = numOfDays;
+            }
+
+            // sets the notification message to be displayed to the applicant
+            message += (deductSick > 0) ? deductSick + " day(s) will be deducted from Sick balance.<br/>" : "";
+            message += (deductDIL > 0) ? deductDIL + " day(s) will be deducted from Days In Lieu balance.<br/>" : "";
+            message += (deductAnnual > 0) ? deductAnnual + " day(s) will be deducted from Annual balance.<br/>" : "";
+            message += (addUnpaid > 0) ? addUnpaid + " day(s) will be added to Unpaid balance.<br/>" : "";
+
+            return message;
+        }
+
         private void SendMail(string message)
         {
             /*Construct an e-mail and send it.*/
@@ -187,5 +357,18 @@ namespace LeaveSystemMVC.Controllers
             }
         }
 
+        protected List<sLeaveModel> GetLeaveHistory(int empID)
+        {
+            var leaveHistory = new List<sLeaveModel>();
+            var leaves = GetLeaveModel("Employee.Employee_ID", empID);
+
+            foreach (var leave in leaves)
+            {
+                if (!leave.leaveStatusName.Equals("Pending_LM") && !leave.leaveStatusName.Equals("Pending_HR"))
+                    leaveHistory.Add(leave);
+            }
+
+            return leaveHistory;
+        }
     }
 }

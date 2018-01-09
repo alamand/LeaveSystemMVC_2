@@ -114,10 +114,10 @@ namespace LeaveSystemMVC.Controllers
 
             if (sDate.Length > 0)
             {
-                queryString += " AND CONVERT(VARCHAR(10), Leave.Start_Date, 0) >= '" + sDate + "'"; 
+                queryString += " AND Leave.Start_Date >= '" + sDate + "'"; 
             }
 
-            if (sDate.Length > 0)
+            if (eDate.Length > 0)
             {
                 queryString += " AND Leave.Start_Date <= '" + eDate + "'";
             }
