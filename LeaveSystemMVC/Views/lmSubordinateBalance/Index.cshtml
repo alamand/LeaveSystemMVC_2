@@ -21,6 +21,7 @@
             <th>Maternity Leave</th>
             <th>Days in Lieu</th>
             <th>Pilgrimage</th>
+            <th>Unpaid</th>
         </tr>
         @foreach (var tuple in Model)
         {
@@ -40,6 +41,7 @@
                 { <td>@tuple.Item2.pilgrimage</td> }
                 else
                 { <td></td> }
+                <td>@tuple.Item2.unpaid</td>
             </tr>
         }
     </table>
