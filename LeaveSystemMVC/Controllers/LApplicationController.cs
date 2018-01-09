@@ -332,11 +332,7 @@ namespace LeaveSystemMVC.Controllers
             if (ModelState.IsValid)
             {
                 // does the user have enough balance?
-                if (lb.pilgrimage < numOfDays)
-                {
-                    ViewBag.ErrorMessage = "You do not have enough balance.";
-                }
-                else
+                if (lb.pilgrimage > numOfDays)
                 {
                     // uploads the file to App_Data/Documentation
                     string fileName = UploadFile(file);
@@ -349,7 +345,10 @@ namespace LeaveSystemMVC.Controllers
 
                     // sets the notification message to be displayed to the applicant
                     TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
-
+                }
+                else
+                {
+                    ViewBag.ErrorMessage = "You do not have enough balance.";
                 }
             }
         }
