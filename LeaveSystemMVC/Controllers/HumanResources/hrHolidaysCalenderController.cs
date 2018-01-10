@@ -244,7 +244,7 @@ namespace LeaveSystemMVC.Controllers
                         lid = (int)reader["Leave_ID"];
                         empid = (int)reader["Employee_ID"];
                         start = (DateTime)reader["Start_Date"];
-                        end = (DateTime)reader["End_Date"];
+                        end = (DateTime)reader["Reporting_Back_Date"];
                         status = (int)reader["Leave_Status_ID"];
                         details.Add(new Emp(appid, empid, lid, start, end, status));
                     }

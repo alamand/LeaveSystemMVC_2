@@ -36,7 +36,7 @@ namespace LeaveSystemMVC.Controllers
                             employeeID = (int)reader["Employee_ID"],
                             employeeName = (string)reader["First_Name"] + " " + (string)reader["Last_Name"],
                             startDate = (!DBNull.Value.Equals(reader["Start_Date"])) ? (DateTime)reader["Start_Date"] : new DateTime(0, 0, 0),
-                            endDate = (!DBNull.Value.Equals(reader["End_Date"])) ? (DateTime)reader["End_Date"] : new DateTime(0, 0, 0),
+                            endDate = (!DBNull.Value.Equals(reader["Reporting_Back_Date"])) ? (DateTime)reader["Reporting_Back_Date"] : new DateTime(0, 0, 0),
                             leaveTypeID = (int)reader["Leave_ID"],
                             leaveTypeName = (string)reader["Leave_Name"],
                             contactDetails = (!DBNull.Value.Equals(reader["Contact_Outside_UAE"])) ? (string)reader["Contact_Outside_UAE"] : "",
@@ -84,7 +84,7 @@ namespace LeaveSystemMVC.Controllers
 
         private string GetFilteredQuery(int deptID, int accStat, string search, string order, string sDate, string eDate)
         {
-            var queryString = "SELECT Leave_Application_ID, Employee.Employee_ID, First_Name, Last_Name, Leave.Start_Date, Leave.End_Date, Leave.Leave_ID, Leave_Name, " +
+            var queryString = "SELECT Leave_Application_ID, Employee.Employee_ID, First_Name, Last_Name, Leave.Start_Date, Leave.Reporting_Back_Date, Leave.Leave_ID, Leave_Name, " +
                 "Contact_Outside_UAE, Comment, Documentation, Flight_Ticket, Total_Leave, Start_Hrs, End_Hrs, Leave.Leave_Status_ID, Status_Name, HR_Comment, LM_Comment " +
                 "FROM dbo.Leave, dbo.Employee, dbo.Leave_Type, dbo.Leave_Status, dbo.Department, dbo.Reporting " +
                 "WHERE Leave.Employee_ID = Employee.Employee_ID AND Leave.Leave_ID = Leave_Type.Leave_ID AND " +
