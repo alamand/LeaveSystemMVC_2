@@ -31,11 +31,6 @@ namespace LeaveSystemMVC.Models
         [Required(ErrorMessage = "Start Date is required.")]
         public DateTime startDate { get; set; }
 
-        // @TODO: Remove on of the two (end date or return date)
-        [DisplayName("End Date")]
-        [Required(ErrorMessage = "Reporting Back Date is required.")]
-        public DateTime endDate { get; set; }
-
         [Display(Name = "Reporting Back Date")]
         [Required(ErrorMessage = "Reporting Back Date is required.")]
         public DateTime returnDate { get; set; }

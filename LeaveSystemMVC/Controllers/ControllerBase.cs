@@ -177,7 +177,7 @@ namespace LeaveSystemMVC.Controllers
             return employeeModel;
         }
 
-        protected List<sLeaveModel> GetLeaveModel(string listFor="", int empID=0)
+        protected List<sLeaveModel> GetLeaveModel(string listFor="", int id=0)
         {
             var leaveList = new List<sLeaveModel>();
 
@@ -187,9 +187,9 @@ namespace LeaveSystemMVC.Controllers
                 "WHERE Leave.Employee_ID = Employee.Employee_ID AND Leave.Leave_ID = Leave_Type.Leave_ID AND " +
                 "Leave.Leave_Status_ID = Leave_Status.Leave_Status_ID AND Department.Department_ID = Employee.Department_ID AND Employee.Employee_ID = Reporting.Employee_ID";
 
-            if (empID != 0)
+            if (id != 0)
             {
-                 queryString += " AND " + listFor + " = " + empID;
+                 queryString += " AND " + listFor + " = " + id;
             }
 
             using (var connection = new SqlConnection(connectionString))
@@ -207,7 +207,7 @@ namespace LeaveSystemMVC.Controllers
                             employeeID = (int)reader["Employee_ID"],
                             employeeName = (string)reader["First_Name"] + " " + (string)reader["Last_Name"],
                             startDate = (!DBNull.Value.Equals(reader["Start_Date"])) ? (DateTime)reader["Start_Date"] : new DateTime(0, 0, 0),
-                            endDate = (!DBNull.Value.Equals(reader["Reporting_Back_Date"])) ? (DateTime)reader["Reporting_Back_Date"] : new DateTime(0,0,0),
+                            returnDate = (!DBNull.Value.Equals(reader["Reporting_Back_Date"])) ? (DateTime)reader["Reporting_Back_Date"] : new DateTime(0,0,0),
                             leaveTypeID = (int)reader["Leave_ID"],
                             leaveTypeName = (string)reader["Leave_Name"],
                             contactDetails = (!DBNull.Value.Equals(reader["Contact_Outside_UAE"])) ? (string)reader["Contact_Outside_UAE"] : "",

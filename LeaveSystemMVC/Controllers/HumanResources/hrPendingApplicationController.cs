@@ -49,8 +49,6 @@ namespace LeaveSystemMVC.Controllers
         [HttpPost]
         public ActionResult Select(sLeaveModel leave, string submit)
         {
-            System.Diagnostics.Debug.WriteLine("submit: " + submit);
-
             switch (submit)
             {
                 case "Approve":
@@ -78,7 +76,7 @@ namespace LeaveSystemMVC.Controllers
             sleaveBalanceModel leaveBalance = GetLeaveBalanceModel(leave.employeeID);
 
             // gets the total number of days, this involves excluding weekends and public holidays
-            int numOfDays = GetNumOfDays(leave.startDate, leave.endDate);
+            int numOfDays = GetNumOfDays(leave.startDate, leave.returnDate);
 
             switch (leave.leaveTypeName)
             {
@@ -91,7 +89,7 @@ namespace LeaveSystemMVC.Controllers
                     break;
 
                 case "Maternity":
-                    TimeSpan diff = leave.endDate - leave.startDate;
+                    TimeSpan diff = leave.returnDate - leave.startDate;
                     message = (leaveBalance.maternity < diff.Days) ? "Not enough credit balance." : "<b>" + numOfDays + " day(s)</b> will be accumulated.";
                     break;
 
@@ -111,7 +109,6 @@ namespace LeaveSystemMVC.Controllers
                 default:
                     break; ;
             }
-
 
             return message;
         }
@@ -255,7 +252,6 @@ namespace LeaveSystemMVC.Controllers
 
         private void Approve(sLeaveModel leave)
         {
-            System.Diagnostics.Debug.WriteLine("Type: " + leave.leaveTypeID);
             
             switch (leave.leaveTypeName)
             {
@@ -297,7 +293,7 @@ namespace LeaveSystemMVC.Controllers
             sleaveBalanceModel lb = GetLeaveBalanceModel(leave.employeeID);
 
             // gets the total number of days, this involves excluding weekends and public holidays
-            int numOfDays = GetNumOfDays(leave.startDate, leave.endDate);
+            int numOfDays = GetNumOfDays(leave.startDate, leave.returnDate);
 
             // keeps track of how much credit points should be deducted from each balance type
             decimal deductDIL = 0;
@@ -350,7 +346,7 @@ namespace LeaveSystemMVC.Controllers
             sleaveBalanceModel lb = GetLeaveBalanceModel(leave.employeeID);
 
             // gets the total number of days, this involves excluding weekends and public holidays
-            int numOfDays = GetNumOfDays(leave.startDate, leave.endDate);
+            int numOfDays = GetNumOfDays(leave.startDate, leave.returnDate);
 
             // keeps track of how much credit points should be deducted from each balance type
             decimal deductDIL = 0;
@@ -389,17 +385,27 @@ namespace LeaveSystemMVC.Controllers
             {
                 deductSick = numOfDays;
             }
+            System.Diagnostics.Debug.WriteLine("Days: " + numOfDays);
+            System.Diagnostics.Debug.WriteLine("D-DIL: " + deductDIL);
+            System.Diagnostics.Debug.WriteLine("D-Sick: " + deductSick);
+            System.Diagnostics.Debug.WriteLine("D-Annual: " + deductAnnual);
+            System.Diagnostics.Debug.WriteLine("D-Unpaid: " + addUnpaid);
+            System.Diagnostics.Debug.WriteLine("B-DIL: " + lb.daysInLieu);
+            System.Diagnostics.Debug.WriteLine("B-Sick: " + lb.sick);
+            System.Diagnostics.Debug.WriteLine("B-Annual: " + lb.annual);
+            System.Diagnostics.Debug.WriteLine("B-Unpaid: " + lb.unpaid);
+            System.Diagnostics.Debug.WriteLine("B-D-DIL: " + (lb.daysInLieu - deductDIL));
+            System.Diagnostics.Debug.WriteLine("B-D-Sick: " + (lb.sick - deductSick));
+            System.Diagnostics.Debug.WriteLine("B-D-Annual: " + (lb.annual - deductAnnual));
+            System.Diagnostics.Debug.WriteLine("B-D-Unpaid: " + (lb.unpaid + addUnpaid));
 
             int approvedID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Approved").Key;
             DBUpdateLeave(leave, approvedID);
 
-            System.Diagnostics.Debug.WriteLine("Status: " + approvedID);
-
-
-            DBUpdateBalance(leave.employeeID, lb.sickID, lb.sick - deductSick);
-            DBUpdateBalance(leave.employeeID, lb.daysInLieuID, lb.daysInLieu - deductDIL);
-            DBUpdateBalance(leave.employeeID, lb.annualID, lb.annual - deductAnnual);
-            DBUpdateBalance(leave.employeeID, lb.unpaidID, lb.unpaid + addUnpaid);
+            DBUpdateBalance(leave.employeeID, lb.sickID, (lb.sick - deductSick));
+            DBUpdateBalance(leave.employeeID, lb.daysInLieuID, (lb.daysInLieu - deductDIL));
+            DBUpdateBalance(leave.employeeID, lb.annualID, (lb.annual - deductAnnual));
+            DBUpdateBalance(leave.employeeID, lb.unpaidID, (lb.unpaid + addUnpaid));
 
             // sets the notification message to be displayed to the applicant
             TempData["SuccessMessage"] += (deductSick > 0) ? deductSick + " day(s) will be deducted from Sick balance.<br/>" : "";
@@ -418,7 +424,7 @@ namespace LeaveSystemMVC.Controllers
             sleaveBalanceModel lb = GetLeaveBalanceModel(leave.employeeID);
 
             // Maternity leave includes weekends and public holidays
-            TimeSpan diff = leave.endDate - leave.startDate;
+            TimeSpan diff = leave.returnDate - leave.startDate;
 
             // the duration of leave is the number of days between the two dates
             int numOfDays = diff.Days;
@@ -450,7 +456,7 @@ namespace LeaveSystemMVC.Controllers
             sleaveBalanceModel lb = GetLeaveBalanceModel(leave.employeeID);
 
             // gets the total number of days, this involves excluding weekends and public holidays
-            int numOfDays = GetNumOfDays(leave.startDate, leave.endDate);
+            int numOfDays = GetNumOfDays(leave.startDate, leave.returnDate);
 
             // does the user have enough balance?
             if (lb.compassionate >= numOfDays)
@@ -507,7 +513,7 @@ namespace LeaveSystemMVC.Controllers
             sleaveBalanceModel lb = GetLeaveBalanceModel(leave.employeeID);
 
             // gets the total number of days, this involves excluding weekends and public holidays
-            int numOfDays = GetNumOfDays(leave.startDate, leave.endDate);
+            int numOfDays = GetNumOfDays(leave.startDate, leave.returnDate);
 
             // does the user have enough balance?
             if (lb.pilgrimage >= numOfDays)
@@ -536,7 +542,7 @@ namespace LeaveSystemMVC.Controllers
             sleaveBalanceModel lb = GetLeaveBalanceModel(leave.employeeID);
 
             // gets the total number of days, this involves excluding weekends and public holidays
-            int numOfDays = GetNumOfDays(leave.startDate, leave.endDate);
+            int numOfDays = GetNumOfDays(leave.startDate, leave.returnDate);
 
             int approvedID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Approved").Key;
             DBUpdateLeave(leave, approvedID);

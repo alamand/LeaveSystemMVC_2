@@ -36,7 +36,7 @@ namespace LeaveSystemMVC.Controllers
                             employeeID = (int)reader["Employee_ID"],
                             employeeName = (string)reader["First_Name"] + " " + (string)reader["Last_Name"],
                             startDate = (!DBNull.Value.Equals(reader["Start_Date"])) ? (DateTime)reader["Start_Date"] : new DateTime(0, 0, 0),
-                            endDate = (!DBNull.Value.Equals(reader["Reporting_Back_Date"])) ? (DateTime)reader["Reporting_Back_Date"] : new DateTime(0, 0, 0),
+                            returnDate = (!DBNull.Value.Equals(reader["Reporting_Back_Date"])) ? (DateTime)reader["Reporting_Back_Date"] : new DateTime(0, 0, 0),
                             leaveTypeID = (int)reader["Leave_ID"],
                             leaveTypeName = (string)reader["Leave_Name"],
                             contactDetails = (!DBNull.Value.Equals(reader["Contact_Outside_UAE"])) ? (string)reader["Contact_Outside_UAE"] : "",

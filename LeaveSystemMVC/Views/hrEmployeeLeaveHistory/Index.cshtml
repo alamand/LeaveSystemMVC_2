@@ -112,14 +112,14 @@
                         string stDt = item.startDate.ToString();
                         stDt = stDt.Substring(0, 10);
 
-                        string enDt = item.endDate.ToString();
-                        enDt = enDt.Substring(0, 10);
+                        string reDt = item.returnDate.ToString();
+                        reDt = reDt.Substring(0, 10);
                     }
                     <td>@Html.DisplayFor(modelItem => item.leaveAppID)</td>
                     <td>@Html.DisplayFor(modelItem => item.employeeName)</td>
                     <td>@Html.DisplayFor(modelItem => item.leaveTypeName)</td>
                     <td>@Html.DisplayFor(modelItem => stDt)</td>
-                    <td>@Html.DisplayFor(modelItem => enDt)</td>
+                    <td>@Html.DisplayFor(modelItem => reDt)</td>
                     <td>@Html.DisplayFor(modelItem => item.leaveDuration)</td>
                     <td>@Html.DisplayFor(modelItem => item.shortStartTime)</td>
                     <td>@Html.DisplayFor(modelItem => item.shortEndTime)</td>

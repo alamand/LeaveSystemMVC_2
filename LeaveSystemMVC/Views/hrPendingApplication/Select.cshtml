@@ -18,49 +18,64 @@
                             <div class="row">
                                 <dl class="dl-horizontal">
                                     @Html.HiddenFor(model => model.leaveAppID)
+                                    @Html.HiddenFor(model => model.leaveStatusID)
+                                    @Html.HiddenFor(model => model.leaveStatusName)
 
                                     <dt>@Html.DisplayNameFor(model => model.employeeName)</dt>
                                     <dd>@Html.DisplayFor(model => model.employeeName)</dd>
+                                    @Html.HiddenFor(model => model.employeeID)
+                                    @Html.HiddenFor(model => model.employeeName)
 
                                     <dt>@Html.DisplayNameFor(model => model.leaveTypeName)</dt>
                                     <dd>@Html.DisplayFor(model => model.leaveTypeName)</dd>
+                                    @Html.HiddenFor(model => model.leaveTypeID)
+                                    @Html.HiddenFor(model => model.leaveTypeName)
 
                                     @{
                                         string startDateString = Model.startDate.ToString("dd/MM/yyyy");
-                                        string endDateString = Model.endDate.ToString("dd/MM/yyyy");
+                                        string returnDateString = Model.returnDate.ToString("dd/MM/yyyy");
                                     }
 
                                     <dt>@Html.DisplayNameFor(model => model.startDate)</dt>
                                     <dd>@Html.DisplayFor(sd => startDateString)</dd>
+                                    @Html.HiddenFor(model => model.startDate)
 
                                     <dt>@Html.DisplayNameFor(model => model.returnDate)</dt>
-                                    <dd>@Html.DisplayFor(rd => endDateString)</dd>
+                                    <dd>@Html.DisplayFor(rd => returnDateString)</dd>
+                                    @Html.HiddenFor(model => model.returnDate)
 
                                     <dt>@Html.DisplayNameFor(model => model.leaveDuration)</dt>
-
                                     <dd>@Html.DisplayFor(model => model.leaveDuration)</dd>
+                                    @Html.HiddenFor(model => model.leaveDuration)
 
                                     @if (Model.leaveTypeName.Equals("Short_Hours_Per_Month"))
                                     {
                                         <dt>@Html.DisplayNameFor(model => model.shortStartTime)</dt>
                                         <dd>@Html.DisplayFor(model => model.shortStartTime)</dd>
+                                        @Html.HiddenFor(model => model.shortStartTime)
+
                                         <dt>@Html.DisplayNameFor(model => model.shortEndTime)</dt>
                                         <dd>@Html.DisplayFor(model => model.shortEndTime)</dd>
-                                    }
+                                        @Html.HiddenFor(model => model.shortEndTime)
 
-                                    @Html.HiddenFor(model => model.leaveStatusName)
+                                    }
 
                                     <dt>@Html.DisplayNameFor(model => model.comments)</dt>
                                     <dd>@Html.DisplayFor(model => model.comments)</dd>
+                                    @Html.HiddenFor(model => model.comments)
 
                                     <dt>@Html.DisplayNameFor(model => model.documentation)</dt>
                                     <dd><a target="_blank" href='\App_Data\Documentation\@Model.leaveAppID-@Model.documentation'>@Html.DisplayFor(model => model.documentation)</a></dd>
+                                    @Html.HiddenFor(model => model.documentation)
 
                                     <dt>@Html.DisplayNameFor(model => model.bookAirTicket)</dt>
                                     <dd>@Html.DisplayFor(model => model.bookAirTicket)</dd>
+                                    @Html.HiddenFor(model => model.bookAirTicket)
 
                                     <dt>@Html.DisplayNameFor(model => model.contactDetails)</dt>
                                     <dd>@Html.DisplayFor(model => model.contactDetails)</dd>
+                                    @Html.HiddenFor(model => model.contactDetails)
+
                                 </dl>
                             </div>
 
@@ -185,13 +200,13 @@
                                             string stDt = lv.startDate.ToString();
                                             stDt = stDt.Substring(0, 10);
 
-                                            string enDt = lv.endDate.ToString();
-                                            enDt = enDt.Substring(0, 10);
+                                            string reDt = lv.returnDate.ToString();
+                                            reDt = reDt.Substring(0, 10);
                                         
                                             <tr>
                                                 <td>@lv.leaveTypeName</td>
                                                 <td>@stDt</td>
-                                                <td>@enDt</td>
+                                                <td>@reDt</td>
                                                 <td>@lv.leaveDuration</td>
                                                 @if (lv.leaveTypeName != "Short_Hours_Per_Month")
                                                 {

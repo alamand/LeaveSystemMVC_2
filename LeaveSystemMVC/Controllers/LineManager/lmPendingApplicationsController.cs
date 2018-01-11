@@ -158,7 +158,7 @@ namespace LeaveSystemMVC.Controllers
             sleaveBalanceModel leaveBalance = GetLeaveBalanceModel(leave.employeeID);
 
             // gets the total number of days, this involves excluding weekends and public holidays
-            int numOfDays = GetNumOfDays(leave.startDate, leave.endDate);
+            int numOfDays = GetNumOfDays(leave.startDate, leave.returnDate);
 
             switch (leave.leaveTypeName)
             {
@@ -171,7 +171,7 @@ namespace LeaveSystemMVC.Controllers
                     break;
 
                 case "Maternity":
-                    TimeSpan diff = leave.endDate - leave.startDate;
+                    TimeSpan diff = leave.returnDate - leave.startDate;
                     message = (leaveBalance.maternity < diff.Days) ? "Not enough credit balance." : "<b>" + numOfDays + " day(s)</b> will be accumulated.";
                     break;
 

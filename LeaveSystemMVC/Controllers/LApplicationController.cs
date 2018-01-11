@@ -43,10 +43,10 @@ namespace LeaveSystemMVC.Controllers
             ModelState.Clear();
 
             // checks if the dates are the same, and if the end date is before than start date (sets ModelState to invalid if one of them is true)
-            CompareDates(model.startDate, model.endDate);
+            CompareDates(model.startDate, model.returnDate);
 
             // gets the total number of days, this involves excluding weekends and public holidays
-            int numOfDays = GetNumOfDays(model.startDate, model.endDate);
+            int numOfDays = GetNumOfDays(model.startDate, model.returnDate);
 
             if (numOfDays > 0 || (model.shortStartTime != null && model.shortEndTime != null))
             {
@@ -211,7 +211,7 @@ namespace LeaveSystemMVC.Controllers
             if (ModelState.IsValid)
             {
                 // Maternity leave includes weekends and public holidays
-                TimeSpan diff = model.endDate - model.startDate;
+                TimeSpan diff = model.returnDate - model.startDate;
 
                 // the duration of leave is the number of days between the two dates
                 int numOfDays = diff.Days;
@@ -270,7 +270,7 @@ namespace LeaveSystemMVC.Controllers
             ModelState.Clear();
 
             // the applicant enters only one date, the leave is for 0 days
-            model.endDate = model.startDate;
+            model.returnDate = model.startDate;
 
             // checks if the times are the same, and if the end time is before than start time (sets ModelState to invalid if one of them is true)
             CompareHours((TimeSpan)model.shortStartTime, (TimeSpan)model.shortEndTime);
@@ -447,7 +447,7 @@ namespace LeaveSystemMVC.Controllers
         {
             string queryString = "INSERT INTO dbo.Leave (Employee_ID, Documentation, Start_Date, Reporting_Back_Date, Start_Hrs, End_Hrs, Leave_ID, " +
                 "Contact_Outside_UAE, Comment, Flight_Ticket, Total_Leave, Leave_Status_ID) " +
-                "VALUES ('" + GetLoggedInID() + "','" + fName + "','" + lm.startDate.ToString("yyyy-MM-dd") + "','" + lm.endDate.ToString("yyyy-MM-dd") + 
+                "VALUES ('" + GetLoggedInID() + "','" + fName + "','" + lm.startDate.ToString("yyyy-MM-dd") + "','" + lm.returnDate.ToString("yyyy-MM-dd") + 
                 "','" + lm.shortStartTime.ToString() + "','" + lm.shortEndTime.ToString() + "','" + lm.leaveTypeID + "','" + lm.contactDetails + "','" + 
                 lm.comments + "','" + lm.bookAirTicket + "','" + numOfDays + "','0');";
             DBExecuteQuery(queryString);
