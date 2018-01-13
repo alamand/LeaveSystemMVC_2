@@ -41,5 +41,21 @@ namespace LeaveSystemMVC.Models
         [Display(Name = "Pilgrimage")]
         public decimal pilgrimage { get; set; } = 0;
         public int pilgrimageID { get; set; } = 0;
+
+        public String editCommentAnnual { get; set; } = "";
+
+        public String editCommentMaternity { get; set; } = "";
+
+        public String editCommentSick { get; set; } = "";
+
+        public String editCommentDIL { get; set; } = "";
+
+        public String editCommentCompassionate { get; set; } = "";
+
+        public String editCommentShortHours { get; set; } = "";
+
+        public String editCommentUnpaid { get; set; } = "";
+
+        public String editCommentPilgrimage { get; set; } = "";
     }
 }

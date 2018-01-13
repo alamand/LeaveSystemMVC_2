@@ -20,43 +20,50 @@
                 <th>Balance Type</th>
                 <th>Current Balance</th>
                 <th>New Balance</th>
+                <th>Reason for Change</th>
             </tr>
             <tr>
                 <td>@Html.LabelFor(model => model.annual)</td>
                 <td>@Model.annual</td>
-                <td>@Html.TextBoxFor(Model => Model.annual, new { @Value = Model.annual, @class="form-control" })</td>
+                <td>@Html.TextBoxFor(Model => Model.annual, new { @Value = Model.annual, style = "width:5em;", @class ="form-control" })</td>
+                <td>@Html.TextBoxFor(Model => Model.editCommentAnnual, new { @Value = Model.editCommentAnnual, @class = "form-control" })</td>
                 @Html.HiddenFor(Model => Model.annualID)
             </tr>
             @if (ViewBag.gender == 'F') {
             <tr>
                 <td>@Html.LabelFor(model => model.maternity)</td>
                 <td>@Model.maternity </td>
-                <td>@Html.TextBoxFor(Model => Model.maternity, new { @Value = Model.maternity, @class = "form-control" })</td>
+                <td>@Html.TextBoxFor(Model => Model.maternity, new { @Value = Model.maternity, style = "width:5em;", @class = "form-control" })</td>
+                <td>@Html.TextBoxFor(Model => Model.editCommentMaternity, new { @Value = Model.editCommentMaternity, @class = "form-control" })</td>
                 @Html.HiddenFor(Model => Model.maternityID)
             </tr>
             }
             <tr>
                 <td>@Html.LabelFor(model => model.sick)</td>
                 <td>@Model.sick</td>
-                <td>@Html.TextBoxFor(Model => Model.sick, new { @Value = Model.sick, @class = "form-control" })</td>
+                <td>@Html.TextBoxFor(Model => Model.sick, new { @Value = Model.sick, style = "width:5em;", @class = "form-control" })</td>
+                <td>@Html.TextBoxFor(Model => Model.editCommentSick, new { @Value = Model.editCommentSick, @class = "form-control" })</td>
                 @Html.HiddenFor(Model => Model.sickID)
             </tr>
             <tr>
                 <td>@Html.LabelFor(model => model.daysInLieu)</td>
                 <td>@Model.daysInLieu</td>
-                <td>@Html.TextBoxFor(Model => Model.daysInLieu, new { @Value = Model.daysInLieu, @class = "form-control" })</td>
+                <td>@Html.TextBoxFor(Model => Model.daysInLieu, new { @Value = Model.daysInLieu, style = "width:5em;", @class = "form-control" })</td>
+                <td>@Html.TextBoxFor(Model => Model.editCommentDIL, new { @Value = Model.editCommentDIL, @class = "form-control" })</td>
                 @Html.HiddenFor(Model => Model.daysInLieuID)
             </tr>
             <tr>
                 <td>@Html.LabelFor(model => model.compassionate)</td>
                 <td>@Model.compassionate</td>
-                <td>@Html.TextBoxFor(Model => Model.compassionate, new { @Value = Model.compassionate, @class = "form-control" })</td>
+                <td>@Html.TextBoxFor(Model => Model.compassionate, new { @Value = Model.compassionate, style = "width:5em;", @class = "form-control" })</td>
+                <td>@Html.TextBoxFor(Model => Model.editCommentCompassionate, new { @Value = Model.editCommentCompassionate, @class = "form-control" })</td>
                 @Html.HiddenFor(Model => Model.compassionateID)
             </tr>
             <tr>
                 <td>@Html.LabelFor(model => model.shortHours)</td>
                 <td>@Model.shortHours</td>
-                <td>@Html.TextBoxFor(Model => Model.shortHours, new { @Value = Model.shortHours, @class = "form-control" })</td>
+                <td>@Html.TextBoxFor(Model => Model.shortHours, new { @Value = Model.shortHours, style = "width:5em;", @class = "form-control" })</td>
+                <td>@Html.TextBoxFor(Model => Model.editCommentShortHours, new { @Value = Model.editCommentShortHours, @class = "form-control" })</td>
                 @Html.HiddenFor(Model => Model.shortHoursID)
             </tr>
             @if (ViewBag.religion.Equals("Muslim"))
@@ -64,14 +71,16 @@
             <tr>
                 <td>@Html.LabelFor(model => model.pilgrimage)</td>
                 <td>@Model.pilgrimage</td>
-                <td>@Html.TextBoxFor(Model => Model.pilgrimage, new { @Value = Model.pilgrimage, @class = "form-control" })</td>
+                <td>@Html.TextBoxFor(Model => Model.pilgrimage, new { @Value = Model.pilgrimage, style = "width:5em;", @class = "form-control" })</td>
+                <td>@Html.TextBoxFor(Model => Model.editCommentPilgrimage, new { @Value = Model.editCommentPilgrimage, @class = "form-control" })</td>
                 @Html.HiddenFor(Model => Model.pilgrimageID)
             </tr>
             }
             <tr>
                 <td>@Html.LabelFor(model => model.unpaid)</td>
                 <td>@Model.unpaid</td>
-                <td>@Html.TextBoxFor(Model => Model.unpaid, new { @Value = Model.unpaid, @class = "form-control" })</td>
+                <td>@Html.TextBoxFor(Model => Model.unpaid, new { @Value = Model.unpaid, style = "width:5em;", @class = "form-control" })</td>
+                <td>@Html.TextBoxFor(Model => Model.editCommentUnpaid, new { @Value = Model.editCommentUnpaid, @class = "form-control" })</td>
                 @Html.HiddenFor(Model => Model.unpaidID)
             </tr>
         </table>

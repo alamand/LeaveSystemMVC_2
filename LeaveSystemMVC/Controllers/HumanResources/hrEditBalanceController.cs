@@ -123,13 +123,21 @@ namespace LeaveSystemMVC.Controllers
             if (ModelState.IsValid)
             {
                 DBUpdateBalance(lb.empId, lb.annualID, lb.annual);
+                DBUpdateComment(lb.empId, lb.annualID, lb.editCommentAnnual);
                 DBUpdateBalance(lb.empId, lb.maternityID, lb.maternity);
+                DBUpdateComment(lb.empId, lb.maternityID, lb.editCommentMaternity);
                 DBUpdateBalance(lb.empId, lb.sickID, lb.sick);
+                DBUpdateComment(lb.empId, lb.sickID, lb.editCommentSick);
                 DBUpdateBalance(lb.empId, lb.compassionateID, lb.compassionate);
+                DBUpdateComment(lb.empId, lb.compassionateID, lb.editCommentCompassionate);
                 DBUpdateBalance(lb.empId, lb.daysInLieuID, lb.daysInLieu);
+                DBUpdateComment(lb.empId, lb.daysInLieuID, lb.editCommentDIL);
                 DBUpdateBalance(lb.empId, lb.shortHoursID, lb.shortHours);
+                DBUpdateComment(lb.empId, lb.shortHoursID, lb.editCommentShortHours);
                 DBUpdateBalance(lb.empId, lb.pilgrimageID, lb.pilgrimage);
+                DBUpdateComment(lb.empId, lb.pilgrimageID, lb.editCommentPilgrimage);
                 DBUpdateBalance(lb.empId, lb.unpaidID, lb.unpaid);
+                DBUpdateComment(lb.empId, lb.unpaidID, lb.editCommentUnpaid);
                 ViewBag.SuccessMessage = " The information has been updated successfully.";
             }
             else
@@ -146,6 +154,15 @@ namespace LeaveSystemMVC.Controllers
             string updateQuery = "UPDATE dbo.Leave_Balance SET Balance = '" + balance + "' WHERE Leave_ID = '" + leaveID + "' AND Employee_ID = '" + employeeID + "'";
             string queryString = (!IsLeaveBalanceExists(employeeID, leaveID) && balance > 0) ? insertQuery : updateQuery;
             DBExecuteQuery(queryString);
+        }
+
+        private void DBUpdateComment(int employeeID, int leaveID, String comment)
+        {
+            if(comment != null)
+            {
+                string updateQuery = "UPDATE dbo.Leave_Balance SET Last_Edit_Comment = '" + comment + "' WHERE Leave_ID = '" + leaveID + "' AND Employee_ID = '" + employeeID + "'";
+                DBExecuteQuery(updateQuery);
+            }            
         }
     }
 }
