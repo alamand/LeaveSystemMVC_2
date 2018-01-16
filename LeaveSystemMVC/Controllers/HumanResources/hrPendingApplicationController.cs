@@ -12,20 +12,24 @@ using System.Net.Mail;
 
 namespace LeaveSystemMVC.Controllers
 {
-    // @TODO: Need to optimize this more, after new changes on the Department Table
     public class hrPendingApplicationController : ControllerBase
     {
-        [HttpGet]
         // GET: hrPendingApplication
+
+        [HttpGet]
         public ActionResult Index()
         {
             List<sLeaveModel> retrievedApplications = new List<sLeaveModel>();
 
+            // extract all pending applications
             foreach (var leave in GetLeaveModel())
             {
                 if (leave.leaveStatusName.Equals("Pending_HR"))
                     retrievedApplications.Add(leave);
             }
+
+            ViewBag.SuccessMessage = TempData["SuccessMessage"];
+            ViewBag.WarningMessage = TempData["WarningMessage"];
 
             return View(retrievedApplications);
         }
@@ -36,7 +40,7 @@ namespace LeaveSystemMVC.Controllers
             sLeaveModel passingLeave = GetLeaveModel().First(leave => leave.leaveAppID == appID);
             var employee = GetEmployeeModel(passingLeave.employeeID);
 
-            ViewData["Message"] = CalculatedBalance(passingLeave);
+            ViewData["Preview"] = AccumulationPreview(passingLeave);
             ViewData["LeaveHistory"] = GetLeaveHistory(passingLeave.employeeID);
             ViewData["Balances"] = GetLeaveBalanceModel(passingLeave.employeeID);
             ViewData["Gender"] = employee.gender;
@@ -55,24 +59,22 @@ namespace LeaveSystemMVC.Controllers
                     Approve(leave);
                     break;
                 case "Reject":
-                    int rejectedID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Rejected_HR").Key;
-                    DBUpdateLeave(leave, rejectedID);
-
-                    string message = "Your " + leave.leaveTypeName + " leave application " + "from " + leave.startDate + " to " + leave.returnDate + " has been rejected by Human Resources.";
-                    SendMail(GetEmployeeModel(leave.employeeID).email, message);
+                    Reject(leave);
                     break;
 
                 default:
                     break; ;
             }
 
-            return RedirectToAction("Index");
+            if (TempData["SuccessMessage"] != null || TempData["WarningMessage"] != null)
+                return RedirectToAction("Index");
+            else
+                return Select(leave.leaveAppID);
         }
 
-        private string CalculatedBalance(sLeaveModel leave)
+        private Dictionary<string, decimal> AccumulationPreview(sLeaveModel leave)
         {
-            string message = "";
-
+            Dictionary<string, decimal> balanceDeduction = new Dictionary<string, decimal>();
             sleaveBalanceModel leaveBalance = GetLeaveBalanceModel(leave.employeeID);
 
             // gets the total number of days, this involves excluding weekends and public holidays
@@ -81,41 +83,41 @@ namespace LeaveSystemMVC.Controllers
             switch (leave.leaveTypeName)
             {
                 case "Annual":
-                    message = LeaveAppAnnual(leaveBalance, numOfDays);
+                    balanceDeduction = LeaveAppAnnual(leaveBalance, numOfDays);
                     break;
 
                 case "Sick":
-                    message = LeaveAppSick(leaveBalance, numOfDays);
+                    balanceDeduction = LeaveAppSick(leaveBalance, numOfDays);
                     break;
 
                 case "Maternity":
                     TimeSpan diff = leave.returnDate - leave.startDate;
-                    message = (leaveBalance.maternity < diff.Days) ? "Not enough credit balance." : "<b>" + numOfDays + " day(s)</b> will be accumulated.";
+                    balanceDeduction.Add("Maternity", (decimal)numOfDays);
                     break;
 
                 case "Compassionate":
-                    message = (leaveBalance.compassionate < numOfDays) ? "Not enough credit balance." : "<b>" + numOfDays + " day(s)</b> will be accumulated.";
+                    balanceDeduction.Add("Compassionate", (decimal)numOfDays);
                     break;
 
                 case "Short_Hours_Per_Month":
                     TimeSpan span = (TimeSpan)leave.shortEndTime - (TimeSpan)leave.shortStartTime;
-                    message = (leaveBalance.compassionate < numOfDays) ? "Not enough credit balance." : "<b>" + span.TotalMinutes + " minutes(s)</b> will be accumulated.";
+                    balanceDeduction.Add("Short_Hours_Per_Month", (decimal)span.Hours);
                     break;
 
                 case "Pilgrimage":
-                    message = (leaveBalance.pilgrimage < numOfDays) ? "Not enough credit balance." : "<b>" + numOfDays + " day(s)</b> will be accumulated.";
+                    balanceDeduction.Add("Pilgrimage", (decimal)leaveBalance.pilgrimage);
                     break;
 
                 default:
                     break; ;
             }
 
-            return message;
+            return balanceDeduction;
         }
 
-        private string LeaveAppAnnual(sleaveBalanceModel lb, int numOfDays)
+        private Dictionary<string, decimal> LeaveAppAnnual(sleaveBalanceModel lb, int numOfDays)
         {
-            string message = "";
+            Dictionary<string, decimal> balanceDeduction = new Dictionary<string, decimal>();
 
             // keeps track of how much credit points should be deducted from each balance type
             decimal deductDIL = 0;
@@ -144,16 +146,20 @@ namespace LeaveSystemMVC.Controllers
                 deductDIL = numOfDays;
             }
 
-            // sets the notification message to be displayed to the applicant
-            message += (deductDIL > 0) ? deductDIL + " day(s) will be deducted from Days In Lieu balance.<br/>" : "";
-            message += (deductAnnual > 0) ? deductAnnual + " day(s) will be deducted from Annual balance.<br/>" : "";
-            message += (addUnpaid > 0) ? addUnpaid + " day(s) will be added to Unpaid balance.<br/>" : "";
-            return message;
+            // add what will be deducted in the dictionary
+            if (deductDIL > 0)
+                balanceDeduction.Add("DIL", deductDIL);
+            if (deductAnnual > 0)
+                balanceDeduction.Add("Annual", deductAnnual);
+            if (addUnpaid > 0)
+                balanceDeduction.Add("Unpaid", addUnpaid);
+
+            return balanceDeduction;
         }
 
-        private string LeaveAppSick(sleaveBalanceModel lb, int numOfDays)
+        private Dictionary<string, decimal> LeaveAppSick(sleaveBalanceModel lb, int numOfDays)
         {
-            string message = "";
+            Dictionary<string, decimal> balanceDeduction = new Dictionary<string, decimal>();
 
             // keeps track of how much credit points should be deducted from each balance type
             decimal deductDIL = 0;
@@ -193,28 +199,34 @@ namespace LeaveSystemMVC.Controllers
                 deductSick = numOfDays;
             }
 
-            // sets the notification message to be displayed to the applicant
-            message += (deductSick > 0) ? deductSick + " day(s) will be deducted from Sick balance.<br/>" : "";
-            message += (deductDIL > 0) ? deductDIL + " day(s) will be deducted from Days In Lieu balance.<br/>" : "";
-            message += (deductAnnual > 0) ? deductAnnual + " day(s) will be deducted from Annual balance.<br/>" : "";
-            message += (addUnpaid > 0) ? addUnpaid + " day(s) will be added to Unpaid balance.<br/>" : "";
+            // add what will be deducted in the dictionary
+            if (deductSick > 0)
+                balanceDeduction.Add("Sick", deductSick);
+            if (deductDIL > 0)
+                balanceDeduction.Add("DIL", deductDIL);
+            if (deductAnnual > 0)
+                balanceDeduction.Add("Annual", deductAnnual);
+            if (addUnpaid > 0)
+                balanceDeduction.Add("Unpaid", addUnpaid);
 
-            return message;
+            return balanceDeduction;
         }
 
         private int GetNumOfDays(DateTime sDate, DateTime eDate)
         {
             // @TODO: Test for all cases
             TimeSpan diff = eDate - sDate;
-            int numOfDays = diff.Days;
-            int fullNumOfDays = numOfDays;
+            int numOfDays = diff.Days;          // number of days excluding public holidays and weekends
+            int fullNumOfDays = numOfDays;      // number of days including public holidays and weekends
 
+            // exclude weekend
+            // go through each day from start date up to number of days
             for (var i = 0; i < fullNumOfDays; i++)
             {
                 switch (sDate.AddDays(i).DayOfWeek)
                 {
                     case DayOfWeek.Saturday:
-                        numOfDays--;
+                        numOfDays--;            
                         break;
                     case DayOfWeek.Friday:
                         numOfDays--;
@@ -222,6 +234,7 @@ namespace LeaveSystemMVC.Controllers
                 }
             }
 
+            // exclude public holidays
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
             string queryString = "SELECT * FROM dbo.Public_Holiday WHERE Date BETWEEN'" + sDate.ToString("yyyy-MM-dd") + "' AND '" + eDate.ToString("yyyy-MM-dd") + "'";
 
@@ -250,9 +263,19 @@ namespace LeaveSystemMVC.Controllers
             return numOfDays;
         }
 
+        private void Reject(sLeaveModel leave)
+        {
+            int rejectedID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Rejected_HR").Key;
+            DBUpdateLeave(leave, rejectedID);
+
+            string message = "Rejected";      //@TODO: write email
+            SendMail(GetEmployeeModel(leave.employeeID).email, message);
+
+            TempData["WarningMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>rejected</b> successfully.<br/>";
+        }
+
         private void Approve(sLeaveModel leave)
         {
-            
             switch (leave.leaveTypeName)
             {
                 case "Annual":
@@ -329,16 +352,13 @@ namespace LeaveSystemMVC.Controllers
             DBUpdateBalance(leave.employeeID, lb.annualID, lb.annual - deductAnnual);
             DBUpdateBalance(leave.employeeID, lb.unpaidID, lb.unpaid + addUnpaid);
 
-            // sets the notification message to be displayed to the applicant
-            TempData["SuccessMessage"] = "leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
-            TempData["SuccessMessage"] += (deductDIL > 0) ? deductDIL + " day(s) will be deducted from Days In Lieu balance.<br/>" : "";
-            TempData["SuccessMessage"] += (deductAnnual > 0) ? deductAnnual + " day(s) will be deducted from Annual balance.<br/>" : "";
-            TempData["SuccessMessage"] += (addUnpaid > 0) ? addUnpaid + " day(s) will be added to Unpaid balance.<br/>" : "";
-
             string message = "Approved"; //@TODO: Write an email
 
             // sends a notification email to the applicant
             SendMail(GetEmployeeModel(leave.employeeID).email, message);
+
+            // sets the notification message to be displayed
+            TempData["SuccessMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>approved</b> successfully.<br/>";
         }
 
         private void ApproveSickLeave(sLeaveModel leave)
@@ -385,19 +405,6 @@ namespace LeaveSystemMVC.Controllers
             {
                 deductSick = numOfDays;
             }
-            System.Diagnostics.Debug.WriteLine("Days: " + numOfDays);
-            System.Diagnostics.Debug.WriteLine("D-DIL: " + deductDIL);
-            System.Diagnostics.Debug.WriteLine("D-Sick: " + deductSick);
-            System.Diagnostics.Debug.WriteLine("D-Annual: " + deductAnnual);
-            System.Diagnostics.Debug.WriteLine("D-Unpaid: " + addUnpaid);
-            System.Diagnostics.Debug.WriteLine("B-DIL: " + lb.daysInLieu);
-            System.Diagnostics.Debug.WriteLine("B-Sick: " + lb.sick);
-            System.Diagnostics.Debug.WriteLine("B-Annual: " + lb.annual);
-            System.Diagnostics.Debug.WriteLine("B-Unpaid: " + lb.unpaid);
-            System.Diagnostics.Debug.WriteLine("B-D-DIL: " + (lb.daysInLieu - deductDIL));
-            System.Diagnostics.Debug.WriteLine("B-D-Sick: " + (lb.sick - deductSick));
-            System.Diagnostics.Debug.WriteLine("B-D-Annual: " + (lb.annual - deductAnnual));
-            System.Diagnostics.Debug.WriteLine("B-D-Unpaid: " + (lb.unpaid + addUnpaid));
 
             int approvedID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Approved").Key;
             DBUpdateLeave(leave, approvedID);
@@ -407,16 +414,13 @@ namespace LeaveSystemMVC.Controllers
             DBUpdateBalance(leave.employeeID, lb.annualID, (lb.annual - deductAnnual));
             DBUpdateBalance(leave.employeeID, lb.unpaidID, (lb.unpaid + addUnpaid));
 
-            // sets the notification message to be displayed to the applicant
-            TempData["SuccessMessage"] += (deductSick > 0) ? deductSick + " day(s) will be deducted from Sick balance.<br/>" : "";
-            TempData["SuccessMessage"] += (deductDIL > 0) ? deductDIL + " day(s) will be deducted from Days In Lieu balance.<br/>" : "";
-            TempData["SuccessMessage"] += (deductAnnual > 0) ? deductAnnual + " day(s) will be deducted from Annual balance.<br/>" : "";
-            TempData["SuccessMessage"] += (addUnpaid > 0) ? addUnpaid + " day(s) will be added to Unpaid balance.<br/>" : "";
-
             string message = "Approved"; //@TODO: Write an email
 
             // sends a notification email to the applicant
             SendMail(GetEmployeeModel(leave.employeeID).email, message);
+
+            // sets the notification message to be displayed
+            TempData["SuccessMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>approved</b> successfully.<br/>";
         }
 
         private void ApproveMaternityLeave(sLeaveModel leave)
@@ -442,12 +446,12 @@ namespace LeaveSystemMVC.Controllers
                 // sends a notification email to the applicant
                 SendMail(GetEmployeeModel(leave.employeeID).email, message);
 
-                // sets the notification message to be displayed to the applicant
-                TempData["SuccessMessage"] = "Your " + leave.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
+                // sets the notification message to be displayed
+                TempData["SuccessMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>approved</b> successfully.<br/>";
             }
             else             
             {
-                ViewBag.ErrorMessage = "You do not have enough balance.";
+                ViewBag.ErrorMessage = "Leave application ID <b>" + leave.leaveAppID + "</b> can't be approved, <b>" + leave.employeeName + "</b> does not have enough balance.";
             }
         }
 
@@ -471,12 +475,12 @@ namespace LeaveSystemMVC.Controllers
                 // sends a notification email to the applicant
                 SendMail(GetEmployeeModel(leave.employeeID).email, message);
 
-                // sets the notification message to be displayed to the applicant
-                TempData["SuccessMessage"] = "Your " + leave.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
+                // sets the notification message to be displayed
+                TempData["SuccessMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>approved</b> successfully.<br/>";
             }
             else
             {
-                ViewBag.ErrorMessage = "You do not have enough balance.";
+                ViewBag.ErrorMessage = "Leave application ID <b>" + leave.leaveAppID + "</b> can't be approved, <b>" + leave.employeeName + "</b> does not have enough balance.";
             }
         }
 
@@ -487,24 +491,25 @@ namespace LeaveSystemMVC.Controllers
             // gets the total number of hours
             TimeSpan span = (TimeSpan)leave.shortEndTime - (TimeSpan)leave.shortStartTime;
 
-            if (span.Hours < lb.shortHours)
+            // does the user have enough balance?
+            if (lb.shortHours >= (decimal)span.Hours)
             {
                 int approvedID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Approved").Key;
                 DBUpdateLeave(leave, approvedID);
 
-                DBUpdateBalance(leave.employeeID, lb.shortHoursID, lb.shortHours - span.Hours);
+                DBUpdateBalance(leave.employeeID, lb.shortHoursID, lb.shortHours - (decimal)span.Hours);
 
                 string message = "Approved"; //@TODO: Write an email
 
                 // sends a notification email to the applicant
                 SendMail(GetEmployeeModel(leave.employeeID).email, message);
 
-                // sets the notification message to be displayed to the applicant
-                TempData["SuccessMessage"] = "Your " + leave.leaveTypeName + " leave application for <b>" + span.TotalMinutes + " minutes</b> has been submitted successfully.<br/>";
+                // sets the notification message to be displayed
+                TempData["SuccessMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>approved</b> successfully.<br/>";
             }
             else
             {
-                ViewBag.ErrorMessage = "You do not have enough balance.";
+                ViewBag.ErrorMessage = "Leave application ID <b>" + leave.leaveAppID + "</b> can't be approved, <b>" + leave.employeeName + "</b> does not have enough balance.";
             }
         }
 
@@ -521,19 +526,19 @@ namespace LeaveSystemMVC.Controllers
                 int approvedID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Approved").Key;
                 DBUpdateLeave(leave, approvedID);
 
-                DBUpdateBalance(leave.employeeID, lb.pilgrimageID, lb.pilgrimage - numOfDays);
+                DBUpdateBalance(leave.employeeID, lb.pilgrimageID, lb.pilgrimage - lb.pilgrimage);
 
                 string message = "Approved"; //@TODO: Write an email
 
                 // sends a notification email to the applicant
                 SendMail(GetEmployeeModel(leave.employeeID).email, message);
 
-                // sets the notification message to be displayed to the applicant
-                TempData["SuccessMessage"] = "Your " + leave.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
+                // sets the notification message to be displayed
+                TempData["SuccessMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>approved</b> successfully.<br/>";
             }
             else
             {
-                ViewBag.ErrorMessage = "You do not have enough balance.";
+                ViewBag.ErrorMessage = "Leave application ID <b>" + leave.leaveAppID + "</b> can't be approved, <b>" + leave.employeeName + "</b> does not have enough balance.";
             }
         }
 
@@ -554,8 +559,8 @@ namespace LeaveSystemMVC.Controllers
             // sends a notification email to the applicant
             SendMail(GetEmployeeModel(leave.employeeID).email, message);
 
-            // sets the notification message to be displayed to the applicant
-            TempData["SuccessMessage"] = "Your " + leave.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
+            // sets the notification message to be displayed
+            TempData["SuccessMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>approved</b> successfully.<br/>";
         }
 
         private void DBUpdateLeave(sLeaveModel leave, int approvalID)

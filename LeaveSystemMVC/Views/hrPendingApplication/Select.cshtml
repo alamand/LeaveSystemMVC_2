@@ -1,233 +1,291 @@
 ﻿@model LeaveSystemMVC.Models.sLeaveModel
-
+@{ ViewBag.Title = "Pending Applications"; }
 @Html.Partial("_LeftMenu")
 
-@using (Html.BeginForm("Select", "hrPendingApplication", FormMethod.Post, new { model = Model }))
-{
-    <div class="col-md-10">
-        <div>
-            <h2>Pending Leave Application</h2>
-            <hr />
-            <div class="row">
-                <div class="col-md-5">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <div class="text-muted bootstrap-admin-box-title">Application Details</div>
-                        </div>
-                        <div class="bootstrap-admin-panel-content">
-                            <div class="row">
-                                <dl class="dl-horizontal">
-                                    @Html.HiddenFor(model => model.leaveAppID)
-                                    @Html.HiddenFor(model => model.leaveStatusID)
-                                    @Html.HiddenFor(model => model.leaveStatusName)
-
-                                    <dt>@Html.DisplayNameFor(model => model.employeeName)</dt>
-                                    <dd>@Html.DisplayFor(model => model.employeeName)</dd>
-                                    @Html.HiddenFor(model => model.employeeID)
-                                    @Html.HiddenFor(model => model.employeeName)
-
-                                    <dt>@Html.DisplayNameFor(model => model.leaveTypeName)</dt>
-                                    <dd>@Html.DisplayFor(model => model.leaveTypeName)</dd>
-                                    @Html.HiddenFor(model => model.leaveTypeID)
-                                    @Html.HiddenFor(model => model.leaveTypeName)
-
-                                    @{
-                                        string startDateString = Model.startDate.ToString("dd/MM/yyyy");
-                                        string returnDateString = Model.returnDate.ToString("dd/MM/yyyy");
-                                    }
-
-                                    <dt>@Html.DisplayNameFor(model => model.startDate)</dt>
-                                    <dd>@Html.DisplayFor(sd => startDateString)</dd>
-                                    @Html.HiddenFor(model => model.startDate)
-
-                                    <dt>@Html.DisplayNameFor(model => model.returnDate)</dt>
-                                    <dd>@Html.DisplayFor(rd => returnDateString)</dd>
-                                    @Html.HiddenFor(model => model.returnDate)
-
-                                    <dt>@Html.DisplayNameFor(model => model.leaveDuration)</dt>
-                                    <dd>@Html.DisplayFor(model => model.leaveDuration)</dd>
-                                    @Html.HiddenFor(model => model.leaveDuration)
-
-                                    @if (Model.leaveTypeName.Equals("Short_Hours_Per_Month"))
-                                    {
-                                        <dt>@Html.DisplayNameFor(model => model.shortStartTime)</dt>
-                                        <dd>@Html.DisplayFor(model => model.shortStartTime)</dd>
-                                        @Html.HiddenFor(model => model.shortStartTime)
-
-                                        <dt>@Html.DisplayNameFor(model => model.shortEndTime)</dt>
-                                        <dd>@Html.DisplayFor(model => model.shortEndTime)</dd>
-                                        @Html.HiddenFor(model => model.shortEndTime)
-
-                                    }
-
-                                    <dt>@Html.DisplayNameFor(model => model.comments)</dt>
-                                    <dd>@Html.DisplayFor(model => model.comments)</dd>
-                                    @Html.HiddenFor(model => model.comments)
-
-                                    <dt>@Html.DisplayNameFor(model => model.documentation)</dt>
-                                    <dd><a target="_blank" href='\App_Data\Documentation\@Model.leaveAppID-@Model.documentation'>@Html.DisplayFor(model => model.documentation)</a></dd>
-                                    @Html.HiddenFor(model => model.documentation)
-
-                                    <dt>@Html.DisplayNameFor(model => model.bookAirTicket)</dt>
-                                    <dd>@Html.DisplayFor(model => model.bookAirTicket)</dd>
-                                    @Html.HiddenFor(model => model.bookAirTicket)
-
-                                    <dt>@Html.DisplayNameFor(model => model.contactDetails)</dt>
-                                    <dd>@Html.DisplayFor(model => model.contactDetails)</dd>
-                                    @Html.HiddenFor(model => model.contactDetails)
-
-                                </dl>
-                            </div>
-
-                            <hr />
-                            <div class="row">
-                                <div class="col-md-5 col-md-offset-1">
-                                    @Html.LabelFor(model => model.hrComment, "Comment", htmlAttributes: new { @class = "control-label col-md-4" })
-                                    @Html.TextAreaFor(model => model.hrComment, new { rows = "6", cols = "35" })
-                                </div>
-                            </div>
-                            <hr />
-                            <div class="row">
-                                <div class="col-md-3 col-md-offset-2">
-                                    <input type="submit" name="submit" id="submit" class="btn btn-success" value="Approve" />
-                                </div>
-                                <div class="col-md-3 col-md-offset-1">
-                                    <input type="submit" name="submit" id="reject" class="btn btn-danger" value="Reject" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+<div class="col-md-10">
+    <h4>@ViewBag.Title</h4>
+    <hr />
+    @Html.Partial("../_Message")
+    <div class="row">
+        @using (Html.BeginForm("Select", "hrPendingApplication", FormMethod.Post, new { model = Model }))
+        {
+        <div class="col-md-5">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="text-muted bootstrap-admin-box-title">Application Details</div>
                 </div>
-                <div class="col-md-5">
-                    @{ 
-                        var balance = ViewData["Balances"] as LeaveSystemMVC.Models.sleaveBalanceModel;
-                    }
-                    <div class="panel-group">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h4 class="panel-title">
-                                    <a data-toggle="collapse" href="#collapse1">Employee Balances</a>
-                                </h4>
-                            </div>
-                            <div id="collapse1" class="panel-collapse collapse">
-                                <table class="table">
-                                    <tr>
-                                        <th>Annual</th>
-                                        <td>@balance.annual.ToString()</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Sick</th>
-                                        <td>@balance.sick.ToString()</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Compassionate</th>
-                                        <td>@balance.compassionate.ToString()</td>
-                                    </tr>
-                                    @if ((char)ViewData["Gender"] == 'F')
-                                    {
-                                        <tr>
-                                            <th>Maternity</th>
-                                            <td>@balance.maternity.ToString()</td>
-                                        </tr>
-                                    }
-                                    <tr>
-                                        <th>Days In Lieu</th>
-                                        <td>@balance.daysInLieu.ToString()</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Short Hours</th>
-                                        <td>@balance.shortHours.ToString()</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Unpaid</th>
-                                        <td>@balance.unpaid.ToString()</td>
-                                    </tr>
-                                    @if (ViewData["Religion"].Equals("Muslim"))
-                                    {
-                                        <tr>
-                                            <th>Pilgrimage</th>
-                                            <td>@balance.pilgrimage.ToString()</td>
-                                        </tr>
-                                    }
-                                </table>
-                            </div>
+                <div class="bootstrap-admin-panel-content">
+                    <div class="row">
+                        <dl class="dl-horizontal">
+                            @Html.HiddenFor(model => model.leaveStatusID)
+                            @Html.HiddenFor(model => model.leaveStatusName)
+
+                            <dt>@Html.DisplayNameFor(model => model.leaveAppID)</dt>
+                            <dd>@Html.DisplayFor(model => model.leaveAppID)</dd>
+                            @Html.HiddenFor(model => model.leaveAppID)
+
+                            <dt>@Html.DisplayNameFor(model => model.employeeID)</dt>
+                            <dd>@Html.DisplayFor(model => model.employeeID)</dd>
+                            @Html.HiddenFor(model => model.employeeID)
+
+                            <dt>@Html.DisplayNameFor(model => model.employeeName)</dt>
+                            <dd>@Html.DisplayFor(model => model.employeeName)</dd>
+                            @Html.HiddenFor(model => model.employeeName)
+
+                            <dt>@Html.DisplayNameFor(model => model.leaveTypeName)</dt>
+                            <dd>@Html.DisplayFor(model => model.leaveTypeName)</dd>
+                            @Html.HiddenFor(model => model.leaveTypeID)
+                            @Html.HiddenFor(model => model.leaveTypeName)
+
+                            @{
+                                string startDateString = Model.startDate.ToString("dd/MM/yyyy");
+                                string returnDateString = Model.returnDate.ToString("dd/MM/yyyy");
+                            }
+
+                            <dt>@Html.DisplayNameFor(model => model.startDate)</dt>
+                            <dd>@Html.DisplayFor(sd => startDateString)</dd>
+                            @Html.HiddenFor(model => model.startDate)
+
+                            <dt>@Html.DisplayNameFor(model => model.returnDate)</dt>
+                            <dd>@Html.DisplayFor(rd => returnDateString)</dd>
+                            @Html.HiddenFor(model => model.returnDate)
+
+                            <dt>@Html.DisplayNameFor(model => model.leaveDuration)</dt>
+                            <dd>@Html.DisplayFor(model => model.leaveDuration)</dd>
+                            @Html.HiddenFor(model => model.leaveDuration)
+
+                            @if (Model.leaveTypeName.Equals("Short_Hours_Per_Month"))
+                            {
+                                <dt>@Html.DisplayNameFor(model => model.shortStartTime)</dt>
+                                <dd>@Html.DisplayFor(model => model.shortStartTime)</dd>
+                                @Html.HiddenFor(model => model.shortStartTime)
+
+                                <dt>@Html.DisplayNameFor(model => model.shortEndTime)</dt>
+                                <dd>@Html.DisplayFor(model => model.shortEndTime)</dd>
+                                @Html.HiddenFor(model => model.shortEndTime)
+
+                            }
+
+                            <dt>@Html.DisplayNameFor(model => model.comments)</dt>
+                            <dd>@Html.DisplayFor(model => model.comments)</dd>
+                            @Html.HiddenFor(model => model.comments)
+
+                            <dt>@Html.DisplayNameFor(model => model.documentation)</dt>
+                            <dd><a target="_blank" href='\App_Data\Documentation\@Model.leaveAppID-@Model.documentation'>@Html.DisplayFor(model => model.documentation)</a></dd>
+                            @Html.HiddenFor(model => model.documentation)
+
+                            <dt>@Html.DisplayNameFor(model => model.bookAirTicket)</dt>
+                            <dd>@Html.DisplayFor(model => model.bookAirTicket)</dd>
+                            @Html.HiddenFor(model => model.bookAirTicket)
+
+                            <dt>@Html.DisplayNameFor(model => model.contactDetails)</dt>
+                            <dd>@Html.DisplayFor(model => model.contactDetails)</dd>
+                            @Html.HiddenFor(model => model.contactDetails)
+
+                        </dl>
+                    </div>
+
+                    <hr />
+                    <div class="row">
+                        <div class="col-md-5 col-md-offset-1">
+                            @Html.LabelFor(model => model.hrComment, "Comment", htmlAttributes: new { @class = "control-label col-md-4" })
+                            @Html.TextAreaFor(model => model.hrComment, new { rows = "6", cols = "35" })
                         </div>
                     </div>
-                </div>
-                @if (ViewData["Message"] as string != null)
-                {
-                    <div class="col-md-5">
-                        <div class="panel-group">
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <h4 class="panel-title">
-                                        <a data-toggle="collapse" href="#collapse2">Balance Accumulation</a>
-                                    </h4>
-                                </div>
-                                <div id="collapse2" class="panel-collapse collapse">
-                                    <span>@Html.Raw(ViewData["Message"])</span>
-                                </div>
-                            </div>
+                    <hr />
+                    <div class="row">
+                        <div class="col-md-3 col-md-offset-2">
+                            <input type="submit" name="submit" id="submit" class="btn btn-success" value="Approve" />
                         </div>
-                    </div>
-                }
-
-            </div>
-            <div class="row">
-                <div class="col-md-10">
-                    <div class="panel-group">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h4 class="panel-title">
-                                    <a data-toggle="collapse" href="#collapse3">Employee Leave History</a>
-                                </h4>
-                            </div>
-                            <div id="collapse3" class="panel-collapse collapse">
-                                <table class="table">
-                                    <tr>
-                                        <th>Leave Type</th>
-                                        <th>Start Date</th>
-                                        <th>End Date</th>
-                                        <th>Duration</th>
-                                        <th>Start Time</th>
-                                        <th>End Time</th>
-                                        <th>Status</th>
-                                    </tr>
-                                    @{
-                                        var leaveHistory = ViewData["LeaveHistory"] as List<LeaveSystemMVC.Models.sLeaveModel>;
-                                        foreach (LeaveSystemMVC.Models.sLeaveModel lv in leaveHistory)
-                                        {
-                                            string stDt = lv.startDate.ToString();
-                                            stDt = stDt.Substring(0, 10);
-
-                                            string reDt = lv.returnDate.ToString();
-                                            reDt = reDt.Substring(0, 10);
-                                        
-                                            <tr>
-                                                <td>@lv.leaveTypeName</td>
-                                                <td>@stDt</td>
-                                                <td>@reDt</td>
-                                                <td>@lv.leaveDuration</td>
-                                                @if (lv.leaveTypeName != "Short_Hours_Per_Month")
-                                                {
-                                                    <td></td>
-                                                    <td></td>
-                                                }
-                                                else
-                                                {
-                                                    <td>@lv.shortStartTime</td>
-                                                    <td>@lv.shortEndTime</td>
-                                                }
-                                                <td>@lv.leaveStatusName</td>
-                                            </tr>
-                                        }
-                                    }
-                                </table>
-                            </div>
+                        <div class="col-md-3 col-md-offset-1">
+                            <input type="submit" name="submit" id="reject" class="btn btn-danger" value="Reject" />
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        }
+        <div class="col-md-5">
+            @{ 
+                var balance = ViewData["Balances"] as LeaveSystemMVC.Models.sleaveBalanceModel;
+                var deduction = ViewData["Preview"] as Dictionary<string, decimal>;
+
+            }
+            <div class="panel-group">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" href="#collapse1">Balances and Deductions</a>
+                        </h4>
+                    </div>
+                    <div id="collapse1" class="panel-collapse collapse">
+                        <table class="table">
+                            <tr>
+                                <th>Type</th>
+                                <th>Balance</th>
+                                <th>Deduction</th>
+                            </tr>
+                            <tr>
+                                <th>Annual</th>
+                                <td>@balance.annual.ToString()</td>
+                                @if (deduction.ContainsKey("Annual"))
+                                {
+                                    <td>-@deduction["Annual"].ToString()</td>
+                                } else
+                                {
+                                    <td></td>
+                                }
+                            </tr>
+                            <tr>
+                                <th>Sick</th>
+                                <td>@balance.sick.ToString()</td>
+                                @if (deduction.ContainsKey("Sick"))
+                                {
+                                    <td>-@deduction["Sick"].ToString()</td>
+                                }
+                                else
+                                {
+                                    <td></td>
+                                }
+                            </tr>
+                            <tr>
+                                <th>Compassionate</th>
+                                <td>@balance.compassionate.ToString()</td>
+                                @if (deduction.ContainsKey("Compassionate"))
+                                {
+                                    <td>-@deduction["Compassionate"].ToString()</td>
+                                }
+                                else
+                                {
+                                    <td></td>
+                                }
+                            </tr>
+                            @if ((char)ViewData["Gender"] == 'F')
+                            {
+                                <tr>
+                                    <th>Maternity</th>
+                                    <td>@balance.maternity.ToString()</td>
+                                    @if (deduction.ContainsKey("Maternity"))
+                                    {
+                                        <td>-@deduction["Maternity"].ToString()</td>
+                                    }
+                                    else
+                                    {
+                                        <td></td>
+                                    }
+                                </tr>
+                            }
+                            <tr>
+                                <th>Days In Lieu</th>
+                                <td>@balance.daysInLieu.ToString()</td>
+                                @if (deduction.ContainsKey("DIL"))
+                                {
+                                    <td>-@deduction["DIL"].ToString()</td>
+                                }
+                                else
+                                {
+                                    <td></td>
+                                }
+                            </tr>
+                            <tr>
+                                <th>Short Hours</th>
+                                <td>@balance.shortHours.ToString()</td>
+                                @if (deduction.ContainsKey("Short_Hours_Per_Month"))
+                                {
+                                    <td>-@deduction["Short_Hours_Per_Month"].ToString()</td>
+                                }
+                                else
+                                {
+                                    <td></td>
+                                }
+                            </tr>
+                            <tr>
+                                <th>Unpaid</th>
+                                <td>@balance.unpaid.ToString()</td>
+                                @if (deduction.ContainsKey("Unpaid"))
+                                {
+                                    <td>+@deduction["Unpaid"].ToString()</td>
+                                }
+                                else
+                                {
+                                    <td></td>
+                                }
+                            </tr>
+                            @if (ViewData["Religion"].Equals("Muslim"))
+                            {
+                                <tr>
+                                    <th>Pilgrimage</th>
+                                    <td>@balance.pilgrimage.ToString()</td>
+                                    @if (deduction.ContainsKey("Pilgrimage"))
+                                    {
+                                        <td>-@deduction["Pilgrimage"].ToString()</td>
+                                    }
+                                    else
+                                    {
+                                        <td></td>
+                                    }
+                                </tr>
+                            }
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-}
+    <div class="row">
+        <div class="col-md-10">
+            <div class="panel-group">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" href="#collapse3">Employee Leave History</a>
+                        </h4>
+                    </div>
+                    <div id="collapse3" class="panel-collapse collapse">
+                        <table class="table">
+                            <tr>
+                                <th>Leave Type</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Duration</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Status</th>
+                            </tr>
+                            @{
+                                var leaveHistory = ViewData["LeaveHistory"] as List<LeaveSystemMVC.Models.sLeaveModel>;
+                                foreach (LeaveSystemMVC.Models.sLeaveModel lv in leaveHistory)
+                                {
+                                    string stDt = lv.startDate.ToString();
+                                    stDt = stDt.Substring(0, 10);
+
+                                    string reDt = lv.returnDate.ToString();
+                                    reDt = reDt.Substring(0, 10);
+                                        
+                                    <tr>
+                                        <td>@lv.leaveTypeName</td>
+                                        <td>@stDt</td>
+                                        <td>@reDt</td>
+                                        <td>@lv.leaveDuration</td>
+                                        @if (lv.leaveTypeName != "Short_Hours_Per_Month")
+                                        {
+                                            <td></td>
+                                            <td></td>
+                                        }
+                                        else
+                                        {
+                                            <td>@lv.shortStartTime</td>
+                                            <td>@lv.shortEndTime</td>
+                                        }
+                                        <td>@lv.leaveStatusName</td>
+                                    </tr>
+                                }
+                            }
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

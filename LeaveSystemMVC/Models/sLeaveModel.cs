@@ -15,7 +15,7 @@ namespace LeaveSystemMVC.Models
         [Display(Name = "Leave Type ID")]
         public int leaveTypeID { get; set; }
 
-        [Display(Name = "Leave Type Name")]
+        [Display(Name = "Leave Type")]
         public string leaveTypeName { get; set; }
 
         [Display(Name = "Employee ID")]

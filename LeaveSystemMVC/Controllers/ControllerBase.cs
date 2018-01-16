@@ -248,6 +248,31 @@ namespace LeaveSystemMVC.Controllers
             return isExist;
         }
 
+        protected int GetSubstituteID(int empID)
+        {
+            string queryString2 = "SELECT dbo.Employee.Substitute_ID FROM dbo.Employee WHERE dbo.Employee.Employee_ID = '" + empID + "'";
+            int subsID = 0;
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString2, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            if (reader["Substitute_ID"] != DBNull.Value)
+                            {
+                                subsID = (int)reader["Substitute_ID"];
+                            }
+                        }
+                    }
+                }
+            }
+            return subsID;
+        }
+
         protected bool IsHRResponsibleExist()
         {
             bool isExist = false;

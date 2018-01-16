@@ -1,18 +1,21 @@
 ﻿@model IEnumerable<LeaveSystemMVC.Models.sLeaveModel>
+@{ ViewBag.Title = "Pending Applications"; }
 @Html.Partial("_LeftMenu")
+
 <div class="col-md-10">
-    <h4>Pending Applications</h4>
+    <h4>@ViewBag.Title</h4>
     <hr />
-        <div class="col-md-5">
-            <div class="panel-group" id="accordion">
-                @foreach (var leave in Model)
-                {
-                    string buttonText = leave.employeeName + " <" + leave.leaveTypeName + ": " + leave.startDate.ToString("dd/MM/yy") + " - " + leave.returnDate.ToString("dd/MM/yy") + ">";
-                    @Html.ActionLink(buttonText, "Select", new { appID = leave.leaveAppID }, new { @class = "btn btn-primary btn-block", @style = "color:white" })
+    @Html.Partial("../_Message")
+    <div class="col-md-5">
+        <div class="panel-group" id="accordion">
+            @foreach (var leave in Model)
+            {
+                string buttonText = leave.employeeName + " <" + leave.leaveTypeName + ": " + leave.startDate.ToString("dd/MM/yy") + " - " + leave.returnDate.ToString("dd/MM/yy") + ">";
+                @Html.ActionLink(buttonText, "Select", new { appID = leave.leaveAppID }, new { @class = "btn btn-primary btn-block", @style = "color:white" })
                     
-                }
-            </div>
+            }
         </div>
+    </div>
 </div>
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
