@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Web.Mvc;
+using LeaveSystemMVC.Models;
 
 namespace LeaveSystemMVC.Controllers
 {
@@ -12,7 +13,7 @@ namespace LeaveSystemMVC.Controllers
         public ActionResult Index()
         {
             // holds the list of employees who are on probation
-            var onProbation = new List<Models.sEmployeeModel>();
+            var onProbation = new List<sEmployeeModel>();
             
             // select all employees who are on probation
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
@@ -29,7 +30,7 @@ namespace LeaveSystemMVC.Controllers
                 {
                     while (reader.Read())
                     {
-                        var employee = new Models.sEmployeeModel();
+                        var employee = new sEmployeeModel();
                         employee.staffID = (int)reader["Employee_ID"];
                         employee.firstName = (string)reader["First_Name"];
                         employee.lastName = (string)reader["Last_Name"];
@@ -41,7 +42,8 @@ namespace LeaveSystemMVC.Controllers
                 }
                 connection.Close();
             }
-            
+
+            ViewBag.SuccessMessage = TempData["SuccessMessage"];
             ViewData["OnProbation"] = onProbation;
             return View();
         }
@@ -57,6 +59,9 @@ namespace LeaveSystemMVC.Controllers
 
             // calculate balance
             SetBalance(staff_id);
+
+            sEmployeeModel emp = GetEmployeeModel(staff_id);
+            TempData["SuccessMessage"] = "<b>" + emp.firstName + " " + emp.lastName + "</b> is now off probation.";
 
             return RedirectToAction("Index");
         }

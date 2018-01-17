@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using System.Configuration;
-using System.Data.SqlClient;
-using LeaveSystemMVC.Models;
 
 namespace LeaveSystemMVC.Controllers
 {
@@ -14,50 +9,9 @@ namespace LeaveSystemMVC.Controllers
         // GET: hrEmployeeLeaveHistory
         public ActionResult Index(int filterDepartmentID = 0, int filterAccStatus = -1, string filterSearch = "", string filterOrderBy = "", string filterStartDate = "", string filterEndDate = "")
         {
-            // @TODO: ADD FILTERS BY DEPARTMENT, EMPLOYEE and DATE (START-END).
-            var model = new List<sLeaveModel>();
-            System.Diagnostics.Debug.WriteLine("search: " + filterStartDate);
-
-            string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
             string queryString = GetFilteredQuery(filterDepartmentID, filterAccStatus, filterSearch, filterOrderBy, filterStartDate, filterEndDate);
-
-            using (var connection = new SqlConnection(connectionString))
-            {
-                var command = new SqlCommand(queryString, connection);
-                connection.Open();
-
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        var leave = new sLeaveModel
-                        {
-                            leaveAppID = (int)reader["Leave_Application_ID"],
-                            employeeID = (int)reader["Employee_ID"],
-                            employeeName = (string)reader["First_Name"] + " " + (string)reader["Last_Name"],
-                            startDate = (!DBNull.Value.Equals(reader["Start_Date"])) ? (DateTime)reader["Start_Date"] : new DateTime(0, 0, 0),
-                            returnDate = (!DBNull.Value.Equals(reader["Reporting_Back_Date"])) ? (DateTime)reader["Reporting_Back_Date"] : new DateTime(0, 0, 0),
-                            leaveTypeID = (int)reader["Leave_ID"],
-                            leaveTypeName = (string)reader["Leave_Name"],
-                            contactDetails = (!DBNull.Value.Equals(reader["Contact_Outside_UAE"])) ? (string)reader["Contact_Outside_UAE"] : "",
-                            comments = (!DBNull.Value.Equals(reader["Comment"])) ? (string)reader["Comment"] : "",
-                            documentation = (!DBNull.Value.Equals(reader["Documentation"])) ? (string)reader["Documentation"] : "",
-                            bookAirTicket = (!DBNull.Value.Equals(reader["Flight_Ticket"])) ? (bool)reader["Flight_Ticket"] : false,
-                            leaveDuration = (decimal)reader["Total_Leave"],
-                            shortStartTime = (!DBNull.Value.Equals(reader["Start_Hrs"])) ? (TimeSpan)reader["Start_Hrs"] : new TimeSpan(0, 0, 0, 0, 0),
-                            shortEndTime = (!DBNull.Value.Equals(reader["End_Hrs"])) ? (TimeSpan)reader["End_Hrs"] : new TimeSpan(0, 0, 0, 0, 0),
-                            leaveStatusID = (int)reader["Leave_Status_ID"],
-                            leaveStatusName = (string)reader["Status_Name"],
-                            hrComment = (!DBNull.Value.Equals(reader["HR_Comment"])) ? (string)reader["HR_Comment"] : "",
-                            lmComment = (!DBNull.Value.Equals(reader["LM_Comment"])) ? (string)reader["LM_Comment"] : ""
-                        };
-                        model.Add(leave);
-                        System.Diagnostics.Debug.WriteLine("db: " + reader["Start_Date"]);
-                    }
-                }
-                connection.Close();
-            }
-
+            var model = GetLeaveModel(queryString);
+            
             ViewData["DepartmentList"] = AddDefaultToDictionary(DBDepartmentList(), 0, "All Departments");
             ViewData["SelectedDepartment"] = filterDepartmentID;
             ViewData["AccountStatusList"] = AccountStatusList();

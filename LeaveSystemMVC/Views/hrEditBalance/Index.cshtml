@@ -1,12 +1,11 @@
 ﻿@model List<Tuple<LeaveSystemMVC.Models.sEmployeeModel, LeaveSystemMVC.Models.sleaveBalanceModel>>
-
-@{
-    ViewBag.Title = "Employee Balances";
-}
-
 @Html.Partial("_LeftMenu")
+@{ ViewBag.Title = "Employee Balances"; }
+
 <div class="col-md-10">
-    <h4>@ViewBag.Title</h4>
+    <h3>@ViewBag.Title</h3>
+    <hr />
+    @Html.Partial("../_Message")
     @{
         var departmentList = ViewData["DepartmentList"] as Dictionary<int, string>;
         var selectedDepartment = ViewData["SelectedDepartment"];

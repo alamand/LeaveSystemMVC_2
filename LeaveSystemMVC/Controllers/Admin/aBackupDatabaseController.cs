@@ -1,7 +1,4 @@
-﻿// FULLY FUNCTIONAL - CLEAN - OPTIMAL
-// REVISE WHEN UPLOADED TO SERVER
-
-using System;
+﻿using System;
 using System.Web.Mvc;
 using System.IO;
 using System.Configuration;
@@ -17,6 +14,8 @@ namespace LeaveSystemMVC.Controllers
         // GET: aBackupDatabase
         public ActionResult Index()
         {
+            ViewBag.InfoMessage = "Please note that this might take a while to generate.";
+            ViewBag.ErrorMessage = TempData["ErrorMessage"];
             return View();
         }
 
@@ -60,7 +59,7 @@ namespace LeaveSystemMVC.Controllers
             }
             catch (Exception ex)
             {
-                ViewBag.Message = "ERROR:" + ex.Message.ToString();
+                ViewBag.ErrorMessage = "ERROR:" + ex.Message.ToString();
             }
 
             return RedirectToAction("Index");
@@ -149,7 +148,7 @@ namespace LeaveSystemMVC.Controllers
             }
             catch (Exception ex)
             {
-                ViewBag.Message = "ERROR:" + ex.Message.ToString();
+                TempData["ErrorMessage"] = "ERROR:" + ex.Message.ToString();
             }
 
             return RedirectToAction("Index");

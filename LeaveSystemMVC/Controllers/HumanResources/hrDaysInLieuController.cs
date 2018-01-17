@@ -1,121 +1,59 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using LeaveSystemMVC.Models;
-using System.Configuration;
-using System.Data.SqlClient;
 
 namespace LeaveSystemMVC.Controllers
 {
     public class hrDaysInLieuController : ControllerBase
     {
         // GET: hrDaysInLieu
-        [HttpGet]
-        public ActionResult Index()
+        public ActionResult Index(int selectedEmployee = 0)
         {
-            return View();
-        }
+            ViewData["EmployeeList"] = AddDefaultToDictionary(DBEmployeeList(), 0, "- Select Employee -");
+            ViewBag.SuccessMessage = TempData["SuccessMessage"];
 
-        [HttpGet]
-        public ActionResult Select()
-        {
-            minStaff model = new minStaff();
-            Dictionary<int, string> EmployeeList = new Dictionary<int, string>();
-            var connectionString =
-                ConfigurationManager.ConnectionStrings["DefaultConnection"].
-                ConnectionString;
-            string queryString = "SELECT Employee_ID, First_Name, Last_Name " +
-                "FROM dbo.Employee " +
-                "WHERE dbo.Employee.First_Name IS NOT NULL ";
-            using (var connection = new SqlConnection(connectionString))
+            if (selectedEmployee != 0)
             {
-                var command = new SqlCommand(queryString, connection);
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-                {
-                    if (reader.HasRows)
-                    {
-                        while (reader.Read())
-                        {
-                            string fullName = (string)reader[1] + " " + (string)reader[2];
-                            EmployeeList.Add((int)reader[0], fullName);
-                        }
-                    }
-                }
-                connection.Close();
+                hrDaysInLieu daysInLieu = new hrDaysInLieu();
+                daysInLieu.employeeID = selectedEmployee;
+                ViewData["selectedEmployee"] = selectedEmployee;
+
+                return View(daysInLieu);
             }
-            ViewData["EmployeeList"] = EmployeeList;
+
             return View();
         }
 
         [HttpPost]
-        public ActionResult Index(hrDaysInLieu DL)
+        public ActionResult Index(hrDaysInLieu dil)
         {
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "INSERT into dbo.Days_In_Lieu VALUES ('" + TempData["EmpID"] + "' , '" + DL.Date.ToString("yyyy-MM-dd") + "' , '" + DL.NumDays + "' , '" + DL.Comment + "')";
-            using (var connection = new SqlConnection(connectionString))
-            {
-                var command = new SqlCommand(queryString, connection);
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-                    connection.Close();
-            }
+            string queryString = "INSERT INTO dbo.Days_In_Lieu VALUES ('" + dil.employeeID + "' , '" + dil.date.ToString("yyyy-MM-dd") + "' , '" + dil.numOfDays + "' , '" + dil.comment + "')";
+            DBExecuteQuery(queryString);
 
             //Check if DIL leave type exists for this employee.
-            string queryString2 = "SELECT dbo.Leave_Balance.Balance FROM dbo.Leave_Balance WHERE dbo.Leave_Balance.Employee_ID = '" + TempData["EmpID"] + "' AND dbo.Leave_Balance.Leave_ID=5";
-            Boolean dilExists = false;
-            using (var connection = new SqlConnection(connectionString))
+            int dilID = DBLeaveTypeList().FirstOrDefault(obj => obj.Value == "DIL").Key;
+            if (IsLeaveBalanceExists(dil.employeeID, dilID))
             {
-                var command = new SqlCommand(queryString2, connection);
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-                {
-                    if (reader.HasRows)
-                    {
-                        while (reader.Read())
-                        {
-                            if (reader["Balance"] != DBNull.Value)
-                            {
-                                dilExists = true;
-                            }
-                        }
-                    }
-                }
+                queryString = "UPDATE dbo.Leave_Balance SET Balance = Balance + '" + dil.numOfDays + "' WHERE Employee_ID = '" + dil.employeeID + "' AND Leave_ID = " + dilID;
             }
-
-            if (dilExists)
-            {
-                queryString = "UPDATE dbo.Leave_Balance SET Balance = Balance + '" + DL.NumDays + "' WHERE Employee_ID = '" + TempData["EmpID"] + "' AND Leave_ID = 5";
-            }
-
             else
             {
-                queryString = "INSERT into dbo.Leave_Balance (Employee_ID, Leave_ID, Balance) VALUES ('" + TempData["EmpID"] + "' , 5 , '" + DL.NumDays + "')";
+                queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_ID, Balance) VALUES ('" + dil.employeeID + "' , '" + dilID + "' , '" + dil.numOfDays + "')";
             }
+            DBExecuteQuery(queryString);
 
-            using (var connection = new SqlConnection(connectionString))
-            {
-                var command = new SqlCommand(queryString, connection);
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-                    connection.Close();
-            }
-            //@todo: Get alert working
-            Response.Write("<script> alert('The days in lieu have been successfully credited.');</script>");
-            return RedirectToAction("Select");
+            sEmployeeModel emp = GetEmployeeModel(dil.employeeID);
+            TempData["SuccessMessage"] = "<b>" + emp.firstName + " " + emp.lastName + "</b> has been credited successfully.";
+
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
-        public ActionResult Select(minStaff empMod)
+        public ActionResult Select(FormCollection form)
         {
-            if (empMod.empIDAsString != null)
-            {
-                TempData["EmpID"] = empMod.empIDAsString;
-                return RedirectToAction("Index");
-            }
-            return Select();
+            int id = Convert.ToInt32(form["selectedEmployee"]);
+            return RedirectToAction("Index", new { selectedEmployee = id });
         }
     }
 }

@@ -1,71 +1,71 @@
 ﻿@model LeaveSystemMVC.Models.sleaveBalanceModel
-@{
-    ViewBag.Title = "Edit Leave Duration of Organization";
-}
-
 @Html.Partial("_LeftMenu")
+@{ ViewBag.Title = "Edit Leave Duration of Organization"; }
+
 <div class="col-md-10">
-    <h4>@ViewBag.title</h4>
+    <h3>@ViewBag.title</h3>
     <hr />
     @Html.Partial("../_Message")
 
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
-        <table class="table">
-            <tr>
-                <th class="col-md-3">Leave Type</th>
-                <th class="col-md-3">Default Duration</th>
-                <th class="col-md-3">Edit Default Duration</th>
-            </tr>
-            <tr>
-                @Html.HiddenFor(model => model.annualID)
-                <td>@Html.LabelFor(model => model.annual)</td>
-                <td>@Model.annual</td>
-                <td>@Html.EditorFor(model => model.annual, new { htmlAttributes = new { @class = "form-control", @Value = Model.annual } })</td>
-            </tr>
-            <tr>
-                @Html.HiddenFor(model => model.maternityID)
-                <td>@Html.LabelFor(model => model.maternity)</td>
-                <td>@Model.maternity</td>
-                <td>@Html.EditorFor(model => model.maternity, new { htmlAttributes = new { @class = "form-control", @Value = Model.maternity } })</td>
-            </tr>
-            <tr>
-                @Html.HiddenFor(model => model.sickID)
-                <td>@Html.LabelFor(model => model.sick)</td>
-                <td>@Model.sick</td>
-                <td>@Html.EditorFor(model => model.sick, new { htmlAttributes = new { @class = "form-control", @Value = Model.sick } })</td>
-            </tr>
-            <tr>
-                @Html.HiddenFor(model => model.daysInLieuID)
-                <td>@Html.LabelFor(model => model.daysInLieu)</td>
-                <td>@Model.daysInLieu</td>
-                <td>@Html.EditorFor(model => model.daysInLieu, new { htmlAttributes = new { @class = "form-control", @Value = Model.daysInLieu } })</td>
-            </tr>
-            <tr>
-                @Html.HiddenFor(model => model.compassionateID)
-                <td>@Html.LabelFor(model => model.compassionate)</td>
-                <td>@Model.compassionate</td>
-                <td>@Html.EditorFor(model => model.compassionate, new { htmlAttributes = new { @class = "form-control", @Value = Model.compassionate } })</td>
-            </tr>
-            <tr>
-                @Html.HiddenFor(model => model.shortHoursID)
-                <td>@Html.LabelFor(model => model.shortHours)</td>
-                <td>@Model.shortHours</td>
-                <td>@Html.EditorFor(model => model.shortHours, new { htmlAttributes = new { @class = "form-control", @Value = Model.shortHours } })</td>
-            </tr>
-            <tr>
-                @Html.HiddenFor(model => model.pilgrimageID)
-                <td>@Html.LabelFor(model => model.pilgrimage)</td>
-                <td>@Model.pilgrimage</td>
-                <td>@Html.EditorFor(model => model.pilgrimage, new { htmlAttributes = new { @class = "form-control", @Value = Model.pilgrimage } })</td>
-            </tr>
-        </table>
-        <hr />
-        <div class="col-md-offset-4">
-            <button type="submit" value="Save" class="btn btn-default col-md-4">
-                <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span> Save
-            </button>
+        <div class="col-md-8">
+            <table class="table">
+                <tr>
+                    <th class="col-md-3">Leave Type</th>
+                    <th class="col-md-2">Default Duration</th>
+                    <th class="col-md-2">Edit Default Duration</th>
+                </tr>
+                <tr>
+                    @Html.HiddenFor(model => model.annualID)
+                    <td>@Html.LabelFor(model => model.annual)</td>
+                    <td>@Model.annual</td>
+                    <td>@Html.EditorFor(model => model.annual, new { htmlAttributes = new { @class = "form-control", @Value = Model.annual } })</td>
+                </tr>
+                <tr>
+                    @Html.HiddenFor(model => model.maternityID)
+                    <td>@Html.LabelFor(model => model.maternity)</td>
+                    <td>@Model.maternity</td>
+                    <td>@Html.EditorFor(model => model.maternity, new { htmlAttributes = new { @class = "form-control", @Value = Model.maternity } })</td>
+                </tr>
+                <tr>
+                    @Html.HiddenFor(model => model.sickID)
+                    <td>@Html.LabelFor(model => model.sick)</td>
+                    <td>@Model.sick</td>
+                    <td>@Html.EditorFor(model => model.sick, new { htmlAttributes = new { @class = "form-control", @Value = Model.sick } })</td>
+                </tr>
+                <tr>
+                    @Html.HiddenFor(model => model.daysInLieuID)
+                    <td>@Html.LabelFor(model => model.daysInLieu)</td>
+                    <td>@Model.daysInLieu</td>
+                    <td>@Html.EditorFor(model => model.daysInLieu, new { htmlAttributes = new { @class = "form-control", @Value = Model.daysInLieu } })</td>
+                </tr>
+                <tr>
+                    @Html.HiddenFor(model => model.compassionateID)
+                    <td>@Html.LabelFor(model => model.compassionate)</td>
+                    <td>@Model.compassionate</td>
+                    <td>@Html.EditorFor(model => model.compassionate, new { htmlAttributes = new { @class = "form-control", @Value = Model.compassionate } })</td>
+                </tr>
+                <tr>
+                    @Html.HiddenFor(model => model.shortHoursID)
+                    <td>@Html.LabelFor(model => model.shortHours)</td>
+                    <td>@Model.shortHours</td>
+                    <td>@Html.EditorFor(model => model.shortHours, new { htmlAttributes = new { @class = "form-control", @Value = Model.shortHours } })</td>
+                </tr>
+                <tr>
+                    @Html.HiddenFor(model => model.pilgrimageID)
+                    <td>@Html.LabelFor(model => model.pilgrimage)</td>
+                    <td>@Model.pilgrimage</td>
+                    <td>@Html.EditorFor(model => model.pilgrimage, new { htmlAttributes = new { @class = "form-control", @Value = Model.pilgrimage } })</td>
+                </tr>
+            </table>
+            <hr />
+            <div class="col-md-offset-4">
+                <button type="submit" value="Save" class="btn btn-default col-md-4">
+                    <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span> Save
+                </button>
+            </div>
         </div>
     }
 </div>

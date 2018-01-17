@@ -177,6 +177,28 @@ namespace LeaveSystemMVC.Controllers
             return employeeModel;
         }
 
+        protected List<sEmployeeModel> GetEmployeeModel()
+        {
+            List<sEmployeeModel> empList = new List<sEmployeeModel>();
+            var queryString = "SELECT Employee_ID FROM dbo.Employee";
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        empList.Add(GetEmployeeModel((int)reader["Employee_ID"]));
+                    }
+                }
+                connection.Close();
+            }
+            
+            return empList;
+        }
+
         protected List<sLeaveModel> GetLeaveModel(string listFor="", int id=0)
         {
             var leaveList = new List<sLeaveModel>();
@@ -187,9 +209,14 @@ namespace LeaveSystemMVC.Controllers
                 "WHERE Leave.Employee_ID = Employee.Employee_ID AND Leave.Leave_ID = Leave_Type.Leave_ID AND " +
                 "Leave.Leave_Status_ID = Leave_Status.Leave_Status_ID AND Department.Department_ID = Employee.Department_ID AND Employee.Employee_ID = Reporting.Employee_ID";
 
-            if (id != 0)
+            if (!listFor.Equals("") && id != 0)
             {
                  queryString += " AND " + listFor + " = " + id;
+            }
+
+            if (!listFor.Equals("") && id == 0)
+            {
+                queryString = listFor;
             }
 
             using (var connection = new SqlConnection(connectionString))

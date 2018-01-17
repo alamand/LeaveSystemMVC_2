@@ -1,17 +1,11 @@
 ﻿@model IEnumerable<LeaveSystemMVC.Models.sLeaveModel>
-
-@{
-    ViewBag.Title = "Employee Leave History";
-}
-
 @Html.Partial("_LeftMenu")
+@{ ViewBag.Title = "Employee Leave History"; }
+
 <div class="col-md-10">
-    <h4>@ViewBag.Title</h4>
-    @{
-        var departmentList = ViewData["DepartmentList"] as Dictionary<int, string>;
-        var statusList = ViewData["AccountStatusList"] as Dictionary<int, string>;
-        var orderByList = ViewData["OrderByList"] as Dictionary<string, string>;
-    }
+    <h3>@ViewBag.title</h3>
+    <hr />
+    @Html.Partial("../_Message")
     <div class="panel-group">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -25,12 +19,16 @@
                 @using (Html.BeginForm("Filter", "hrEmployeeLeaveHistory", FormMethod.Post))
                 {
                     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-
+                    var departmentList = ViewData["DepartmentList"] as Dictionary<int, string>;
+                    var statusList = ViewData["AccountStatusList"] as Dictionary<int, string>;
+                    var orderByList = ViewData["OrderByList"] as Dictionary<string, string>;
+                    
                     <div class="form-horizontal">
                         <div class="row">
                             <div class="col-md-1 col-md-offset-1">
                                 <p style="padding-top: 8px;">Search</p>
                             </div>
+                            <!-- <input class="form-control" id="searchFilter" type="text" placeholder="Search by app. ID or name..."> -->
                             <div class="col-md-3">
                                 <div class="input-group">
                                     @Html.TextBox("enteredSearch", "", new { @Value = ViewData["EnteredSearch"], @class = "form-control", @placeholder = "Search by ID or name..." })
@@ -134,6 +132,23 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(document).ready(function () {
+            (function ($) {
+                $("#table").addClass("search");
+                $('#searchFilter').keyup(function () {
+                    var rex = new RegExp($(this).val(), 'i');
+                    $('.search tr ').hide();
 
+                    //Recusively filter the jquery object to get results.
+                    $('.search tr ').filter(function (i, v) {
+                        //Get the 3rd column object here which is userNamecolumn
+                        var $t = $(this).children(":eq(0), :eq(1)");
+                        return rex.test($t.text());
+                    }).show();
+                })
 
+            }(jQuery));
+        });
+    </script>
 }

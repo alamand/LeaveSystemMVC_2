@@ -1,20 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.ComponentModel.DataAnnotations;
 
 namespace LeaveSystemMVC.Models
 {
     public class hrDaysInLieu
     {
+        public int employeeID { set; get; }
+
         [Required(ErrorMessage = "Please select a duration.")]
-        public decimal NumDays { set; get; }
-        public int Employee_ID { set; get; }
+        public decimal numOfDays { set; get; }
 
         [Required(ErrorMessage = "Please select a date.")]
-        public DateTime Date { set; get; }
-        public string Comment { set; get; }
+        public DateTime date { set; get; }
+
+        public string comment { set; get; }
 
     }
 }

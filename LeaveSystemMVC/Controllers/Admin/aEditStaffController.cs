@@ -24,7 +24,6 @@ namespace LeaveSystemMVC.Controllers
             {
                 // selected employee model that will be passed into the view
                 sEmployeeModel emp = GetEmployeeModel(selectedEmployee);
-
                 return View(emp);
             }
 

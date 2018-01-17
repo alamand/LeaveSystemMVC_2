@@ -1800,7 +1800,6 @@
     <Content Include="Views\hrEditDefaultLeaveDuration\Index.cshtml" />
     <Content Include="Views\hrEditBalance\Index.cshtml" />
     <Content Include="Views\hrEditBalance\Edit.cshtml" />
-    <Content Include="Views\hrDaysInLieu\Select.cshtml" />
     <Content Include="Views\aBackupDatabase\Index.cshtml" />
     <Content Include="Views\hrProbationAdministration\Index.cshtml" />
     <Content Include="Views\LApplication\_AnnualPartial.cshtml" />

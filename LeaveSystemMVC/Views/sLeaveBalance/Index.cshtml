@@ -1,11 +1,11 @@
 ﻿@model LeaveSystemMVC.Models.sleaveBalanceModel
-
-@{
-    ViewBag.Title = "Leave Balances";
-}
 @Html.Partial("_LeftMenu")
+@{ ViewBag.Title = "Leave Balances"; }
+
 <div class="col-md-4">
-    <h4>@ViewBag.Title</h4>
+    <h3>@ViewBag.Title</h3>
+    <hr />
+    @Html.Partial("../_Message")    
     <table class="table">
         <tr>
             <th>@Html.DisplayNameFor(Model => Model.annual)</th>

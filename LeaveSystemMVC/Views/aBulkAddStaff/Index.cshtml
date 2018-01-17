@@ -1,12 +1,12 @@
 ﻿@model LeaveSystemMVC.Models.sEmployeeModel
 @Html.Partial("_LeftMenu")
-@{
-    ViewBag.Title = "Index";
-}
-
-
+@{ ViewBag.Title = "Add Staff in Bulk"; }
 
 <div class="col-md-10">
+    <h3>@ViewBag.Title</h3>
+    <hr />
+    @Html.Partial("../_Message")
+
     @using (Html.BeginForm("Index", "aBulkAddStaff", FormMethod.Post, new { enctype = "multipart/form-data" }))
     {
         @Html.AntiForgeryToken()
@@ -14,9 +14,6 @@
         //Below should not be empstartdate.... need to ask ma'am what to do here
         //this to be committed
 
-        <h2>Add Staff in Bulk</h2>
-        <hr />
-        <h4>@ViewBag.Message</h4>
         <div class="form-horizontal">
             <div class="col-md-offset-2 col-md-10">
                 <input type="file" id="dataFile" name="upload" />
