@@ -550,7 +550,7 @@ namespace LeaveSystemMVC.Controllers
         private void DBUpdateLeave(sLeaveModel leave, int approvalID)
         {
             string queryString = "UPDATE dbo.Leave SET Leave_Status_ID = '" + approvalID + "', " +
-                       "HR_Comment = '" + leave.hrComment + "' " +
+                       "LM_Comment = '" + leave.lmComment + "' " +
                        "WHERE Leave_Application_ID = '" + leave.leaveAppID + "' ";
             DBExecuteQuery(queryString);
         }
