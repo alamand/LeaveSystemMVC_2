@@ -9,7 +9,7 @@ using System.Data.SqlClient;
 
 namespace LeaveSystemMVC.Controllers
 {
-    public class hrDaysInLieuController : Controller
+    public class hrDaysInLieuController : ControllerBase
     {
         // GET: hrDaysInLieu
         [HttpGet]
@@ -62,8 +62,38 @@ namespace LeaveSystemMVC.Controllers
                 using (var reader = command.ExecuteReader())
                     connection.Close();
             }
-            
-            queryString = "UPDATE dbo.Leave_Balance SET Balance = Balance + '" +  DL.NumDays + "' WHERE Employee_ID = '" + TempData["EmpID"] + "' AND Leave_ID = 5";
+
+            //Check if DIL leave type exists for this employee.
+            string queryString2 = "SELECT dbo.Leave_Balance.Balance FROM dbo.Leave_Balance WHERE dbo.Leave_Balance.Employee_ID = '" + TempData["EmpID"] + "' AND dbo.Leave_Balance.Leave_ID=5";
+            Boolean dilExists = false;
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString2, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            if (reader["Balance"] != DBNull.Value)
+                            {
+                                dilExists = true;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (dilExists)
+            {
+                queryString = "UPDATE dbo.Leave_Balance SET Balance = Balance + '" + DL.NumDays + "' WHERE Employee_ID = '" + TempData["EmpID"] + "' AND Leave_ID = 5";
+            }
+
+            else
+            {
+                queryString = "INSERT into dbo.Leave_Balance (Employee_ID, Leave_ID, Balance) VALUES ('" + TempData["EmpID"] + "' , 5 , '" + DL.NumDays + "')";
+            }
 
             using (var connection = new SqlConnection(connectionString))
             {
@@ -72,7 +102,7 @@ namespace LeaveSystemMVC.Controllers
                 using (var reader = command.ExecuteReader())
                     connection.Close();
             }
-            //@todo: Get popup alert working
+            //@todo: Get alert working
             Response.Write("<script> alert('The days in lieu have been successfully credited.');</script>");
             return RedirectToAction("Select");
         }
