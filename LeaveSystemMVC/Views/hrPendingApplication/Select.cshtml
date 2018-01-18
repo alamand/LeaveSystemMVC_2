@@ -9,7 +9,7 @@
     <div class="row">
         @using (Html.BeginForm("Select", "hrPendingApplication", FormMethod.Post, new { model = Model }))
         {
-        <div class="col-md-5">
+        <div class="col-md-6">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <div class="text-muted bootstrap-admin-box-title">Application Details</div>
@@ -70,8 +70,12 @@
                             }
 
                             <dt>@Html.DisplayNameFor(model => model.comments)</dt>
-                            <dd>@Html.DisplayFor(model => model.comments)</dd>
+                            <dd style="word-break: break-word">@Html.DisplayFor(model => model.comments)</dd>
                             @Html.HiddenFor(model => model.comments)
+
+                            <dt>@Html.DisplayNameFor(model => model.lmComment)</dt>
+                            <dd style="word-break: break-word">@Html.DisplayFor(model => model.lmComment)</dd>
+                            @Html.HiddenFor(model => model.lmComment)
 
                             <dt>@Html.DisplayNameFor(model => model.documentation)</dt>
                             <dd><a target="_blank" href='\App_Data\Documentation\@Model.leaveAppID-@Model.documentation'>@Html.DisplayFor(model => model.documentation)</a></dd>
@@ -90,17 +94,12 @@
                                 <dd>@Html.DisplayFor(model => model.contactDetails)</dd>
                                 @Html.HiddenFor(model => model.contactDetails)
                             }
-                        </dl>
-                    </div>
 
-                    <hr />
-                    <div class="row">
-                        <div class="col-md-5 col-md-offset-1">
-                            @Html.LabelFor(model => model.hrComment, "Comment", htmlAttributes: new { @class = "control-label col-md-4" })
-                            @Html.TextAreaFor(model => model.hrComment, new { rows = "6", cols = "35" })
-                        </div>
+                            <dt>@Html.DisplayNameFor(model => model.hrComment)</dt>
+                            <dd>@Html.TextAreaFor(model => model.hrComment, new { rows = "6", cols = "35" })</dd>
+                        </dl>
+                        <hr />
                     </div>
-                    <hr />
                     <div class="row">
                         <div class="col-md-3 col-md-offset-2">
                             <input type="submit" name="submit" id="submit" class="btn btn-success" value="Approve" />

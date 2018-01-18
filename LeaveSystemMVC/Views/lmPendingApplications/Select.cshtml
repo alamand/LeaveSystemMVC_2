@@ -9,7 +9,7 @@
     <div class="row">
         @using (Html.BeginForm("Select", "lmPendingApplications", FormMethod.Post, new { model = Model }))
         {
-        <div class="col-md-5">
+        <div class="col-md-6">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <div class="text-muted bootstrap-admin-box-title">Application Details</div>
@@ -70,7 +70,7 @@
                             }
 
                             <dt>@Html.DisplayNameFor(model => model.comments)</dt>
-                            <dd>@Html.DisplayFor(model => model.comments)</dd>
+                            <dd style="word-break: break-word">@Html.DisplayFor(model => model.comments)</dd>
                             @Html.HiddenFor(model => model.comments)
 
                             <dt>@Html.DisplayNameFor(model => model.documentation)</dt>
@@ -91,17 +91,11 @@
                                 @Html.HiddenFor(model => model.contactDetails)
                             }
 
+                            <dt>@Html.DisplayNameFor(model => model.lmComment)</dt>
+                            <dd>@Html.TextAreaFor(model => model.lmComment, new { rows = "6", cols = "35" })</dd>
                         </dl>
+                        <hr />
                     </div>
-
-                    <hr />
-                    <div class="row">
-                        <div class="col-md-5 col-md-offset-1">
-                            @Html.LabelFor(model => model.lmComment, "Comment", htmlAttributes: new { @class = "control-label col-md-4" })
-                            @Html.TextAreaFor(model => model.lmComment, new { rows = "6", cols = "35" })
-                        </div>
-                    </div>
-                    <hr />
                     <div class="row">
                         <div class="col-md-3 col-md-offset-2">
                             <input type="submit" name="submit" id="submit" class="btn btn-success" value="Approve" />

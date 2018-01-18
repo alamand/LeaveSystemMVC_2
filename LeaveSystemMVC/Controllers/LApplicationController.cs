@@ -294,7 +294,7 @@ namespace LeaveSystemMVC.Controllers
                     {
                         if (span.TotalMinutes <= 150)        // 2:30 hours
                         {
-                            if (span.Hours < lb.shortHours)
+                            if (span.Hours <= lb.shortHours)
                             {
                                 // inserts the data to the database
                                 ApplyLeave(model);
@@ -389,7 +389,7 @@ namespace LeaveSystemMVC.Controllers
                 var tempLeaveTypes = new Dictionary<int, string>(leaveTypes);
                 foreach (var entity in tempLeaveTypes)
                 {
-                    if (!entity.Value.Equals("DIL") && entity.Key != 0)
+                    if (!entity.Value.Equals("DIL") && !entity.Value.Equals("Unpaid") && entity.Key != 0)
                     {
                         leaveTypes.Remove(entity.Key);
                     }
