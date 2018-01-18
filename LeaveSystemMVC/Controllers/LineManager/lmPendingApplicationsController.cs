@@ -111,6 +111,10 @@ namespace LeaveSystemMVC.Controllers
                     balanceDeduction.Add("Pilgrimage", (decimal)leaveBalance.pilgrimage);
                     break;
 
+                case "Unpaid":
+                    balanceDeduction.Add("Unpaid", numOfDays);
+                    break;
+
                 default:
                     break; ;
             }
