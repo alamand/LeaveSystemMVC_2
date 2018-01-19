@@ -136,7 +136,7 @@ namespace LeaveSystemMVC.Controllers
                 ApplyLeave(model, numOfDays, fileName);
 
                 // sends a notification email to the applicant
-                SendMail(model, emp);
+                // SendMail(model, emp);
 
                 // sets the notification message to be displayed to the applicant
                 TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
@@ -151,14 +151,12 @@ namespace LeaveSystemMVC.Controllers
             // keeps track of how much credit points should be deducted from each balance type
             decimal deductDIL = 0;
             decimal deductSick = 0;
-            decimal deductAnnual = 0;
             decimal addUnpaid = 0;
 
-            // deduction order: Sick --> DIL --> Annual --> Unpaid
+            // deduction order: Sick --> DIL --> Unpaid
             // checks if the applicant has enough balance in sick, if yes, then simply deduct from sick, 
             // if not, deduct all the balance from sick and the remainder from DIL balance. if DIL balance 
-            // is insufficient, deduct all the balance from DIL and the remainder from annual balance. 
-            // if annual balance is insufficient, deduct all from annual and then add the remaining number 
+            // is insufficient, deduct all the balance from DIL and then add the remaining number 
             // of days to unpaid balance.
             if (lb.sick < numOfDays)
             {
@@ -166,15 +164,7 @@ namespace LeaveSystemMVC.Controllers
                 if (lb.sick + lb.daysInLieu < numOfDays)
                 {
                     deductDIL = lb.daysInLieu;
-                    if (lb.sick + lb.daysInLieu + lb.annual < numOfDays)
-                    {
-                        deductAnnual = lb.annual;
-                        addUnpaid = numOfDays - deductSick - deductDIL - deductAnnual;
-                    }
-                    else
-                    {
-                        deductAnnual = numOfDays - deductSick - deductDIL;
-                    }
+                    addUnpaid = numOfDays - deductSick - deductDIL;
                 }
                 else
                 {
@@ -195,46 +185,78 @@ namespace LeaveSystemMVC.Controllers
                 ApplyLeave(model, numOfDays, fileName);
                 
                 // sends a notification email to the applicant
-                SendMail(model, emp);
+                // SendMail(model, emp);
                 
                 // sets the notification message to be displayed to the applicant
                 TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
                 TempData["SuccessMessage"] += (deductSick > 0) ? deductSick + " day(s) will be deducted from Sick balance.<br/>" : "";
                 TempData["SuccessMessage"] += (deductDIL > 0) ? deductDIL + " day(s) will be deducted from Days In Lieu balance.<br/>" : "";
-                TempData["SuccessMessage"] += (deductAnnual > 0) ? deductAnnual + " day(s) will be deducted from Annual balance.<br/>" : "";
                 TempData["SuccessMessage"] += (addUnpaid > 0) ? addUnpaid + " day(s) will be added to Unpaid balance.<br/>" : "";
             }
         }
 
         private void LeaveAppMaternity(sLeaveModel model, sleaveBalanceModel lb, sEmployeeModel emp, HttpPostedFileBase file)
         {
-            if (ModelState.IsValid)
+            // Maternity leave includes weekends and public holidays
+            TimeSpan diff = model.returnDate - model.startDate;
+
+            // the duration of leave is the number of days between the two dates
+            int numOfDays = diff.Days;
+
+            // keeps track of how much credit points should be deducted from each balance type
+            decimal deductMaternity = 0;
+            decimal deductDIL = 0;
+            decimal deductAnnual = 0;
+            decimal addUnpaid = 0;
+
+            // deduction order: Maternity --> DIL --> Annual --> Unpaid
+            // checks if the applicant has enough balance in maternity, if yes, then simply deduct from maternity, 
+            // if not, deduct all the balance from maternity and the remainder from DIL balance. if DIL balance 
+            // is insufficient, deduct all the balance from DIL and the renmainder from annual, finnaly if annual 
+            // is insufficient, deduct all from annual and add the remaining number of days to unpaid balance.
+            if (lb.maternity < numOfDays)
             {
-                // Maternity leave includes weekends and public holidays
-                TimeSpan diff = model.returnDate - model.startDate;
-
-                // the duration of leave is the number of days between the two dates
-                int numOfDays = diff.Days;
-
-                // does the user have enough balance?
-                if (lb.maternity < numOfDays)
+                deductMaternity = lb.maternity;
+                if (lb.maternity + lb.daysInLieu < numOfDays)
                 {
-                    ViewBag.ErrorMessage = "You do not have enough balance.";
+                    deductDIL = lb.daysInLieu;
+                    if (lb.maternity + lb.daysInLieu + lb.annual < numOfDays)
+                    {
+                        deductAnnual = lb.annual;
+                        addUnpaid = numOfDays - deductMaternity - deductDIL - deductAnnual;
+                    }
+                    else
+                    {
+                        deductAnnual = numOfDays - deductMaternity - deductDIL;
+                    }
                 }
                 else
                 {
-                    // uploads the file to App_Data/Documentation
-                    string fileName = UploadFile(file);
-                    
-                    // inserts the data to the database
-                    ApplyLeave(model, numOfDays, fileName);
-                    
-                    // sends a notification email to the applicant
-                    SendMail(model, emp);
-
-                    // sets the notification message to be displayed to the applicant
-                    TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
+                    deductDIL = numOfDays - deductMaternity;
                 }
+            }
+            else
+            {
+                deductMaternity = numOfDays;
+            }
+
+            if (ModelState.IsValid)
+            {
+                // uploads the file to App_Data/Documentation
+                string fileName = UploadFile(file);
+                    
+                // inserts the data to the database
+                ApplyLeave(model, numOfDays, fileName);
+
+                // sends a notification email to the applicant
+                // SendMail(model, emp);
+
+                // sets the notification message to be displayed to the applicant
+                TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
+                TempData["SuccessMessage"] += (deductMaternity > 0) ? deductMaternity + " day(s) will be deducted from Maternity balance.<br/>" : "";
+                TempData["SuccessMessage"] += (deductDIL > 0) ? deductDIL + " day(s) will be deducted from Days In Lieu balance.<br/>" : "";
+                TempData["SuccessMessage"] += (deductAnnual > 0) ? deductAnnual + " day(s) will be deducted from Annual balance.<br/>" : "";
+                TempData["SuccessMessage"] += (addUnpaid > 0) ? addUnpaid + " day(s) will be added to Unpaid balance.<br/>" : "";
             }
         }
 
@@ -256,7 +278,7 @@ namespace LeaveSystemMVC.Controllers
                     ApplyLeave(model, numOfDays, fileName);
                    
                     // sends a notification email to the applicant
-                    SendMail(model, emp);
+                    // SendMail(model, emp);
                    
                     // sets the notification message to be displayed to the applicant
                     TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
@@ -300,7 +322,7 @@ namespace LeaveSystemMVC.Controllers
                                 ApplyLeave(model);
                                 
                                 // sends a notification email to the applicant
-                                SendMail(model, emp);
+                                // SendMail(model, emp);
                                 
                                 // sets the notification message to be displayed to the applicant
                                 TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + span.TotalMinutes + " minutes</b> has been submitted successfully.<br/>";
@@ -341,7 +363,7 @@ namespace LeaveSystemMVC.Controllers
                     ApplyLeave(model, numOfDays, fileName);
 
                     // sends a notification email to the applicant
-                    SendMail(model, emp);
+                   //  SendMail(model, emp);
 
                     // sets the notification message to be displayed to the applicant
                     TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
@@ -364,7 +386,7 @@ namespace LeaveSystemMVC.Controllers
                 ApplyLeave(model, numOfDays, fileName);
 
                 // sends a notification email to the applicant
-                SendMail(model, emp);
+                // SendMail(model, emp);
 
                 // sets the notification message to be displayed to the applicant
                 TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";

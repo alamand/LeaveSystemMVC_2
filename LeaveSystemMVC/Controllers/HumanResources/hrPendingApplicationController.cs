@@ -92,7 +92,7 @@ namespace LeaveSystemMVC.Controllers
 
                 case "Maternity":
                     TimeSpan diff = leave.returnDate - leave.startDate;
-                    balanceDeduction.Add("Maternity", (decimal)numOfDays);
+                    balanceDeduction = LeaveAppMaternity(leaveBalance, (int)diff.Days);
                     break;
 
                 case "Compassionate":
@@ -206,6 +206,60 @@ namespace LeaveSystemMVC.Controllers
             // add what will be deducted in the dictionary
             if (deductSick > 0)
                 balanceDeduction.Add("Sick", deductSick);
+            if (deductDIL > 0)
+                balanceDeduction.Add("DIL", deductDIL);
+            if (deductAnnual > 0)
+                balanceDeduction.Add("Annual", deductAnnual);
+            if (addUnpaid > 0)
+                balanceDeduction.Add("Unpaid", addUnpaid);
+
+            return balanceDeduction;
+        }
+
+        private Dictionary<string, decimal> LeaveAppMaternity(sleaveBalanceModel lb, int numOfDays)
+        {
+            Dictionary<string, decimal> balanceDeduction = new Dictionary<string, decimal>();
+
+            // keeps track of how much credit points should be deducted from each balance type
+            decimal deductMaternity = 0;
+            decimal deductDIL = 0;
+            decimal deductAnnual = 0;
+            decimal addUnpaid = 0;
+
+            // deduction order: Maternity --> DIL --> Annual --> Unpaid
+            // checks if the applicant has enough balance in maternity, if yes, then simply deduct from maternity, 
+            // if not, deduct all the balance from maternity and the remainder from DIL balance. if DIL balance 
+            // is insufficient, deduct all the balance from DIL and the renmainder from annual, finnaly if annual 
+            // is insufficient, deduct all from annual and add the remaining number of days to unpaid balance.
+            if (lb.maternity < numOfDays)
+            {
+                deductMaternity = lb.maternity;
+                if (lb.maternity + lb.daysInLieu < numOfDays)
+                {
+                    deductDIL = lb.daysInLieu;
+                    if (lb.maternity + lb.daysInLieu + lb.annual < numOfDays)
+                    {
+                        deductAnnual = lb.annual;
+                        addUnpaid = numOfDays - deductMaternity - deductDIL - deductAnnual;
+                    }
+                    else
+                    {
+                        deductAnnual = numOfDays - deductMaternity - deductDIL;
+                    }
+                }
+                else
+                {
+                    deductDIL = numOfDays - deductMaternity;
+                }
+            }
+            else
+            {
+                deductMaternity = numOfDays;
+            }
+
+            // add what will be deducted in the dictionary
+            if (deductMaternity > 0)
+                balanceDeduction.Add("Maternity", deductMaternity);
             if (deductDIL > 0)
                 balanceDeduction.Add("DIL", deductDIL);
             if (deductAnnual > 0)
@@ -375,14 +429,12 @@ namespace LeaveSystemMVC.Controllers
             // keeps track of how much credit points should be deducted from each balance type
             decimal deductDIL = 0;
             decimal deductSick = 0;
-            decimal deductAnnual = 0;
             decimal addUnpaid = 0;
 
-            // deduction order: Sick --> DIL --> Annual --> Unpaid
+            // deduction order: Sick --> DIL --> Unpaid
             // checks if the applicant has enough balance in sick, if yes, then simply deduct from sick, 
             // if not, deduct all the balance from sick and the remainder from DIL balance. if DIL balance 
-            // is insufficient, deduct all the balance from DIL and the remainder from annual balance. 
-            // if annual balance is insufficient, deduct all from annual and then add the remaining number 
+            // is insufficient, deduct all the balance from DIL and then add the remaining number 
             // of days to unpaid balance.
             if (lb.sick < numOfDays)
             {
@@ -390,15 +442,7 @@ namespace LeaveSystemMVC.Controllers
                 if (lb.sick + lb.daysInLieu < numOfDays)
                 {
                     deductDIL = lb.daysInLieu;
-                    if (lb.sick + lb.daysInLieu + lb.annual < numOfDays)
-                    {
-                        deductAnnual = lb.annual;
-                        addUnpaid = numOfDays - deductSick - deductDIL - deductAnnual;
-                    }
-                    else
-                    {
-                        deductAnnual = numOfDays - deductSick - deductDIL;
-                    }
+                    addUnpaid = numOfDays - deductSick - deductDIL;
                 }
                 else
                 {
@@ -415,13 +459,12 @@ namespace LeaveSystemMVC.Controllers
 
             DBUpdateBalance(leave.employeeID, lb.sickID, (lb.sick - deductSick));
             DBUpdateBalance(leave.employeeID, lb.daysInLieuID, (lb.daysInLieu - deductDIL));
-            DBUpdateBalance(leave.employeeID, lb.annualID, (lb.annual - deductAnnual));
             DBUpdateBalance(leave.employeeID, lb.unpaidID, (lb.unpaid + addUnpaid));
 
             string message = "Approved"; //@TODO: Write an email
 
             // sends a notification email to the applicant
-            SendMail(GetEmployeeModel(leave.employeeID).email, message);
+            // SendMail(GetEmployeeModel(leave.employeeID).email, message);
 
             // sets the notification message to be displayed
             TempData["SuccessMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>approved</b> successfully.<br/>";
@@ -437,26 +480,59 @@ namespace LeaveSystemMVC.Controllers
             // the duration of leave is the number of days between the two dates
             int numOfDays = diff.Days;
 
-            // does the user have enough balance?
-            if (lb.maternity >= numOfDays)
+            // keeps track of how much credit points should be deducted from each balance type
+            decimal deductMaternity = 0;
+            decimal deductDIL = 0;
+            decimal deductAnnual = 0;
+            decimal addUnpaid = 0;
+
+            // deduction order: Maternity --> DIL --> Annual --> Unpaid
+            // checks if the applicant has enough balance in maternity, if yes, then simply deduct from maternity, 
+            // if not, deduct all the balance from maternity and the remainder from DIL balance. if DIL balance 
+            // is insufficient, deduct all the balance from DIL and the renmainder from annual, finnaly if annual 
+            // is insufficient, deduct all from annual and add the remaining number of days to unpaid balance.
+            if (lb.maternity < numOfDays)
             {
-                int approvedID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Approved").Key;
-                DBUpdateLeave(leave, approvedID);
-
-                DBUpdateBalance(leave.employeeID, lb.maternityID, lb.maternity - numOfDays);
-
-                string message = "Approved"; //@TODO: Write an email
-
-                // sends a notification email to the applicant
-                SendMail(GetEmployeeModel(leave.employeeID).email, message);
-
-                // sets the notification message to be displayed
-                TempData["SuccessMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>approved</b> successfully.<br/>";
+                deductMaternity = lb.maternity;
+                if (lb.maternity + lb.daysInLieu < numOfDays)
+                {
+                    deductDIL = lb.daysInLieu;
+                    if (lb.maternity + lb.daysInLieu + lb.annual < numOfDays)
+                    {
+                        deductAnnual = lb.annual;
+                        addUnpaid = numOfDays - deductMaternity - deductDIL - deductAnnual;
+                    }
+                    else
+                    {
+                        deductAnnual = numOfDays - deductMaternity - deductDIL;
+                    }
+                }
+                else
+                {
+                    deductDIL = numOfDays - deductMaternity;
+                }
             }
-            else             
+            else
             {
-                ViewBag.ErrorMessage = "Leave application ID <b>" + leave.leaveAppID + "</b> can't be approved, <b>" + leave.employeeName + "</b> does not have enough balance.";
+                deductMaternity = numOfDays;
             }
+
+            int approvedID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Approved").Key;
+            DBUpdateLeave(leave, approvedID);
+
+            DBUpdateBalance(leave.employeeID, lb.maternityID, lb.maternity - deductMaternity);
+            DBUpdateBalance(leave.employeeID, lb.daysInLieuID, (lb.daysInLieu - deductDIL));
+            DBUpdateBalance(leave.employeeID, lb.annualID, lb.annual - deductAnnual);
+            DBUpdateBalance(leave.employeeID, lb.unpaidID, (lb.unpaid + addUnpaid));
+
+            string message = "Approved"; //@TODO: Write an email
+
+            // sends a notification email to the applicant
+            // SendMail(GetEmployeeModel(leave.employeeID).email, message);
+
+            // sets the notification message to be displayed
+            TempData["SuccessMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>approved</b> successfully.<br/>";
+
         }
 
         private void ApproveCompassionate(sLeaveModel leave)
@@ -477,7 +553,7 @@ namespace LeaveSystemMVC.Controllers
                 string message = "Approved"; //@TODO: Write an email
 
                 // sends a notification email to the applicant
-                SendMail(GetEmployeeModel(leave.employeeID).email, message);
+                // SendMail(GetEmployeeModel(leave.employeeID).email, message);
 
                 // sets the notification message to be displayed
                 TempData["SuccessMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>approved</b> successfully.<br/>";
@@ -506,7 +582,7 @@ namespace LeaveSystemMVC.Controllers
                 string message = "Approved"; //@TODO: Write an email
 
                 // sends a notification email to the applicant
-                SendMail(GetEmployeeModel(leave.employeeID).email, message);
+                // SendMail(GetEmployeeModel(leave.employeeID).email, message);
 
                 // sets the notification message to be displayed
                 TempData["SuccessMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>approved</b> successfully.<br/>";
@@ -535,7 +611,7 @@ namespace LeaveSystemMVC.Controllers
                 string message = "Approved"; //@TODO: Write an email
 
                 // sends a notification email to the applicant
-                SendMail(GetEmployeeModel(leave.employeeID).email, message);
+                // SendMail(GetEmployeeModel(leave.employeeID).email, message);
 
                 // sets the notification message to be displayed
                 TempData["SuccessMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>approved</b> successfully.<br/>";
@@ -561,7 +637,7 @@ namespace LeaveSystemMVC.Controllers
             string message = "Approved"; //@TODO: Write an email
 
             // sends a notification email to the applicant
-            SendMail(GetEmployeeModel(leave.employeeID).email, message);
+            // SendMail(GetEmployeeModel(leave.employeeID).email, message);
 
             // sets the notification message to be displayed
             TempData["SuccessMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>approved</b> successfully.<br/>";
