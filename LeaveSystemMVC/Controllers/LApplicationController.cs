@@ -311,7 +311,7 @@ namespace LeaveSystemMVC.Controllers
                 {
                     if (!isPublicHoliday)
                     {
-                            if (duration/60 <= lb.shortHours)
+                            if ((decimal)duration/60 <= lb.shortHours)
                             {
                                 // inserts the data to the database
                                 ApplyLeave(model);
