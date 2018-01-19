@@ -101,7 +101,7 @@ namespace LeaveSystemMVC.Controllers
 
                 case "Short_Hours_Per_Month":
                     TimeSpan span = (TimeSpan)leave.shortEndTime - (TimeSpan)leave.shortStartTime;
-                    balanceDeduction.Add("Short_Hours_Per_Month", (decimal)span.Hours);
+                    balanceDeduction.Add("Short_Hours_Per_Month", (decimal)span.TotalHours);
                     break;
 
                 case "Pilgrimage":

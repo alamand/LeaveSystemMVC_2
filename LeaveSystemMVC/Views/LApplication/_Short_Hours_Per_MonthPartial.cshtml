@@ -14,6 +14,9 @@
 </div>
 <hr />
 
+@{
+    var shortHourList = ViewData["ShortHourDuration"] as Dictionary<int, string>;
+}
 <!--start and end time-->
 <div class="container-fluid form-group">
     <div class="row">
@@ -21,16 +24,15 @@
             @Html.LabelFor(model => model.shortStartTime, "Start Time", htmlAttributes: new { @class = "control-label col-md-2" })
         </div>
         <div class="col-md-4">
-            @Html.TextBoxFor(model => model.shortStartTime, new { @class = "form-control", type = "time" })
+            @Html.TextBoxFor(model => model.shortStartTime, new { @class = "form-control", type = "time", step="900" })
             @Html.ValidationMessageFor(model => model.shortStartTime, "", new { @class = "text-danger" })
         </div>
 
         <div class="col-xs-2" style="white-space:nowrap">
-            @Html.LabelFor(model => model.shortEndTime, "End Time", htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.Label("Duration", htmlAttributes: new { @class = "control-label col-md-2" })
         </div>
-        <div class="col-md-4">
-            @Html.TextBoxFor(model => model.shortEndTime, new { @class = "form-control", type = "time" })
-            @Html.ValidationMessageFor(model => model.shortEndTime, "", new { @class = "text-danger" })
+        <div class="col-md-2">
+            @Html.DropDownList("selectedDuration", new SelectList(shortHourList, "Key", "Value"), new { @class = "form-control" })
         </div>
     </div>
 </div>

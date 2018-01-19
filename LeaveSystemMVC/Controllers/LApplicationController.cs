@@ -36,7 +36,7 @@ namespace LeaveSystemMVC.Controllers
         }
 
         [HttpPost]
-        public ActionResult Index(HttpPostedFileBase file, sLeaveModel model)
+        public ActionResult Index(HttpPostedFileBase file, sLeaveModel model, FormCollection form)
         {
             sEmployeeModel emp = GetEmployeeModel(GetLoggedInID());
             sleaveBalanceModel leaveBalance = GetLeaveBalanceModel(GetLoggedInID());
@@ -69,7 +69,8 @@ namespace LeaveSystemMVC.Controllers
                         break;
 
                     case "Short_Hours_Per_Month":
-                        LeaveAppShortHours(model, leaveBalance, emp);
+                        int duration = Convert.ToInt32(form["selectedDuration"]);
+                        LeaveAppShortHours(model, leaveBalance, emp, duration);
                         break;
 
                     case "Pilgrimage":
@@ -286,20 +287,16 @@ namespace LeaveSystemMVC.Controllers
             }
         }
 
-        private void LeaveAppShortHours(sLeaveModel model, sleaveBalanceModel lb, sEmployeeModel emp)
+        private void LeaveAppShortHours(sLeaveModel model, sleaveBalanceModel lb, sEmployeeModel emp, int duration)
         {
             // clears the model state as the endDate was not set in the View page
             ModelState.Clear();
 
             // the applicant enters only one date, the leave is for 0 days
             model.returnDate = model.startDate;
-
-            // checks if the times are the same, and if the end time is before than start time (sets ModelState to invalid if one of them is true)
-            CompareHours((TimeSpan)model.shortStartTime, (TimeSpan)model.shortEndTime);
-
-            // gets the total number of hours
-            TimeSpan span = (TimeSpan)model.shortEndTime - (TimeSpan)model.shortStartTime;
-
+            model.shortEndTime = model.shortStartTime;
+            model.shortEndTime = new TimeSpan(model.shortStartTime.Hours + (duration / 60), model.shortStartTime.Minutes + (duration % 60), 0);
+            
             // checks if the selected date is a weekend
             bool isWeekend = model.startDate.DayOfWeek.Equals(DayOfWeek.Friday) || model.startDate.DayOfWeek.Equals(DayOfWeek.Saturday) ? true : false;
 
@@ -314,9 +311,7 @@ namespace LeaveSystemMVC.Controllers
                 {
                     if (!isPublicHoliday)
                     {
-                        if (span.TotalMinutes <= 150)        // 2:30 hours
-                        {
-                            if (span.Hours <= lb.shortHours)
+                            if (duration/60 <= lb.shortHours)
                             {
                                 // inserts the data to the database
                                 ApplyLeave(model);
@@ -325,17 +320,12 @@ namespace LeaveSystemMVC.Controllers
                                 // SendMail(model, emp);
                                 
                                 // sets the notification message to be displayed to the applicant
-                                TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + span.TotalMinutes + " minutes</b> has been submitted successfully.<br/>";
+                                TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + duration + " minutes</b> has been submitted successfully.<br/>";
                             }
                             else
                             {
                                 ViewBag.ErrorMessage = "You do not have enough balance.";
                             }
-                        }
-                        else
-                        {
-                            ViewBag.ErrorMessage = "You cannot apply for more than 2:30 hrs.";
-                        }
                     }
                     else
                     {
@@ -399,6 +389,7 @@ namespace LeaveSystemMVC.Controllers
             ViewData["LeaveTypes"] = leaveTypes;
             ViewData["SelectedLeaveTypeID"] = leaveID;
             ViewData["SelectedLeaveTypeName"] = leaveTypes[leaveID];
+            ViewData["ShortHourDuration"] = GetShortHourDurationList();
         }
 
         private Dictionary<int, string> GetAvailableLeaveTypes(sEmployeeModel emp)
@@ -632,6 +623,19 @@ namespace LeaveSystemMVC.Controllers
             }
 
             return isPublicHoliday;
+        }
+
+        private Dictionary<int, string> GetShortHourDurationList()
+        {
+            var durationList = new Dictionary<int, string>
+            {
+                { 30, "0:30 hrs" },
+                { 60, "1:00 hrs" },
+                { 90, "1:30 hrs" },
+                { 120, "2:00 hrs" },
+                { 150, "2:30 hrs" }
+            };
+            return durationList;
         }
     }
 }
