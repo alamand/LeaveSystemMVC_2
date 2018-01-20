@@ -9,6 +9,7 @@ using System.Configuration;
 using System.Data.SqlClient;
 using System.Net;
 using System.Net.Mail;
+using Hangfire;
 
 namespace LeaveSystemMVC.Controllers
 {
@@ -412,7 +413,7 @@ namespace LeaveSystemMVC.Controllers
             string message = "Approved"; //@TODO: Write an email
 
             // sends a notification email to the applicant
-            SendMail(GetEmployeeModel(leave.employeeID).email, message);
+            BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
 
             // sets the notification message to be displayed
             TempData["SuccessMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>approved</b> successfully.<br/>";
@@ -459,7 +460,7 @@ namespace LeaveSystemMVC.Controllers
             string message = "Approved"; //@TODO: Write an email
 
             // sends a notification email to the applicant
-            // SendMail(GetEmployeeModel(leave.employeeID).email, message);
+            BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
 
             // sets the notification message to be displayed
             TempData["SuccessMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>approved</b> successfully.<br/>";
@@ -518,7 +519,7 @@ namespace LeaveSystemMVC.Controllers
             string message = "Approved"; //@TODO: Write an email
 
             // sends a notification email to the applicant
-            // SendMail(GetEmployeeModel(leave.employeeID).email, message);
+            BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
 
             // sets the notification message to be displayed
             TempData["SuccessMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>approved</b> successfully.<br/>";
@@ -568,7 +569,7 @@ namespace LeaveSystemMVC.Controllers
                 string message = "Approved"; //@TODO: Write an email
 
                 // sends a notification email to the applicant
-                // SendMail(GetEmployeeModel(leave.employeeID).email, message);
+                BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
 
                 // sets the notification message to be displayed
                 TempData["SuccessMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>approved</b> successfully.<br/>";
@@ -595,7 +596,7 @@ namespace LeaveSystemMVC.Controllers
                 string message = "Approved"; //@TODO: Write an email
 
                 // sends a notification email to the applicant
-                // SendMail(GetEmployeeModel(leave.employeeID).email, message);
+                BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
 
                 // sets the notification message to be displayed
                 TempData["SuccessMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>approved</b> successfully.<br/>";
@@ -619,7 +620,7 @@ namespace LeaveSystemMVC.Controllers
             string message = "Approved"; //@TODO: Write an email
 
             // sends a notification email to the applicant
-            // SendMail(GetEmployeeModel(leave.employeeID).email, message);
+            BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
 
             // sets the notification message to be displayed
             TempData["SuccessMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>approved</b> successfully.<br/>";
@@ -633,7 +634,7 @@ namespace LeaveSystemMVC.Controllers
             DBExecuteQuery(queryString);
         }
 
-        private void SendMail(string email, string message)
+        public void SendMail(string email, string message)
         {
             MailMessage mail = new MailMessage();
             mail.From = new MailAddress("project_ict333@murdochdubai.ac.ae", "GIMEL LMS");
@@ -647,11 +648,9 @@ namespace LeaveSystemMVC.Controllers
             try
             {
                 client.Send(mail);
+                System.Diagnostics.Debug.WriteLine("Mail Sent");
             }
-            catch (Exception e)
-            {
-                Response.Write("<script> alert('The email could not be sent due to a network error.');</script>");
-            }
+            catch (Exception e){}
         }
 
         private List<sLeaveModel> GetLeaveHistory(int empID)

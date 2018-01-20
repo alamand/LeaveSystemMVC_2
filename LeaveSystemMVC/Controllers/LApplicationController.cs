@@ -10,6 +10,7 @@ using System.Security.Claims;
 using System.IO;
 using System.Net.Mail;
 using System.Net;
+using Hangfire;
 
 // @TODO: More testing and optimization
 // @Mandy: Give some good words for pop up messages.
@@ -137,7 +138,7 @@ namespace LeaveSystemMVC.Controllers
                 ApplyLeave(model, numOfDays, fileName);
 
                 // sends a notification email to the applicant
-                // SendMail(model, emp);
+                BackgroundJob.Enqueue(() => SendMail(model, emp));
 
                 // sets the notification message to be displayed to the applicant
                 TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
@@ -184,10 +185,10 @@ namespace LeaveSystemMVC.Controllers
                 
                 // inserts the data to the database
                 ApplyLeave(model, numOfDays, fileName);
-                
+
                 // sends a notification email to the applicant
-                // SendMail(model, emp);
-                
+                BackgroundJob.Enqueue(() => SendMail(model, emp));
+
                 // sets the notification message to be displayed to the applicant
                 TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
                 TempData["SuccessMessage"] += (deductSick > 0) ? deductSick + " day(s) will be deducted from Sick balance.<br/>" : "";
@@ -250,7 +251,7 @@ namespace LeaveSystemMVC.Controllers
                 ApplyLeave(model, numOfDays, fileName);
 
                 // sends a notification email to the applicant
-                // SendMail(model, emp);
+                BackgroundJob.Enqueue(() => SendMail(model, emp));
 
                 // sets the notification message to be displayed to the applicant
                 TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
@@ -277,10 +278,10 @@ namespace LeaveSystemMVC.Controllers
                    
                     // inserts the data to the database
                     ApplyLeave(model, numOfDays, fileName);
-                   
+
                     // sends a notification email to the applicant
-                    // SendMail(model, emp);
-                   
+                    BackgroundJob.Enqueue(() => SendMail(model, emp));
+
                     // sets the notification message to be displayed to the applicant
                     TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
                 }
@@ -315,10 +316,10 @@ namespace LeaveSystemMVC.Controllers
                             {
                                 // inserts the data to the database
                                 ApplyLeave(model);
-                                
+
                                 // sends a notification email to the applicant
-                                // SendMail(model, emp);
-                                
+                                BackgroundJob.Enqueue(() => SendMail(model, emp));
+
                                 // sets the notification message to be displayed to the applicant
                                 TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + duration + " minutes</b> has been submitted successfully.<br/>";
                             }
@@ -353,7 +354,7 @@ namespace LeaveSystemMVC.Controllers
                     ApplyLeave(model, numOfDays, fileName);
 
                     // sends a notification email to the applicant
-                   //  SendMail(model, emp);
+                    BackgroundJob.Enqueue(() => SendMail(model, emp));
 
                     // sets the notification message to be displayed to the applicant
                     TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
@@ -376,7 +377,7 @@ namespace LeaveSystemMVC.Controllers
                 ApplyLeave(model, numOfDays, fileName);
 
                 // sends a notification email to the applicant
-                // SendMail(model, emp);
+                BackgroundJob.Enqueue(() => SendMail(model, emp));
 
                 // sets the notification message to be displayed to the applicant
                 TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
@@ -428,7 +429,7 @@ namespace LeaveSystemMVC.Controllers
             return leaveTypes;
         }
 
-        private void SendMail(sLeaveModel lm, sEmployeeModel emp)
+        public void SendMail(sLeaveModel lm, sEmployeeModel emp)
         {
             string message = "";
             if (lm.shortStartTime == null && lm.shortEndTime == null)
@@ -448,12 +449,9 @@ namespace LeaveSystemMVC.Controllers
             try
             {
                 client.Send(mail);
+                System.Diagnostics.Debug.WriteLine("Mail Sent");
             }
-            catch (Exception e)
-            {
-                Response.Write("<script> alert('The email could not be sent due to a network error.');</script>");
-            }
-            Response.Write("<script> alert('Your leave application has been submitted.');location.href='Index'</script>");
+            catch (Exception e){}
         }
 
         private void ApplyLeave(sLeaveModel lm, int numOfDays=0, string fName="")

@@ -6,6 +6,9 @@ using System.Web.Mvc;
 using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
 using Owin;
+using Hangfire;
+using System.Configuration;
+using Hangfire.SqlServer;
 
 namespace LeaveSystemMVC.App_Start
 {
@@ -20,6 +23,12 @@ namespace LeaveSystemMVC.App_Start
                 AuthenticationType = "ApplicationCookie",
                 LoginPath = new PathString("/Auth/Login")
             });
+
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            GlobalConfiguration.Configuration.UseSqlServerStorage(connectionString, new SqlServerStorageOptions { QueuePollInterval = TimeSpan.FromSeconds(1) });
+
+            app.UseHangfireDashboard();
+            app.UseHangfireServer();
         }
     }
 }
