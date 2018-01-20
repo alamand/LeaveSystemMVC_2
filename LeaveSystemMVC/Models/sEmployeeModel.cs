@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using LeaveSystemMVC.CustomLibraries;
 
 namespace LeaveSystemMVC.Models
 {
@@ -45,6 +40,7 @@ namespace LeaveSystemMVC.Models
         [StringLength(100, MinimumLength = 0, ErrorMessage = "Email Address is too long.")]
         public string email { get; set; }
 
+        [Display(Name = "Gender")]
         public char gender { get; set; }
 
         public int? deptID { get; set; }
@@ -55,20 +51,14 @@ namespace LeaveSystemMVC.Models
         [RegularExpression(@"^(?:\+971|00971|0)?(?:50|51|52|55|56|2|3|4|6|7|9)\d{7}$", ErrorMessage = "Invalid Phone Number.")]
         public string phoneNo{ get; set; }
 
+        [Display(Name = "Start Date")]
         [Required(ErrorMessage = "Start Date is required.")]
         [DataType(DataType.Date)]
         public DateTime empStartDate { get; set; }
 
+        [Display(Name = "End Date")]
         [DataType(DataType.Date)]
         public DateTime empEndDate { get; set; }
-
-        [DataType(DataType.Date)]
-        public DateTime empOldStartDate { get; set; }
-
-        [DataType(DataType.Date)]
-        public DateTime empOldEndDate { get; set; }
-
-        public int? secondLineManager { get; set; }
 
         [Display(Name = "Account Status")]
         public bool accountStatus { get; set; } = true;

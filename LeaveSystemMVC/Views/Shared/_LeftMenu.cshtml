@@ -20,7 +20,7 @@
             //@Html.MenuItem("Select Substitute", "Index", "lmSelectSubstitute") //must be integrated with pending applications
             @Html.MenuItem("Subordinate Balances", "Index", "lmSubordinateBalance")
             @Html.MenuItem("Subordinate Leave History", "Index", "lmSubordinateLeaveHistory")
-            @Html.MenuItem("Credit Days In Lieu", "Index", "hrDaysInLieu")
+            @Html.MenuItem("Credit Days In Lieu", "Index", "lmDaysInLieu")
         }
 
         @if (User.IsInRole("HR_Responsible"))
@@ -36,8 +36,6 @@
             @Html.MenuItem("Edit Leave Duration", "Index", "hrEditDefaultLeaveDuration")
             @Html.MenuItem("Credit Leave Balances", "Index", "hrCreditLeaveBalance")
             @Html.MenuItem("Staff on Probation", "Index", "hrProbationAdministration")
-
-            //@Html.MenuItem("Create New Leave Type", "Index", "hrCreateLeaveType")
          }
 
         @if (User.IsInRole("HR"))
@@ -50,7 +48,6 @@
             @Html.MenuItem("Credit Days In Lieu", "Index", "hrDaysInLieu")
             @Html.MenuItem("Edit Leave Duration", "Index", "hrEditDefaultLeaveDuration")
             @Html.MenuItem("Credit Leave Balances", "Index", "hrCreditLeaveBalance")
-            //@Html.MenuItem("Create New Leave Type", "Index", "hrCreateLeaveType")                             
         }
 
         @if (User.IsInRole("Admin"))
@@ -59,9 +56,6 @@
             <li role="presentation" class="dropdown-header" style="font-size:14pt">Administrator</li>
             @Html.MenuItem("Add Staff Member", "Index", "aAddStaff")
             @Html.MenuItem("Edit Staff Member", "Index", "aEditStaff")
-            @Html.MenuItem("Add Department", "Index", "aAddDepartment")
-            //@Html.MenuItem("Edit Department", "Index", "aEditDepartment") //Exists in SMS system. Low priority.
-            //@Html.MenuItem("Add Staff Role", "Index", "aAddStaffRole")
             @Html.MenuItem("Bulk Add Staff", "Index", "aBulkAddStaff")
             @Html.MenuItem("Backup Database", "Index", "aBackupDatabase")
         }

@@ -154,7 +154,7 @@ namespace LeaveSystemMVC.Controllers
                                 } // end of switch
                                 if (!addEmployee)
                                     break;
-                                newEmployee.employeeObject.password = RandomPassword.Generate(7, 7);
+                                //newEmployee.employeeObject.password = RandomPassword.Generate(7, 7);
                                 column++;
                             } // end of tablecolumn foreach
                             if(addEmployee)

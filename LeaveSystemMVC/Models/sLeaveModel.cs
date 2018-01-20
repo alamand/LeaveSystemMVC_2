@@ -1,9 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace LeaveSystemMVC.Models
 {
@@ -24,8 +21,8 @@ namespace LeaveSystemMVC.Models
         [Display(Name = "Employee Name")]
         public string employeeName { get; set; }
 
-        //[DisplayName("Select Application Date")]
-        public DateTime applicationDate { get; set; } //Date of application creation
+        [DisplayName("Leave Application Date")]
+        public DateTime applicationDate { get; set; }
 
         [DisplayName("Start Date")]
         [Required(ErrorMessage = "Start Date is required.")]
