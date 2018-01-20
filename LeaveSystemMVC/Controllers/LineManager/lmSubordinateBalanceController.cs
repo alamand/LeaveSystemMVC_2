@@ -13,12 +13,12 @@ namespace LeaveSystemMVC.Controllers
     public class lmSubordinateBalanceController : ControllerBase
     {
         // GET: lmSubordinateBalance
-        public ActionResult Index()
+        public ActionResult Index(string filterSearch = "", string filterOrderBy = "")
         {
             var model = new List<Tuple<sEmployeeModel, sleaveBalanceModel>>();
 
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "Select Employee_ID FROM dbo.Employee WHERE Reporting_ID = " + GetLoggedInID();
+            string queryString = GetFilteredQuery(filterSearch, filterOrderBy); 
 
             using (var connection = new SqlConnection(connectionString))
             {
@@ -37,9 +37,56 @@ namespace LeaveSystemMVC.Controllers
                 connection.Close();
             }
 
+            ViewData["OrderByList"] = OrderByList();
+            ViewData["SelectedOrderBy"] = filterOrderBy;
+            ViewData["EnteredSearch"] = filterSearch;
             ViewData["ReligionList"] = DBReligionList();
 
             return View(model);
         }
+
+        [HttpPost]
+        public ActionResult Filter(FormCollection form)
+        {
+            string search = form["enteredSearch"];
+            string orderBy = form["selectedOrderBy"];
+            return RedirectToAction("Index", new { filterSearch = search, filterOrderBy = orderBy });
+        }
+
+        private string GetFilteredQuery(string search, string order)
+        {
+            string queryString = "Select Employee_ID FROM dbo.Employee WHERE Reporting_ID = " + GetLoggedInID();
+
+            // adds a filter query if search box contains character(s), note that 0 length means the search box is empty
+            if (search.Length > 0)
+            {
+                queryString += " AND (Employee_ID LIKE '%" + search + "%' " +
+                    "OR First_Name LIKE '%" + search + "%' " +
+                    "OR Last_Name LIKE '%" + search + "%')";
+            }
+
+            if (order.Length > 0)
+            {
+                queryString += " ORDER BY " + order;
+            }
+
+            return queryString;
+        }
+
+        private Dictionary<string, string> OrderByList()
+        {
+            var orderByList = new Dictionary<string, string>
+            {
+                { "Employee.First_Name ASC", "First Name | Ascending" },
+                { "Employee.First_Name DESC", "First Name | Descending" },
+                { "Employee.Last_Name ASC", "Last Name | Ascending" },
+                { "Employee.Last_Name DESC", "Last Name | Descending" },
+                { "Employee.Employee_ID ASC", "Employee ID | Ascending" },
+                { "Employee.Employee_ID DESC", "Employee ID | Descending" }
+            };
+            return orderByList;
+        }
+
+
     }
 }

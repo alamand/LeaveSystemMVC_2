@@ -7,9 +7,56 @@
     <hr />
     @Html.Partial("../_Message")
     @{
+        var orderByList = ViewData["OrderByList"] as Dictionary<string, string>;
+        var selectedOrderBy = ViewData["SelectedOrderBy"];
+        var enteredSearch = ViewData["EnteredSearch"];
         var religionList = ViewData["ReligionList"] as Dictionary<int, string>;
-    }        
+    }
+    <div class="panel-group">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" class="active" href="#collapse1">Filters</a>
+                </h4>
+            </div>
+            <br />
 
+            <div id="collapse1" class="panel-collapse collapse in">
+                @using (Html.BeginForm("Filter", "lmSubordinateBalance", FormMethod.Post))
+                {
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                    <div class="form-horizontal">
+                        <div class="row">
+                            <div class="col-md-1 col-md-offset-1">
+                                <p style="padding-top: 8px;">Search</p>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="input-group">
+                                    @Html.TextBox("enteredSearch", "", new { @Value = enteredSearch, @class = "form-control", @placeholder = "Search by ID or name..." })
+                                    <span class="input-group-btn">
+                                        <button type="submit" class="btn btn-default">
+                                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-1 col-md-offset-1">
+                                <p style="padding-top: 8px;">Sort By</p>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-horizontal">
+                                    @Html.DropDownList("selectedOrderBy", new SelectList(orderByList, "Key", "Value"), new { @selected = selectedOrderBy, @class = "form-control", @onchange = "this.form.submit();" })
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    
     <table class="table">
         <tr>
             <th>Employee ID</th>

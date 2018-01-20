@@ -7,14 +7,14 @@
     @Html.Partial("../_Message")
     <h5></h5>
     <div class="row">
-        <div class="col-md-2">
+        <div class="col-md-3">
             @using (Html.BeginForm("DownloadBAK", "aBackupDatabase", FormMethod.Post))
             {
                 @Html.AntiForgeryToken()
                 @Html.ValidationSummary(true)
 
                 <div class="form-horizontal">
-                    <div class="col-md-10">
+                    <div class="col-md-12">
                         <button type="submit" class="btn btn-default">
                             <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> Download .BAK
                         </button>
@@ -22,14 +22,14 @@
                 </div>
             }
         </div>
-        <div class="col-md-2">
+        <div class="col-md-3">
             @using (Html.BeginForm("DownloadSQL", "aBackupDatabase", FormMethod.Post))
             {
                 @Html.AntiForgeryToken()
                 @Html.ValidationSummary(true)
 
                 <div class="form-horizontal">
-                    <div class="col-md-10">
+                    <div class="col-md-12">
                         <!-- <button type="submit" class="btn btn-default" onclick="waitingDialog.show('Generating File...');setTimeout(function () {waitingDialog.hide();}, 2000);"> -->
                         <button type="submit" class="btn btn-default">
                             <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> Download .SQL

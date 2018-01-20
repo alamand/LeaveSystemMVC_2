@@ -6,6 +6,67 @@
     <h3>@ViewBag.Title</h3>
     <hr />
     @Html.Partial("../_Message")
+    <div class="panel-group">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" class="active" href="#collapse1">Filters</a>
+                </h4>
+            </div>
+            <br />
+
+            <div id="collapse1" class="panel-collapse collapse in">
+                @using (Html.BeginForm("Filter", "lmSubordinateLeaveHistory", FormMethod.Post))
+                {
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    var orderByList = ViewData["OrderByList"] as Dictionary<string, string>;
+
+                    <div class="form-horizontal">
+                        <div class="row">
+                            <div class="col-md-1 col-md-offset-1">
+                                <p style="padding-top: 8px;">Search</p>
+                            </div>
+                            <!-- <input class="form-control" id="searchFilter" type="text" placeholder="Search by app. ID or name..."> -->
+                            <div class="col-md-3">
+                                <div class="input-group">
+                                    @Html.TextBox("enteredSearch", "", new { @Value = ViewData["EnteredSearch"], @class = "form-control", @placeholder = "Search by ID or name..." })
+                                    <span class="input-group-btn">
+                                        <button type="submit" class="btn btn-default">
+                                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-1 col-md-offset-1">
+                                <p style="padding-top: 8px;">Sort By</p>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-horizontal">
+                                    @Html.DropDownList("selectedOrderBy", new SelectList(orderByList, "Key", "Value"), new { @selected = ViewData["SelectedOrderBy"], @class = "form-control", @onchange = "this.form.submit();" })
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+
+                        <div class="row">
+                            <div class="col-md-1 col-md-offset-1">
+                                <p style="padding-top: 8px;">Between</p>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="input-group input-daterange">
+                                    @Html.Editor("selectedStartDate", new { htmlAttributes = new { @class = "form-control", @type = "date", @Value = ViewData["SelectedStartDate"], @onchange = "this.form.submit();" } })
+                                    <div class="input-group-addon">and</div>
+                                    @Html.Editor("selectedEndDate", new { htmlAttributes = new { @class = "form-control", @type = "date", @Value = ViewData["SelectedEndDate"], @onchange = "this.form.submit();" } })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+                }
+            </div>
+        </div>
+    </div>
+
     <div class="row">
         <table class="table">
             <tr>
