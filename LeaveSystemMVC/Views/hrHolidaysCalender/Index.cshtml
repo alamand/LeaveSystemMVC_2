@@ -6,7 +6,6 @@
     <h3>@ViewBag.title</h3>
     <hr />
     @Html.Partial("../_Message")
-
     <p>@Html.ActionLink("Create a new Holiday", "CreateHoliday")</p>
     @{
         var yearList = ViewData["YearList"] as Dictionary<int, string>;
@@ -34,15 +33,19 @@
             <table class="table">
                 <tr>
                     <th style="text-align:center">@Html.DisplayNameFor(model => model.holidayName)</th>
-                    <th style="text-align:center">@Html.DisplayNameFor(model => model.startDate)</th>
+                    <th style="text-align:center">@Html.DisplayNameFor(model => model.date)</th>
+                    <th style="text-align:center">@Html.DisplayName("Delete")</th>
                 </tr>
                 @foreach (var item in Model)
                 {
-                    <tr style="border:1px solid black;">
-                        <td style="border:1px solid black;">@Html.DisplayFor(modelItem => item.holidayName) </td>
-                        <td style="border:1px solid black; text-align:center">
-                            @Html.DisplayFor(modelItem => item.startDate.Year)/@Html.DisplayFor(modelItem => item.startDate.Month)/@Html.DisplayFor(modelItem => item.startDate.Day)
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => item.holidayName) </td>
+                        <td style="text-align:center">
+                            @Html.DisplayFor(modelItem => item.date.Year)/@Html.DisplayFor(modelItem => item.date.Month)/@Html.DisplayFor(modelItem => item.date.Day)
                         </td>
+                        <td style="text-align:center"><a href="@Url.Action("Remove", "hrHolidaysCalender", new { holidayID = item.holidayID }, null)">
+                                <span class="glyphicon glyphicon-remove" aria-hidden="true" style="color:red"></span>
+                            </a></td>
                     </tr>
                 }
             </table>

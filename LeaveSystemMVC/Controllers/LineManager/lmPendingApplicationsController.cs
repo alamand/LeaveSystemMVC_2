@@ -561,7 +561,7 @@ namespace LeaveSystemMVC.Controllers
             TimeSpan span = (TimeSpan)leave.shortEndTime - (TimeSpan)leave.shortStartTime;
             
             // does the user have enough balance?
-            if (span.Hours < lb.shortHours)
+            if ((decimal)span.TotalHours < lb.shortHours)
             {
                 int approvedID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Pending_HR").Key;
                 DBUpdateLeave(leave, approvedID);

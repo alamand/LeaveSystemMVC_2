@@ -1,61 +1,45 @@
 ﻿@model LeaveSystemMVC.Models.hrHolidaysCalender
-
-@{
-    ViewBag.Title = "Create Holiday";
-}
-
 @Html.Partial("_LeftMenu")
+@{ ViewBag.Title = "Create Holiday"; }
 
-<div class="col-md-8">
-    <h4>@ViewBag.Title</h4>
+<div class="col-md-10">
+    <h3>@ViewBag.title</h3>
+    <hr />
+    @Html.Partial("../_Message")
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
         <div class="form-horizontal">
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            <hr />
-            @if (TempData["Success"] != null)
-            {
-                <div class="green">
-                    <p><strong>Success:</strong> @TempData["Success"].ToString()</p>
-                </div>
-            }
+
             <div class="row">
-                @Html.ValidationMessage("errorMessage")
                 <div class="col-md-2" style="white-space:nowrap">
-                    @Html.LabelFor(calender => calender.holidayName)
+                    @Html.LabelFor(model => model.holidayName, "Holiday Name", htmlAttributes: new { @class = "control-label col-md-2" })
                 </div>
                 <div class="col-md-4">
-                    @Html.TextBoxFor(calender => calender.holidayName, new { maxlength = 50 })
-                    @Html.ValidationMessageFor(calender => calender.holidayName)
-                </div>
-            </div>
-            <br />
-            <div class="container-fluid form-group">
-                <div class="row">
-                    <div class="col-xs-2" style="white-space:nowrap">
-                        @Html.LabelFor(calender => calender.startDate)
-                    </div>
-                    <div class="col-md-4">
-                        @Html.EditorFor(calender => calender.startDate, new { type = "Date" })
-                        @Html.ValidationMessageFor(calender => calender.startDate)
-                    </div>
-                    <div class="col-xs-2" style="white-space:nowrap">
-                        @Html.LabelFor(calender => calender.endDate)
-                    </div>
-                    <div class="col-md-4">
-                        @Html.TextBoxFor(calender => calender.endDate, new { type = "date" })
-                        @Html.ValidationMessageFor(calender => calender.endDate)
-                    </div>
+                    @Html.EditorFor(model => model.holidayName, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.holidayName, "", new { @class = "text-danger" })
                 </div>
             </div>
             <hr />
-            <div class="col-md-offset-4 col-md-12">
+            <div class="row">
+                <div class="col-sm-2" style="white-space:nowrap">
+                    @Html.LabelFor(model => model.date, "Holiday Date", htmlAttributes: new { @class = "control-label col-md-2", type = "Date" })
+                </div>
+
+                <div class="col-md-3">
+                    @Html.EditorFor(model => model.date, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.date, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <hr />
+            <div class="col-md-offset-2 col-md-2">
                 <a href="@Url.Action("Index", "hrHolidaysCalender")" class="btn btn-default">
                     <span class="glyphicon glyphicon-circle-arrow-left" aria-hidden="true"></span>
                     Back
                 </a>
-
+            </div>
+            <div class="col-md-2">
                 <button type="submit" value="Save" class="btn btn-default">
                     <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span> Save
                 </button>

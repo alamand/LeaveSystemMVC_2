@@ -13,6 +13,11 @@ namespace LeaveSystemMVC.Controllers
     {
         string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
 
+        protected void Output(string message)
+        {
+            System.Diagnostics.Debug.WriteLine(message);
+        }
+
         protected int GetLoggedInID()
         {
             var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;

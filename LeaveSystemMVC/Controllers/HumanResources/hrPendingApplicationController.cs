@@ -573,12 +573,12 @@ namespace LeaveSystemMVC.Controllers
             TimeSpan span = (TimeSpan)leave.shortEndTime - (TimeSpan)leave.shortStartTime;
 
             // does the user have enough balance?
-            if (lb.shortHours >= (decimal)span.Hours)
+            if (lb.shortHours >= (decimal)span.TotalHours)
             {
                 int approvedID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Approved").Key;
                 DBUpdateLeave(leave, approvedID);
 
-                DBUpdateBalance(leave.employeeID, lb.shortHoursID, lb.shortHours - (decimal)span.Hours);
+                DBUpdateBalance(leave.employeeID, lb.shortHoursID, lb.shortHours - (decimal)span.TotalHours);
 
                 string message = "Approved"; //@TODO: Write an email
 
