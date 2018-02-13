@@ -115,12 +115,27 @@
                     }
                     <td>@Html.DisplayFor(modelItem => item.leaveAppID)</td>
                     <td>@Html.DisplayFor(modelItem => item.employeeName)</td>
-                    <td>@Html.DisplayFor(modelItem => item.leaveTypeName)</td>
+                    @if (item.leaveTypeName.Equals("Short_Hours_Per_Month"))
+                    {
+                        <td>Short Hours</td>
+                    }
+                    else
+                    {
+                        <td>@Html.DisplayFor(modelItem => item.leaveTypeName)</td>
+                    }
                     <td>@Html.DisplayFor(modelItem => stDt)</td>
                     <td>@Html.DisplayFor(modelItem => reDt)</td>
                     <td>@Html.DisplayFor(modelItem => item.leaveDuration)</td>
-                    <td>@Html.DisplayFor(modelItem => item.shortStartTime)</td>
-                    <td>@Html.DisplayFor(modelItem => item.shortEndTime)</td>
+                    @if (item.leaveTypeName.Equals("Short_Hours_Per_Month"))
+                    {
+                        <td>@Html.DisplayFor(modelItem => item.shortStartTime)</td>
+                        <td>@Html.DisplayFor(modelItem => item.shortEndTime)</td>
+                    }
+                    else
+                    {
+                        <td></td>
+                        <td></td>
+                    }
                     <td>@Html.DisplayFor(modelItem => item.leaveStatusName)</td>
                     <td>@Html.ActionLink("View", "Edit", "hrEmployeeLeaveHistory", new { empID = item.leaveAppID }, null)</td>
 

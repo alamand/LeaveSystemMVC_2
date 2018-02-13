@@ -119,7 +119,17 @@ namespace LeaveSystemMVC.Controllers
         protected sEmployeeModel GetEmployeeModel(int empID)
         {
             sEmployeeModel employeeModel = new sEmployeeModel();
-            var queryString = "SELECT * FROM dbo.Employee WHERE Employee_ID = " + empID;
+
+            var queryString = "";
+
+            // true if this employee has a record in the Reporting Table
+            Boolean reportingIDExist = IsReportingExist(empID);  
+
+            if (reportingIDExist)
+                queryString += "SELECT * FROM dbo.Employee, dbo.Reporting WHERE Employee.Employee_ID = Reporting.Employee_ID AND Employee.Employee_ID = " + empID + " AND " +
+                            "(Reporting.Start_Date <= SYSDATETIME() AND (Reporting.End_Date > SYSDATETIME() OR Reporting.End_Date IS NULL))";
+            else
+                queryString += "SELECT * FROM dbo.Employee WHERE Employee.Employee_ID = " + empID;
 
             using (var connection = new SqlConnection(connectionString))
             {
@@ -140,7 +150,8 @@ namespace LeaveSystemMVC.Controllers
                         employeeModel.deptID = (reader["Department_ID"] != DBNull.Value) ? (int)reader["Department_ID"] : (int?)null;
                         employeeModel.phoneNo = (reader["Ph_No"] != DBNull.Value) ? (string)reader["Ph_No"] : "";
                         employeeModel.accountStatus = (bool)reader["Account_Status"];
-                        employeeModel.reportsToLineManagerID = (reader["Reporting_ID"] != DBNull.Value) ? (int)reader["Reporting_ID"] : (int?)null;
+                        if (reportingIDExist)
+                            employeeModel.reportsToLineManagerID = (reader["Reporting_ID"] != DBNull.Value) ? (int)reader["Reporting_ID"] : (int?)null;
                         employeeModel.religionID = (reader["Religion_ID"] != DBNull.Value) ? (int)reader["Religion_ID"] : 0;
                         employeeModel.dateOfBirth = (!DBNull.Value.Equals(reader["Date_Of_Birth"])) ? (DateTime)reader["Date_Of_Birth"] : new DateTime();
                         employeeModel.nationalityID = (reader["Nationality_ID"] != DBNull.Value) ? (int)reader["Nationality_ID"] : 0;
@@ -202,6 +213,24 @@ namespace LeaveSystemMVC.Controllers
             }
             
             return empList;
+        }
+
+        protected Boolean IsReportingExist(int empID)
+        {
+            bool isExist = false;
+
+            var queryString = "SELECT COUNT(*) FROM dbo.Employee, dbo.Reporting WHERE Employee.Employee_ID = Reporting.Employee_ID AND Employee.Employee_ID = " + empID + " AND " +
+                            "(Reporting.Start_Date <= SYSDATETIME() AND (Reporting.End_Date > SYSDATETIME() OR Reporting.End_Date IS NULL))";
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                if ((int)command.ExecuteScalar() > 0)
+                    isExist = true;
+                connection.Close();
+            }
+            return isExist;
         }
 
         protected List<sLeaveModel> GetLeaveModel(string listFor="", int id=0)
