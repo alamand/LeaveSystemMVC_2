@@ -121,11 +121,7 @@
                     else
                     { <td></td> }
                     <td>@tuple.Item2.unpaid</td>
-                    <td style="text-align:center">
-                        <a href="@Url.Action("Edit", "hrEditBalance", new { id = tuple.Item1.staffID }, null)">
-                            <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
-                        </a>
-                    </td>
+                    <td>@Html.ActionLink("Edit", "Edit", "hrEditBalance", new { empID = tuple.Item1.staffID }, null)</td>
                 </tr>
             }
         </tbody>
