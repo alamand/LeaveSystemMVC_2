@@ -92,6 +92,8 @@ namespace LeaveSystemMVC.Controllers
             }
 
             SetViewData(emp, model.leaveTypeID);
+            ViewBag.ErrorMessage = TempData["ErrorMessage"];
+            ViewBag.WarningMessage = TempData["WarningMessage"];
 
             // if the application was submitted successfully, then display success message, else show the application page again.
             if (TempData["SuccessMessage"] != null)
@@ -133,18 +135,22 @@ namespace LeaveSystemMVC.Controllers
             {
                 // uploads the file to App_Data/Documentation
                 string fileName = UploadFile(file);
-                
-                // inserts the data to the database
-                ApplyLeave(model, numOfDays, fileName);
 
-                // sends a notification email to the applicant
-                BackgroundJob.Enqueue(() => SendMail(model, emp));
+                if (TempData["ErrorMessage"] == null)
+                {
+                    // inserts the data to the database
+                    ApplyLeave(model, numOfDays, fileName);
 
-                // sets the notification message to be displayed to the applicant
-                TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
-                TempData["SuccessMessage"] += (deductDIL > 0) ? deductDIL + " day(s) will be deducted from Days In Lieu balance.<br/>" : "";
-                TempData["SuccessMessage"] += (deductAnnual > 0) ? deductAnnual + " day(s) will be deducted from Annual balance.<br/>" : "";
-                TempData["SuccessMessage"] += (addUnpaid > 0) ? addUnpaid + " day(s) will be added to Unpaid balance.<br/>" : "";
+                    // sends a notification email to the applicant
+                    BackgroundJob.Enqueue(() => SendMail(model, emp));
+
+                    // sets the notification message to be displayed to the applicant
+                    TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
+                    TempData["SuccessMessage"] += (deductDIL > 0) ? deductDIL + " day(s) will be deducted from Days In Lieu balance.<br/>" : "";
+                    TempData["SuccessMessage"] += (deductAnnual > 0) ? deductAnnual + " day(s) will be deducted from Annual balance.<br/>" : "";
+                    TempData["SuccessMessage"] += (addUnpaid > 0) ? addUnpaid + " day(s) will be added to Unpaid balance.<br/>" : "";
+                }
+
             }
         }
 
@@ -182,18 +188,21 @@ namespace LeaveSystemMVC.Controllers
             {
                 // uploads the file to App_Data/Documentation
                 string fileName = UploadFile(file);
-                
-                // inserts the data to the database
-                ApplyLeave(model, numOfDays, fileName);
 
-                // sends a notification email to the applicant
-                BackgroundJob.Enqueue(() => SendMail(model, emp));
+                if (TempData["ErrorMessage"] == null)
+                {
+                    // inserts the data to the database
+                    ApplyLeave(model, numOfDays, fileName);
 
-                // sets the notification message to be displayed to the applicant
-                TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
-                TempData["SuccessMessage"] += (deductSick > 0) ? deductSick + " day(s) will be deducted from Sick balance.<br/>" : "";
-                TempData["SuccessMessage"] += (deductDIL > 0) ? deductDIL + " day(s) will be deducted from Days In Lieu balance.<br/>" : "";
-                TempData["SuccessMessage"] += (addUnpaid > 0) ? addUnpaid + " day(s) will be added to Unpaid balance.<br/>" : "";
+                    // sends a notification email to the applicant
+                    BackgroundJob.Enqueue(() => SendMail(model, emp));
+
+                    // sets the notification message to be displayed to the applicant
+                    TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
+                    TempData["SuccessMessage"] += (deductSick > 0) ? deductSick + " day(s) will be deducted from Sick balance.<br/>" : "";
+                    TempData["SuccessMessage"] += (deductDIL > 0) ? deductDIL + " day(s) will be deducted from Days In Lieu balance.<br/>" : "";
+                    TempData["SuccessMessage"] += (addUnpaid > 0) ? addUnpaid + " day(s) will be added to Unpaid balance.<br/>" : "";
+                }
             }
         }
 
@@ -248,19 +257,22 @@ namespace LeaveSystemMVC.Controllers
             {
                 // uploads the file to App_Data/Documentation
                 string fileName = UploadFile(file);
-                    
-                // inserts the data to the database
-                ApplyLeave(model, numOfDays, fileName);
 
-                // sends a notification email to the applicant
-                BackgroundJob.Enqueue(() => SendMail(model, emp));
+                if (TempData["ErrorMessage"] == null)
+                {
+                    // inserts the data to the database
+                    ApplyLeave(model, numOfDays, fileName);
 
-                // sets the notification message to be displayed to the applicant
-                TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
-                TempData["SuccessMessage"] += (deductMaternity > 0) ? deductMaternity + " day(s) will be deducted from Maternity balance.<br/>" : "";
-                TempData["SuccessMessage"] += (deductDIL > 0) ? deductDIL + " day(s) will be deducted from Days In Lieu balance.<br/>" : "";
-                TempData["SuccessMessage"] += (deductAnnual > 0) ? deductAnnual + " day(s) will be deducted from Annual balance.<br/>" : "";
-                TempData["SuccessMessage"] += (addUnpaid > 0) ? addUnpaid + " day(s) will be added to Unpaid balance.<br/>" : "";
+                    // sends a notification email to the applicant
+                    BackgroundJob.Enqueue(() => SendMail(model, emp));
+
+                    // sets the notification message to be displayed to the applicant
+                    TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
+                    TempData["SuccessMessage"] += (deductMaternity > 0) ? deductMaternity + " day(s) will be deducted from Maternity balance.<br/>" : "";
+                    TempData["SuccessMessage"] += (deductDIL > 0) ? deductDIL + " day(s) will be deducted from Days In Lieu balance.<br/>" : "";
+                    TempData["SuccessMessage"] += (deductAnnual > 0) ? deductAnnual + " day(s) will be deducted from Annual balance.<br/>" : "";
+                    TempData["SuccessMessage"] += (addUnpaid > 0) ? addUnpaid + " day(s) will be added to Unpaid balance.<br/>" : "";
+                }
             }
         }
 
@@ -277,15 +289,18 @@ namespace LeaveSystemMVC.Controllers
                 {
                     // uploads the file to App_Data/Documentation
                     string fileName = UploadFile(file);
-                   
-                    // inserts the data to the database
-                    ApplyLeave(model, numOfDays, fileName);
 
-                    // sends a notification email to the applicant
-                    BackgroundJob.Enqueue(() => SendMail(model, emp));
+                    if (TempData["ErrorMessage"] == null)
+                    {
+                        // inserts the data to the database
+                        ApplyLeave(model, numOfDays, fileName);
 
-                    // sets the notification message to be displayed to the applicant
-                    TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
+                        // sends a notification email to the applicant
+                        BackgroundJob.Enqueue(() => SendMail(model, emp));
+
+                        // sets the notification message to be displayed to the applicant
+                        TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
+                    }
                 }
             }
         }
@@ -352,18 +367,21 @@ namespace LeaveSystemMVC.Controllers
                     // uploads the file to App_Data/Documentation
                     string fileName = UploadFile(file);
 
-                    // inserts the data to the database
-                    ApplyLeave(model, numOfDays, fileName);
+                    if (TempData["ErrorMessage"] == null)
+                    {
+                        // inserts the data to the database
+                        ApplyLeave(model, numOfDays, fileName);
 
-                    // sends a notification email to the applicant
-                    BackgroundJob.Enqueue(() => SendMail(model, emp));
+                        // sends a notification email to the applicant
+                        BackgroundJob.Enqueue(() => SendMail(model, emp));
 
-                    // sets the notification message to be displayed to the applicant
-                    TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
-                }
-                else
-                {
-                    ViewBag.ErrorMessage = "You do not have enough balance.";
+                        // sets the notification message to be displayed to the applicant
+                        TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
+                    }
+                    else
+                    {
+                        RedirectToAction("Index", new { appID = model.leaveAppID });
+                    }
                 }
             }
         }
@@ -375,14 +393,17 @@ namespace LeaveSystemMVC.Controllers
                 // uploads the file to App_Data/Documentation
                 string fileName = UploadFile(file);
 
-                // inserts the data to the database
-                ApplyLeave(model, numOfDays, fileName);
+                if (TempData["ErrorMessage"] == null)
+                {
+                    // inserts the data to the database
+                    ApplyLeave(model, numOfDays, fileName);
 
-                // sends a notification email to the applicant
-                BackgroundJob.Enqueue(() => SendMail(model, emp));
+                    // sends a notification email to the applicant
+                    BackgroundJob.Enqueue(() => SendMail(model, emp));
 
-                // sets the notification message to be displayed to the applicant
-                TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
+                    // sets the notification message to be displayed to the applicant
+                    TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
+                }
             }
         }
 
@@ -478,14 +499,25 @@ namespace LeaveSystemMVC.Controllers
                     // extract only the filename
                     fileName = Path.GetFileName(file.FileName);
                     string fName = GetNextApplicationID() + "-" + fileName;
-
-                    // store the file inside ~/App_Data/Documentation folder
-                    var path = Path.Combine(Server.MapPath("~/App_Data/Documentation"), fName);
-                    file.SaveAs(path);
+                    string ext = Path.GetExtension(file.FileName);
+                    if (ext != ".doc" && ext != ".docx" && ext != ".pdf" && ext != ".txt" && ext != ".rtf" &&
+                        ext != ".png" && ext != ".jpg" && ext != ".jpeg" && ext != ".bmp" &&
+                        ext != ".csv" && ext != ".xlsx" && ext != ".xlsm")
+                    {
+                        TempData["ErrorMEssage"] = "You have selected an invalid file type. " +
+                            "<br /> Please upload one of the following file types; <b>.doc</b>, <b>.docx</b>, <b>.pdf</b>, <b>.txt</b>, <b>.rtf</b>, <b>.png</b>" +
+                            ", <b>.jpg</b>, <b>.jpg</b>, <b>.jpeg</b>, <b>.bmp</b>, <b>.csv</b>, <b>.xlsx</b> or <b>.xlsm</b>";
+                    }
+                    else
+                    {
+                        // store the file inside ~/App_Data/Documentation folder
+                        var path = Path.Combine(Server.MapPath("~/App_Data/Documentation"), fName);
+                        file.SaveAs(path);
+                    }
                 }
                 catch (Exception ex)
                 {
-                    ViewBag.ErrorMessage = "ERROR:" + ex.Message.ToString();
+                    TempData["ErrorMEssage"] = "ERROR:" + ex.Message.ToString();
                 }
             }
             return fileName;

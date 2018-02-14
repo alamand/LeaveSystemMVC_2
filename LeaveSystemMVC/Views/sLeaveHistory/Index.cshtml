@@ -16,6 +16,7 @@
             <th>Start Time</th>
             <th>End Time</th>
             <th>Leave Status</th>
+            <th>View</th>
         </tr>
 
         @foreach (var item in Model)
@@ -36,6 +37,11 @@
                 <td>@Html.DisplayFor(modelItem => item.shortStartTime)</td>
                 <td>@Html.DisplayFor(modelItem => item.shortEndTime)</td>
                 <td>@Html.DisplayFor(modelItem => item.leaveStatusName)</td>
+                <td style="text-align:center">
+                    <a href="@Url.Action("View", "sLeaveHistory", new { appID = item.leaveAppID }, null)">
+                        <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
+                    </a>
+                </td>
             </tr>
         }
     </table>

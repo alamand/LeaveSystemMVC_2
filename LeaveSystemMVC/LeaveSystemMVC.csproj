@@ -1789,6 +1789,7 @@
     <Content Include="Views\_Message.cshtml" />
     <Content Include="Views\LApplication\_UnpaidPartial.cshtml" />
     <Content Include="Views\lmDaysInLieu\Index.cshtml" />
+    <Content Include="Views\sLeaveHistory\View.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\DB_Backup\" />
