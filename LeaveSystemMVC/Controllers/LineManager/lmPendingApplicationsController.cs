@@ -96,7 +96,10 @@ namespace LeaveSystemMVC.Controllers
 
                 case "Maternity":
                     TimeSpan diff = leave.returnDate - leave.startDate;
-                    balanceDeduction = LeaveAppMaternity(leaveBalance, (int)diff.Days);
+                    int numOfPublicHolidays = GetNumOfPublicHolidays(leave.startDate, leave.returnDate);
+                    // Maternity leave includes weekends but excludes public holidays
+                    numOfDays = diff.Days - numOfPublicHolidays;
+                    balanceDeduction = LeaveAppMaternity(leaveBalance, numOfDays);
                     break;
 
                 case "Compassionate":
@@ -325,6 +328,40 @@ namespace LeaveSystemMVC.Controllers
             return numOfDays;
         }
 
+        private int GetNumOfPublicHolidays(DateTime sDate, DateTime eDate)
+        {
+            TimeSpan diff = eDate - sDate;
+            int numOfDays = diff.Days;
+            int fullNumOfDays = numOfDays;
+            int numOfPublicHolidays = 0;
+
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            string queryString = "SELECT * FROM dbo.Public_Holiday WHERE Date BETWEEN'" + sDate.ToString("yyyy-MM-dd") + "' AND '" + eDate.ToString("yyyy-MM-dd") + "'";
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        DateTime day = (DateTime)reader["Date"];
+                        for (var i = 0; i < fullNumOfDays; i++)
+                        {
+                            if (sDate.AddDays(i).Equals(day))
+                            {
+                                numOfPublicHolidays++;
+                            }
+                        }
+                    }
+                }
+                connection.Close();
+            }
+            return numOfPublicHolidays;
+        }
+
         private void Reject(sLeaveModel leave)
         {
             int rejectedID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Rejected_LM").Key;
@@ -470,11 +507,12 @@ namespace LeaveSystemMVC.Controllers
         {
             sleaveBalanceModel lb = GetLeaveBalanceModel(leave.employeeID);
 
-            // Maternity leave includes weekends and public holidays
             TimeSpan diff = leave.returnDate - leave.startDate;
 
-            // the duration of leave is the number of days between the two dates
-            int numOfDays = diff.Days;
+            int numOfPublicHolidays = GetNumOfPublicHolidays(leave.startDate, leave.returnDate);
+
+            // Maternity leave includes weekends but excludes public holidays
+            int numOfDays = diff.Days - numOfPublicHolidays;
 
             // keeps track of how much credit points should be deducted from each balance type
             decimal deductMaternity = 0;
