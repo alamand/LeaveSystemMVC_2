@@ -81,22 +81,17 @@ namespace LeaveSystemMVC.Controllers
             else
                 queryString = "UPDATE dbo.Employee SET Department_ID = NULL WHERE Employee_ID = " + emp.staffID;
             DBExecuteQuery(queryString);
-
-            // updates the employee's record if a reporting to line manager was selected or de-selected
-            if (emp.reportsToLineManagerID != 0 && emp.reportsToLineManagerID != null)
-                queryString = "UPDATE dbo.Employee SET Reporting_ID = " + emp.reportsToLineManagerID + " WHERE Employee_ID = " + emp.staffID;
-            else
-                queryString = "UPDATE dbo.Employee SET Reporting_ID = NULL WHERE Employee_ID = " + emp.staffID;
-            DBExecuteQuery(queryString);
-
         }
 
         private void AddReportingTo(sEmployeeModel emp)
         {
             // @TODO: need to fix the dates
-            var queryString = "INSERT INTO dbo.Reporting (Employee_ID, Reporting_ID, Start_Date) " +
-                "VALUES('" + emp.staffID + "', '" + emp.reportsToLineManagerID + "', '" + emp.empStartDate.ToString("yyyy-MM-dd") + "')";
-            DBExecuteQuery(queryString);
+            if (emp.reportsToLineManagerID != 0 && emp.reportsToLineManagerID != null)
+            {
+                var queryString = "INSERT INTO dbo.Reporting (Employee_ID, Reporting_ID, Start_Date) " +
+                    "VALUES('" + emp.staffID + "', '" + emp.reportsToLineManagerID + "', '" + emp.empStartDate.ToString("yyyy-MM-dd") + "')";
+                DBExecuteQuery(queryString);
+            }
         }
 
         private void AddEmploymentPeriod(sEmployeeModel emp)

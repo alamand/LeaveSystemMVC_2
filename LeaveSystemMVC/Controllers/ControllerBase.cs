@@ -126,8 +126,9 @@ namespace LeaveSystemMVC.Controllers
             Boolean reportingIDExist = IsReportingExist(empID);  
 
             if (reportingIDExist)
-                queryString += "SELECT * FROM dbo.Employee, dbo.Reporting WHERE Employee.Employee_ID = Reporting.Employee_ID AND Employee.Employee_ID = " + empID + " AND " +
-                            "(Reporting.Start_Date <= SYSDATETIME() AND (Reporting.End_Date > SYSDATETIME() OR Reporting.End_Date IS NULL))";
+                queryString += "SELECT * FROM dbo.Employee, dbo.Reporting, dbo.Employment_Period WHERE Employee.Employee_ID = Employment_Period.Employee_ID AND " +
+                    "Employee.Employee_ID = Reporting.Employee_ID AND Employee.Employee_ID = " + empID + " AND " +
+                    "(Reporting.Start_Date <= SYSDATETIME() AND (Reporting.End_Date > SYSDATETIME() OR Reporting.End_Date IS NULL))";
             else
                 queryString += "SELECT * FROM dbo.Employee WHERE Employee.Employee_ID = " + empID;
 
@@ -156,6 +157,7 @@ namespace LeaveSystemMVC.Controllers
                         employeeModel.dateOfBirth = (!DBNull.Value.Equals(reader["Date_Of_Birth"])) ? (DateTime)reader["Date_Of_Birth"] : new DateTime();
                         employeeModel.nationalityID = (reader["Nationality_ID"] != DBNull.Value) ? (int)reader["Nationality_ID"] : 0;
                         employeeModel.onProbation = (reader["Probation"] != DBNull.Value) ? (bool)reader["Probation"] : false;
+                        employeeModel.empStartDate = (reader["Emp_Start_Date"] != DBNull.Value) ? (DateTime)reader["Emp_Start_Date"] : new DateTime();
                     }
                 }
                 connection.Close();

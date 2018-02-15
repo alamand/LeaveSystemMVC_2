@@ -427,25 +427,30 @@ namespace LeaveSystemMVC.Controllers
                 foreach (var entity in tempLeaveTypes)
                 {
                     if (!entity.Value.Equals("DIL") && !entity.Value.Equals("Unpaid") && entity.Key != 0)
-                    {
                         leaveTypes.Remove(entity.Key);
-                    }
                 }
             }
             else
             {
+                // only female can apply for maternity leaves
                 if (emp.gender != 'F')
                 {
                     int maternityID = leaveTypes.FirstOrDefault(obj => obj.Value == "Maternity").Key;
                     leaveTypes.Remove(maternityID);
                 }
 
-                if (!emp.religionID.Equals("Muslim"))
-                {
-                    int pilgrimageID = leaveTypes.FirstOrDefault(obj => obj.Value == "Pilgrimage").Key;
+                // only muslims with an employment period of 5 years or greater can apply for pilgrimage leave
+                int pilgrimageID = leaveTypes.FirstOrDefault(obj => obj.Value == "Pilgrimage").Key;
+                if (!DBReligionList()[emp.religionID].Equals("Muslim"))
                     leaveTypes.Remove(pilgrimageID);
+                else
+                {
+                    TimeSpan diff = DateTime.Today - emp.empStartDate;
+                    double years = diff.TotalDays / 365.25;
+                    if (years < 5)
+                        leaveTypes.Remove(pilgrimageID);
                 }
-
+                    
                 leaveTypes.Remove(leaveTypes.FirstOrDefault(obj => obj.Value == "DIL").Key);
             }
 
