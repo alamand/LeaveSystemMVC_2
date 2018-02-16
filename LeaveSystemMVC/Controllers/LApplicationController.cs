@@ -49,7 +49,7 @@ namespace LeaveSystemMVC.Controllers
             // gets the total number of days, this involves excluding weekends and public holidays
             int numOfDays = GetNumOfDays(model.startDate, model.returnDate);
 
-            if (numOfDays > 0 && (model.shortStartTime != null || model.shortEndTime != null))
+            if ((model.leaveTypeName.Equals("Short_Hours_Per_Month"))|| (numOfDays > 0 && (model.shortStartTime != null || model.shortEndTime != null)))
             {
                 switch (model.leaveTypeName)
                 {
@@ -733,8 +733,8 @@ namespace LeaveSystemMVC.Controllers
         {
             var durationList = new Dictionary<int, string>
             {
-                { 30, "0:30 hrs" },
-                { 60, "1:00 hrs" },
+                { 30, "0:30 mins" },
+                { 60, "1:00 hr" },
                 { 90, "1:30 hrs" },
                 { 120, "2:00 hrs" },
                 { 150, "2:30 hrs" }
