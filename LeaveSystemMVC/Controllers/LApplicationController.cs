@@ -49,7 +49,7 @@ namespace LeaveSystemMVC.Controllers
             // gets the total number of days, this involves excluding weekends and public holidays
             int numOfDays = GetNumOfDays(model.startDate, model.returnDate);
 
-            if (numOfDays > 0 || (model.shortStartTime != null && model.shortEndTime != null))
+            if (numOfDays > 0 && (model.shortStartTime != null || model.shortEndTime != null))
             {
                 switch (model.leaveTypeName)
                 {
@@ -82,13 +82,17 @@ namespace LeaveSystemMVC.Controllers
                         LeaveAppUnpaid(model, emp, file, numOfDays);
                         break;
 
+                    case "DIL":
+                        LeaveAppDIL(model, emp, leaveBalance, file, numOfDays);
+                        break;
+
                     default:
                         break; ;
                 }
             }
             else
             {
-                ViewBag.WarningMessage = "The selected date(s) is/are weekend(s), and/or public holiday(s)";
+                TempData["ErrorMessage"] = "The selected date(s) is/are weekend(s), and/or public holiday(s), and/or the leave duration is zero.";
             }
 
             SetViewData(emp, model.leaveTypeID);
@@ -283,7 +287,7 @@ namespace LeaveSystemMVC.Controllers
                 // does the user have enough balance?
                 if (lb.compassionate < numOfDays)
                 {
-                    ViewBag.ErrorMessage = "You do not have enough balance.";
+                    TempData["ErrorMessage"] = "You do not have enough balance.";
                 }
                 else
                 {
@@ -403,6 +407,35 @@ namespace LeaveSystemMVC.Controllers
 
                     // sets the notification message to be displayed to the applicant
                     TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
+                }
+            }
+        }
+
+        private void LeaveAppDIL(sLeaveModel model, sEmployeeModel emp, sleaveBalanceModel lb, HttpPostedFileBase file, int numOfDays)
+        {
+            if (ModelState.IsValid)
+            {
+                // does the user have enough balance?
+                if (lb.daysInLieu < numOfDays)
+                {
+                    TempData["ErrorMessage"] = "You do not have enough balance.";
+                }
+                else
+                {
+                    // uploads the file to App_Data/Documentation
+                    string fileName = UploadFile(file);
+
+                    if (TempData["ErrorMessage"] == null)
+                    {
+                        // inserts the data to the database
+                        ApplyLeave(model, numOfDays, fileName);
+
+                        // sends a notification email to the applicant
+                        BackgroundJob.Enqueue(() => SendMail(model, emp));
+
+                        // sets the notification message to be displayed to the applicant
+                        TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
+                    }
                 }
             }
         }

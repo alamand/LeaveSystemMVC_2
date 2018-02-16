@@ -45,7 +45,7 @@ namespace LeaveSystemMVC.Controllers
                 lb.empId = empID;
 
                 // sets all balances to 0, so that if the database does not containt a record for the employee, it won't use the default balance
-                lb.annual = lb.compassionate = lb.daysInLieu = lb.maternity = lb.sick = lb.unpaid = lb.pilgrimage = 0;
+                lb.annual = lb.compassionate = lb.daysInLieu = lb.maternity = lb.sick = lb.unpaid = lb.pilgrimage = lb.shortHours = 0;
 
                 // the word Balance is the column name in dbo.Leave_Balance
                 balanceColName = "Balance";     
@@ -157,7 +157,8 @@ namespace LeaveSystemMVC.Controllers
                         employeeModel.dateOfBirth = (!DBNull.Value.Equals(reader["Date_Of_Birth"])) ? (DateTime)reader["Date_Of_Birth"] : new DateTime();
                         employeeModel.nationalityID = (reader["Nationality_ID"] != DBNull.Value) ? (int)reader["Nationality_ID"] : 0;
                         employeeModel.onProbation = (reader["Probation"] != DBNull.Value) ? (bool)reader["Probation"] : false;
-                        employeeModel.empStartDate = (reader["Emp_Start_Date"] != DBNull.Value) ? (DateTime)reader["Emp_Start_Date"] : new DateTime();
+                        if (reportingIDExist)
+                            employeeModel.empStartDate = (reader["Emp_Start_Date"] != DBNull.Value) ? (DateTime)reader["Emp_Start_Date"] : new DateTime();
                     }
                 }
                 connection.Close();
