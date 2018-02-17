@@ -119,6 +119,10 @@ namespace LeaveSystemMVC.Controllers
                     balanceDeduction.Add("Unpaid", numOfDays);
                     break;
 
+                case "DIL":
+                    balanceDeduction.Add("DIL", numOfDays);
+                    break;
+
                 default:
                     break; ;
             }
@@ -405,6 +409,10 @@ namespace LeaveSystemMVC.Controllers
                     ApproveUnpaid(leave);
                     break;
 
+                case "DIL":
+                    ApproveDIL(leave);
+                    break;
+
                 default:
                     break; ;
             }
@@ -600,6 +608,33 @@ namespace LeaveSystemMVC.Controllers
             
             // does the user have enough balance?
             if ((decimal)span.TotalHours < lb.shortHours)
+            {
+                int approvedID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Pending_HR").Key;
+                DBUpdateLeave(leave, approvedID);
+
+                string message = "Approved"; //@TODO: Write an email
+
+                // sends a notification email to the applicant
+                BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
+
+                // sets the notification message to be displayed
+                TempData["SuccessMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>approved</b> successfully.<br/>";
+            }
+            else
+            {
+                ViewBag.ErrorMessage = "Leave application ID <b>" + leave.leaveAppID + "</b> can't be approved, <b>" + leave.employeeName + "</b> does not have enough balance.";
+            }
+        }
+
+        private void ApproveDIL(sLeaveModel leave)
+        {
+            sleaveBalanceModel lb = GetLeaveBalanceModel(leave.employeeID);
+
+            // gets the total number of days, this involves excluding weekends and public holidays
+            int numOfDays = GetNumOfDays(leave.startDate, leave.returnDate);
+
+            // does the user have enough balance?
+            if (lb.daysInLieu >= numOfDays)
             {
                 int approvedID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Pending_HR").Key;
                 DBUpdateLeave(leave, approvedID);
