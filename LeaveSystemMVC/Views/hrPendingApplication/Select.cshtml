@@ -86,6 +86,9 @@
                                 <dt>@Html.DisplayNameFor(model => model.bookAirTicket)</dt>
                                 <dd>@Html.DisplayFor(model => model.bookAirTicket)</dd>
                                 @Html.HiddenFor(model => model.bookAirTicket)
+
+                                <dt>@Html.DisplayNameFor(model => model.email)</dt>
+                                <dd>@Html.DisplayFor(model => model.email)</dd>
                             }
 
                             @if (Model.leaveTypeName.Equals("Annual") || Model.leaveTypeName.Equals("Maternity"))

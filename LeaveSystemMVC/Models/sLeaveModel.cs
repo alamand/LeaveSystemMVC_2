@@ -69,5 +69,11 @@ namespace LeaveSystemMVC.Models
         [DataType(DataType.PhoneNumber, ErrorMessage = "You must provide a phone number in international format, starting with a + symbol.")]
         [RegularExpression(@"^\+[1-9]{1}[0-9]{3,14}$", ErrorMessage = "You must provide a phone number in international format, starting with a + symbol.")]
         public string contactDetails { get; set; }
+
+        [Display(Name = "Personal email address")]
+        [Required(ErrorMessage = "Email Address is required.")]
+        [EmailAddress(ErrorMessage = "Invalid Email Address.")]
+        [StringLength(100, MinimumLength = 0, ErrorMessage = "Email Address is too long.")]
+        public string email { get; set; }
     }
 }

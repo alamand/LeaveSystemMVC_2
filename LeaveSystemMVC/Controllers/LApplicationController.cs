@@ -518,10 +518,10 @@ namespace LeaveSystemMVC.Controllers
         private void ApplyLeave(sLeaveModel lm, int numOfDays=0, string fName="")
         {
             string queryString = "INSERT INTO dbo.Leave (Employee_ID, Documentation, Start_Date, Reporting_Back_Date, Start_Hrs, End_Hrs, Leave_ID, " +
-                "Contact_Outside_UAE, Comment, Flight_Ticket, Total_Leave, Leave_Status_ID) " +
+                "Contact_Outside_UAE, Comment, Flight_Ticket, Total_Leave, Leave_Status_ID, Personal_Email) " +
                 "VALUES ('" + GetLoggedInID() + "','" + fName + "','" + lm.startDate.ToString("yyyy-MM-dd") + "','" + lm.returnDate.ToString("yyyy-MM-dd") + 
                 "','" + lm.shortStartTime.ToString() + "','" + lm.shortEndTime.ToString() + "','" + lm.leaveTypeID + "','" + lm.contactDetails + "','" + 
-                lm.comments + "','" + lm.bookAirTicket + "','" + numOfDays + "','0');";
+                lm.comments + "','" + lm.bookAirTicket + "','" + numOfDays + "','0', '" + lm.email + "');";
             DBExecuteQuery(queryString);
         }
 
