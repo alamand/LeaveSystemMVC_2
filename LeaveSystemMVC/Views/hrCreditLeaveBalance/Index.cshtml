@@ -1,28 +1,58 @@
-﻿@model LeaveSystemMVC.Models.sleaveBalanceModel
+﻿@model List<LeaveSystemMVC.Models.sleaveBalanceModel>
+
 @Html.Partial("_LeftMenu")
-<div class="col-md-6">
-    @using (Html.BeginForm("Credit", "hrCreditLeaveBalance", FormMethod.Post))
+@{ ViewBag.Title = " Credit Leave Quotas"; }
+
+<div class="col-md-10">
+    <h3>@ViewBag.Title</h3>
+    <hr />
+    @Html.Partial("../_Message")
+    @{  var quotaBalance = ViewBag.defaultBalance as LeaveSystemMVC.Models.sleaveBalanceModel;
+        var employeeList = ViewBag.employeeList as Dictionary<int, string>; }
+    @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
+        <div class="row">
+            <table class="table">
+                <tr>
+                    <th>Employee Name</th>
+                    <th style="text-align: center">Current DIL Balance</th>
+                    <th style="text-align: center">Roll-up DIL Balance</th>
+                
+                    <th style="text-align: center">Current Annual Balance</th>
+                    <th style="text-align: center">Roll-up Annual Balance</th>
+                
+                </tr>
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    @Html.HiddenFor(model => Model[i].empId)
+                    <tr>
+                        <td>@employeeList[Model[i].empId]</td>
 
-        <div class="form-horizontal">
-            <h4>Credit Leave Balances at the Start of Each Calendar Year</h4>
-            <hr />
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            <article>
-                <b>Note: Use this feature only at the start of the year to credit the organization's leave balances.
-                This feature will reset the balances of all staff members to the alloted quota per year, with the exception of annual leave.
-                For annual leave, the remaining balance is carried over to the next year.</b>
-            </article>
-            <hr />
-
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="Credit Leave Balances of Organization" class="btn btn-default" />
-                </div>
-            </div>
+                        @Html.HiddenFor(model => Model[i].daysInLieuID)
+                        <td style="text-align: center">@Html.DisplayFor(Model => Model[i].daysInLieu)</td>
+                        @{ var rollUpDIL = Model[i].daysInLieu + quotaBalance.daysInLieu; }
+                        <td style="text-align: center">@Html.TextBoxFor(Model => Model[i].daysInLieu, new { @Value = rollUpDIL, style = "width:5em;", @class = "form-control" })</td>
+                       
+                        @Html.HiddenFor(model => Model[i].annualID)
+                        <td style="text-align: center">@Html.DisplayFor(Model => Model[i].annual)</td>
+                        @{ var rollUpAnnual = Model[i].annual + quotaBalance.annual; }
+                        <td style="text-align: center">@Html.TextBoxFor(Model => Model[i].annual, new { @Value = rollUpAnnual, style = "width:5em;", @class = "form-control" })</td>
+                    </tr>
+                 }
+            </table>
         </div>
-    }
+        <div class="col-md-offset-3">
+            <a href="@Url.Action("Index", "hrCreditLeaveBalance")" class="btn btn-default col-md-3">
+                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                Clear
+            </a>
+
+            <button type="submit" value="Save" class="btn btn-default col-md-offset-1 col-md-3">
+                <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span> Save
+            </button>
+        </div>
+     }
 </div>
 
 @section Scripts {
