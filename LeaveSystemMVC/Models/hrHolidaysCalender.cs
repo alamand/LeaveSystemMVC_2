@@ -10,6 +10,7 @@ namespace LeaveSystemMVC.Models
 
         [Required]
         [DisplayName("Holiday Name ")]
+        [StringLength(30, MinimumLength = 0, ErrorMessage = "Holiday name is too long.")]
         public string holidayName { set; get; }
 
         [Required]

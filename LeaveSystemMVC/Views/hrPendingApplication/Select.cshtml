@@ -70,11 +70,11 @@
                             }
 
                             <dt>@Html.DisplayNameFor(model => model.comments)</dt>
-                            <dd style="word-break: break-word">@Html.DisplayFor(model => model.comments)</dd>
+                            <dd style="word-break: break-word">@Html.DisplayFor(model => model.comments) @Html.ValidationMessageFor(model => model.comments, "", new { @class = "text-danger" })</dd>
                             @Html.HiddenFor(model => model.comments)
 
                             <dt>@Html.DisplayNameFor(model => model.lmComment)</dt>
-                            <dd style="word-break: break-word">@Html.DisplayFor(model => model.lmComment)</dd>
+                            <dd style="word-break: break-word">@Html.DisplayFor(model => model.lmComment) @Html.ValidationMessageFor(model => model.lmComment, "", new { @class = "text-danger" })</dd>
                             @Html.HiddenFor(model => model.lmComment)
 
                             <dt>@Html.DisplayNameFor(model => model.documentation)</dt>
@@ -88,7 +88,7 @@
                                 @Html.HiddenFor(model => model.bookAirTicket)
 
                                 <dt>@Html.DisplayNameFor(model => model.email)</dt>
-                                <dd>@Html.DisplayFor(model => model.email)</dd>
+                                <dd style="word-break: break-word">@Html.DisplayFor(model => model.email)</dd>
                             }
 
                             @if (Model.leaveTypeName.Equals("Annual") || Model.leaveTypeName.Equals("Maternity"))

@@ -44,9 +44,11 @@ namespace LeaveSystemMVC.Models
         public TimeSpan shortEndTime { get; set; }
 
         [DisplayName("Line Manager Comment")]
+        [StringLength(300, MinimumLength = 0, ErrorMessage = "Comment is too long.")]
         public string lmComment { get; set; }
 
         [DisplayName("HR Comment")]
+        [StringLength(300, MinimumLength = 0, ErrorMessage = "Comment is too long.")]
         public string hrComment { get; set; }
 
         [DisplayName("Leave Status ID")]
@@ -56,16 +58,19 @@ namespace LeaveSystemMVC.Models
         public string leaveStatusName { get; set; }
 
         [DisplayName("Comments")]
+        [StringLength(300, MinimumLength = 0, ErrorMessage = "Comment is too long.")]
         public string comments { get; set; }
 
         [DisplayName("Documentation")]
+        [StringLength(300, MinimumLength = 0, ErrorMessage = "File name is too long.")]
         public string documentation { get; set; }
 
         [DisplayName("Book Air Ticket?")]
         public bool bookAirTicket { get; set; }
 
         [DisplayName("Phone Number")]
-        [Required(ErrorMessage = "Phone Number is required.")]
+        [Required(ErrorMessage = "Phone number is required.")]
+        [StringLength(20, MinimumLength = 0, ErrorMessage = "Phone number is too long.")]
         [DataType(DataType.PhoneNumber, ErrorMessage = "You must provide a phone number in international format, starting with a + symbol.")]
         [RegularExpression(@"^\+[1-9]{1}[0-9]{3,14}$", ErrorMessage = "You must provide a phone number in international format, starting with a + symbol.")]
         public string contactDetails { get; set; }

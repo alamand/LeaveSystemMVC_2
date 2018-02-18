@@ -13,6 +13,7 @@ namespace LeaveSystemMVC.Models
         [Required(ErrorMessage = "Please select a date.")]
         public DateTime date { set; get; }
 
+        [StringLength(150, MinimumLength = 0, ErrorMessage = "Comment is too long.")]
         public string comment { set; get; }
 
     }

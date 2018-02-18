@@ -95,7 +95,12 @@
                             }
 
                             <dt>@Html.DisplayNameFor(model => model.lmComment)</dt>
-                            <dd>@Html.TextAreaFor(model => model.lmComment, new { rows = "6", cols = "35" })</dd>
+                            <dd>
+                                <div>
+                                    @Html.TextAreaFor(model => model.lmComment, new { rows = "6", cols = "35" })
+                                    @Html.ValidationMessageFor(model => model.lmComment, "", new { @class = "text-danger" })
+                                </div>
+                            </dd>
                         </dl>
                         <hr />
                     </div>
