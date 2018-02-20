@@ -10,7 +10,7 @@ namespace LeaveSystemMVC.Controllers
         // GET: hrDaysInLieu
         public ActionResult Index(int selectedEmployee = 0)
         {
-            ViewData["EmployeeList"] = AddDefaultToDictionary(DBEmployeeList(), 0, "- Select Employee -");
+            ViewData["EmployeeList"] = AddDefaultToDictionary(DBStaffList(), 0, "- Select Employee -");
             ViewBag.SuccessMessage = TempData["SuccessMessage"];
 
             if (selectedEmployee != 0)

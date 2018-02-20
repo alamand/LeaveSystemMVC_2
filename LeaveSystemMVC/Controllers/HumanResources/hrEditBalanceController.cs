@@ -60,7 +60,9 @@ namespace LeaveSystemMVC.Controllers
 
         private string GetFilteredQuery(int deptID, int accStat, string search, string order)
         {
-            string queryString = "SELECT Employee_ID FROM dbo.Employee WHERE 1=1 ";
+            int staffRoleID = DBRoleList().FirstOrDefault(obj => obj.Value == "Staff").Key;
+            string queryString = "SELECT Employee.Employee_ID FROM dbo.Employee, dbo.Employee_Role " +
+                "WHERE Employee.Employee_ID = Employee_Role.Employee_ID AND Employee_Role.Role_ID = " + staffRoleID;
 
             // adds a filter query if a department is selected from the dropdown, note that 0 represents All Departments
             if (deptID > 0)

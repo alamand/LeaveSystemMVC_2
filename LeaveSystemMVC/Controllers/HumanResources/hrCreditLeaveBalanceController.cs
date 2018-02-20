@@ -15,7 +15,7 @@ namespace LeaveSystemMVC.Controllers
         // GET: hrCreditLeaveBalance
         public ActionResult Index()
         {
-            var ActiveEmployees = DBEmployeeList(1);
+            var ActiveEmployees = DBStaffList(1);
             List<sleaveBalanceModel> empBalance = new List<sleaveBalanceModel>();
             foreach (int empID in ActiveEmployees.Keys)
             {

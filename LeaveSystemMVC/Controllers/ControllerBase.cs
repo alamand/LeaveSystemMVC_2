@@ -434,6 +434,36 @@ namespace LeaveSystemMVC.Controllers
 
         }
 
+        protected Dictionary<int, string> DBStaffList(int accountStatus = -1)
+        {
+            int staffRoleID = DBRoleList().FirstOrDefault(obj => obj.Value == "Staff").Key;
+            Dictionary<int, string> staffList = new Dictionary<int, string>();
+
+            var queryString = "SELECT Employee.Employee_ID, First_Name, Last_Name " +
+                "FROM dbo.Employee, dbo.Employee_Role " +
+                "WHERE Employee.Employee_ID = Employee_Role.Employee_ID AND Employee_Role.Role_ID = " + staffRoleID;
+
+            if (accountStatus == 1 || accountStatus == 0)
+                queryString += " AND Employee.Account_Status = " + accountStatus;
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        string fullName = (string)reader["First_Name"] + " " + (string)reader["Last_Name"];
+                        staffList.Add((int)reader["Employee_ID"], fullName);
+                    }
+                }
+                connection.Close();
+            }
+            return staffList;
+
+        }
+
         protected Dictionary<int, string> DBLineManagerList()
         {
             int lmRoleID = DBRoleList().FirstOrDefault(obj => obj.Value == "LM").Key;
