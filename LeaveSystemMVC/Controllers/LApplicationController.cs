@@ -39,71 +39,79 @@ namespace LeaveSystemMVC.Controllers
         [HttpPost]
         public ActionResult Index(HttpPostedFileBase file, sLeaveModel model, FormCollection form)
         {
-            sEmployeeModel emp = GetEmployeeModel(GetLoggedInID());
-            sleaveBalanceModel leaveBalance = GetLeaveBalanceModel(GetLoggedInID());
-            ModelState.Clear();
-
-            // checks if the dates are the same, and if the end date is before than start date (sets ModelState to invalid if one of them is true)
-            CompareDates(model.startDate, model.returnDate);
-
-            // gets the total number of days, this involves excluding weekends and public holidays
-            int numOfDays = GetNumOfDays(model.startDate, model.returnDate);
-
-            if ((model.leaveTypeName.Equals("Short_Hours_Per_Month"))|| (numOfDays > 0 && (model.shortStartTime != null || model.shortEndTime != null)))
+            if (Request.Form["submit"] != null)
             {
-                switch (model.leaveTypeName)
+                sEmployeeModel emp = GetEmployeeModel(GetLoggedInID());
+                sleaveBalanceModel leaveBalance = GetLeaveBalanceModel(GetLoggedInID());
+                ModelState.Clear();
+
+                // checks if the dates are the same, and if the end date is before than start date (sets ModelState to invalid if one of them is true)
+                CompareDates(model.startDate, model.returnDate);
+
+                // gets the total number of days, this involves excluding weekends and public holidays
+                int numOfDays = GetNumOfDays(model.startDate, model.returnDate);
+
+                if ((model.leaveTypeName.Equals("Short_Hours_Per_Month")) || (numOfDays > 0 && (model.shortStartTime != null || model.shortEndTime != null)))
                 {
-                    case "Annual":
-                        LeaveAppAnnual(model, leaveBalance, emp, file, numOfDays);
-                        break;
+                    switch (model.leaveTypeName)
+                    {
+                        case "Annual":
+                            LeaveAppAnnual(model, leaveBalance, emp, file, numOfDays);
+                            break;
 
-                    case "Sick":
-                        LeaveAppSick(model, leaveBalance, emp, file, numOfDays);
-                        break;
+                        case "Sick":
+                            LeaveAppSick(model, leaveBalance, emp, file, numOfDays);
+                            break;
 
-                    case "Maternity":
-                        LeaveAppMaternity(model, leaveBalance, emp, file);
-                        break;
+                        case "Maternity":
+                            LeaveAppMaternity(model, leaveBalance, emp, file);
+                            break;
 
-                    case "Compassionate":
-                        LeaveAppCompassionate(model, leaveBalance, emp, file, numOfDays);
-                        break;
+                        case "Compassionate":
+                            LeaveAppCompassionate(model, leaveBalance, emp, file, numOfDays);
+                            break;
 
-                    case "Short_Hours_Per_Month":
-                        int duration = Convert.ToInt32(form["selectedDuration"]);
-                        LeaveAppShortHours(model, leaveBalance, emp, duration);
-                        break;
+                        case "Short_Hours_Per_Month":
+                            int duration = Convert.ToInt32(form["selectedDuration"]);
+                            LeaveAppShortHours(model, leaveBalance, emp, duration);
+                            break;
 
-                    case "Pilgrimage":
-                        LeaveAppPilgrimage(model, leaveBalance, emp, file, numOfDays);
-                        break;
+                        case "Pilgrimage":
+                            LeaveAppPilgrimage(model, leaveBalance, emp, file, numOfDays);
+                            break;
 
-                    case "Unpaid":
-                        LeaveAppUnpaid(model, emp, file, numOfDays);
-                        break;
+                        case "Unpaid":
+                            LeaveAppUnpaid(model, emp, file, numOfDays);
+                            break;
 
-                    case "DIL":
-                        LeaveAppDIL(model, emp, leaveBalance, file, numOfDays);
-                        break;
+                        case "DIL":
+                            LeaveAppDIL(model, emp, leaveBalance, file, numOfDays);
+                            break;
 
-                    default:
-                        break; ;
+                        default:
+                            break;
+                    }
                 }
+                else
+                {
+                    TempData["ErrorMessage"] = "The selected date(s) is/are weekend(s), and/or public holiday(s), and/or the leave duration is zero.";
+                }
+
+                SetViewData(emp, model.leaveTypeID);
+                ViewBag.ErrorMessage = TempData["ErrorMessage"];
+                ViewBag.WarningMessage = TempData["WarningMessage"];
+
+                // if the application was submitted successfully, then display success message, else show the application page again.
+                if (TempData["SuccessMessage"] != null)
+                    return RedirectToAction("Index");
+                else
+                    return View(model);
             }
             else
             {
-                TempData["ErrorMessage"] = "The selected date(s) is/are weekend(s), and/or public holiday(s), and/or the leave duration is zero.";
-            }
-
-            SetViewData(emp, model.leaveTypeID);
-            ViewBag.ErrorMessage = TempData["ErrorMessage"];
-            ViewBag.WarningMessage = TempData["WarningMessage"];
-
-            // if the application was submitted successfully, then display success message, else show the application page again.
-            if (TempData["SuccessMessage"] != null)
                 return RedirectToAction("Index");
-            else
-                return View(model);
+            }
+                
         }
 
         private void LeaveAppAnnual(sLeaveModel model, sleaveBalanceModel lb, sEmployeeModel emp, HttpPostedFileBase file, int numOfDays)

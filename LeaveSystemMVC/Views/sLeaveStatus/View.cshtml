@@ -76,7 +76,7 @@
                                 @if (docIncluded)
                                 {
                                     <dt>@Html.DisplayNameFor(model => model.documentation)</dt>
-                                    <dd><a target="_blank" href='\App_Data\Documentation\@Model.leaveAppID-@Model.documentation'>@Html.DisplayFor(model => model.documentation)</a></dd>
+                                    <dd style="word-break: break-word"><a target="_blank" href='\App_Data\Documentation\@Model.leaveAppID-@Model.documentation'>@Html.DisplayFor(model => model.documentation)</a></dd>
                                     @Html.HiddenFor(model => model.documentation)
                                 }
 
@@ -100,7 +100,7 @@
                                     @Html.HiddenFor(model => model.bookAirTicket)
 
                                     <dt>@Html.DisplayNameFor(model => model.email)</dt>
-                                    <dd>@Html.DisplayFor(model => model.email)</dd>
+                                    <dd style="word-break: break-word">@Html.DisplayFor(model => model.email)</dd>
                                 }
 
                                 @if (Model.leaveTypeName.Equals("Annual") || Model.leaveTypeName.Equals("Maternity"))

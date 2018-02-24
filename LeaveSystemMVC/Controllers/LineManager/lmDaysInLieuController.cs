@@ -39,25 +39,32 @@ namespace LeaveSystemMVC.Controllers
         [HttpPost]
         public ActionResult Index(hrDaysInLieu dil)
         {
-            string queryString = "INSERT INTO dbo.Days_In_Lieu VALUES ('" + dil.employeeID + "' , '" + dil.date.ToString("yyyy-MM-dd") + "' , '" + dil.numOfDays + "' , '" + dil.comment + "')";
-            DBExecuteQuery(queryString);
-
-            //Check if DIL leave type exists for this employee.
-            int dilID = DBLeaveTypeList().FirstOrDefault(obj => obj.Value == "DIL").Key;
-            if (IsLeaveBalanceExists(dil.employeeID, dilID))
+            if (Request.Form["submit"] != null)
             {
-                queryString = "UPDATE dbo.Leave_Balance SET Balance = Balance + '" + dil.numOfDays + "' WHERE Employee_ID = '" + dil.employeeID + "' AND Leave_ID = " + dilID;
+                string queryString = "INSERT INTO dbo.Days_In_Lieu VALUES ('" + dil.employeeID + "' , '" + dil.date.ToString("yyyy-MM-dd") + "' , '" + dil.numOfDays + "' , '" + dil.comment + "')";
+                DBExecuteQuery(queryString);
+
+                //Check if DIL leave type exists for this employee.
+                int dilID = DBLeaveTypeList().FirstOrDefault(obj => obj.Value == "DIL").Key;
+                if (IsLeaveBalanceExists(dil.employeeID, dilID))
+                {
+                    queryString = "UPDATE dbo.Leave_Balance SET Balance = Balance + '" + dil.numOfDays + "' WHERE Employee_ID = '" + dil.employeeID + "' AND Leave_ID = " + dilID;
+                }
+                else
+                {
+                    queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_ID, Balance) VALUES ('" + dil.employeeID + "' , '" + dilID + "' , '" + dil.numOfDays + "')";
+                }
+                DBExecuteQuery(queryString);
+
+                sEmployeeModel emp = GetEmployeeModel(dil.employeeID);
+                TempData["SuccessMessage"] = "<b>" + emp.firstName + " " + emp.lastName + "</b> has been credited successfully.";
+
+                return RedirectToAction("Index");
             }
             else
             {
-                queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_ID, Balance) VALUES ('" + dil.employeeID + "' , '" + dilID + "' , '" + dil.numOfDays + "')";
+                return RedirectToAction("Index");
             }
-            DBExecuteQuery(queryString);
-
-            sEmployeeModel emp = GetEmployeeModel(dil.employeeID);
-            TempData["SuccessMessage"] = "<b>" + emp.firstName + " " + emp.lastName + "</b> has been credited successfully.";
-
-            return RedirectToAction("Index");
         }
 
         [HttpPost]

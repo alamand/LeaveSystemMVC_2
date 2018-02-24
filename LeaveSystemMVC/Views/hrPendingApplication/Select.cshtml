@@ -78,7 +78,7 @@
                             @Html.HiddenFor(model => model.lmComment)
 
                             <dt>@Html.DisplayNameFor(model => model.documentation)</dt>
-                            <dd><a target="_blank" href='\App_Data\Documentation\@Model.leaveAppID-@Model.documentation'>@Html.DisplayFor(model => model.documentation)</a></dd>
+                            <dd style="word-break: break-word"><a target="_blank" href='\App_Data\Documentation\@Model.leaveAppID-@Model.documentation'>@Html.DisplayFor(model => model.documentation)</a></dd>
                             @Html.HiddenFor(model => model.documentation)
 
                             @if (Model.leaveTypeName.Equals("Annual"))
