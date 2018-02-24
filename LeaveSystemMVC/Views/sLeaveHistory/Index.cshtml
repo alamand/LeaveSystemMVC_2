@@ -12,30 +12,24 @@
             <th>Leave Type</th>
             <th>Start Date</th>
             <th>End Date</th>
-            <th>Leave Duration</th>
-            <th>Start Time</th>
-            <th>End Time</th>
-            <th>Leave Status</th>
+            <th>Duration</th>
+            <th>Status</th>
             <th>View</th>
         </tr>
 
         @foreach (var item in Model)
         {
-            <tr>
-                @{
-                    string stDt = item.startDate.ToString();
-                    stDt = stDt.Substring(0, 10);
+            string stDt = item.startDate.ToString();
+            stDt = stDt.Substring(0, 10);
 
-                    string reDt = item.returnDate.ToString();
-                    reDt = reDt.Substring(0, 10);
-                }
+            string reDt = item.returnDate.ToString();
+            reDt = reDt.Substring(0, 10);
+            <tr>
                 <td>@Html.DisplayFor(modelItem => item.leaveAppID)</td>
                 <td>@Html.DisplayFor(modelItem => item.leaveTypeName)</td>
                 <td>@Html.DisplayFor(modelItem => stDt)</td>
                 <td>@Html.DisplayFor(modelItem => reDt)</td>
                 <td>@Html.DisplayFor(modelItem => item.leaveDuration)</td>
-                <td>@Html.DisplayFor(modelItem => item.shortStartTime)</td>
-                <td>@Html.DisplayFor(modelItem => item.shortEndTime)</td>
                 <td>@Html.DisplayFor(modelItem => item.leaveStatusName)</td>
                 <td style="text-align:center">
                     <a href="@Url.Action("View", "sLeaveHistory", new { appID = item.leaveAppID }, null)">

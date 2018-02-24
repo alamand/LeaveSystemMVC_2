@@ -27,6 +27,14 @@ namespace LeaveSystemMVC.Controllers
             return Convert.ToInt32(loggedInID);
         }
 
+        protected void SetMessageViewBags()
+        {
+            ViewBag.InfoMessage = TempData["InfoMessage"];
+            ViewBag.SuccessMessage = TempData["SuccessMessage"];
+            ViewBag.WarningMessage = TempData["WarningMEssage"];
+            ViewBag.ErrorMessage = TempData["ErrorMessage"];
+        }
+
         protected sleaveBalanceModel GetLeaveBalanceModel(int empID = 0)
         {
             var lb = new sleaveBalanceModel();
@@ -122,13 +130,19 @@ namespace LeaveSystemMVC.Controllers
 
             var queryString = "";
 
-            // true if this employee has a record in the Reporting Table
-            Boolean reportingIDExist = IsReportingExist(empID);  
+            bool reportingIDExist = IsReportingExist(empID);                // true if this employee has a record in the Reporting Table
+            bool startDateExist = IsStartDateExist(empID);                  // true if this employee has a record in the Employment_Period Table
 
-            if (reportingIDExist)
+
+            if (reportingIDExist && startDateExist) // @TODO: fix this when line manager substitution and employment period feature is added
                 queryString += "SELECT * FROM dbo.Employee, dbo.Reporting, dbo.Employment_Period WHERE Employee.Employee_ID = Employment_Period.Employee_ID AND " +
                     "Employee.Employee_ID = Reporting.Employee_ID AND Employee.Employee_ID = " + empID + " AND " +
                     "(Reporting.Start_Date <= SYSDATETIME() AND (Reporting.End_Date > SYSDATETIME() OR Reporting.End_Date IS NULL))";
+            else if (reportingIDExist)      // @TODO: fix this when line manager substitution feature is added
+                queryString += "SELECT * FROM dbo.Employee, dbo.Reporting WHERE Employee.Employee_ID = Reporting.Employee_ID AND Employee.Employee_ID = " + empID + " AND " +
+                    "(Reporting.Start_Date <= SYSDATETIME() AND (Reporting.End_Date > SYSDATETIME() OR Reporting.End_Date IS NULL))";
+            else if (startDateExist)        // @TODO: fix this when employment Period feature is added
+                queryString += "SELECT * FROM dbo.Employee, dbo.Employment_Period WHERE Employee.Employee_ID = Employment_Period.Employee_ID AND Employee.Employee_ID = " + empID;
             else
                 queryString += "SELECT * FROM dbo.Employee WHERE Employee.Employee_ID = " + empID;
 
@@ -157,7 +171,7 @@ namespace LeaveSystemMVC.Controllers
                         employeeModel.dateOfBirth = (!DBNull.Value.Equals(reader["Date_Of_Birth"])) ? (DateTime)reader["Date_Of_Birth"] : new DateTime();
                         employeeModel.nationalityID = (reader["Nationality_ID"] != DBNull.Value) ? (int)reader["Nationality_ID"] : 0;
                         employeeModel.onProbation = (reader["Probation"] != DBNull.Value) ? (bool)reader["Probation"] : false;
-                        if (reportingIDExist)
+                        if (startDateExist)
                             employeeModel.empStartDate = (reader["Emp_Start_Date"] != DBNull.Value) ? (DateTime)reader["Emp_Start_Date"] : new DateTime();
                     }
                 }
@@ -218,28 +232,41 @@ namespace LeaveSystemMVC.Controllers
             return empList;
         }
 
-        protected Boolean IsReportingExist(int empID)
+        protected bool IsReportingExist(int empID)
         {
             bool isExist = false;
 
-            var queryString = "SELECT COUNT(*) FROM dbo.Employee, dbo.Reporting WHERE Employee.Employee_ID = Reporting.Employee_ID AND Employee.Employee_ID = " + empID + " AND " +
-                            "(Reporting.Start_Date <= SYSDATETIME() AND (Reporting.End_Date > SYSDATETIME() OR Reporting.End_Date IS NULL))";
+            var queryString = "SELECT COUNT(*) FROM dbo.Reporting WHERE Employee_ID = " + empID + " AND " +
+                            "(Start_Date <= SYSDATETIME() AND (End_Date > SYSDATETIME() OR End_Date IS NULL))";
 
             using (var connection = new SqlConnection(connectionString))
             {
                 var command = new SqlCommand(queryString, connection);
                 connection.Open();
-                if ((int)command.ExecuteScalar() > 0)
-                    isExist = true;
+                isExist = ((int)command.ExecuteScalar() > 0) ? true : false;
                 connection.Close();
             }
             return isExist;
         }
 
-        protected List<sLeaveModel> GetLeaveModel(string listFor="", int id=0)
+        protected bool IsStartDateExist(int empID)
         {
-            var leaveList = new List<sLeaveModel>();
+            bool isExist = false;
 
+            var queryString = "SELECT COUNT(*) FROM dbo.Employment_Period WHERE Employee_ID = " + empID;
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                isExist = ((int)command.ExecuteScalar() > 0) ? true : false;
+                connection.Close();
+            }
+            return isExist;
+        }
+
+        protected List<sLeaveModel> GetLeaveModel(string listFor = "", int id = 0)
+        {
             var queryString = "SELECT Leave_Application_ID, Employee.Employee_ID, First_Name, Last_Name, Leave.Start_Date, Leave.Reporting_Back_Date, Leave.Leave_ID, Leave_Name, " +
                 "Contact_Outside_UAE, Comment, Documentation, Flight_Ticket, Total_Leave, Start_Hrs, End_Hrs, Leave.Leave_Status_ID, Status_Name, HR_Comment, LM_Comment, Leave.Personal_Email " +
                 "FROM dbo.Leave, dbo.Employee, dbo.Leave_Type, dbo.Leave_Status, dbo.Department, dbo.Reporting " +
@@ -248,13 +275,15 @@ namespace LeaveSystemMVC.Controllers
 
             if (!listFor.Equals("") && id != 0)
             {
-                 queryString += " AND " + listFor + " = " + id;
+                queryString += " AND " + listFor + " = " + id;
             }
 
-            if (!listFor.Equals("") && id == 0)
-            {
-                queryString = listFor;
-            }
+            return GetLeaveModel(queryString);
+        }
+
+        protected List<sLeaveModel> GetLeaveModel(string queryString)
+        {
+            var leaveList = new List<sLeaveModel>();
 
             using (var connection = new SqlConnection(connectionString))
             {

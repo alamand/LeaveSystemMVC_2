@@ -66,9 +66,13 @@
                             {
                         <td>@months months, @days days</td> }
                         }
-                        <td><a href="@Url.Action("SetProbation", "hrProbationAdministration", new { id = onP.staffID }, null)">Confirm</a></td>
+                        <td style="text-align:center">
+                            <a href="@Url.Action("SetProbation", "hrProbationAdministration", new { id = onP.staffID }, null)">
+                                <span class="glyphicon glyphicon-ok" aria-hidden="true" style="color:green"></span>
+                            </a>
+                        </td>
                     </tr>
-                            }
+                }
             }
         </table>
     </div>

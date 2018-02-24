@@ -6,15 +6,13 @@
     <h3>@ViewBag.Title</h3>
     <hr />
     @Html.Partial("../_Message")
-    <table class="table" style="white-space:nowrap">
+    <table class="table">
         <tr>
             <th>App. ID</th>
-            <th>Type</th>
+            <th>Leave Type</th>
             <th>Start Date</th>
             <th>End Date</th>
             <th>Duration</th>
-            <th>Start Time</th>
-            <th>End Time</th>
             <th>Status</th>
             <th>View</th>
             <th>Cancel</th>
@@ -26,37 +24,20 @@
 
             string reDt = item.returnDate.ToString();
             reDt = reDt.Substring(0, 9);
-
             <tr>
                 <td>@Html.DisplayFor(modelItem => item.leaveAppID)</td>
-                @if (item.leaveTypeName.Equals("Short_Hours_Per_Month"))
-                {
-                    <td>Short Hours</td>
-                }
-                else
-                {
-                    <td>@Html.DisplayFor(modelItem => item.leaveTypeName)</td>
-                }                <td>@Html.DisplayFor(modelItem => stDt)</td>
+                <td>@Html.DisplayFor(modelItem => item.leaveTypeName)</td>
+                <td>@Html.DisplayFor(modelItem => stDt)</td>
                 <td>@Html.DisplayFor(modelItem => reDt)</td>
                 <td>@Html.DisplayFor(modelItem => item.leaveDuration)</td>
-                @if (item.leaveTypeName.Equals("Short_Hours_Per_Month"))
-                {
-                    <td>@Html.DisplayFor(modelItem => item.shortStartTime)</td>
-                    <td>@Html.DisplayFor(modelItem => item.shortEndTime)</td>
-                }
-                else
-                {
-                    <td></td>
-                    <td></td>
-                }
                 <td>@Html.DisplayFor(modelItem => item.leaveStatusName)</td>
                 <td style="text-align:center">
-                    <a href="@Url.Action("Delete", "sLeaveStatus", new { id = item.leaveAppID }, null)">
+                    <a href="@Url.Action("View", "sLeaveStatus", new { appID = item.leaveAppID }, null)">
                         <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
                     </a>
                 </td>
                 <td style="text-align:center">
-                    <a href="@Url.Action("Delete", "sLeaveStatus", new { id = item.leaveAppID }, null)">
+                    <a href="@Url.Action("Delete", "sLeaveStatus", new { appID = item.leaveAppID }, null)">
                         <span class="glyphicon glyphicon-remove" aria-hidden="true" style="color:red"></span>
                     </a>
                 </td>

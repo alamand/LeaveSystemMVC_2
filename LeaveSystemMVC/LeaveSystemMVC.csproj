@@ -1790,6 +1790,9 @@
     <Content Include="Views\LApplication\_UnpaidPartial.cshtml" />
     <Content Include="Views\lmDaysInLieu\Index.cshtml" />
     <Content Include="Views\sLeaveHistory\View.cshtml" />
+    <Content Include="Views\sLeaveStatus\View.cshtml" />
+    <Content Include="Views\lmSubordinateLeaveHistory\View.cshtml" />
+    <Content Include="Views\hrEmployeeLeaveHistory\View.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\DB_Backup\" />
