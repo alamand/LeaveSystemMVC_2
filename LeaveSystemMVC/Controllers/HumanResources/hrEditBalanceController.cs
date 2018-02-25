@@ -79,7 +79,7 @@ namespace LeaveSystemMVC.Controllers
             // adds a filter query if search box contains character(s), note that 0 length means the search box is empty
             if (search.Length > 0)
             {
-                queryString += " AND (Employee_ID LIKE '%" + search + "%' " +
+                queryString += " AND (Employee.Employee_ID LIKE '%" + search + "%' " +
                     "OR First_Name LIKE '%" + search + "%' " +
                     "OR Last_Name LIKE '%" + search + "%')";
             }
