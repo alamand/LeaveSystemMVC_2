@@ -31,8 +31,7 @@ namespace LeaveSystemMVC.Controllers
             //user selected year
             ViewData["SelectedYear"] = filterYear;
 
-            ViewBag.SuccessMessage = TempData["SuccessMessage"];
-
+            SetMessageViewBags();
             return View(model);
         }
 
@@ -75,30 +74,41 @@ namespace LeaveSystemMVC.Controllers
         [HttpPost]
         public ActionResult CreateHoliday(hrHolidaysCalender holiday)
         {
-            if (string.IsNullOrWhiteSpace(holiday.holidayName))
-            {
-                ModelState.AddModelError("holidayName", "A holiday name must be entered.");
-            }
             if (holiday.holidayName.Length > 30)
             {
                 ModelState.AddModelError("holidayName", "Holiday name is too long.");
             }
-            else if (string.IsNullOrEmpty(holiday.date.ToString()))
+
+            if (holiday.date.Year < DateTime.Today.Year)
             {
-                ModelState.AddModelError("date", "Holiday date must be selected.");
+                ModelState.AddModelError("date", "Can't add a holiday to previous years.");
             }
 
             if (ModelState.IsValid)
             {
                 if (!IsPublicHoliday(holiday.date))
                 {
-                    string queryString = "INSERT INTO dbo.Public_Holiday (Name, Date) VALUES('" + holiday.holidayName + "','" + holiday.date.ToString("yyyy-MM-dd") + "')";
-                    DBExecuteQuery(queryString);
+                    if (!IsPublicHoliday(holiday.holidayName))
+                    {
+                        if (holiday.date.Year >= DateTime.Today.Year)
+                        {
+                            string queryString = "INSERT INTO dbo.Public_Holiday (Name, Date) VALUES('" + holiday.holidayName + "','" + holiday.date.ToString("yyyy-MM-dd") + "')";
+                            DBExecuteQuery(queryString);
 
-                    // rebalance all employees with approved applications, 1 to indicate that a holiday is added
-                    RebalanceCredit(holiday.date, 1);
+                            // rebalance all employees with approved applications, 1 to indicate that a holiday is added
+                            RebalanceCredit(holiday.date, 1);
 
-                    TempData["SuccessMessage"] = "<b>" + holiday.holidayName + "</b> public holiday has been created successfully.<br/>";
+                            TempData["SuccessMessage"] = "<b>" + holiday.holidayName + "</b> public holiday has been created successfully.<br/>";
+                        }
+                        else
+                        {
+                            ViewBag.ErrorMessage = "Can't add a holiday to previous years.";
+                        }
+                    }
+                    else
+                    {
+                        ViewBag.ErrorMessage = "Holiday name <b>" + holiday.holidayName + "</b> already exist in this year.";
+                    }
                 }
                 else
                 {
@@ -138,6 +148,30 @@ namespace LeaveSystemMVC.Controllers
                 isWeekend = true;
 
             return isWeekend;
+        }
+
+        private bool IsPublicHoliday(String holidayName)
+        {
+            bool isPublicHoliday = false;
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            string queryString = "SELECT * FROM dbo.Public_Holiday WHERE YEAR(Date) = YEAR(GETDATE())";
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        isPublicHoliday = holidayName.Equals((String)reader["Name"]) ? true : false;
+                    }
+                }
+                connection.Close();
+            }
+
+            return isPublicHoliday;
         }
 
         private bool IsPublicHoliday(DateTime date)

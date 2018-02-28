@@ -7,39 +7,52 @@
     <h3>@ViewBag.Title</h3>
     <hr />
     @Html.Partial("../_Message")
-    @{  var quotaBalance = ViewBag.defaultBalance as LeaveSystemMVC.Models.sleaveBalanceModel;
+    @{ var quotaBalance = ViewBag.defaultBalance as LeaveSystemMVC.Models.sleaveBalanceModel;
         var employeeList = ViewBag.employeeList as Dictionary<int, string>; }
+
+    <div class="row">
+        <div class="col-md-offset-3 col-md-6">
+            <div class="form-group has-feedback">
+                <i class="glyphicon glyphicon-search form-control-feedback"></i>
+                @Html.TextBox("searchInput", "", new { @class = "form-control", @placeholder = "Search by employee ID or name...", onkeyup = "search()" })
+            </div>
+        </div>
+    </div>
+    <br />
+
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
         <div class="row">
-            <table class="table">
+            <table class="table" id="table">
                 <tr>
+                    <th>Employee ID</th>
                     <th>Employee Name</th>
                     <th style="text-align: center">Current DIL Balance</th>
                     <th style="text-align: center">New Year DIL Balance</th>
-                
+
                     <th style="text-align: center">Current Annual Balance</th>
                     <th style="text-align: center">New Year Annual Balance</th>
-                
+
                 </tr>
                 @for (int i = 0; i < Model.Count; i++)
                 {
                     @Html.HiddenFor(model => Model[i].empId)
                     <tr>
+                        <td>@Model[i].empId</td>
                         <td>@employeeList[Model[i].empId]</td>
 
                         @Html.HiddenFor(model => Model[i].daysInLieuID)
                         <td style="text-align: center">@Html.DisplayFor(Model => Model[i].daysInLieu)</td>
                         @{ var rollUpDIL = Model[i].daysInLieu + quotaBalance.daysInLieu; }
                         <td style="text-align: center">@Html.TextBoxFor(Model => Model[i].daysInLieu, new { @Value = rollUpDIL, style = "width:5em;", @class = "form-control" })</td>
-                       
+
                         @Html.HiddenFor(model => Model[i].annualID)
                         <td style="text-align: center">@Html.DisplayFor(Model => Model[i].annual)</td>
                         @{ var rollUpAnnual = Model[i].annual + quotaBalance.annual; }
                         <td style="text-align: center">@Html.TextBoxFor(Model => Model[i].annual, new { @Value = rollUpAnnual, style = "width:5em;", @class = "form-control" })</td>
                     </tr>
-                 }
+                }
             </table>
         </div>
         <div class="col-md-offset-3">
@@ -52,9 +65,33 @@
                 <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span> Save
             </button>
         </div>
-     }
+    }
 </div>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+        
+    <script>
+        function search() {
+            // Declare variables
+            var input, filter, table, tr, tdID, tdName, i;
+            input = document.getElementById("searchInput");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("table");
+            tr = table.getElementsByTagName("tr");
+
+            // Loop through all table rows, and hide those who don't match the search query
+            for (i = 0; i < tr.length; i++) {
+                tdID = tr[i].getElementsByTagName("td")[0];
+                tdName = tr[i].getElementsByTagName("td")[1];
+                if (tdID || tdName) {
+                    if (tdID.innerHTML.toUpperCase().indexOf(filter) > -1 || tdName.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+    </script>
 }

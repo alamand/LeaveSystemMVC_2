@@ -80,8 +80,7 @@ namespace LeaveSystemMVC.Controllers
             if (search.Length > 0)
             {
                 queryString += " AND (Employee.Employee_ID LIKE '%" + search + "%' " +
-                    "OR First_Name LIKE '%" + search + "%' " +
-                    "OR Last_Name LIKE '%" + search + "%')";
+                    "OR CONCAT(First_Name, ' ', Last_Name) LIKE '%" + search + "%')";
             }
 
             if (order.Length > 0)
@@ -106,7 +105,6 @@ namespace LeaveSystemMVC.Controllers
             return orderByList;
         }
 
-
         public ActionResult Edit(int empID)
         {
             var emp = GetEmployeeModel(empID);
@@ -124,22 +122,14 @@ namespace LeaveSystemMVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                DBUpdateBalance(lb.empId, lb.annualID, lb.annual);
-                DBUpdateComment(lb.empId, lb.annualID, lb.editCommentAnnual);
-                DBUpdateBalance(lb.empId, lb.maternityID, lb.maternity);
-                DBUpdateComment(lb.empId, lb.maternityID, lb.editCommentMaternity);
-                DBUpdateBalance(lb.empId, lb.sickID, lb.sick);
-                DBUpdateComment(lb.empId, lb.sickID, lb.editCommentSick);
-                DBUpdateBalance(lb.empId, lb.compassionateID, lb.compassionate);
-                DBUpdateComment(lb.empId, lb.compassionateID, lb.editCommentCompassionate);
-                DBUpdateBalance(lb.empId, lb.daysInLieuID, lb.daysInLieu);
-                DBUpdateComment(lb.empId, lb.daysInLieuID, lb.editCommentDIL);
-                DBUpdateBalance(lb.empId, lb.shortHoursID, lb.shortHours);
-                DBUpdateComment(lb.empId, lb.shortHoursID, lb.editCommentShortHours);
-                DBUpdateBalance(lb.empId, lb.pilgrimageID, lb.pilgrimage);
-                DBUpdateComment(lb.empId, lb.pilgrimageID, lb.editCommentPilgrimage);
-                DBUpdateBalance(lb.empId, lb.unpaidID, lb.unpaid);
-                DBUpdateComment(lb.empId, lb.unpaidID, lb.editCommentUnpaid);
+                DBUpdateBalance(lb.empId, lb.annualID, lb.annual, lb.editCommentAnnual);
+                DBUpdateBalance(lb.empId, lb.maternityID, lb.maternity, lb.editCommentMaternity);
+                DBUpdateBalance(lb.empId, lb.sickID, lb.sick, lb.editCommentSick);
+                DBUpdateBalance(lb.empId, lb.compassionateID, lb.compassionate, lb.editCommentCompassionate);
+                DBUpdateBalance(lb.empId, lb.daysInLieuID, lb.daysInLieu, lb.editCommentDIL);
+                DBUpdateBalance(lb.empId, lb.shortHoursID, lb.shortHours, lb.editCommentShortHours);
+                DBUpdateBalance(lb.empId, lb.pilgrimageID, lb.pilgrimage, lb.editCommentPilgrimage);
+                DBUpdateBalance(lb.empId, lb.unpaidID, lb.unpaid, lb.editCommentUnpaid);
                 ViewBag.SuccessMessage = " The information has been updated successfully.";
             }
             else
@@ -150,21 +140,12 @@ namespace LeaveSystemMVC.Controllers
             return Edit(lb.empId);
         }
 
-        private void DBUpdateBalance(int employeeID, int leaveID, decimal balance)
+        private void DBUpdateBalance(int employeeID, int leaveID, decimal balance, string comment)
         {
-            string insertQuery = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_ID, Balance) VALUES('" + employeeID + "','" + leaveID + "','" + balance + "')";
-            string updateQuery = "UPDATE dbo.Leave_Balance SET Balance = '" + balance + "' WHERE Leave_ID = '" + leaveID + "' AND Employee_ID = '" + employeeID + "'";
+            string insertQuery = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_ID, Balance, Last_Edit_Comment) VALUES('" + employeeID + "','" + leaveID + "','" + balance + "','" + comment + "')";
+            string updateQuery = "UPDATE dbo.Leave_Balance SET Balance = '" + balance + "', Last_Edit_Comment = '" + comment + "' WHERE Leave_ID = '" + leaveID + "' AND Employee_ID = '" + employeeID + "'";
             string queryString = (!IsLeaveBalanceExists(employeeID, leaveID) && balance > 0) ? insertQuery : updateQuery;
             DBExecuteQuery(queryString);
-        }
-
-        private void DBUpdateComment(int employeeID, int leaveID, String comment)
-        {
-            if(comment != null)
-            {
-                string updateQuery = "UPDATE dbo.Leave_Balance SET Last_Edit_Comment = '" + comment + "' WHERE Leave_ID = '" + leaveID + "' AND Employee_ID = '" + employeeID + "'";
-                DBExecuteQuery(updateQuery);
-            }            
         }
     }
 }

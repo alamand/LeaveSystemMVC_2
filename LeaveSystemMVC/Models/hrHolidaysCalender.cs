@@ -8,15 +8,14 @@ namespace LeaveSystemMVC.Models
     {
         public int holidayID { get; set; }
 
-        [Required]
         [DisplayName("Holiday Name ")]
+        [Required(ErrorMessage = "Holiday name is required.")]
         [StringLength(30, MinimumLength = 0, ErrorMessage = "Holiday name is too long.")]
         public string holidayName { set; get; }
 
-        [Required]
+        [Required(ErrorMessage = "Holiday date is required.")]
         [DisplayName("Date")]
         [DataType(DataType.Date)]
-        //[DisplayFormat(DataFormatString ="dd/MM/yyyy")]
         public DateTime date { set; get; }
     }
 }

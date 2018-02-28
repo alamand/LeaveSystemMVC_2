@@ -74,9 +74,7 @@ namespace LeaveSystemMVC.Controllers
             if (search.Length > 0)
             {
                 queryString += " AND (Employee.Employee_ID LIKE '%" + search + "%' " +
-                    "OR Leave_Application_ID LIKE '%" + search + "%' " +
-                    "OR First_Name LIKE '%" + search + "%' " +
-                    "OR Last_Name LIKE '%" + search + "%')";
+                    "OR CONCAT(First_Name, ' ', Last_Name) LIKE '%" + search + "%')";
             }
 
             if (sDate.Length > 0)
