@@ -1,0 +1,103 @@
+﻿@model List<LeaveSystemMVC.Models.sEmployeeModel>
+@Html.Partial("_LeftMenu")
+@{ ViewBag.Title = "Administer Employment Period"; }
+
+<div class="col-md-10">
+    <h3>@ViewBag.Title</h3>
+    <hr />
+    @Html.Partial("../_Message")
+    @{
+        var employeeList = ViewData["EmployeeList"] as Dictionary<int, string>;
+        int selectedEmployee = Convert.ToInt32(ViewData["selectedEmployee"]);
+    }
+    @using (Html.BeginForm("Select", "hrAdministerEmployment", FormMethod.Post))
+    {
+        <div class="form-horizontal">
+            <div class="row ">
+                <div class="col-md-2">
+                    <p style="padding-top: 8px;">Select Staff Member:</p>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-horizontal">
+                        @Html.DropDownList("selectedEmployee", new SelectList(employeeList, "Key", "Value"), new { @selected = selectedEmployee, @class = "form-control", @onchange = "this.form.submit();" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr />
+    }
+    @if (selectedEmployee != 0)
+    {
+        using (Html.BeginForm())
+        {
+            DateTime defaultDate = new DateTime(0001, 01, 01);
+            @Html.AntiForgeryToken()
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <div class="text-muted bootstrap-admin-box-title">Staff Member Employment Period(s)</div>
+                    </div>
+                    <div class="bootstrap-admin-panel-content">
+                        <div class="form-horizontal">
+                            @for (int i=0; i<Model.Count; i++)
+                            {
+                                @Html.HiddenFor(model => Model[i].staffID)
+                                <div class="row">
+                                    <div class="col-sm-2" style="white-space:nowrap">
+                                        @Html.LabelFor(model => Model[i].empStartDate, "Start Date", htmlAttributes: new { @class = "control-label col-md-2", type = "Date" })
+                                    </div>
+                                
+                                    @if (Model[i].empStartDate == defaultDate)
+                                    {
+                                        <div class="col-md-3">
+                                            @Html.TextBoxFor(model => Model[i].empStartDate, "{0:yyyy-MM-dd}", new { @Value = "YYYY-MM-DD", @class = "form-control", type = "date" })
+                                            @Html.ValidationMessageFor(model => Model[i].empStartDate, "", new { @class = "text-danger" })
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-3">
+                                            @Html.TextBoxFor(model => Model[i].empStartDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", @readonly = "readonly" })
+                                            @Html.ValidationMessageFor(model => Model[i].empStartDate, "", new { @class = "text-danger" })
+                                        </div>
+                                    }
+
+                                    @if (Model[i].empEndDate == defaultDate)
+                                    {
+                                        if (Model[i].empStartDate != defaultDate)
+                                        {
+                                            <div class="col-sm-offset-1 col-sm-2" style="white-space:nowrap">
+                                                @Html.LabelFor(model => Model[i].empEndDate, "End Date", htmlAttributes: new { @class = "control-label col-md-2", type = "Date" })
+                                            </div>
+                                            <div class="col-md-3">
+                                                @Html.TextBoxFor(model => Model[i].empEndDate, "{0:yyyy-MM-dd}", new { @Value = "YYYY-MM-DD", @class = "form-control", type = "date" })
+                                                @Html.ValidationMessageFor(model => Model[i].empEndDate, "", new { @class = "text-danger" })
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div class="col-sm-offset-1 col-sm-2" style="white-space:nowrap">
+                                            @Html.LabelFor(model => Model[i].empEndDate, "End Date", htmlAttributes: new { @class = "control-label col-md-2", type = "Date" })
+                                        </div>
+                                        <div class="col-md-3">
+                                            @Html.TextBoxFor(model => Model[i].empEndDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", @readonly = "readonly" })
+                                            @Html.ValidationMessageFor(model => Model[i].empEndDate, "", new { @class = "text-danger" })
+                                        </div>
+                                    }
+                                </div>
+                                <hr />
+                            }
+                            <div class="form-group">
+                                <div class="col-md-offset-5 col-md-4">
+                                    <input type="submit" value="Submit" class="btn btn-default" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+

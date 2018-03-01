@@ -58,6 +58,7 @@ namespace LeaveSystemMVC.Models
         public DateTime empStartDate { get; set; }
 
         [Display(Name = "End Date")]
+        [Required(ErrorMessage = "End Date is required.")]
         [DataType(DataType.Date)]
         public DateTime empEndDate { get; set; }
 
