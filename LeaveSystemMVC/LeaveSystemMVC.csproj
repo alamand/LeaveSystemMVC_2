@@ -206,6 +206,7 @@
     <Compile Include="Controllers\Admin\aBulkAddStaffController.cs" />
     <Compile Include="Controllers\Admin\aEditStaffController.cs" />
     <Compile Include="Controllers\AuthController.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\HumanResources\hrAdministerEmploymentController.cs" />
     <Compile Include="Controllers\HumanResources\hrCreditLeaveBalanceController.cs" />
@@ -1795,10 +1796,12 @@
     <Content Include="Views\lmSubordinateLeaveHistory\View.cshtml" />
     <Content Include="Views\hrEmployeeLeaveHistory\View.cshtml" />
     <Content Include="Views\hrAdministerEmployment\Index.cshtml" />
+    <Content Include="Views\Shared\PageNotFound.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\DB_Backup\" />
     <Folder Include="App_Data\Documentation\" />
+    <Folder Include="Views\Error\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">
