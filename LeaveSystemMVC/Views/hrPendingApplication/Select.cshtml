@@ -50,14 +50,14 @@
                             <dd>@Html.DisplayFor(rd => returnDateString)</dd>
                             @Html.HiddenFor(model => model.returnDate)
 
-                            @if (!Model.leaveTypeName.Equals("Short_Hours_Per_Month"))
+                            @if (!Model.leaveTypeName.Equals("Short_Hours"))
                             {
                                 <dt>@Html.DisplayNameFor(model => model.leaveDuration)</dt>
                                 <dd>@Html.DisplayFor(model => model.leaveDuration)</dd>
                                 @Html.HiddenFor(model => model.leaveDuration)
                             }
 
-                            @if (Model.leaveTypeName.Equals("Short_Hours_Per_Month"))
+                            @if (Model.leaveTypeName.Equals("Short_Hours"))
                             {
                                 <dt>@Html.DisplayNameFor(model => model.shortStartTime)</dt>
                                 <dd>@Html.DisplayFor(model => model.shortStartTime)</dd>
@@ -200,9 +200,9 @@
                             <tr>
                                 <th>Short Hours</th>
                                 <td>@balance.shortHours.ToString()</td>
-                                @if (deduction.ContainsKey("Short_Hours_Per_Month"))
+                                @if (deduction.ContainsKey("Short_Hours"))
                                 {
-                                    <td>-@deduction["Short_Hours_Per_Month"].ToString()</td>
+                                    <td>-@deduction["Short_Hours"].ToString()</td>
                                 }
                                 else
                                 {
@@ -277,7 +277,7 @@
                                         <td>@stDt</td>
                                         <td>@reDt</td>
                                         <td>@lv.leaveDuration</td>
-                                        @if (lv.leaveTypeName != "Short_Hours_Per_Month")
+                                        @if (lv.leaveTypeName != "Short_Hours")
                                         {
                                             <td></td>
                                             <td></td>

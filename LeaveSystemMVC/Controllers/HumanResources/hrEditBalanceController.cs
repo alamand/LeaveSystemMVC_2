@@ -142,8 +142,8 @@ namespace LeaveSystemMVC.Controllers
 
         private void DBUpdateBalance(int employeeID, int leaveID, decimal balance, string comment)
         {
-            string insertQuery = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_ID, Balance, Last_Edit_Comment) VALUES('" + employeeID + "','" + leaveID + "','" + balance + "','" + comment + "')";
-            string updateQuery = "UPDATE dbo.Leave_Balance SET Balance = '" + balance + "', Last_Edit_Comment = '" + comment + "' WHERE Leave_ID = '" + leaveID + "' AND Employee_ID = '" + employeeID + "'";
+            string insertQuery = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_Type_ID, Balance, Last_Edit_Comment) VALUES('" + employeeID + "','" + leaveID + "','" + balance + "','" + comment + "')";
+            string updateQuery = "UPDATE dbo.Leave_Balance SET Balance = '" + balance + "', Last_Edit_Comment = '" + comment + "' WHERE Leave_Type_ID = '" + leaveID + "' AND Employee_ID = '" + employeeID + "'";
             string queryString = (!IsLeaveBalanceExists(employeeID, leaveID) && balance > 0) ? insertQuery : updateQuery;
             DBExecuteQuery(queryString);
         }

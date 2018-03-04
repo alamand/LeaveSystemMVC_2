@@ -37,11 +37,11 @@ namespace LeaveSystemMVC.Controllers
                 int dilID = DBLeaveTypeList().FirstOrDefault(obj => obj.Value == "DIL").Key;
                 if (IsLeaveBalanceExists(dil.employeeID, dilID))
                 {
-                    queryString = "UPDATE dbo.Leave_Balance SET Balance = Balance + '" + dil.numOfDays + "' WHERE Employee_ID = '" + dil.employeeID + "' AND Leave_ID = " + dilID;
+                    queryString = "UPDATE dbo.Leave_Balance SET Balance = Balance + '" + dil.numOfDays + "' WHERE Employee_ID = '" + dil.employeeID + "' AND Leave_Type_ID = " + dilID;
                 }
                 else
                 {
-                    queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_ID, Balance) VALUES ('" + dil.employeeID + "' , '" + dilID + "' , '" + dil.numOfDays + "')";
+                    queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_Type_ID, Balance) VALUES ('" + dil.employeeID + "' , '" + dilID + "' , '" + dil.numOfDays + "')";
                 }
                 DBExecuteQuery(queryString);
 

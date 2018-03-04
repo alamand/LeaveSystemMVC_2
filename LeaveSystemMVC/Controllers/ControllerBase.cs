@@ -58,9 +58,9 @@ namespace LeaveSystemMVC.Controllers
                 // the word Balance is the column name in dbo.Leave_Balance
                 balanceColName = "Balance";     
 
-                queryString = "SELECT Leave_Type.Leave_ID, Leave_Name, Balance " +
+                queryString = "SELECT Leave_Type.Leave_Type_ID, Leave_Name, Balance " +
                 "FROM dbo.Leave_Balance, dbo.Leave_Type " +
-                "Where Leave_Type.Leave_ID = Leave_Balance.Leave_ID AND Employee_ID =" + empID;
+                "Where Leave_Type.Leave_Type_ID = Leave_Balance.Leave_Type_ID AND Employee_ID =" + empID;
             }
 
             using (var connection = new SqlConnection(connectionString))
@@ -75,42 +75,42 @@ namespace LeaveSystemMVC.Controllers
                         switch ((string)reader["Leave_Name"])
                         {
                             case "Annual":
-                                lb.annualID = (int)reader["Leave_ID"];
+                                lb.annualID = (int)reader["Leave_Type_ID"];
                                 lb.annual = (decimal)reader[balanceColName];
                                 break;
 
                             case "Maternity":
-                                lb.maternityID = (int)reader["Leave_ID"];
+                                lb.maternityID = (int)reader["Leave_Type_ID"];
                                 lb.maternity = (decimal)reader[balanceColName];
                                 break;
 
                             case "Sick":
-                                lb.sickID = (int)reader["Leave_ID"];
+                                lb.sickID = (int)reader["Leave_Type_ID"];
                                 lb.sick = (decimal)reader[balanceColName];
                                 break;
 
                             case "DIL":
-                                lb.daysInLieuID = (int)reader["Leave_ID"];
+                                lb.daysInLieuID = (int)reader["Leave_Type_ID"];
                                 lb.daysInLieu = (decimal)reader[balanceColName];
                                 break;
 
                             case "Compassionate":
-                                lb.compassionateID = (int)reader["Leave_ID"];
+                                lb.compassionateID = (int)reader["Leave_Type_ID"];
                                 lb.compassionate = (decimal)reader[balanceColName];
                                 break;
 
-                            case "Short_Hours_Per_Month":
-                                lb.shortHoursID = (int)reader["Leave_ID"];
+                            case "Short_Hours":
+                                lb.shortHoursID = (int)reader["Leave_Type_ID"];
                                 lb.shortHours = (decimal)reader[balanceColName];
                                 break;
 
                             case "Pilgrimage":
-                                lb.pilgrimageID = (int)reader["Leave_ID"];
+                                lb.pilgrimageID = (int)reader["Leave_Type_ID"];
                                 lb.pilgrimage = (decimal)reader[balanceColName];
                                 break;
 
                             case "Unpaid":
-                                lb.unpaidID = (int)reader["Leave_ID"];
+                                lb.unpaidID = (int)reader["Leave_Type_ID"];
                                 lb.unpaid = (decimal)reader[balanceColName];
                                 break;
 
@@ -267,10 +267,10 @@ namespace LeaveSystemMVC.Controllers
 
         protected List<sLeaveModel> GetLeaveModel(string listFor = "", int id = 0)
         {
-            var queryString = "SELECT Leave_Application_ID, Employee.Employee_ID, First_Name, Last_Name, Leave.Start_Date, Leave.Reporting_Back_Date, Leave.Leave_ID, Leave_Name, " +
+            var queryString = "SELECT Leave_Application_ID, Employee.Employee_ID, First_Name, Last_Name, Leave.Start_Date, Leave.Reporting_Back_Date, Leave.Leave_Type_ID, Leave_Name, " +
                 "Contact_Outside_UAE, Comment, Documentation, Flight_Ticket, Total_Leave, Start_Hrs, End_Hrs, Leave.Leave_Status_ID, Status_Name, HR_Comment, LM_Comment, Leave.Personal_Email " +
                 "FROM dbo.Leave, dbo.Employee, dbo.Leave_Type, dbo.Leave_Status, dbo.Department, dbo.Reporting " +
-                "WHERE Leave.Employee_ID = Employee.Employee_ID AND Leave.Leave_ID = Leave_Type.Leave_ID AND " +
+                "WHERE Leave.Employee_ID = Employee.Employee_ID AND Leave.Leave_Type_ID = Leave_Type.Leave_Type_ID AND " +
                 "Leave.Leave_Status_ID = Leave_Status.Leave_Status_ID AND Department.Department_ID = Employee.Department_ID AND Employee.Employee_ID = Reporting.Employee_ID";
 
             if (!listFor.Equals("") && id != 0)
@@ -301,7 +301,7 @@ namespace LeaveSystemMVC.Controllers
                             employeeName = (string)reader["First_Name"] + " " + (string)reader["Last_Name"],
                             startDate = (!DBNull.Value.Equals(reader["Start_Date"])) ? (DateTime)reader["Start_Date"] : new DateTime(0, 0, 0),
                             returnDate = (!DBNull.Value.Equals(reader["Reporting_Back_Date"])) ? (DateTime)reader["Reporting_Back_Date"] : new DateTime(0,0,0),
-                            leaveTypeID = (int)reader["Leave_ID"],
+                            leaveTypeID = (int)reader["Leave_Type_ID"],
                             leaveTypeName = (string)reader["Leave_Name"],
                             contactDetails = (!DBNull.Value.Equals(reader["Contact_Outside_UAE"])) ? (string)reader["Contact_Outside_UAE"] : "",
                             comments = (!DBNull.Value.Equals(reader["Comment"])) ? (string)reader["Comment"] : "",
@@ -329,7 +329,7 @@ namespace LeaveSystemMVC.Controllers
         {
             bool isExist = false;
 
-            var queryString = "SELECT COUNT(*) FROM dbo.Leave_Balance WHERE Employee_ID = " + empID + " AND Leave_ID = " + leaveID;
+            var queryString = "SELECT COUNT(*) FROM dbo.Leave_Balance WHERE Employee_ID = " + empID + " AND Leave_Type_ID = " + leaveID;
 
             using (var connection = new SqlConnection(connectionString))
             {
@@ -524,8 +524,8 @@ namespace LeaveSystemMVC.Controllers
 
         protected Dictionary<int, string> DBLeaveTypeList()
         {
-            var queryString = "SELECT Leave_ID, Leave_Name FROM dbo.Leave_Type";
-            return DBListing(queryString, "Leave_ID", "Leave_Name");
+            var queryString = "SELECT Leave_Type_ID, Leave_Name FROM dbo.Leave_Type";
+            return DBListing(queryString, "Leave_Type_ID", "Leave_Name");
         }
 
         protected Dictionary<int, string> DBNationalityList()

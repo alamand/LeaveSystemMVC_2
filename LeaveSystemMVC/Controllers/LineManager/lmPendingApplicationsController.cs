@@ -106,9 +106,9 @@ namespace LeaveSystemMVC.Controllers
                     balanceDeduction.Add("Compassionate", (decimal)numOfDays);
                     break;
 
-                case "Short_Hours_Per_Month":
+                case "Short_Hours":
                     TimeSpan span = (TimeSpan)leave.shortEndTime - (TimeSpan)leave.shortStartTime;
-                    balanceDeduction.Add("Short_Hours_Per_Month", (decimal)span.TotalHours);
+                    balanceDeduction.Add("Short_Hours", (decimal)span.TotalHours);
                     break;
 
                 case "Pilgrimage":
@@ -397,7 +397,7 @@ namespace LeaveSystemMVC.Controllers
                     ApproveCompassionate(leave);
                     break;
 
-                case "Short_Hours_Per_Month":
+                case "Short_Hours":
                     ApproveShortHours(leave);
                     break;
 

@@ -104,21 +104,21 @@ namespace LeaveSystemMVC.Controllers
             // if it does, then update that record, else insert a new record
             // this is to avoid duplicate records with the same staff & leave id.
             if (IsLeaveBalanceExist(leaveTypes.annualID, staff_id))  
-                queryString = "UPDATE dbo.Leave_Balance SET Balance = " + (decimal)annualBalance + " WHERE Employee_ID = " + staff_id + " AND Leave_ID = " + leaveTypes.annualID;
+                queryString = "UPDATE dbo.Leave_Balance SET Balance = " + (decimal)annualBalance + " WHERE Employee_ID = " + staff_id + " AND Leave_Type_ID = " + leaveTypes.annualID;
             else
-                queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_ID, Balance) Values('" + staff_id + "','" + leaveTypes.annualID + "','" + (decimal)annualBalance + "')";
+                queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_Type_ID, Balance) Values('" + staff_id + "','" + leaveTypes.annualID + "','" + (decimal)annualBalance + "')";
             DBExecuteQuery(queryString);
 
             if (IsLeaveBalanceExist(leaveTypes.sickID, staff_id))
-                queryString = "UPDATE dbo.Leave_Balance SET Balance = " + leaveTypes.sick + " WHERE Employee_ID = " + staff_id + " AND Leave_ID = " + leaveTypes.sickID;
+                queryString = "UPDATE dbo.Leave_Balance SET Balance = " + leaveTypes.sick + " WHERE Employee_ID = " + staff_id + " AND Leave_Type_ID = " + leaveTypes.sickID;
             else
-                queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_ID, Balance) Values('" + staff_id + "','" + leaveTypes.sickID + "','" + leaveTypes.sick + "')";
+                queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_Type_ID, Balance) Values('" + staff_id + "','" + leaveTypes.sickID + "','" + leaveTypes.sick + "')";
             DBExecuteQuery(queryString);
 
             if (IsLeaveBalanceExist(leaveTypes.compassionateID, staff_id))
-                queryString = "UPDATE dbo.Leave_Balance SET Balance = " + leaveTypes.compassionate + " WHERE Employee_ID = " + staff_id + " AND Leave_ID = " + leaveTypes.compassionateID;
+                queryString = "UPDATE dbo.Leave_Balance SET Balance = " + leaveTypes.compassionate + " WHERE Employee_ID = " + staff_id + " AND Leave_Type_ID = " + leaveTypes.compassionateID;
             else
-                queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_ID, Balance) Values('" + staff_id + "','" + leaveTypes.compassionateID + "','" + leaveTypes.compassionate + "')";
+                queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_Type_ID, Balance) Values('" + staff_id + "','" + leaveTypes.compassionateID + "','" + leaveTypes.compassionate + "')";
             DBExecuteQuery(queryString);
         }
 
@@ -155,7 +155,7 @@ namespace LeaveSystemMVC.Controllers
         {
             bool exists = false;
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "SELECT Count(*) From dbo.Leave_Balance WHERE Employee_ID = " + staff_id + " AND Leave_ID = " + leave_id;
+            string queryString = "SELECT Count(*) From dbo.Leave_Balance WHERE Employee_ID = " + staff_id + " AND Leave_Type_ID = " + leave_id;
             using (var connection = new SqlConnection(connectionString))
             {
                 var command = new SqlCommand(queryString, connection);

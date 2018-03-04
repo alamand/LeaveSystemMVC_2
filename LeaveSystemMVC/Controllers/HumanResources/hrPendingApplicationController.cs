@@ -103,9 +103,9 @@ namespace LeaveSystemMVC.Controllers
                     balanceDeduction.Add("Compassionate", (decimal)numOfDays);
                     break;
 
-                case "Short_Hours_Per_Month":
+                case "Short_Hours":
                     TimeSpan span = (TimeSpan)leave.shortEndTime - (TimeSpan)leave.shortStartTime;
-                    balanceDeduction.Add("Short_Hours_Per_Month", (decimal)span.TotalHours);
+                    balanceDeduction.Add("Short_Hours", (decimal)span.TotalHours);
                     break;
 
                 case "Pilgrimage":
@@ -394,7 +394,7 @@ namespace LeaveSystemMVC.Controllers
                     ApproveCompassionate(leave);
                     break;
 
-                case "Short_Hours_Per_Month":
+                case "Short_Hours":
                     ApproveShortHours(leave);
                     break;
 
@@ -730,7 +730,7 @@ namespace LeaveSystemMVC.Controllers
         private void DBUpdateBalance(int empID, int leaveID, decimal balance)
         {
             string queryString = "UPDATE dbo.Leave_Balance SET Balance = '" + balance + "' " +
-                       "WHERE Employee_ID = '" + empID + "' AND Leave_ID = '" + leaveID + "' ";
+                       "WHERE Employee_ID = '" + empID + "' AND Leave_Type_ID = '" + leaveID + "' ";
             DBExecuteQuery(queryString);
         }
 

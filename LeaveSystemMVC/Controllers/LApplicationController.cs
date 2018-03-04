@@ -49,7 +49,7 @@ namespace LeaveSystemMVC.Controllers
             // gets the total number of days, this involves excluding weekends and public holidays
             int numOfDays = GetNumOfDays(model.startDate, model.returnDate);
 
-            if ((model.leaveTypeName.Equals("Short_Hours_Per_Month")) || (numOfDays > 0 && (model.shortStartTime != null || model.shortEndTime != null)))
+            if ((model.leaveTypeName.Equals("Short_Hours")) || (numOfDays > 0 && (model.shortStartTime != null || model.shortEndTime != null)))
             {
                 switch (model.leaveTypeName)
                 {
@@ -69,7 +69,7 @@ namespace LeaveSystemMVC.Controllers
                         LeaveAppCompassionate(model, leaveBalance, emp, file, numOfDays);
                         break;
 
-                    case "Short_Hours_Per_Month":
+                    case "Short_Hours":
                         int duration = Convert.ToInt32(form["selectedDuration"]);
                         LeaveAppShortHours(model, leaveBalance, emp, duration);
                         break;
@@ -516,7 +516,7 @@ namespace LeaveSystemMVC.Controllers
 
         private void ApplyLeave(sLeaveModel lm, int numOfDays=0, string fName="")
         {
-            string queryString = "INSERT INTO dbo.Leave (Employee_ID, Documentation, Start_Date, Reporting_Back_Date, Start_Hrs, End_Hrs, Leave_ID, " +
+            string queryString = "INSERT INTO dbo.Leave (Employee_ID, Documentation, Start_Date, Reporting_Back_Date, Start_Hrs, End_Hrs, Leave_Type_ID, " +
                 "Contact_Outside_UAE, Comment, Flight_Ticket, Total_Leave, Leave_Status_ID, Personal_Email) " +
                 "VALUES ('" + GetLoggedInID() + "','" + fName + "','" + lm.startDate.ToString("yyyy-MM-dd") + "','" + lm.returnDate.ToString("yyyy-MM-dd") + 
                 "','" + lm.shortStartTime.ToString() + "','" + lm.shortEndTime.ToString() + "','" + lm.leaveTypeID + "','" + lm.contactDetails + "','" + 

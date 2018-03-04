@@ -49,10 +49,10 @@ namespace LeaveSystemMVC.Controllers
 
         private string GetFilteredQuery(int deptID, int leaveType, int leaveStat, string search, string order, string sDate, string eDate)
         {
-            var queryString = "SELECT Leave_Application_ID, Employee.Employee_ID, First_Name, Last_Name, Leave.Start_Date, Leave.Reporting_Back_Date, Leave.Leave_ID, Leave_Name, " +
+            var queryString = "SELECT Leave_Application_ID, Employee.Employee_ID, First_Name, Last_Name, Leave.Start_Date, Leave.Reporting_Back_Date, Leave.Leave_Type_ID, Leave_Name, " +
                 "Contact_Outside_UAE, Comment, Documentation, Flight_Ticket, Total_Leave, Start_Hrs, End_Hrs, Leave.Leave_Status_ID, Status_Name, HR_Comment, LM_Comment, Leave.Personal_Email " +
                 "FROM dbo.Leave, dbo.Employee, dbo.Leave_Type, dbo.Leave_Status, dbo.Department, dbo.Reporting " +
-                "WHERE Leave.Employee_ID = Employee.Employee_ID AND Leave.Leave_ID = Leave_Type.Leave_ID AND " +
+                "WHERE Leave.Employee_ID = Employee.Employee_ID AND Leave.Leave_Type_ID = Leave_Type.Leave_Type_ID AND " +
                 "Leave.Leave_Status_ID = Leave_Status.Leave_Status_ID AND Department.Department_ID = Employee.Department_ID AND Employee.Employee_ID = Reporting.Employee_ID " +
                 "AND Leave_Status.Status_Name != 'Pending_LM' AND Leave_Status.Status_Name != 'Pending_HR'";
 
@@ -65,7 +65,7 @@ namespace LeaveSystemMVC.Controllers
             // adds a filter query if a leave type is selected from the dropdown, note that -1 represents All Types
             if (leaveType >= 0)
             {
-                queryString += " AND Leave.Leave_ID = " + leaveType;
+                queryString += " AND Leave.Leave_Type_ID = " + leaveType;
             }
 
             // adds a filter query if a leave status is selected from the dropdown, note that -1 represents all status

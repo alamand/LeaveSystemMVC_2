@@ -261,7 +261,7 @@ namespace LeaveSystemMVC.Controllers
                 {
                     if (leave.leaveStatusName.Equals("Approved") && !leave.leaveTypeName.Equals("Maternity"))
                     {
-                        if (leave.leaveTypeName.Equals("Short_Hours_Per_Month"))
+                        if (leave.leaveTypeName.Equals("Short_Hours"))
                         {
                             if (leave.startDate == holiday)
                             {
@@ -306,7 +306,7 @@ namespace LeaveSystemMVC.Controllers
 
         private void DBUpdateBalance(sLeaveModel leave, decimal balance)
         {
-            string queryString = "UPDATE dbo.Leave_Balance SET Balance = Balance+'"+ balance + "' WHERE Employee_ID = '" + leave.employeeID + "' AND Leave_ID = '" + leave.leaveTypeID + "'";
+            string queryString = "UPDATE dbo.Leave_Balance SET Balance = Balance+'"+ balance + "' WHERE Employee_ID = '" + leave.employeeID + "' AND Leave_Type_ID = '" + leave.leaveTypeID + "'";
             DBExecuteQuery(queryString);
         }
     }

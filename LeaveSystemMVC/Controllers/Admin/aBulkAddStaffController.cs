@@ -247,7 +247,7 @@ namespace LeaveSystemMVC.Controllers
                                         break;
                                 } // end of switch
 
-                                queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_ID, Balance) " +
+                                queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_Type_ID, Balance) " +
                                 "VALUES ('" + employeeID + "', '" + leaveID + "', '" + balance +  "')";
 
                                 using (var connection = new SqlConnection(connectionString))

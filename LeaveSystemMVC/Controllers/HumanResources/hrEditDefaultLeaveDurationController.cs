@@ -35,7 +35,7 @@ namespace LeaveSystemMVC.Controllers
 
         public void UpdateBalance(int id, decimal duration)
         {
-            string queryUpdate = "UPDATE dbo.Leave_Type SET Duration='" + duration + "' WHERE Leave_ID='" + id + "'";
+            string queryUpdate = "UPDATE dbo.Leave_Type SET Duration='" + duration + "' WHERE Leave_Type_ID='" + id + "'";
             DBExecuteQuery(queryUpdate);
         }
     }

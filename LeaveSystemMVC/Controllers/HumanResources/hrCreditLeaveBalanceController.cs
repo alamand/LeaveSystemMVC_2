@@ -53,9 +53,9 @@ namespace LeaveSystemMVC.Controllers
         {
             string queryString = "";
             if (IsLeaveBalanceExists(empID, leaveID))
-                queryString = "UPDATE dbo.Leave_Balance SET Balance = " + balance + ", Last_Edit_Comment = 'Leave quota per annum' WHERE Employee_ID = " + empID + " AND Leave_ID = " + leaveID;
+                queryString = "UPDATE dbo.Leave_Balance SET Balance = " + balance + ", Last_Edit_Comment = 'Leave quota per annum' WHERE Employee_ID = " + empID + " AND Leave_Type_ID = " + leaveID;
             else
-                queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_ID, Balance, Last_Edit_Comment) VALUES(" + empID + "," + leaveID + "," + balance + ",'Leave quota per annum')";
+                queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_Type_ID, Balance, Last_Edit_Comment) VALUES(" + empID + "," + leaveID + "," + balance + ",'Leave quota per annum')";
             DBExecuteQuery(queryString);
         }
         

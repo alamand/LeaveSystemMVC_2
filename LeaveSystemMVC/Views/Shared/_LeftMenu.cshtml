@@ -26,15 +26,15 @@
         @if (User.IsInRole("HR_Responsible"))
         {
             <li role="presentation" class="nav-divider"></li>
-            <li role="presentation" class="dropdown-header"style="font-size:14pt">HR Responsible</li>
+            <li role="presentation" class="droEdit Leave Durationpdown-header"style="font-size:14pt">HR Responsible</li>
             @Html.MenuItem("Pending Approvals", "Index", "hrPendingApplication")
             @Html.MenuItem("Public Holidays", "Index", "hrHolidaysCalender")                
             @Html.MenuItem("Employee Leave History", "Index", "hrEmployeeLeaveHistory")
             @Html.MenuItem("View/Edit Employee Balances", "Index", "hrEditBalance")
             //@Html.MenuItem("Select Substitute", "Index", "hrSelectSubstitute")
             @Html.MenuItem("Credit Days In Lieu", "Index", "hrDaysInLieu")
-            @Html.MenuItem("Edit Leave Duration", "Index", "hrEditDefaultLeaveDuration")
-            @Html.MenuItem("Credit Leave Balances", "Index", "hrCreditLeaveBalance")
+            @Html.MenuItem("Edit Leave Quotas", "Index", "hrEditDefaultLeaveDuration")
+            @Html.MenuItem("Credit Leave Quotas", "Index", "hrCreditLeaveBalance")
             @Html.MenuItem("Administer Employment Period", "Index", "hrAdministerEmployment")                
             @Html.MenuItem("Staff on Probation", "Index", "hrProbationAdministration")
          }
@@ -47,8 +47,8 @@
             @Html.MenuItem("Employee Leave History", "Index", "hrEmployeeLeaveHistory")
             @Html.MenuItem("View/Edit Employee Balances", "Index", "hrEditBalance")
             @Html.MenuItem("Credit Days In Lieu", "Index", "hrDaysInLieu")
-            @Html.MenuItem("Edit Leave Duration", "Index", "hrEditDefaultLeaveDuration")
-            @Html.MenuItem("Credit Leave Balances", "Index", "hrCreditLeaveBalance")
+            @Html.MenuItem("Edit Leave Quotas", "Index", "hrEditDefaultLeaveDuration")
+            @Html.MenuItem("Credit Leave Quotas", "Index", "hrCreditLeaveBalance")
         }
 
         @if (User.IsInRole("Admin"))
