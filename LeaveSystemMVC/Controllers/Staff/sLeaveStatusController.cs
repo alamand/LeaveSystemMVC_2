@@ -108,9 +108,8 @@ namespace LeaveSystemMVC.Controllers
             }
         }
 
-        public ActionResult Delete(int id) {
-
-            string queryString = "UPDATE Leave SET Leave_Status_ID= '5' WHERE Leave_Application_ID = '"+id+"'";
+        public ActionResult Delete(int appID) {
+            string queryString = "UPDATE Leave SET Leave_Status_ID= '5' WHERE Leave_Application_ID = '"+appID+"'";
             DBExecuteQuery(queryString);
             TempData["SuccessMessage"] = "Your leave application has been cancelled successfully.";
 
