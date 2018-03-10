@@ -1,10 +1,10 @@
 ﻿@model LeaveSystemMVC.Models.sleaveBalanceModel
 @Html.Partial("_LeftMenu")
-@{ ViewBag.Title = "Edit Annual Leave Quotas of Organization"; }
+@{ ViewBag.Title = "Edit Organization-wide Leave Quotas"; }
 
 <div class="col-md-10">
     <h3>@ViewBag.title</h3>
-    <hr />
+    <br />
     @Html.Partial("../_Message")
 
     @using (Html.BeginForm())
@@ -15,7 +15,7 @@
                 <tr>
                     <th class="col-md-3">Leave Type</th>
                     <th class="col-md-2">Default Duration</th>
-                    <th class="col-md-2">Edit Default Duration</th>
+                    <th class="col-md-2">New Default Duration</th>
                 </tr>
                 <tr>
                     @Html.HiddenFor(model => model.annualID)

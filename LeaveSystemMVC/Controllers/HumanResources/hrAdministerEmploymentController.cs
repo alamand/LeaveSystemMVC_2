@@ -15,7 +15,7 @@ namespace LeaveSystemMVC.Controllers
             SetMessageViewBags();
 
             // gets and stores to the ViewData all available Employees from the DB and adds a default key of 0 for de-selecting 
-            ViewData["EmployeeList"] = AddDefaultToDictionary(DBEmployeeList(), 0, "- Select Employee -");
+            ViewData["EmployeeList"] = AddDefaultToDictionary(DBStaffList(), 0, "- Select Employee -");
 
             // this sets the default selection, or the user selection from the dropdown
             ViewData["selectedEmployee"] = selectedEmployee;
