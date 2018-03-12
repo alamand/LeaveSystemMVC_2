@@ -14,8 +14,8 @@
             <table class="table">
                 <tr>
                     <th class="col-md-3">Leave Type</th>
-                    <th class="col-md-2">Default Duration</th>
-                    <th class="col-md-2">New Default Duration</th>
+                    <th class="col-md-2">Default Quota</th>
+                    <th class="col-md-2">New Default Quota</th>
                 </tr>
                 <tr>
                     @Html.HiddenFor(model => model.annualID)
@@ -34,12 +34,6 @@
                     <td>@Html.LabelFor(model => model.sick)</td>
                     <td>@Model.sick</td>
                     <td>@Html.EditorFor(model => model.sick, new { htmlAttributes = new { @class = "form-control", @Value = Model.sick } })</td>
-                </tr>
-                <tr>
-                    @Html.HiddenFor(model => model.daysInLieuID)
-                    <td>@Html.LabelFor(model => model.daysInLieu)</td>
-                    <td>@Model.daysInLieu</td>
-                    <td>@Html.EditorFor(model => model.daysInLieu, new { htmlAttributes = new { @class = "form-control", @Value = Model.daysInLieu } })</td>
                 </tr>
                 <tr>
                     @Html.HiddenFor(model => model.compassionateID)

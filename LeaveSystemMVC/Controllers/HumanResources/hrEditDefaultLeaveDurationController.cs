@@ -19,11 +19,11 @@ namespace LeaveSystemMVC.Controllers
             if (ModelState.IsValid)
             {
                 UpdateBalance(model.annualID, model.annual);
-                UpdateBalance(model.compassionateID, model.compassionate);
-                UpdateBalance(model.daysInLieuID, model.daysInLieu);
+                UpdateBalance(model.compassionateID, model.compassionate);                
                 UpdateBalance(model.maternityID, model.maternity);
                 UpdateBalance(model.sickID, model.sick);
                 UpdateBalance(model.shortHoursID, model.shortHours);
+                UpdateBalance(model.pilgrimageID, model.pilgrimage);
                 ViewBag.SuccessMessage = "The information has been updated successfully.";
             }
             else
