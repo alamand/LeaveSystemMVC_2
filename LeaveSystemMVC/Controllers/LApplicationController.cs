@@ -365,8 +365,12 @@ namespace LeaveSystemMVC.Controllers
             if (ModelState.IsValid)
             {
                 // does the user have enough balance?
-                if (lb.pilgrimage > numOfDays)
+                if (lb.pilgrimage < numOfDays)
                 {
+                    TempData["ErrorMessage"] = "You do not have enough balance.";
+                }
+                else
+                { 
                     // uploads the file to App_Data/Documentation
                     string fileName = UploadFile(file);
 
@@ -380,10 +384,6 @@ namespace LeaveSystemMVC.Controllers
 
                         // sets the notification message to be displayed to the applicant
                         TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
-                    }
-                    else
-                    {
-                        RedirectToAction("Index", new { appID = model.leaveAppID });
                     }
                 }
             }
@@ -509,7 +509,6 @@ namespace LeaveSystemMVC.Controllers
             try
             {
                 client.Send(mail);
-                System.Diagnostics.Debug.WriteLine("Mail Sent");
             }
             catch (Exception e){}
         }
