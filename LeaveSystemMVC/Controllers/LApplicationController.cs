@@ -70,7 +70,7 @@ namespace LeaveSystemMVC.Controllers
 
                     case "Short_Hours":
                         int duration = Convert.ToInt32(form["selectedDuration"]);
-                        LeaveAppShortHours(model, leaveBalance, emp, duration);
+                        LeaveAppShortHours(model, leaveBalance, emp, duration);                        
                         break;
 
                     case "Pilgrimage":
@@ -323,15 +323,22 @@ namespace LeaveSystemMVC.Controllers
             // checks if the selected date is a public holiday
             bool isPublicHoliday = IsPublicHoliday(model.startDate);
 
-            // applys for leave ONLY if the date is not a weekend or public holiday,
-            // the leave duration is less than 2:30 hours, and the applicant has enough balance
+            bool isValidHours = false;
+            // checks that the hours are between 6am and 10pm
+            if ((model.shortStartTime.Hours >= 6 && model.shortEndTime.Hours <= 21))
+                isValidHours = true;
+
+            // applies for leave ONLY if the date is not a weekend or public holiday,
+            // the leave duration is less than 2:30 hours, the applicant has enough balance, and the times are within a valid range
             if (ModelState.IsValid)
             {
-                if (!isWeekend)
+                if (isValidHours)
                 {
-                    if (!isPublicHoliday)
+                    if (!isWeekend)
                     {
-                            if ((decimal)duration/60 <= lb.shortHours)
+                        if (!isPublicHoliday)
+                        {
+                            if ((decimal)duration / 60 <= lb.shortHours)
                             {
                                 // inserts the data to the database
                                 ApplyLeave(model);
@@ -344,17 +351,22 @@ namespace LeaveSystemMVC.Controllers
                             }
                             else
                             {
-                                ViewBag.ErrorMessage = "You do not have enough balance.";
+                                TempData["ErrorMessage"] = "You do not have enough balance.";
                             }
+                        }
+                        else
+                        {
+                            TempData["ErrorMessage"] = "The selected date is a public holiday.";
+                        }
                     }
                     else
                     {
-                        ViewBag.WarningMessage = "The selected date is a public holiday.";
+                        TempData["ErrorMessage"] = "The selected date is a weekend.";
                     }
                 }
                 else
                 {
-                    ViewBag.WarningMessage = "The selected date is a weekend.";
+                    TempData["ErrorMessage"] = "The selected hours are invalid.";
                 }
             }
         }
