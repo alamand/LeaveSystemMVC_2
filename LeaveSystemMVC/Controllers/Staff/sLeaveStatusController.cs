@@ -111,9 +111,31 @@ namespace LeaveSystemMVC.Controllers
         public ActionResult Delete(int appID) {
             string queryString = "UPDATE Leave SET Leave_Status_ID= '5' WHERE Leave_Application_ID = '"+appID+"'";
             DBExecuteQuery(queryString);
+
             TempData["SuccessMessage"] = "Your leave application has been cancelled successfully.";
 
+            //@TODO: send an email
+
             return RedirectToAction("Index");
+        }
+
+        public void SendMail(string email, string message)
+        {
+            MailMessage mail = new MailMessage();
+            mail.From = new MailAddress("project_ict333@murdochdubai.ac.ae", "GIMEL LMS");
+            mail.To.Add(new MailAddress(email));
+            mail.Subject = "Leave Application Update";
+            mail.Body = message + Environment.NewLine;
+
+            SmtpClient client = new SmtpClient();
+            client.EnableSsl = true;
+            client.Credentials = new NetworkCredential("project_ict333@murdochdubai.ac.ae", "ict@333");
+            try
+            {
+                client.Send(mail);
+                System.Diagnostics.Debug.WriteLine("Mail Sent");
+            }
+            catch (Exception e) { }
         }
     }
 }

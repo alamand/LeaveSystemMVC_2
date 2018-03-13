@@ -13,7 +13,6 @@ using System.Net;
 using Hangfire;
 
 // @TODO: More testing and optimization
-// @Mandy: Give some good words for pop up messages.
 
 namespace LeaveSystemMVC.Controllers
 {
@@ -92,7 +91,7 @@ namespace LeaveSystemMVC.Controllers
             }
             else
             {
-                TempData["ErrorMessage"] = "The selected date(s) is/are weekend(s), and/or public holiday(s), and/or the leave duration is zero.";
+                TempData["ErrorMessage"] = "Invalid application. The selected date(s) is/are weekend(s), and/or public holiday(s), and/or the leave duration is zero.";
             }
 
             SetViewData(emp, model.leaveTypeID);
@@ -492,15 +491,15 @@ namespace LeaveSystemMVC.Controllers
         public void SendMail(sLeaveModel lm, sEmployeeModel emp)
         {
             string message = "";
-            if (lm.shortStartTime == null && lm.shortEndTime == null)
-                message = "Your " + lm.leaveTypeName + " leave application from " + lm.startDate + " to " + lm.returnDate + " has been sent to your line manager for approval.";
+            if (!lm.leaveTypeName.Equals("Short_Hours"))
+                message = "Your " + lm.leaveTypeName + " leave application from " + lm.startDate.ToShortDateString() + " to " + lm.returnDate.ToShortDateString() + " with ID: " + lm.leaveAppID + " has been sent to your line manager for approval.";
             else
-                message = "Your " + lm.leaveTypeName + " leave application for " + lm.startDate + " from " + lm.shortStartTime + " to " + lm.shortEndTime + " has been sent to your line manager for approval.";
+                message = "Your " + lm.leaveTypeName + " leave application for " + lm.startDate.ToShortDateString() + " from " + lm.shortStartTime + " to " + lm.shortEndTime + " with ID: " + lm.leaveAppID + " has been sent to your line manager for approval.";
 
             MailMessage mail = new MailMessage();
             mail.From = new MailAddress("project_ict333@murdochdubai.ac.ae", "GIMEL LMS");
             mail.To.Add(new MailAddress(emp.email));
-            mail.Subject = "Leave Application Update";
+            mail.Subject = "Leave Application " + lm.leaveAppID + " Update";
             mail.Body = message + Environment.NewLine;
 
             SmtpClient client = new SmtpClient();

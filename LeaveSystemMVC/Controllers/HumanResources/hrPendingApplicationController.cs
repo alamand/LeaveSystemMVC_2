@@ -64,7 +64,7 @@ namespace LeaveSystemMVC.Controllers
                     break;
 
                 default:
-                    break; ;
+                    break;
             }
 
             if (TempData["SuccessMessage"] != null || TempData["WarningMessage"] != null)
@@ -368,7 +368,8 @@ namespace LeaveSystemMVC.Controllers
             int rejectedID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Rejected_HR").Key;
             DBUpdateLeave(leave, rejectedID);
 
-            string message = "Rejected";      //@TODO: write email
+            string message = "";
+            message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been rejected by human resources.";
             BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
 
             TempData["WarningMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>rejected</b> successfully.<br/>";
@@ -456,7 +457,8 @@ namespace LeaveSystemMVC.Controllers
             DBUpdateBalance(leave.employeeID, lb.annualID, lb.annual - deductAnnual);
             DBUpdateBalance(leave.employeeID, lb.unpaidID, lb.unpaid + addUnpaid);
 
-            string message = "Approved"; //@TODO: Write an email
+            string message;
+            message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by human resources.";
 
             // sends a notification email to the applicant
             BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
@@ -507,7 +509,8 @@ namespace LeaveSystemMVC.Controllers
             DBUpdateBalance(leave.employeeID, lb.daysInLieuID, (lb.daysInLieu - deductDIL));
             DBUpdateBalance(leave.employeeID, lb.unpaidID, (lb.unpaid + addUnpaid));
 
-            string message = "Approved"; //@TODO: Write an email
+            string message;
+            message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by human resources.";
 
             // sends a notification email to the applicant
             BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
@@ -572,7 +575,8 @@ namespace LeaveSystemMVC.Controllers
             DBUpdateBalance(leave.employeeID, lb.annualID, lb.annual - deductAnnual);
             DBUpdateBalance(leave.employeeID, lb.unpaidID, (lb.unpaid + addUnpaid));
 
-            string message = "Approved"; //@TODO: Write an email
+            string message;
+            message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by human resources.";
 
             // sends a notification email to the applicant
             BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
@@ -597,7 +601,8 @@ namespace LeaveSystemMVC.Controllers
 
                 DBUpdateBalance(leave.employeeID, lb.compassionateID, lb.compassionate - numOfDays);
 
-                string message = "Approved"; //@TODO: Write an email
+                string message;
+                message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by human resources.";
 
                 // sends a notification email to the applicant
                 BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
@@ -626,7 +631,8 @@ namespace LeaveSystemMVC.Controllers
 
                 DBUpdateBalance(leave.employeeID, lb.shortHoursID, lb.shortHours - (decimal)span.TotalHours);
 
-                string message = "Approved"; //@TODO: Write an email
+                string message;
+                message = "Your " + leave.leaveTypeName + " leave application for " + leave.startDate.ToShortDateString() + " from " + leave.shortStartTime + " to " + leave.shortEndTime + " with ID " + leave.leaveAppID + " has been approved by human resources.";
 
                 // sends a notification email to the applicant
                 BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
@@ -655,7 +661,8 @@ namespace LeaveSystemMVC.Controllers
 
                 DBUpdateBalance(leave.employeeID, lb.daysInLieuID, lb.daysInLieu - numOfDays);
 
-                string message = "Approved"; //@TODO: Write an email
+                string message;
+                message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by human resources.";
 
                 // sends a notification email to the applicant
                 BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
@@ -684,7 +691,8 @@ namespace LeaveSystemMVC.Controllers
 
                 DBUpdateBalance(leave.employeeID, lb.pilgrimageID, lb.pilgrimage - lb.pilgrimage);
 
-                string message = "Approved"; //@TODO: Write an email
+                string message;
+                message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by human resources.";
 
                 // sends a notification email to the applicant
                 BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
@@ -710,7 +718,8 @@ namespace LeaveSystemMVC.Controllers
 
             DBUpdateBalance(leave.employeeID, lb.unpaidID, lb.unpaid + numOfDays);
 
-            string message = "Approved"; //@TODO: Write an email
+            string message;
+            message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by human resources.";
 
             // sends a notification email to the applicant
             BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
