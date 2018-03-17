@@ -161,12 +161,14 @@ namespace LeaveSystemMVC.Controllers
             // keeps track of how much credit points should be deducted from each balance type
             decimal deductDIL = 0;
             decimal deductSick = 0;
+            decimal deductAnnual = 0;
             decimal addUnpaid = 0;
 
-            // deduction order: Sick --> DIL --> Unpaid
+            // deduction order: Sick --> DIL --> Annual --> Unpaid
             // checks if the applicant has enough balance in sick, if yes, then simply deduct from sick, 
             // if not, deduct all the balance from sick and the remainder from DIL balance. if DIL balance 
-            // is insufficient, deduct all the balance from DIL and then add the remaining number 
+            // is insufficient, deduct all the balance from DIL and the remainder from annual balance. 
+            // if annual balance is insufficient, deduct all from annual and then add the remaining number 
             // of days to unpaid balance.
             if (lb.sick < numOfDays)
             {
@@ -174,7 +176,15 @@ namespace LeaveSystemMVC.Controllers
                 if (lb.sick + lb.daysInLieu < numOfDays)
                 {
                     deductDIL = lb.daysInLieu;
-                    addUnpaid = numOfDays - deductSick - deductDIL;
+                    if (lb.sick + lb.daysInLieu + lb.annual < numOfDays)
+                    {
+                        deductAnnual = lb.annual;
+                        addUnpaid = numOfDays - deductSick - deductDIL - deductAnnual;
+                    }
+                    else
+                    {
+                        deductAnnual = numOfDays - deductSick - deductDIL;
+                    }
                 }
                 else
                 {
@@ -203,6 +213,7 @@ namespace LeaveSystemMVC.Controllers
                     TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
                     TempData["SuccessMessage"] += (deductSick > 0) ? deductSick + " day(s) will be deducted from Sick balance.<br/>" : "";
                     TempData["SuccessMessage"] += (deductDIL > 0) ? deductDIL + " day(s) will be deducted from Days In Lieu balance.<br/>" : "";
+                    TempData["SuccessMessage"] += (deductAnnual > 0) ? deductAnnual + " day(s) will be deducted from Annual balance.<br/>" : "";
                     TempData["SuccessMessage"] += (addUnpaid > 0) ? addUnpaid + " day(s) will be added to Unpaid balance.<br/>" : "";
                 }
             }
@@ -280,29 +291,65 @@ namespace LeaveSystemMVC.Controllers
 
         private void LeaveAppCompassionate(sLeaveModel model, sleaveBalanceModel lb, sEmployeeModel emp, HttpPostedFileBase file, int numOfDays)
         {
-            if (ModelState.IsValid)
+            decimal maxDIL = GetLeaveBalanceModel().compassionate;
+
+            // keeps track of how much credit points should be deducted from each balance type
+            decimal addCompassionate = 0;
+            decimal deductDIL = 0;
+            decimal deductAnnual = 0;
+            decimal addUnpaid = 0;
+
+            // deduction order: Compassionate --> DIL --> Annual --> Unpaid
+            // checks if the applicant has not exceeded the compassionate limit, if yes, then simply add to compassionate, 
+            // if not, deduct all the balance from DIL and the remainder from Annual balance. if Annual balance 
+            // is insufficient, deduct all the balance from DIL and the remainder from annual balance. 
+            // if annual balance is insufficient, deduct all from annual and then add the remaining number 
+            // of days to unpaid balance.
+            if (maxDIL < numOfDays)
             {
-                // does the user have enough balance?
-                if (lb.compassionate < numOfDays)
+                addCompassionate = maxDIL;
+                if (maxDIL + lb.daysInLieu < numOfDays)
                 {
-                    TempData["ErrorMessage"] = "You do not have enough balance.";
+                    deductDIL = lb.daysInLieu;
+                    if (maxDIL + lb.daysInLieu + lb.annual < numOfDays)
+                    {
+                        deductAnnual = lb.annual;
+                        addUnpaid = numOfDays - maxDIL - deductDIL - deductAnnual;
+                    }
+                    else
+                    {
+                        deductAnnual = numOfDays - maxDIL - deductDIL;
+                    }
                 }
                 else
                 {
-                    // uploads the file to App_Data/Documentation
-                    string fileName = UploadFile(file);
+                    deductDIL = numOfDays - maxDIL;
+                }
+            }
+            else
+            {
+                addCompassionate = numOfDays;
+            }
 
-                    if (TempData["ErrorMessage"] == null)
-                    {
-                        // inserts the data to the database
-                        ApplyLeave(model, numOfDays, fileName);
+            if (ModelState.IsValid)
+            {
+                // uploads the file to App_Data/Documentation
+                string fileName = UploadFile(file);
 
-                        // sends a notification email to the applicant
-                        BackgroundJob.Enqueue(() => SendMail(model, emp));
+                if (TempData["ErrorMessage"] == null)
+                {
+                    // inserts the data to the database
+                    ApplyLeave(model, numOfDays, fileName);
 
-                        // sets the notification message to be displayed to the applicant
-                        TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
-                    }
+                    // sends a notification email to the applicant
+                    BackgroundJob.Enqueue(() => SendMail(model, emp));
+
+                    // sets the notification message to be displayed to the applicant
+                    TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
+                    TempData["SuccessMessage"] += (addCompassionate > 0) ? addCompassionate + " day(s) will be added to Compassionate balance.<br/>" : "";
+                    TempData["SuccessMessage"] += (deductDIL > 0) ? deductDIL + " day(s) will be deducted from Days In Lieu balance.<br/>" : "";
+                    TempData["SuccessMessage"] += (deductAnnual > 0) ? deductAnnual + " day(s) will be deducted from Annual balance.<br/>" : "";
+                    TempData["SuccessMessage"] += (addUnpaid > 0) ? addUnpaid + " day(s) will be added to Unpaid balance.<br/>" : "";
                 }
             }
         }

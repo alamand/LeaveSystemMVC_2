@@ -94,12 +94,14 @@ namespace LeaveSystemMVC.Controllers
         private Tuple<int, decimal> DBGetAuditDILLeaveBalance(int empID, int leaveType)
         {
             string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "SELECT Leave_Balance_ID, Balance FROM dbo.Leave_Balance WHERE Employee_ID = '" + empID + "' AND Leave_Type_ID = '" + leaveType + "'";
+            string queryString = "SELECT Leave_Balance_ID, Balance FROM dbo.Leave_Balance WHERE Employee_ID = @0 AND Leave_Type_ID = @1";
             Tuple<int, decimal> balTuple = null;
 
             using (var connection = new SqlConnection(connectionString))
             {
                 var command = new SqlCommand(queryString, connection);
+                command.Parameters.AddWithValue("@0", empID);
+                command.Parameters.AddWithValue("@1", leaveType);
                 connection.Open();
                 using (var reader = command.ExecuteReader())
                 {

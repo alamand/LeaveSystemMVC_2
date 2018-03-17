@@ -37,7 +37,6 @@ namespace LeaveSystemMVC.Controllers
             {
                 UpdateLeaveBalance(empBal.empId, empBal.daysInLieuID, empBal.daysInLieu);
                 UpdateLeaveBalance(empBal.empId, empBal.annualID, empBal.annual);
-                UpdateLeaveBalance(empBal.empId, defaultBal.compassionateID, defaultBal.compassionate);
                 UpdateLeaveBalance(empBal.empId, defaultBal.sickID, defaultBal.sick);
 
                 if (GetEmployeeModel(empBal.empId).gender == 'F')

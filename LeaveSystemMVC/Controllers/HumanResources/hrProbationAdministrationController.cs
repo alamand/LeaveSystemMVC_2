@@ -116,9 +116,9 @@ namespace LeaveSystemMVC.Controllers
             DBExecuteQuery(queryString);
 
             if (IsLeaveBalanceExist(leaveTypes.compassionateID, staff_id))
-                queryString = "UPDATE dbo.Leave_Balance SET Balance = " + leaveTypes.compassionate + " WHERE Employee_ID = " + staff_id + " AND Leave_Type_ID = " + leaveTypes.compassionateID;
+                queryString = "UPDATE dbo.Leave_Balance SET Balance = 0 WHERE Employee_ID = " + staff_id + " AND Leave_Type_ID = " + leaveTypes.compassionateID;
             else
-                queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_Type_ID, Balance) Values('" + staff_id + "','" + leaveTypes.compassionateID + "','" + leaveTypes.compassionate + "')";
+                queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_Type_ID, Balance) Values('" + staff_id + "','" + leaveTypes.compassionateID + "','0')";
             DBExecuteQuery(queryString);
         }
 
