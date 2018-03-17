@@ -261,32 +261,80 @@ namespace LeaveSystemMVC.Controllers
                 {
                     if (leave.leaveStatusName.Equals("Approved") && !leave.leaveTypeName.Equals("Maternity"))
                     {
+                        // key: Leave Type
+                        // Value.Item1 : Leave Balance ID
+                        // Value.Item2 : Current Balance
+                        // Value.Item3 : Leave Application Duration
+                        // Value.Item4 : Public Holiday(s) Removed/Added
+                        Dictionary<int, Tuple<int, decimal, decimal, decimal>> audit = DBGetAuditLeave(leave.leaveAppID);
+                        sleaveBalanceModel leaveType = GetLeaveBalanceModel();
+
                         if (leave.leaveTypeName.Equals("Short_Hours"))
                         {
                             if (leave.startDate == holiday)
                             {
                                 TimeSpan span = leave.shortEndTime - leave.shortStartTime;
-
-                                // note that short leaves does not have a duration in days, only in time
-                                // if we are adding a holiday (credit=positive), then we will give back the employee his/her consumed balance
-                                // else if we are removing a holiday (credit=negative), then we are subtracting balance from the employee
-                                DBUpdateLeave(leave.leaveAppID, 0);
-                                DBUpdateBalance(leave, addRemove * (decimal)span.TotalHours);
+                                // Public holiday added
+                                if (addRemove == 1)
+                                {
+                                    DBUpdateBalance(leave.employeeID, leaveType.shortHoursID, audit[leaveType.shortHoursID].Item3);
+                                    DBUpdateAudit(audit[leaveType.shortHoursID].Item1, leave.leaveAppID, audit[leaveType.shortHoursID].Item2, audit[leaveType.shortHoursID].Item3, "Added Public Holiday");
+                                }
+                                else
+                                {
+                                    DBUpdateBalance(leave.employeeID, leaveType.shortHoursID, -audit[leaveType.shortHoursID].Item3);
+                                    DBUpdateAudit(audit[leaveType.shortHoursID].Item1, leave.leaveAppID, audit[leaveType.shortHoursID].Item2, -audit[leaveType.shortHoursID].Item3, "Removed Public Holiday");
+                                }
                             }
                         }
                         else
                         {
-                            // starting leave date
+                            int leaveTypeID = 0;
                             DateTime date = leave.startDate;
+
                             do
                             {
                                 if (date == holiday)
                                 {
+                                    switch (leave.leaveTypeName)
+                                    {
+                                        case "Annual":
+                                            leaveTypeID = GetRebalancingLeaveTypeForAnnual(leave, audit, leaveType, addRemove);
+                                            break;
+
+                                        case "Sick":
+                                            leaveTypeID = GetRebalancingLeaveTypeForSick(leave, audit, leaveType, addRemove);
+                                            break;
+                                            
+                                        case "Compassionate":
+                                            leaveTypeID = GetRebalancingLeaveTypeForCompassionate(leave, audit, leaveType, addRemove);
+                                            break;
+
+                                        case "DIL":
+                                            leaveTypeID = leaveType.daysInLieuID;
+                                            break;
+
+                                        case "Pilgrimage":
+                                            leaveTypeID = leaveType.pilgrimageID;
+                                            break;
+
+                                        case "Unpaid":
+                                            leaveTypeID = leaveType.unpaidID;
+                                            break;
+
+                                        default:
+                                            break;
+                                    }
+
+                                    Dictionary<int, string> leaveTypeList = DBLeaveTypeList();
+                                    Boolean incremental = leaveTypeList[leaveTypeID].Equals("Unpaid") || leaveTypeList[leaveTypeID].Equals("Compassionate") ? true : false;
+
                                     // note that here we are reducing the total days of leave by 1 and adding balance to the employee by 1, and vice versa
                                     // if credit is positive, then we have added a holiday, which means subtract total leave days and add balance
                                     // if credit is negative, then we have removed a holiday, which means add total leave days and subtract balance
                                     DBUpdateLeave(leave.leaveAppID, -addRemove);
-                                    DBUpdateBalance(leave, addRemove);
+                                    DBUpdateBalance(leave.employeeID, leaveTypeID, (incremental) ? -addRemove : addRemove);
+                                    DBUpdateAudit(audit[leaveTypeID].Item1, leave.leaveAppID, audit[leaveTypeID].Item2, audit[leaveTypeID].Item2 + ((incremental) ? -addRemove : addRemove), (addRemove == 1) ? "Added Public Holiday" : "Removed Public Holiday");
                                 }
                                 // move to the next date
                                 date = date.AddDays(1);
@@ -298,15 +346,156 @@ namespace LeaveSystemMVC.Controllers
             }
         }
 
+        private int GetRebalancingLeaveTypeForAnnual(sLeaveModel leave, Dictionary<int, Tuple<int, decimal, decimal, decimal>> audit, sleaveBalanceModel leaveType, int addRemove)
+        {
+            int leaveTypeID = 0;
+
+            foreach (KeyValuePair<int, Tuple<int, decimal, decimal, decimal>> pair in audit)
+            {
+                int key = pair.Key;
+                int balID = pair.Value.Item1;
+                decimal currBal = pair.Value.Item2;
+                decimal consumed = pair.Value.Item3;
+                decimal ph = pair.Value.Item4;
+                Output("Leave Type: " + key + " | Balance ID: " + balID + " | Current Balance: " + currBal + " | Consumed: " + consumed + " | PH: " + ph);
+            }
+
+            // Public holiday is added
+            if (addRemove == 1)
+            {
+                if (audit.ContainsKey(leaveType.unpaidID) && audit[leaveType.unpaidID].Item3 + audit[leaveType.unpaidID].Item4 < 0)
+                    leaveTypeID = leaveType.unpaidID;
+                else if (audit.ContainsKey(leaveType.annualID) && audit[leaveType.annualID].Item3 + audit[leaveType.annualID].Item4 > 0)
+                    leaveTypeID = leaveType.annualID;
+                else
+                    leaveTypeID = leaveType.daysInLieuID;
+            }
+            else
+            {
+                if (audit.ContainsKey(leaveType.daysInLieuID) && audit[leaveType.daysInLieuID].Item2 > 0)
+                    leaveTypeID = leaveType.daysInLieuID;
+                else if (audit.ContainsKey(leaveType.annualID) && audit[leaveType.annualID].Item2 > 0)
+                    leaveTypeID = leaveType.annualID;
+                else
+                    leaveTypeID = leaveType.unpaidID;
+            }
+
+            return leaveTypeID;
+        }
+
+        private int GetRebalancingLeaveTypeForSick(sLeaveModel leave, Dictionary<int, Tuple<int, decimal, decimal, decimal>> audit, sleaveBalanceModel leaveType, int addRemove)
+        {
+            int leaveTypeID = 0;
+
+            // Public holiday is added
+            if (addRemove == 1)
+            {
+                if (audit.ContainsKey(leaveType.unpaidID) && audit[leaveType.unpaidID].Item3 + audit[leaveType.unpaidID].Item4 < 0)
+                    leaveTypeID = leaveType.unpaidID;
+                else if (audit.ContainsKey(leaveType.annualID) && audit[leaveType.annualID].Item3 + audit[leaveType.annualID].Item4 > 0)
+                    leaveTypeID = leaveType.annualID;
+                else if (audit.ContainsKey(leaveType.sickID) && audit[leaveType.sickID].Item3 + audit[leaveType.sickID].Item4 > 0)
+                    leaveTypeID = leaveType.sickID;
+                else
+                    leaveTypeID = leaveType.daysInLieuID;
+            }
+            else
+            {
+                if (audit.ContainsKey(leaveType.daysInLieuID) && audit[leaveType.daysInLieuID].Item2 > 0)
+                    leaveTypeID = leaveType.daysInLieuID;
+                else if (audit.ContainsKey(leaveType.sickID) && audit[leaveType.sickID].Item2 > 0)
+                    leaveTypeID = leaveType.sickID;
+                else if (audit.ContainsKey(leaveType.annualID) && audit[leaveType.annualID].Item2 > 0)
+                    leaveTypeID = leaveType.annualID;
+                else
+                    leaveTypeID = leaveType.unpaidID;
+            }
+
+            return leaveTypeID;
+        }
+
+        private int GetRebalancingLeaveTypeForCompassionate(sLeaveModel leave, Dictionary<int, Tuple<int, decimal, decimal, decimal>> audit, sleaveBalanceModel leaveType, int addRemove)
+        {
+            int leaveTypeID = 0;
+
+            // Public holiday is added
+            if (addRemove == 1)
+            {
+                if (audit.ContainsKey(leaveType.unpaidID) && audit[leaveType.unpaidID].Item3 + audit[leaveType.unpaidID].Item4 < 0)
+                    leaveTypeID = leaveType.unpaidID;
+                else if (audit.ContainsKey(leaveType.daysInLieuID) && audit[leaveType.daysInLieuID].Item3 + audit[leaveType.daysInLieuID].Item4 > 0)
+                    leaveTypeID = leaveType.daysInLieuID;
+                else if (audit.ContainsKey(leaveType.annualID) && audit[leaveType.annualID].Item3 + audit[leaveType.annualID].Item4 > 0)
+                    leaveTypeID = leaveType.annualID;
+                else
+                    leaveTypeID = leaveType.compassionateID;
+            }
+            else
+            {
+                if (audit.ContainsKey(leaveType.compassionateID) && audit[leaveType.compassionateID].Item4 < leaveType.compassionate)
+                    leaveTypeID = leaveType.compassionateID;
+                else if (audit.ContainsKey(leaveType.annualID) && audit[leaveType.annualID].Item2 > 0)
+                    leaveTypeID = leaveType.annualID;
+                else if (audit.ContainsKey(leaveType.daysInLieuID) && audit[leaveType.daysInLieuID].Item2 > 0)
+                    leaveTypeID = leaveType.daysInLieuID;
+                else
+                    leaveTypeID = leaveType.unpaidID;
+            }
+
+            return leaveTypeID;
+        }
+
+        private void DBUpdateAudit(int balanceID, int appID, int valBefore, int addRemove, string comment)
+        {
+            string queryString = "INSERT INTO dbo.Audit_Leave_Balance (Leave_Balance_ID, Leave_Application_ID, Column_Name, Value_Before, Value_After, Modified_By, Modified_On, Comment) " +
+                  "VALUES('" + balanceID + "','" + appID + "', 'Balance' ,'" + valBefore + "','" + (decimal)(valBefore + addRemove) + "','" + GetLoggedInID() + "','" + DateTime.Today.ToString("yyyy-MM-dd") + "', '" + comment + "')";
+            DBExecuteQuery(queryString);
+        }
+
+        protected Dictionary<int, Tuple<int, decimal, decimal, decimal>> DBGetAuditLeave(int appID)
+        {
+            string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+
+            var queryString = "SELECT Leave_Balance.Leave_Balance_ID, Leave_Type_ID, Balance, Value_Before, Value_After, Comment FROM dbo.Leave_Balance, dbo.Audit_Leave_Balance " +
+                "WHERE Leave_Balance.Leave_Balance_ID = Audit_Leave_Balance.Leave_Balance_ID AND Leave_Application_ID = '" + appID + "'";
+            Dictionary<int, Tuple<int, decimal, decimal, decimal>> auditLeave = new Dictionary<int, Tuple<int, decimal, decimal, decimal>>();
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        int balID = (int)reader["Leave_Balance_ID"];
+                        int leaveType = (int)reader["Leave_Type_ID"];
+                        decimal currentBalance = (decimal)reader["Balance"];
+                        decimal valBefore = decimal.Parse((string)reader["Value_Before"]);
+                        decimal valAfter = decimal.Parse((string)reader["Value_After"]);
+                        string comment = (string)reader["Comment"];
+
+                        if (comment.Equals("Approved Leave Application"))
+                            auditLeave.Add(leaveType, new Tuple<int, decimal, decimal, decimal>(balID, currentBalance, valBefore-valAfter, 0));
+                        else if (comment.Equals("Added Public Holiday") || comment.Equals("Removed Public Holiday"))
+                            auditLeave[leaveType] = new Tuple<int, decimal, decimal, decimal>(auditLeave[leaveType].Item1, auditLeave[leaveType].Item2, auditLeave[leaveType].Item3 ,auditLeave[leaveType].Item4 + valBefore - valAfter);
+                    }
+                }
+                connection.Close();
+            }
+
+            return auditLeave;
+        }
+
         private void DBUpdateLeave(int appID, int duration)
         {
             string queryString = "UPDATE dbo.Leave SET Total_Leave = Total_Leave+'"+ duration + "' WHERE Leave_Application_ID = '" + appID + "'";
             DBExecuteQuery(queryString);
         }
 
-        private void DBUpdateBalance(sLeaveModel leave, decimal balance)
+        private void DBUpdateBalance(int empID, int leaveTypeID, decimal balance)
         {
-            string queryString = "UPDATE dbo.Leave_Balance SET Balance = Balance+'"+ balance + "' WHERE Employee_ID = '" + leave.employeeID + "' AND Leave_Type_ID = '" + leave.leaveTypeID + "'";
+            string queryString = "UPDATE dbo.Leave_Balance SET Balance = Balance+'"+ balance + "' WHERE Employee_ID = '" + empID + "' AND Leave_Type_ID = '" + leaveTypeID + "'";
             DBExecuteQuery(queryString);
         }
     }

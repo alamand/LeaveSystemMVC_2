@@ -122,5 +122,17 @@ namespace LeaveSystemMVC.Controllers
 
             return leaveStatusList;
         }
+
+        public ActionResult Cancel(int applicationID)
+        {
+            int cancelledID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Cancelled_LM").Key;
+            string queryString = "UPDATE dbo.Leave SET Leave_Status_ID = '" + cancelledID + "' WHERE Leave_Application_ID = '" + applicationID + "'";
+            DBExecuteQuery(queryString);
+
+            DBRefundLeaveBalance(applicationID);
+
+            TempData["WarningMessage"] = "Leave application <b>" + applicationID + "</b> has be cancelled successfully.";
+            return RedirectToAction("View", new { appID = applicationID });
+        }
     }
 }

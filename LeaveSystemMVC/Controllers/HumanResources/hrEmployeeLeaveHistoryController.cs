@@ -1,6 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Web;
 using System.Web.Mvc;
+using System.Configuration;
+using System.Data.SqlClient;
+using LeaveSystemMVC.Models;
 
 namespace LeaveSystemMVC.Controllers
 {
@@ -126,5 +131,19 @@ namespace LeaveSystemMVC.Controllers
 
             return leaveStatusList;
         }
+
+        public ActionResult Cancel(int applicationID)
+        {
+            int cancelledID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Cancelled_HR").Key;
+            string queryString = "UPDATE dbo.Leave SET Leave_Status_ID = '" + cancelledID + "' WHERE Leave_Application_ID = '" + applicationID + "'";
+            DBExecuteQuery(queryString);
+
+            DBRefundLeaveBalance(applicationID);
+
+            TempData["WarningMessage"] = "Leave application <b>" + applicationID + "</b> has be cancelled successfully.";
+            return RedirectToAction("View", new { appID = applicationID });
+        }
+
+
     }
 }

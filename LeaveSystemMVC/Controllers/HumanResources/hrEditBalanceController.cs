@@ -140,12 +140,62 @@ namespace LeaveSystemMVC.Controllers
             return Edit(lb.empId);
         }
 
-        private void DBUpdateBalance(int employeeID, int leaveID, decimal balance, string comment)
+        private void DBUpdateBalance(int employeeID, int typeID, decimal balance, string comment)
         {
-            string insertQuery = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_Type_ID, Balance, Last_Edit_Comment) VALUES('" + employeeID + "','" + leaveID + "','" + balance + "','" + comment + "')";
-            string updateQuery = "UPDATE dbo.Leave_Balance SET Balance = '" + balance + "', Last_Edit_Comment = '" + comment + "' WHERE Leave_Type_ID = '" + leaveID + "' AND Employee_ID = '" + employeeID + "'";
-            string queryString = (!IsLeaveBalanceExists(employeeID, leaveID) && balance > 0) ? insertQuery : updateQuery;
+            Boolean balanceExists = IsLeaveBalanceExists(employeeID, typeID);
+            Tuple<int, decimal> oldBalance = (balanceExists) ? DBGetBalanceBefore(employeeID, typeID) : null ;
+            string insertQuery = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_Type_ID, Balance, Last_Edit_Comment) VALUES('" + employeeID + "','" + typeID + "','" + balance + "','" + comment + "')";
+            string updateQuery = "UPDATE dbo.Leave_Balance SET Balance = '" + balance + "', Last_Edit_Comment = '" + comment + "' WHERE Leave_Type_ID = '" + typeID + "' AND Employee_ID = '" + employeeID + "'";
+            string queryString = (!balanceExists && balance > 0) ? insertQuery : updateQuery;
             DBExecuteQuery(queryString);
+
+            if (oldBalance == null)
+            {
+                if (balance > 0)
+                {
+                    Tuple<int, decimal> createdBalance = DBGetBalanceBefore(employeeID, typeID);
+                    queryString = "INSERT INTO dbo.Audit_Leave_Balance (Leave_Balance_ID, Column_Name, Value_After, Created_By, Created_On, Comment) " +
+                        "VALUES('" + createdBalance.Item1 + "', 'Balance' ,'" + createdBalance.Item2 + "','" + GetLoggedInID() + "','" + DateTime.Today.ToString("yyyy-MM-dd") + "','" + comment + "')";
+                    DBExecuteQuery(queryString);
+                }
+            }
+            else
+            {
+                if (oldBalance.Item2 != balance)
+                {
+                    queryString = "INSERT INTO dbo.Audit_Leave_Balance (Leave_Balance_ID, Column_Name, Value_Before, Value_After, Modified_By, Modified_On, Comment) " +
+                                      "VALUES('" + oldBalance.Item1 + "', 'Balance' ,'" + oldBalance.Item2 + "','" + balance + "','" + GetLoggedInID() + "','" + DateTime.Today.ToString("yyyy-MM-dd") + "','" + comment + "')";
+                    DBExecuteQuery(queryString);
+                }
+            }
         }
+
+
+        private Tuple<int, decimal> DBGetBalanceBefore(int empID, int typeID)
+        {
+            var queryString = "SELECT Leave_Balance_ID, Balance FROM dbo.Leave_Balance WHERE Employee_ID = '" + empID + "' AND Leave_Type_ID = '" + typeID + "'";
+            Tuple<int, decimal> leaveBalance = null;
+
+
+            string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        int balanceID = (int)reader["Leave_Balance_ID"];
+                        decimal balance = (decimal)reader["Balance"];
+                        leaveBalance = new Tuple<int, decimal>(balanceID, balance);
+                    }
+                }
+                connection.Close();
+            }
+
+            return leaveBalance;
+        }
+
     }
 }

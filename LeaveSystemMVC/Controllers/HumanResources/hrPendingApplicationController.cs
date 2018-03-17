@@ -452,10 +452,23 @@ namespace LeaveSystemMVC.Controllers
 
             int approvedID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Approved").Key;
             DBUpdateLeave(leave, approvedID);
+            string comment = "Approved Leave Application";
 
-            DBUpdateBalance(leave.employeeID, lb.daysInLieuID, lb.daysInLieu - deductDIL);
-            DBUpdateBalance(leave.employeeID, lb.annualID, lb.annual - deductAnnual);
-            DBUpdateBalance(leave.employeeID, lb.unpaidID, lb.unpaid + addUnpaid);
+            if (deductDIL > 0)
+            {
+                DBUpdateBalance(leave.employeeID, lb.daysInLieuID, lb.daysInLieu - deductDIL);
+                DBUpdateAudit(DBLeaveBalanceID(leave.employeeID, lb.daysInLieuID), leave.leaveAppID, lb.daysInLieu, lb.daysInLieu - deductDIL, comment);
+            }
+            if (deductAnnual > 0)
+            {
+                DBUpdateBalance(leave.employeeID, lb.annualID, lb.annual - deductAnnual);
+                DBUpdateAudit(DBLeaveBalanceID(leave.employeeID, lb.annualID), leave.leaveAppID, lb.annual, lb.annual - deductAnnual, comment);
+            }
+            if (addUnpaid > 0)
+            {
+                DBUpdateBalance(leave.employeeID, lb.unpaidID, lb.unpaid + addUnpaid);
+                DBUpdateAudit(DBLeaveBalanceID(leave.employeeID, lb.unpaidID), leave.leaveAppID, lb.unpaid, lb.unpaid + addUnpaid, comment);
+            }
 
             string message;
             message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by human resources.";
@@ -477,12 +490,14 @@ namespace LeaveSystemMVC.Controllers
             // keeps track of how much credit points should be deducted from each balance type
             decimal deductDIL = 0;
             decimal deductSick = 0;
+            decimal deductAnnual = 0;
             decimal addUnpaid = 0;
 
-            // deduction order: Sick --> DIL --> Unpaid
+            // deduction order: Sick --> DIL --> Annual --> Unpaid
             // checks if the applicant has enough balance in sick, if yes, then simply deduct from sick, 
             // if not, deduct all the balance from sick and the remainder from DIL balance. if DIL balance 
-            // is insufficient, deduct all the balance from DIL and then add the remaining number 
+            // is insufficient, deduct all the balance from DIL and the remainder from annual balance. 
+            // if annual balance is insufficient, deduct all from annual and then add the remaining number 
             // of days to unpaid balance.
             if (lb.sick < numOfDays)
             {
@@ -490,7 +505,15 @@ namespace LeaveSystemMVC.Controllers
                 if (lb.sick + lb.daysInLieu < numOfDays)
                 {
                     deductDIL = lb.daysInLieu;
-                    addUnpaid = numOfDays - deductSick - deductDIL;
+                    if (lb.sick + lb.daysInLieu + lb.annual < numOfDays)
+                    {
+                        deductAnnual = lb.annual;
+                        addUnpaid = numOfDays - deductSick - deductDIL - deductAnnual;
+                    }
+                    else
+                    {
+                        deductAnnual = numOfDays - deductSick - deductDIL;
+                    }
                 }
                 else
                 {
@@ -504,10 +527,28 @@ namespace LeaveSystemMVC.Controllers
 
             int approvedID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Approved").Key;
             DBUpdateLeave(leave, approvedID);
+            string comment = "Approved Leave Application";
 
-            DBUpdateBalance(leave.employeeID, lb.sickID, (lb.sick - deductSick));
-            DBUpdateBalance(leave.employeeID, lb.daysInLieuID, (lb.daysInLieu - deductDIL));
-            DBUpdateBalance(leave.employeeID, lb.unpaidID, (lb.unpaid + addUnpaid));
+            if (deductSick > 0)
+            {
+                DBUpdateBalance(leave.employeeID, lb.sickID, (lb.sick - deductSick));
+                DBUpdateAudit(DBLeaveBalanceID(leave.employeeID, lb.sickID), leave.leaveAppID, lb.sick, lb.sick - deductSick, comment);
+            }
+            if (deductDIL > 0)
+            {
+                DBUpdateBalance(leave.employeeID, lb.daysInLieuID, (lb.daysInLieu - deductDIL));
+                DBUpdateAudit(DBLeaveBalanceID(leave.employeeID, lb.daysInLieuID), leave.leaveAppID, lb.daysInLieu, lb.daysInLieu - deductDIL, comment);
+            }
+            if (deductAnnual > 0)
+            {
+                DBUpdateBalance(leave.employeeID, lb.annualID, (lb.annual - deductAnnual));
+                DBUpdateAudit(DBLeaveBalanceID(leave.employeeID, lb.annualID), leave.leaveAppID, lb.annual, lb.annual - deductAnnual, comment);
+            }
+            if (addUnpaid > 0)
+            {
+                DBUpdateBalance(leave.employeeID, lb.unpaidID, (lb.unpaid + addUnpaid));
+                DBUpdateAudit(DBLeaveBalanceID(leave.employeeID, lb.unpaidID), leave.leaveAppID, lb.unpaid, lb.unpaid + addUnpaid, comment);
+            }
 
             string message;
             message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by human resources.";
@@ -569,11 +610,28 @@ namespace LeaveSystemMVC.Controllers
 
             int approvedID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Approved").Key;
             DBUpdateLeave(leave, approvedID);
+            string comment = "Approved Leave Application";
 
-            DBUpdateBalance(leave.employeeID, lb.maternityID, lb.maternity - deductMaternity);
-            DBUpdateBalance(leave.employeeID, lb.daysInLieuID, (lb.daysInLieu - deductDIL));
-            DBUpdateBalance(leave.employeeID, lb.annualID, lb.annual - deductAnnual);
-            DBUpdateBalance(leave.employeeID, lb.unpaidID, (lb.unpaid + addUnpaid));
+            if (deductMaternity > 0)
+            {
+                DBUpdateBalance(leave.employeeID, lb.maternityID, lb.maternity - deductMaternity);
+                DBUpdateAudit(DBLeaveBalanceID(leave.employeeID, lb.maternityID), leave.leaveAppID, lb.maternity, lb.maternity - deductMaternity, comment);
+            }
+            if (deductDIL > 0)
+            {
+                DBUpdateBalance(leave.employeeID, lb.daysInLieuID, (lb.daysInLieu - deductDIL));
+                DBUpdateAudit(DBLeaveBalanceID(leave.employeeID, lb.daysInLieuID), leave.leaveAppID, lb.daysInLieu, lb.daysInLieu - deductDIL, comment);
+            }
+            if (deductAnnual > 0)
+            {
+                DBUpdateBalance(leave.employeeID, lb.annualID, lb.annual - deductAnnual);
+                DBUpdateAudit(DBLeaveBalanceID(leave.employeeID, lb.annualID), leave.leaveAppID, lb.annual, lb.annual - deductAnnual, comment);
+            }
+            if (addUnpaid > 0)
+            {
+                DBUpdateBalance(leave.employeeID, lb.unpaidID, (lb.unpaid + addUnpaid));
+                DBUpdateAudit(DBLeaveBalanceID(leave.employeeID, lb.daysInLieuID), leave.leaveAppID, lb.unpaidID, lb.unpaidID + addUnpaid, comment);
+            }
 
             string message;
             message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by human resources.";
@@ -600,6 +658,7 @@ namespace LeaveSystemMVC.Controllers
                 DBUpdateLeave(leave, approvedID);
 
                 DBUpdateBalance(leave.employeeID, lb.compassionateID, lb.compassionate - numOfDays);
+                DBUpdateAudit(DBLeaveBalanceID(leave.employeeID, lb.compassionateID), leave.leaveAppID, lb.compassionate, lb.compassionate - numOfDays, "Approved Leave Application");
 
                 string message;
                 message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by human resources.";
@@ -630,6 +689,7 @@ namespace LeaveSystemMVC.Controllers
                 DBUpdateLeave(leave, approvedID);
 
                 DBUpdateBalance(leave.employeeID, lb.shortHoursID, lb.shortHours - (decimal)span.TotalHours);
+                DBUpdateAudit(DBLeaveBalanceID(leave.employeeID, lb.shortHoursID), leave.leaveAppID, lb.shortHours, lb.shortHours - (decimal)span.TotalHours, "Approved Leave Application");
 
                 string message;
                 message = "Your " + leave.leaveTypeName + " leave application for " + leave.startDate.ToShortDateString() + " from " + leave.shortStartTime + " to " + leave.shortEndTime + " with ID " + leave.leaveAppID + " has been approved by human resources.";
@@ -660,6 +720,7 @@ namespace LeaveSystemMVC.Controllers
                 DBUpdateLeave(leave, approvedID);
 
                 DBUpdateBalance(leave.employeeID, lb.daysInLieuID, lb.daysInLieu - numOfDays);
+                DBUpdateAudit(DBLeaveBalanceID(leave.employeeID, lb.daysInLieuID), leave.leaveAppID, lb.daysInLieu, lb.daysInLieu - numOfDays, "Approved Leave Application");
 
                 string message;
                 message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by human resources.";
@@ -690,6 +751,7 @@ namespace LeaveSystemMVC.Controllers
                 DBUpdateLeave(leave, approvedID);
 
                 DBUpdateBalance(leave.employeeID, lb.pilgrimageID, lb.pilgrimage - lb.pilgrimage);
+                DBUpdateAudit(DBLeaveBalanceID(leave.employeeID, lb.pilgrimageID), leave.leaveAppID, lb.pilgrimage, lb.pilgrimage - lb.pilgrimage, "Approved Leave Application");
 
                 string message;
                 message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by human resources.";
@@ -717,6 +779,7 @@ namespace LeaveSystemMVC.Controllers
             DBUpdateLeave(leave, approvedID);
 
             DBUpdateBalance(leave.employeeID, lb.unpaidID, lb.unpaid + numOfDays);
+            DBUpdateAudit(DBLeaveBalanceID(leave.employeeID, lb.unpaidID), leave.leaveAppID, lb.unpaid, lb.unpaid + numOfDays, "Approved Leave Application");
 
             string message;
             message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by human resources.";
@@ -741,6 +804,30 @@ namespace LeaveSystemMVC.Controllers
             string queryString = "UPDATE dbo.Leave_Balance SET Balance = '" + balance + "' " +
                        "WHERE Employee_ID = '" + empID + "' AND Leave_Type_ID = '" + leaveID + "' ";
             DBExecuteQuery(queryString);
+        }
+
+        private int DBLeaveBalanceID(int empID, int typeID)
+        {
+            var queryString = "SELECT Leave_Balance_ID FROM dbo.Leave_Balance WHERE Employee_ID = '" + empID + "' AND Leave_Type_ID = '" + typeID + "'";
+            int leaveBalanceID = 0;
+
+
+            string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        leaveBalanceID = (int)reader["Leave_Balance_ID"];
+                    }
+                }
+                connection.Close();
+            }
+
+            return leaveBalanceID;
         }
 
         public void SendMail(string email, string message)

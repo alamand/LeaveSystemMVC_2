@@ -420,6 +420,78 @@ namespace LeaveSystemMVC.Controllers
             }
         }
 
+        protected Dictionary<int, decimal> DBGetAuditLeaveBalance(int leaveApp)
+        {
+            string queryString = "SELECT Leave_Balance_ID, Value_Before, Value_After FROM dbo.Audit_Leave_Balance WHERE Leave_Application_ID = '" + leaveApp + "' ORDER BY Modified_On";
+            Dictionary<int, decimal> auditLeave = new Dictionary<int, decimal>();
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        int balID = (int)reader["Leave_Balance_ID"];
+                        string valBefore = (string)reader["Value_Before"];
+                        string valAfter = (string)reader["Value_After"];
+                        if (auditLeave.ContainsKey(balID))
+                            auditLeave[balID] += decimal.Parse(valBefore) - decimal.Parse(valAfter);
+                        else
+                            auditLeave.Add(balID, decimal.Parse(valBefore) - decimal.Parse(valAfter));
+                    }
+                }
+                connection.Close();
+            }
+
+            return auditLeave;
+        }
+
+        protected void DBRefundLeaveBalance(int appID)
+        {
+            Dictionary<int, decimal> audit = DBGetAuditLeaveBalance(appID);
+
+            foreach (KeyValuePair<int, decimal> pair in audit)
+            {
+                int balID = pair.Key;
+                decimal consumedBal = pair.Value;
+                decimal previousBalance = DBGetLeaveBalance(balID);
+                String queryString = "UPDATE dbo.Leave_Balance SET Balance = '" + (previousBalance+consumedBal) + "' WHERE Leave_Balance_ID = '" + balID + "'";
+                DBExecuteQuery(queryString);
+                DBUpdateAudit(balID, appID, previousBalance, previousBalance + consumedBal, "Refund All Balances");
+            }
+
+        }
+
+        protected decimal DBGetLeaveBalance(int balID) {
+            var queryString = "SELECT Balance FROM dbo.Leave_Balance WHERE Leave_Balance_ID = '" + balID + "'";
+            decimal balance = 0;
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        balance = (decimal)reader["Balance"];
+                    }
+                }
+                connection.Close();
+            }
+
+            return balance;
+        }
+
+        protected void DBUpdateAudit(int leaveBalanceID, int applicationID, decimal valueBefore, decimal valueAfter, string comment)
+        {
+            string queryString = "INSERT INTO dbo.Audit_Leave_Balance (Leave_Balance_ID, Leave_Application_ID, Column_Name, Value_Before, Value_After, Modified_By, Modified_On, Comment) " +
+                  "VALUES('" + leaveBalanceID + "','" + applicationID + "', 'Balance' ,'" + valueBefore + "','" + valueAfter + "','" + GetLoggedInID() + "','" + DateTime.Today.ToString("yyyy-MM-dd") + "','" + comment + "')";
+            DBExecuteQuery(queryString);
+        }
+
         protected Dictionary<int, string> AccountStatusList()
         {
             Dictionary<int, string> accStatus = new Dictionary<int, string>
