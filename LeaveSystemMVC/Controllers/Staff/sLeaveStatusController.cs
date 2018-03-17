@@ -73,11 +73,11 @@ namespace LeaveSystemMVC.Controllers
                     string ext = Path.GetExtension(file.FileName);
                     if (ext != ".doc" && ext != ".docx" && ext != ".pdf" && ext != ".txt" && ext != ".rtf" &&
                         ext != ".png" && ext != ".jpg" && ext != ".jpeg" && ext != ".bmp" &&
-                        ext != ".csv" && ext != ".xls" && ext != ".xlsx" && ext != ".xlsm")
+                        ext != ".csv" && ext != ".xls" && ext != ".xlsx" && ext != ".odf")
                     {
                         TempData["ErrorMEssage"] = "You have selected an invalid file type. " +
                             "<br /> Please upload one of the following file types; <b>.doc</b>, <b>.docx</b>, <b>.pdf</b>, <b>.txt</b>, <b>.rtf</b>, <b>.png</b>" +
-                            ", <b>.jpg</b>, <b>.jpg</b>, <b>.jpeg</b>, <b>.bmp</b>, <b>.csv</b>, <b>.xls</b>, <b>.xlsx</b> or <b>.xlsm</b>";
+                            ", <b>.jpg</b>, <b>.jpg</b>, <b>.jpeg</b>, <b>.bmp</b>, <b>.csv</b>, <b>.xls</b>, <b>.xlsx</b> or <b>.odf</b>";
                     }
                     else
                     {
