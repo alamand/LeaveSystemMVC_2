@@ -30,7 +30,7 @@
                 <td>@Html.DisplayFor(modelItem => stDt)</td>
                 <td>@Html.DisplayFor(modelItem => reDt)</td>
                 <td>@Html.DisplayFor(modelItem => item.leaveDuration)</td>
-                <td>@Html.DisplayFor(modelItem => item.leaveStatusName)</td>
+                <td>@Html.DisplayFor(modelItem => item.leaveStatusDisplayName)</td>
                 <td style="text-align:center">
                     <a href="@Url.Action("View", "sLeaveStatus", new { appID = item.leaveAppID }, null)">
                         <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
