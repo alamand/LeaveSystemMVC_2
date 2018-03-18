@@ -8,10 +8,8 @@
     @Html.Partial("../_Message")
     @{
         var leaveTypes = ViewData["LeaveTypes"] as Dictionary<int, string>;
-        var leaveNames = ViewData["LeaveNames"] as Dictionary<int, string>;
         var selectedLeaveTypeID = (int)ViewData["SelectedLeaveTypeID"];
-        var selectedLeaveTypeName = (string)ViewData["SelectedLeaveName"];
-        var selectedLeaveDisplayName = (string)ViewData["SelectedLeaveDisplayName"];
+        var selectedLeaveTypeName = (string)ViewData["SelectedLeaveTypeName"];
     }
 
     <div class="panel panel-default">
@@ -31,7 +29,7 @@
                         </div>
 
                         <div class="col-md-4">
-                            @Html.DropDownList("selectedLeaveTypeID", new SelectList(leaveNames, "Key", "Value"), new { @selected = selectedLeaveTypeID, @class = "form-control", @onchange = "this.form.submit();" })
+                            @Html.DropDownList("selectedLeaveTypeID", new SelectList(leaveTypes, "Key", "Value"), new { @selected = selectedLeaveTypeID, @class = "form-control", @onchange = "this.form.submit();" })
                         </div>
                     </div>
                 }
@@ -45,7 +43,7 @@
                     {
                         <hr />
                         @Html.HiddenFor(model => model.leaveTypeID, new { @Value = selectedLeaveTypeID })
-                        @Html.HiddenFor(model => model.leaveTypeName, new { @Value = leaveNames[selectedLeaveTypeID] })
+                        @Html.HiddenFor(model => model.leaveTypeName, new { @Value = leaveTypes[selectedLeaveTypeID] })
                         @Html.Partial("_" + selectedLeaveTypeName + "Partial", Model)
 
                         <hr />
