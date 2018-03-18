@@ -116,35 +116,6 @@ namespace LeaveSystemMVC.Controllers
             return RedirectToAction("Index", new { selectedEmployee = id });
         }
 
-        private List<sEmployeeModel> GetEmploymentPeriod(int empID)
-        {
-            List<sEmployeeModel> employmentList = new List<sEmployeeModel>();
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "SELECT * FROM dbo.Employment_Period WHERE Employee_ID = '" + empID + "' ORDER BY Emp_Start_Date";
-
-            using (var connection = new SqlConnection(connectionString))
-            {
-                var command = new SqlCommand(queryString, connection);
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        var employment = new sEmployeeModel
-                        {
-                            staffID = (int)reader["Employee_ID"],
-                            empStartDate = (reader["Emp_Start_Date"] != DBNull.Value) ? (DateTime)reader["Emp_Start_Date"] : new DateTime(),
-                            empEndDate = (reader["Emp_End_Date"] != DBNull.Value) ? (DateTime)reader["Emp_End_Date"] : new DateTime()
-                        };
-                        employmentList.Add(employment);
-                    }
-                }
-                connection.Close();
-            }
-
-            return employmentList;
-        }
-
         private Boolean IsStartDateExist(int empID, DateTime startDate)
         {
             bool isExist = false;

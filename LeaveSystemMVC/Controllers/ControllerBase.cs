@@ -235,7 +235,11 @@ namespace LeaveSystemMVC.Controllers
         protected bool IsPilgrimageAllowed(int empID)
         {
             sEmployeeModel emp = GetEmployeeModel(empID);
-            TimeSpan diff = DateTime.Today - emp.empStartDate;
+            List<sEmployeeModel> employmentList = GetEmploymentPeriod(empID);
+
+            // gets the latest employment period.
+            sEmployeeModel latestEmployment = employmentList[employmentList.Count - 1];
+            TimeSpan diff = DateTime.Today - latestEmployment.empStartDate;
             double years = diff.TotalDays / 365.25;
             if (DBReligionList()[emp.religionID].Equals("Muslim") && emp.gender == 'M' && years >= 5)
             {
@@ -245,6 +249,35 @@ namespace LeaveSystemMVC.Controllers
             {
                 return false;
             }
+        }
+
+        protected List<sEmployeeModel> GetEmploymentPeriod(int empID)
+        {
+            List<sEmployeeModel> employmentList = new List<sEmployeeModel>();
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            string queryString = "SELECT * FROM dbo.Employment_Period WHERE Employee_ID = '" + empID + "' ORDER BY Emp_Start_Date";
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var employment = new sEmployeeModel
+                        {
+                            staffID = (int)reader["Employee_ID"],
+                            empStartDate = (reader["Emp_Start_Date"] != DBNull.Value) ? (DateTime)reader["Emp_Start_Date"] : new DateTime(),
+                            empEndDate = (reader["Emp_End_Date"] != DBNull.Value) ? (DateTime)reader["Emp_End_Date"] : new DateTime()
+                        };
+                        employmentList.Add(employment);
+                    }
+                }
+                connection.Close();
+            }
+
+            return employmentList;
         }
 
         protected bool IsReportingExist(int empID)
