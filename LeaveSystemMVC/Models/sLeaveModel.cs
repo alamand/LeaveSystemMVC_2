@@ -57,9 +57,6 @@ namespace LeaveSystemMVC.Models
         [DisplayName("Leave Status ID")]
         public string leaveStatusName { get; set; }
 
-        [DisplayName("Leave Status Name")]
-        public string leaveStatusDisplayName { get; set; }
-
         [DisplayName("Comments")]
         [StringLength(300, MinimumLength = 0, ErrorMessage = "Comment is too long.")]
         public string comments { get; set; }
