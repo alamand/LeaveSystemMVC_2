@@ -232,6 +232,21 @@ namespace LeaveSystemMVC.Controllers
             return empList;
         }
 
+        protected bool IsPilgrimageAllowed(int empID)
+        {
+            sEmployeeModel emp = GetEmployeeModel(empID);
+            TimeSpan diff = DateTime.Today - emp.empStartDate;
+            double years = diff.TotalDays / 365.25;
+            if (DBReligionList()[emp.religionID].Equals("Muslim") && emp.gender == 'M' && years >= 5)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         protected bool IsReportingExist(int empID)
         {
             bool isExist = false;

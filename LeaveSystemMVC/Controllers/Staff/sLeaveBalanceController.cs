@@ -13,11 +13,13 @@ namespace LeaveSystemMVC.Controllers
         // GET: sLeaveBalance
         public ActionResult Index()
         {
-            var model = GetLeaveBalanceModel(GetLoggedInID());
-            var emp = GetEmployeeModel(GetLoggedInID());
+            int loginID = GetLoggedInID();
+            var model = GetLeaveBalanceModel(loginID);
+            var emp = GetEmployeeModel(loginID);
+            var pilgrimageAllowed = IsPilgrimageAllowed(loginID);
 
             ViewData["Gender"] = emp.gender;
-            ViewData["Religion"] = DBReligionList()[emp.religionID];
+            ViewData["Pilgrimage"] = pilgrimageAllowed;
 
             return View(model);
         }

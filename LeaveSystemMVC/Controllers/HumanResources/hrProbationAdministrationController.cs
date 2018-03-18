@@ -71,6 +71,9 @@ namespace LeaveSystemMVC.Controllers
         {
             // holds default durations for all leave types
             sleaveBalanceModel leaveTypes = GetLeaveBalanceModel();
+            // hold this staff member's details
+            sEmployeeModel employee = GetEmployeeModel(staff_id);
+
             double annualBalance = 0;
             
             // calculate annual leave balance where each month the staff recieves 1.8 annual credit
@@ -120,6 +123,15 @@ namespace LeaveSystemMVC.Controllers
             else
                 queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_Type_ID, Balance) Values('" + staff_id + "','" + leaveTypes.compassionateID + "','0')";
             DBExecuteQuery(queryString);
+
+            if (DBReligionList()[employee.religionID].Equals("Muslim") && employee.gender == 'M')
+            {
+                if (IsLeaveBalanceExist(leaveTypes.pilgrimageID, staff_id))
+                    queryString = "UPDATE dbo.Leave_Balance SET Balance = " + leaveTypes.pilgrimage + " WHERE Employee_ID = " + staff_id + " AND Leave_Type_ID = " + leaveTypes.pilgrimageID;
+                else
+                    queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_Type_ID, Balance) Values('" + staff_id + "','" + leaveTypes.pilgrimageID + "','" + leaveTypes.pilgrimage + "')";
+                DBExecuteQuery(queryString);
+            }
         }
 
         // gets the staffs start date from the database

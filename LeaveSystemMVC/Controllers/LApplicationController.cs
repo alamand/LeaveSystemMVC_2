@@ -531,15 +531,10 @@ namespace LeaveSystemMVC.Controllers
 
                 // only muslims with an employment period of 5 years or greater can apply for pilgrimage leave
                 int pilgrimageID = leaveTypes.FirstOrDefault(obj => obj.Value == "Pilgrimage").Key;
-                if (!DBReligionList()[emp.religionID].Equals("Muslim"))
-                    leaveTypes.Remove(pilgrimageID);
-                else
+                if (!IsPilgrimageAllowed(GetLoggedInID()))
                 {
-                    TimeSpan diff = DateTime.Today - emp.empStartDate;
-                    double years = diff.TotalDays / 365.25;
-                    if (years < 5)
-                        leaveTypes.Remove(pilgrimageID);
-                }
+                    leaveTypes.Remove(pilgrimageID);
+                }          
                     
                 leaveTypes.Remove(leaveTypes.FirstOrDefault(obj => obj.Value == "DIL").Key);
             }
