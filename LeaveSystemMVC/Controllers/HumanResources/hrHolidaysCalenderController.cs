@@ -76,12 +76,12 @@ namespace LeaveSystemMVC.Controllers
         {
             if (holiday.holidayName.Length > 30)
             {
-                ModelState.AddModelError("holidayName", "Holiday name is too long.");
+                ModelState.AddModelError("holidayName", "The holiday name is too long.");
             }
 
             if (holiday.date.Year < DateTime.Today.Year)
             {
-                ModelState.AddModelError("date", "Can't add a holiday to previous years.");
+                ModelState.AddModelError("date", "You cannot add a holiday to the previous year.");
             }
 
             if (ModelState.IsValid)
@@ -104,7 +104,7 @@ namespace LeaveSystemMVC.Controllers
                     }
                     else
                     {
-                        ViewBag.ErrorMessage = "Can't add a holiday to previous years.";
+                        ViewBag.ErrorMessage = "You cannot add a holiday to the previous year.";
                     }
                 }
                 else

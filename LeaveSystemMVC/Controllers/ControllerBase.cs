@@ -460,13 +460,17 @@ namespace LeaveSystemMVC.Controllers
 
         protected void DBExecuteQuery(string query)
         {
-            using (var connection = new SqlConnection(connectionString))
+            try
             {
-                var command = new SqlCommand(query, connection);
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-                    connection.Close();
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    var command = new SqlCommand(query, connection);
+                    connection.Open();
+                    using (var reader = command.ExecuteReader())
+                        connection.Close();
+                }
             }
+            catch (Exception e) { Output(e.Message); }
         }
 
         protected Dictionary<int, decimal> DBGetAuditLeaveBalance(int leaveApp)
