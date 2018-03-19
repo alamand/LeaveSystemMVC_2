@@ -111,13 +111,17 @@
                                 }
                             </dl>
                             <br />
-                            <a href="@Url.Action("Index", "sLeaveStatus")" class="btn btn-default col-md-offset-4 col-md-3">
-                                <span class="glyphicon glyphicon-circle-arrow-left" aria-hidden="true"></span>
-                                Back
-                            </a>
                         </div>
                     </div>
                 </div>
+                <a href="@Url.Action("Index", "sLeaveStatus")" class="btn btn-default col-md-offset-2 col-md-3">
+                    <span class="glyphicon glyphicon-circle-arrow-left" aria-hidden="true"></span>
+                    Back
+                </a>
+                <a href="@Url.Action("Cancel", "sLeaveStatus", new { appID = Model.leaveAppID }, null)" class="btn btn-danger col-md-offset-1 col-md-4">
+                    <span class="glyphicon glyphicon glyphicon-erase" aria-hidden="true"></span>
+                    Cancel Application
+                </a>
             </div>
 
             if (docIncluded && approved)

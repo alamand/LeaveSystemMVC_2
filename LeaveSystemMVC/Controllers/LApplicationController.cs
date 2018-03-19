@@ -568,12 +568,18 @@ namespace LeaveSystemMVC.Controllers
 
         private void ApplyLeave(sLeaveModel lm, int numOfDays=0, string fName="")
         {
+            int statusID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Pending_LM").Key;
+
             string queryString = "INSERT INTO dbo.Leave (Employee_ID, Documentation, Start_Date, Reporting_Back_Date, Start_Hrs, End_Hrs, Leave_Type_ID, " +
                 "Contact_Outside_UAE, Comment, Flight_Ticket, Total_Leave, Leave_Status_ID, Personal_Email) " +
                 "VALUES ('" + GetLoggedInID() + "','" + fName + "','" + lm.startDate.ToString("yyyy-MM-dd") + "','" + lm.returnDate.ToString("yyyy-MM-dd") + 
                 "','" + lm.shortStartTime.ToString() + "','" + lm.shortEndTime.ToString() + "','" + lm.leaveTypeID + "','" + lm.contactDetails + "','" + 
-                lm.comments + "','" + lm.bookAirTicket + "','" + numOfDays + "','0', '" + lm.email + "');";
+                lm.comments + "','" + lm.bookAirTicket + "','" + numOfDays + "','" + statusID + "', '" + lm.email + "');";
             DBExecuteQuery(queryString);
+
+            string quditString = "INSERT INTO dbo.Audit_Leave_Application (Leave_Application_ID, Column_Name, Value_After, Created_By, Created_On) " +
+                  "VALUES('" + DBLastIdentity("Leave_Application_ID", "dbo.Leave") + "', 'Leave_Status_ID', '" + statusID + "','" + GetLoggedInID() + "','" + DateTime.Today.ToString("yyyy-MM-dd") + "')";
+            DBExecuteQuery(quditString);
         }
 
         private string UploadFile(HttpPostedFileBase file)
@@ -792,5 +798,6 @@ namespace LeaveSystemMVC.Controllers
             };
             return durationList;
         }
+
     }
 }

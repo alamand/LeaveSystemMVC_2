@@ -484,7 +484,7 @@ namespace LeaveSystemMVC.Controllers
             TimeSpan span = (TimeSpan)leave.shortEndTime - (TimeSpan)leave.shortStartTime;
             
             // does the user have enough balance?
-            if ((decimal)span.TotalHours < lb.shortHours)
+            if ((decimal)span.TotalHours <= lb.shortHours)
             {
                 int approvedID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Pending_HR").Key;
                 DBUpdateLeave(leave, approvedID);
@@ -582,10 +582,15 @@ namespace LeaveSystemMVC.Controllers
 
         private void DBUpdateLeave(sLeaveModel leave, int approvalID)
         {
+            int previousStatus = leave.leaveStatusID;
             string queryString = "UPDATE dbo.Leave SET Leave_Status_ID = '" + approvalID + "', " +
                        "LM_Comment = '" + leave.lmComment + "' " +
                        "WHERE Leave_Application_ID = '" + leave.leaveAppID + "' ";
             DBExecuteQuery(queryString);
+
+            string quditString = "INSERT INTO dbo.Audit_Leave_Application (Leave_Application_ID, Column_Name, Value_Before, Value_After, Modified_By, Modified_On) " +
+                  "VALUES('" + leave.leaveAppID + "', 'Leave_Status_ID', '" + previousStatus + "','" + approvalID + "','" + GetLoggedInID() + "','" + DateTime.Today.ToString("yyyy-MM-dd") + "')";
+            DBExecuteQuery(quditString);
         }
 
         public void SendMail(string email, string message)

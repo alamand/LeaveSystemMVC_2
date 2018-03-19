@@ -360,7 +360,7 @@ namespace LeaveSystemMVC.Controllers
                             shortEndTime = (!DBNull.Value.Equals(reader["End_Hrs"])) ? (TimeSpan)reader["End_Hrs"] : new TimeSpan(0, 0, 0, 0, 0),
                             leaveStatusID = (int)reader["Leave_Status_ID"],
                             leaveStatusName = (string)reader["Status_Name"],
-                            leaveStatusDisplayName = (string)reader["Display_Name"],
+                            //leaveStatusDisplayName = (string)reader["Display_Name"],
                             hrComment = (!DBNull.Value.Equals(reader["HR_Comment"])) ? (string)reader["HR_Comment"] : "",
                             lmComment = (!DBNull.Value.Equals(reader["LM_Comment"])) ? (string)reader["LM_Comment"] : "",
                             email = (!DBNull.Value.Equals(reader["Personal_Email"])) ? (string)reader["Personal_Email"] : ""
@@ -506,9 +506,9 @@ namespace LeaveSystemMVC.Controllers
                 int balID = pair.Key;
                 decimal consumedBal = pair.Value;
                 decimal previousBalance = DBGetLeaveBalance(balID);
-                String queryString = "UPDATE dbo.Leave_Balance SET Balance = '" + (previousBalance+consumedBal) + "' WHERE Leave_Balance_ID = '" + balID + "'";
+                string queryString = "UPDATE dbo.Leave_Balance SET Balance = '" + (previousBalance+consumedBal) + "' WHERE Leave_Balance_ID = '" + balID + "'";
                 DBExecuteQuery(queryString);
-                DBUpdateAudit(balID, appID, previousBalance, previousBalance + consumedBal, "Refund All Balances");
+                DBUpdateAuditBalance(balID, appID, previousBalance, previousBalance + consumedBal, "Refund All Balances");
             }
 
         }
@@ -534,11 +534,36 @@ namespace LeaveSystemMVC.Controllers
             return balance;
         }
 
-        protected void DBUpdateAudit(int leaveBalanceID, int applicationID, decimal valueBefore, decimal valueAfter, string comment)
+        protected void DBUpdateAuditBalance(int leaveBalanceID, int applicationID, decimal valueBefore, decimal valueAfter, string comment)
         {
             string queryString = "INSERT INTO dbo.Audit_Leave_Balance (Leave_Balance_ID, Leave_Application_ID, Column_Name, Value_Before, Value_After, Modified_By, Modified_On, Comment) " +
                   "VALUES('" + leaveBalanceID + "','" + applicationID + "', 'Balance' ,'" + valueBefore + "','" + valueAfter + "','" + GetLoggedInID() + "','" + DateTime.Today.ToString("yyyy-MM-dd") + "','" + comment + "')";
             DBExecuteQuery(queryString);
+        }
+
+
+
+        protected int DBLastIdentity(string colName, string tableName)
+        {
+            string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+
+            string queryString = "SELECT MAX(" + colName + ") AS LastID FROM " + tableName;
+            int id = 0;
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        id = (int)reader["LastID"];
+                    }
+                }
+                connection.Close();
+            }
+
+            return id;
         }
 
         protected Dictionary<int, string> AccountStatusList()

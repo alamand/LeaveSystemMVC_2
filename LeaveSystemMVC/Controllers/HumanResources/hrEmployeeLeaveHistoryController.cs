@@ -140,6 +140,11 @@ namespace LeaveSystemMVC.Controllers
 
             DBRefundLeaveBalance(applicationID);
 
+            int approvedID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Approved").Key;
+            string quditString = "INSERT INTO dbo.Audit_Leave_Application (Leave_Application_ID, Column_Name, Value_Before, Value_After, Modified_By, Modified_On) " +
+                  "VALUES('" + applicationID + "', 'Leave_Status_ID', '" + approvedID + "','" + cancelledID + "','" + GetLoggedInID() + "','" + DateTime.Today.ToString("yyyy-MM-dd") + "')";
+            DBExecuteQuery(quditString);
+
             TempData["WarningMessage"] = "Leave application <b>" + applicationID + "</b> has be cancelled successfully.";
             return RedirectToAction("View", new { appID = applicationID });
         }

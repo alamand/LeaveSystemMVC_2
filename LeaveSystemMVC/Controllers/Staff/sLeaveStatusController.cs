@@ -108,9 +108,15 @@ namespace LeaveSystemMVC.Controllers
             }
         }
 
-        public ActionResult Delete(int appID) {
-            string queryString = "UPDATE Leave SET Leave_Status_ID= '5' WHERE Leave_Application_ID = '"+appID+"'";
+        public ActionResult Cancel(int appID) {
+            int previousStatus = GetLeaveModel("Leave_Application_ID", appID)[0].leaveStatusID;
+            int cancelID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Cancelled_Staff").Key;
+            string queryString = "UPDATE Leave SET Leave_Status_ID= '" + cancelID + "' WHERE Leave_Application_ID = '" + appID + "'";
             DBExecuteQuery(queryString);
+
+            string quditString = "INSERT INTO dbo.Audit_Leave_Application (Leave_Application_ID, Column_Name, Value_Before, Value_After, Modified_By, Modified_On) " +
+                  "VALUES('" + appID + "', 'Leave_Status_ID', '" + previousStatus + "','" + cancelID + "','" + GetLoggedInID() + "','" + DateTime.Today.ToString("yyyy-MM-dd") + "')";
+            DBExecuteQuery(quditString);
 
             TempData["SuccessMessage"] = "Your leave application has been cancelled successfully.";
 
@@ -118,6 +124,7 @@ namespace LeaveSystemMVC.Controllers
 
             return RedirectToAction("Index");
         }
+
 
         public void SendMail(string email, string message)
         {
