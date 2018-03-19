@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using System.Configuration;
 using System.Data.SqlClient;
 using LeaveSystemMVC.Models;
+using Hangfire;
 
 namespace LeaveSystemMVC.Controllers
 {
@@ -134,6 +135,7 @@ namespace LeaveSystemMVC.Controllers
 
         public ActionResult Cancel(int applicationID)
         {
+            sLeaveModel leaveModel = GetLeaveModel("Leave_Application_ID", applicationID)[0];
             int cancelledID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Cancelled_HR").Key;
             string queryString = "UPDATE dbo.Leave SET Leave_Status_ID = '" + cancelledID + "' WHERE Leave_Application_ID = '" + applicationID + "'";
             DBExecuteQuery(queryString);
@@ -145,7 +147,11 @@ namespace LeaveSystemMVC.Controllers
                   "VALUES('" + applicationID + "', 'Leave_Status_ID', '" + approvedID + "','" + cancelledID + "','" + GetLoggedInID() + "','" + DateTime.Today.ToString("yyyy-MM-dd") + "')";
             DBExecuteQuery(quditString);
 
-            TempData["WarningMessage"] = "Leave application <b>" + applicationID + "</b> has be cancelled successfully.";
+            string message = "";
+            message = "Your " + leaveModel.leaveTypeName + " leave application from " + leaveModel.startDate.ToShortDateString() + " to " + leaveModel.returnDate.ToShortDateString() + " with ID " + applicationID + " has been cancelled by human resources.";
+            BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leaveModel.employeeID).email, message));
+
+            TempData["WarningMessage"] = "Leave application <b>" + applicationID + "</b> has been cancelled successfully.";
             return RedirectToAction("View", new { appID = applicationID });
         }
 

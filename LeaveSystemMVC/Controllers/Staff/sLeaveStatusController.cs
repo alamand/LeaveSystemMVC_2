@@ -109,7 +109,8 @@ namespace LeaveSystemMVC.Controllers
         }
 
         public ActionResult Cancel(int appID) {
-            int previousStatus = GetLeaveModel("Leave_Application_ID", appID)[0].leaveStatusID;
+            sLeaveModel leaveModel = GetLeaveModel("Leave_Application_ID", appID)[0];
+            int previousStatus = leaveModel.leaveStatusID;
             int cancelID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Cancelled_Staff").Key;
             string queryString = "UPDATE Leave SET Leave_Status_ID= '" + cancelID + "' WHERE Leave_Application_ID = '" + appID + "'";
             DBExecuteQuery(queryString);
@@ -120,29 +121,11 @@ namespace LeaveSystemMVC.Controllers
 
             TempData["SuccessMessage"] = "Your leave application has been cancelled successfully.";
 
-            //@TODO: send an email
+            string message = "";
+            message = "You have succesfully cancelled your " + leaveModel.leaveTypeName + " leave application from " + leaveModel.startDate.ToShortDateString() + " to " + leaveModel.returnDate.ToShortDateString() + " with ID " + appID + " .";
+            BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(GetLoggedInID()).email, message));
 
             return RedirectToAction("Index");
-        }
-
-
-        public void SendMail(string email, string message)
-        {
-            MailMessage mail = new MailMessage();
-            mail.From = new MailAddress("project_ict333@murdochdubai.ac.ae", "GIMEL LMS");
-            mail.To.Add(new MailAddress(email));
-            mail.Subject = "Leave Application Update";
-            mail.Body = message + Environment.NewLine;
-
-            SmtpClient client = new SmtpClient();
-            client.EnableSsl = true;
-            client.Credentials = new NetworkCredential("project_ict333@murdochdubai.ac.ae", "ict@333");
-            try
-            {
-                client.Send(mail);
-                System.Diagnostics.Debug.WriteLine("Mail Sent");
-            }
-            catch (Exception e) { }
         }
     }
 }

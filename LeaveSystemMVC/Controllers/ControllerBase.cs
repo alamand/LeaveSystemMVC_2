@@ -6,6 +6,8 @@ using System.Web.Mvc;
 using System.Configuration;
 using System.Data.SqlClient;
 using LeaveSystemMVC.Models;
+using System.Net;
+using System.Net.Mail;
 
 namespace LeaveSystemMVC.Controllers
 {
@@ -515,6 +517,25 @@ namespace LeaveSystemMVC.Controllers
                 DBUpdateAuditBalance(balID, appID, previousBalance, previousBalance + consumedBal, "Refund All Balances");
             }
 
+        }
+
+        public void SendMail(string email, string message)
+        {
+            MailMessage mail = new MailMessage();
+            mail.From = new MailAddress("project_ict333@murdochdubai.ac.ae", "GIMEL LMS");
+            mail.To.Add(new MailAddress(email));
+            mail.Subject = "Leave Application Update";
+            mail.Body = message + Environment.NewLine;
+
+            SmtpClient client = new SmtpClient();
+            client.EnableSsl = true;
+            client.Credentials = new NetworkCredential("project_ict333@murdochdubai.ac.ae", "ict@333");
+            try
+            {
+                client.Send(mail);
+                System.Diagnostics.Debug.WriteLine("Mail Sent");
+            }
+            catch (Exception e) { }
         }
 
         protected decimal DBGetLeaveBalance(int balID) {
