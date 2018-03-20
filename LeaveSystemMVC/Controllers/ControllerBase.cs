@@ -699,10 +699,16 @@ namespace LeaveSystemMVC.Controllers
             return DBListing(queryString, "Leave_Type_ID", "Leave_Name");
         }
 
+        protected Dictionary<int, string> DBLeaveNameList()
+        {
+            var queryString = "SELECT Leave_Type_ID, Display_Name FROM dbo.Leave_Type";
+            return DBListing(queryString, "Leave_Type_ID", "Display_Name");
+        }
+
         protected Dictionary<int, string> DBNationalityList()
         {
-            var queryString = "SELECT Nationality_ID, Nationality_Name FROM dbo.Nationality";
-            return DBListing(queryString, "Nationality_ID", "Nationality_Name");
+            var queryString = "SELECT Nationality_ID, Display_Name FROM dbo.Nationality";
+            return DBListing(queryString, "Nationality_ID", "Display_Name");
         }
 
         protected Dictionary<int, string> DBDepartmentList()
@@ -719,8 +725,8 @@ namespace LeaveSystemMVC.Controllers
 
         protected Dictionary<int, string> DBReligionList()
         {
-            var queryString = "SELECT Religion_ID, Religion_Name FROM dbo.Religion";
-            return DBListing(queryString, "Religion_ID", "Religion_Name");
+            var queryString = "SELECT Religion_ID, Display_Name FROM dbo.Religion";
+            return DBListing(queryString, "Religion_ID", "Display_Name");
         }
 
         protected Dictionary<int, string> AddDefaultToDictionary(Dictionary<int, string> dictionary, int key, string value)

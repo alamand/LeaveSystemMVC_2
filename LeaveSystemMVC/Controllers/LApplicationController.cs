@@ -499,16 +499,17 @@ namespace LeaveSystemMVC.Controllers
 
         private void SetViewData(sEmployeeModel emp, int leaveID)
         {
-            var leaveTypes = GetAvailableLeaveTypes(emp);
-            ViewData["LeaveTypes"] = leaveTypes;
+            var leaveTypesNames = GetAvailableLeaveTypesAndNames(emp);
+            ViewData["LeaveTypesNames"] = leaveTypesNames;
             ViewData["SelectedLeaveTypeID"] = leaveID;
-            ViewData["SelectedLeaveTypeName"] = leaveTypes[leaveID];
+            ViewData["SelectedLeaveType"] = leaveTypesNames.Item1[leaveID];
             ViewData["ShortHourDuration"] = GetShortHourDurationList();
         }
 
-        private Dictionary<int, string> GetAvailableLeaveTypes(sEmployeeModel emp)
+        private Tuple<Dictionary<int, string>, Dictionary<int, string>> GetAvailableLeaveTypesAndNames(sEmployeeModel emp)
         {
             var leaveTypes = AddDefaultToDictionary(DBLeaveTypeList(), 0, "- Select Leave Type -");
+            var leaveNames = AddDefaultToDictionary(DBLeaveNameList(), 0, "- Select Leave Type -");
 
             // employees on probation can only apply for DIL leave, while off probation employees can apply for any.
             if (emp.onProbation)
@@ -517,7 +518,10 @@ namespace LeaveSystemMVC.Controllers
                 foreach (var entity in tempLeaveTypes)
                 {
                     if (!entity.Value.Equals("DIL") && !entity.Value.Equals("Unpaid") && entity.Key != 0)
+                    {
                         leaveTypes.Remove(entity.Key);
+                        leaveNames.Remove(entity.Key);
+                    }
                 }
             }
             else
@@ -527,6 +531,7 @@ namespace LeaveSystemMVC.Controllers
                 {
                     int maternityID = leaveTypes.FirstOrDefault(obj => obj.Value == "Maternity").Key;
                     leaveTypes.Remove(maternityID);
+                    leaveNames.Remove(maternityID);
                 }
 
                 // only muslims with an employment period of 5 years or greater can apply for pilgrimage leave
@@ -534,12 +539,16 @@ namespace LeaveSystemMVC.Controllers
                 if (!IsPilgrimageAllowed(GetLoggedInID()))
                 {
                     leaveTypes.Remove(pilgrimageID);
+                    leaveNames.Remove(pilgrimageID);
                 }          
                     
                 leaveTypes.Remove(leaveTypes.FirstOrDefault(obj => obj.Value == "DIL").Key);
+                Output(leaveTypes.Count.ToString());
+                leaveNames.Remove(leaveNames.FirstOrDefault(obj => obj.Value == "Days in Lieu").Key);
+                Output(leaveNames.Count.ToString());
             }
 
-            return leaveTypes;
+            return new Tuple<Dictionary<int, string>, Dictionary<int, string>>(leaveTypes, leaveNames);
         }
 
         public void SendMail(sLeaveModel lm, sEmployeeModel emp)
