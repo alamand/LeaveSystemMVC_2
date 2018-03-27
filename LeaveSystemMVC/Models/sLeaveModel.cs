@@ -25,7 +25,7 @@ namespace LeaveSystemMVC.Models
         public DateTime applicationDate { get; set; }
 
         [DisplayName("Start Date")]
-        [Required(ErrorMessage = "Start Date is required.")]
+        [Required(ErrorMessage = "A valid Start Date is required.")]
         public DateTime startDate { get; set; }
 
         [Display(Name = "Reporting Back Date")]
@@ -73,9 +73,9 @@ namespace LeaveSystemMVC.Models
 
         [DisplayName("Phone Number")]
         [Required(ErrorMessage = "Phone number is required.")]
-        [StringLength(20, MinimumLength = 0, ErrorMessage = "Phone number is too long.")]
+        [StringLength(15, MinimumLength = 10, ErrorMessage = "Phone number is not the correct length.")]
         [DataType(DataType.PhoneNumber, ErrorMessage = "You must provide a phone number in international format, starting with a + symbol.")]
-        [RegularExpression(@"^\+[1-9]{1}[0-9]{3,14}$", ErrorMessage = "You must provide a phone number in international format, starting with a + symbol.")]
+        [RegularExpression(@"^\+[1-9]{1}[0-9]{3,14}$", ErrorMessage = "You must provide a phone number in international format, starting with a + symbol, and without spaces.")]
         public string contactDetails { get; set; }
 
         [Display(Name = "Personal email address")]

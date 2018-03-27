@@ -43,7 +43,7 @@ namespace LeaveSystemMVC.Controllers
                     UpdateLeaveBalance(empBal.empId, defaultBal.maternityID, defaultBal.maternity);
             }
 
-            TempData["SuccessMessage"] = "Leave balances has been updated.";
+            TempData["SuccessMessage"] = "Leave balances have been updated.";
 
             return RedirectToAction("Index");
         }

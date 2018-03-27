@@ -660,6 +660,11 @@ namespace LeaveSystemMVC.Controllers
                 ModelState.AddModelError("endDate", "Reporting Back date cannot be earlier than Start Date.");
             else if (result == 0)
                 ModelState.AddModelError("endDate", "Start and Reporting Back dates cannot be the same.");
+            if(sDate.Year < DateTime.Now.Year)
+                ModelState.AddModelError("startDate", "Starting year cannot be before current year.");
+            TimeSpan diff = rDate - sDate;
+            if(diff.Days >= 1000)
+                ModelState.AddModelError("startDate", "Amount of leave exceeds maximum limit.");
         }
 
         private void CompareHours(TimeSpan sTime, TimeSpan eTime)
