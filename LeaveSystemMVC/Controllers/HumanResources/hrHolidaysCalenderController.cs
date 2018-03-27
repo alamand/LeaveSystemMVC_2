@@ -236,7 +236,7 @@ namespace LeaveSystemMVC.Controllers
                 // extract all approved applications
                 foreach (var leave in GetLeaveModel())
                 {
-                    if (leave.leaveStatusName.Equals("Approved") && !leave.leaveTypeName.Equals("Maternity"))
+                    if (leave.leaveStatusName.Equals("Approved"))
                     {
                         // key: Leave Type
                         // Value.Item1 : Leave Balance ID
@@ -297,6 +297,10 @@ namespace LeaveSystemMVC.Controllers
 
                                         case "Unpaid":
                                             leaveTypeID = leaveType.unpaidID;
+                                            break;
+
+                                        case "Maternity":
+                                            leaveTypeID = leaveType.maternityID;
                                             break;
 
                                         default:

@@ -31,7 +31,9 @@ namespace LeaveSystemMVC.Controllers
         [HttpPost]
         public ActionResult Index(hrDaysInLieu dil)
         {
-            string queryString;
+            string queryString = "INSERT INTO dbo.Days_In_Lieu VALUES ('" + dil.employeeID + "' , '" + dil.date.ToString("yyyy-MM-dd") + "' , '" + dil.numOfDays + "' , '" + dil.comment + "')";
+            DBExecuteQuery(queryString);
+
             int dilID = DBLeaveTypeList().FirstOrDefault(obj => obj.Value == "DIL").Key;
 
             //Check if DIL leave type exists for this employee.
