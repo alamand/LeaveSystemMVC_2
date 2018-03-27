@@ -55,7 +55,18 @@ namespace LeaveSystemMVC.Controllers
 
         private string GetFilteredQuery(string search, string order)
         {
-            string queryString = "SELECT Employee.Employee_ID FROM dbo.Employee, dbo.Reporting WHERE Employee.Employee_ID = Reporting.Employee_ID AND Reporting_ID = " + GetLoggedInID() + " AND Start_Date <= SYSDATETIME() AND (End_Date > SYSDATETIME() OR End_Date IS NULL)";
+            int loggedInID = GetLoggedInID();
+            string queryString = "SELECT Employee.Employee_ID FROM dbo.Employee, dbo.Reporting WHERE Employee.Employee_ID = Reporting.Employee_ID AND (Report_To_ID = " + loggedInID;
+
+            List<lmReporting> reportingList = GetReportingList(loggedInID);
+            foreach (var reporting in reportingList)
+            {
+                if (reporting.toID == loggedInID)
+                {
+                    queryString += " OR Report_To_ID = " + reporting.reportToID;
+                }
+            }
+            queryString += ")";
 
             // adds a filter query if search box contains character(s), note that 0 length means the search box is empty
             if (search.Length > 0)

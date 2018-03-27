@@ -235,9 +235,9 @@
     </Compile>
     <Compile Include="HtmlHelperExtensions\MenuExtensions.cs" />
     <Compile Include="Models\hrDaysInLieu.cs" />
+    <Compile Include="Models\lmReporting.cs" />
     <Compile Include="Models\hrHolidaysCalender.cs" />
     <Compile Include="Models\sleaveBalanceModel.cs" />
-    <Compile Include="Models\selectSubstitute.cs" />
     <Compile Include="Models\sLeaveModel.cs" />
     <Compile Include="Models\sEmployeeModel.cs" />
     <Compile Include="Models\Users.cs" />

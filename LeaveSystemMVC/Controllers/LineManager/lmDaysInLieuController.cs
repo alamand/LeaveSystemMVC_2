@@ -16,11 +16,18 @@ namespace LeaveSystemMVC.Controllers
             Dictionary<int, string> lmSubordinates = new Dictionary<int, string>();
             lmSubordinates.Add(0, "- Select Employee -");
             var allEmployees = GetEmployeeModel();
+            int loggedInID = GetLoggedInID();
 
             foreach (var emp in allEmployees)
             {
-                if (emp.reportsToLineManagerID == GetLoggedInID())
+                if (emp.reportsToLineManagerID == loggedInID)
                     lmSubordinates.Add((int)emp.staffID, emp.firstName + " " + emp.lastName);
+            }
+
+            foreach (var reporting in GetReportingList(loggedInID))
+            {
+                if (reporting.toID == loggedInID)
+                    lmSubordinates.Add(reporting.employeeID, reporting.employeeName);
             }
 
             ViewData["EmployeeList"] = lmSubordinates;

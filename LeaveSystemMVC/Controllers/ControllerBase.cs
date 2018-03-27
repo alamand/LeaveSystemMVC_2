@@ -132,18 +132,16 @@ namespace LeaveSystemMVC.Controllers
 
             var queryString = "";
 
-            bool reportingIDExist = IsReportingExist(empID);                // true if this employee has a record in the Reporting Table
-            bool startDateExist = IsStartDateExist(empID);                  // true if this employee has a record in the Employment_Period Table
+            bool reportingIDExist = IsReportingExist(empID);                
+            bool startDateExist = IsStartDateExist(empID);                 
 
 
             if (reportingIDExist && startDateExist) // @TODO: fix this when line manager substitution and employment period feature is added
                 queryString += "SELECT * FROM dbo.Employee, dbo.Reporting, dbo.Employment_Period WHERE Employee.Employee_ID = Employment_Period.Employee_ID AND " +
-                    "Employee.Employee_ID = Reporting.Employee_ID AND Employee.Employee_ID = " + empID + " AND " +
-                    "(Reporting.Start_Date <= SYSDATETIME() AND (Reporting.End_Date > SYSDATETIME() OR Reporting.End_Date IS NULL))";
-            else if (reportingIDExist)      // @TODO: fix this when line manager substitution feature is added
-                queryString += "SELECT * FROM dbo.Employee, dbo.Reporting WHERE Employee.Employee_ID = Reporting.Employee_ID AND Employee.Employee_ID = " + empID + " AND " +
-                    "(Reporting.Start_Date <= SYSDATETIME() AND (Reporting.End_Date > SYSDATETIME() OR Reporting.End_Date IS NULL))";
-            else if (startDateExist)        // @TODO: fix this when employment Period feature is added
+                    "Employee.Employee_ID = Reporting.Employee_ID AND Employee.Employee_ID = " + empID;
+            else if (reportingIDExist)     
+                queryString += "SELECT * FROM dbo.Employee, dbo.Reporting WHERE Employee.Employee_ID = Reporting.Employee_ID AND Employee.Employee_ID = " + empID;
+            else if (startDateExist) 
                 queryString += "SELECT * FROM dbo.Employee, dbo.Employment_Period WHERE Employee.Employee_ID = Employment_Period.Employee_ID AND Employee.Employee_ID = " + empID;
             else
                 queryString += "SELECT * FROM dbo.Employee WHERE Employee.Employee_ID = " + empID;
@@ -168,7 +166,7 @@ namespace LeaveSystemMVC.Controllers
                         employeeModel.phoneNo = (reader["Ph_No"] != DBNull.Value) ? (string)reader["Ph_No"] : "";
                         employeeModel.accountStatus = (bool)reader["Account_Status"];
                         if (reportingIDExist)
-                            employeeModel.reportsToLineManagerID = (reader["Reporting_ID"] != DBNull.Value) ? (int)reader["Reporting_ID"] : (int?)null;
+                            employeeModel.reportsToLineManagerID = (reader["Report_To_ID"] != DBNull.Value) ? (int)reader["Report_To_ID"] : (int?)null;
                         employeeModel.religionID = (reader["Religion_ID"] != DBNull.Value) ? (int)reader["Religion_ID"] : 0;
                         employeeModel.dateOfBirth = (!DBNull.Value.Equals(reader["Date_Of_Birth"])) ? (DateTime)reader["Date_Of_Birth"] : new DateTime();
                         employeeModel.nationalityID = (reader["Nationality_ID"] != DBNull.Value) ? (int)reader["Nationality_ID"] : 0;
@@ -286,8 +284,7 @@ namespace LeaveSystemMVC.Controllers
         {
             bool isExist = false;
 
-            var queryString = "SELECT COUNT(*) FROM dbo.Reporting WHERE Employee_ID = " + empID + " AND " +
-                            "(Start_Date <= SYSDATETIME() AND (End_Date > SYSDATETIME() OR End_Date IS NULL))";
+            var queryString = "SELECT COUNT(*) FROM dbo.Reporting WHERE Employee_ID = " + empID;
 
             using (var connection = new SqlConnection(connectionString))
             {
@@ -566,8 +563,6 @@ namespace LeaveSystemMVC.Controllers
             DBExecuteQuery(queryString);
         }
 
-
-
         protected int DBLastIdentity(string colName, string tableName)
         {
             string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
@@ -589,6 +584,44 @@ namespace LeaveSystemMVC.Controllers
             }
 
             return id;
+        }
+
+        protected List<lmReporting> GetReportingList(int empID=0)
+        {
+            List<lmReporting> reportingList = new List<lmReporting>();
+
+            string queryString = "SELECT Report_To_ID, Employee_ID, From_ID, To_ID, Substitution_Level, is_Active " +
+                "FROM dbo.Reporting_Map " +
+                "FULL OUTER JOIN dbo.Reporting ON dbo.Reporting_Map.Original_ID = Reporting.Report_To_ID";
+
+            if (empID != 0)
+                queryString += " WHERE Report_To_ID = '" + empID + "' OR To_ID = '" + empID + "' OR From_ID = '" + empID + "'";
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        lmReporting reporting = new lmReporting
+                        {
+                            employeeID = (int)reader["Employee_ID"],
+                            reportToID = (int)reader["Report_To_ID"],
+                            fromID = (reader["From_ID"] != DBNull.Value) ? (int)reader["From_ID"] : (int?)null,
+                            toID = (reader["To_ID"] != DBNull.Value) ? (int)reader["To_ID"] : (int?)null,
+                            subLevel = (reader["Substitution_Level"] != DBNull.Value) ? (int)reader["Substitution_Level"] : (int?)null,
+                            isActive = (reader["Is_Active"] != DBNull.Value) ? (Boolean)reader["is_Active"] : (Boolean?)null,
+                            employeeName = DBEmployeeList()[(int)reader["Employee_ID"]]
+                        };
+                        reportingList.Add(reporting);
+                    }
+                }
+                connection.Close();
+            }
+
+            return reportingList;
         }
 
         protected Dictionary<int, string> AccountStatusList()
@@ -759,6 +792,5 @@ namespace LeaveSystemMVC.Controllers
             }
             return list;
         }
-
     }
 }

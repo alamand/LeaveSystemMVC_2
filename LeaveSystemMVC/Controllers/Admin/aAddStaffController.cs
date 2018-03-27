@@ -88,7 +88,7 @@ namespace LeaveSystemMVC.Controllers
             // @TODO: need to fix the dates
             if (emp.reportsToLineManagerID != 0 && emp.reportsToLineManagerID != null)
             {
-                var queryString = "INSERT INTO dbo.Reporting (Employee_ID, Reporting_ID, Start_Date) " +
+                var queryString = "INSERT INTO dbo.Reporting (Employee_ID, Report_To_ID, Start_Date) " +
                     "VALUES('" + emp.staffID + "', '" + emp.reportsToLineManagerID + "', '" + emp.empStartDate.ToString("yyyy-MM-dd") + "')";
                 DBExecuteQuery(queryString);
             }

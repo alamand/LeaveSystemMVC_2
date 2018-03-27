@@ -6,186 +6,176 @@ using System.Web.Mvc;
 using System.Configuration;
 using System.Data.SqlClient;
 using LeaveSystemMVC.Models;
-using System.Security.Claims;
+
 
 namespace LeaveSystemMVC.Controllers
 {
-    public class lmSelectSubstituteController : Controller
+    public class lmSelectSubstituteController : ControllerBase
     {
-        
-        // GET: lmSubstitute
+        // GET: lmSelectSubstitute
         public ActionResult Index()
         {
-            int deptID = 0;
-            string userID=" ";
-            selectSubstitute substitute = new selectSubstitute();
-            string fullName = "";
+            // gets everything from the Reporting_Map table
+            List<lmReporting> reportingList = GetReportingList();
 
-            //to get the id of the person logged in 
-            var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
-            if (claimsIdentity != null)
-            {
-                var c = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
-                if (c != null)
-                {
-                    userID = c.Value;
-                }
+            // removes duplicates (caused by Employee_ID)
+            var distinctList = reportingList.Select(m => new { m.reportToID, m.fromID, m.toID, m.isActive }).Distinct().ToList();
 
-            }
-            //Include the employees who work in the same department as the current logged in line manager 
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "Select Department_ID FROM dbo.Department Where Line_Manager_ID='" + userID + "'";
-            using (var connection = new SqlConnection(connectionString))
+            // final selectable substitute (dropdown box)
+            Dictionary<int, Dictionary<int, string>> selectableSubstitutes = new Dictionary<int, Dictionary<int, string>>();
+            int loggedInID = GetLoggedInID();
+
+            foreach (var item in distinctList)
             {
-                var command = new SqlCommand(queryString, connection);
-                connection.Open();
-                using (var reader = command.ExecuteReader())
+                // is this the original LM? and he/she is not substituting anyone?
+                // if yes, then get all selectable employees for this user
+                if (item.reportToID == loggedInID && item.fromID == null)
+                    selectableSubstitutes.Add(item.reportToID, GetSelectableEmployees(loggedInID));
+
+                // is this the latest substitute?
+                if (item.toID == loggedInID && item.isActive == true)
                 {
-                    while (reader.Read())
+                    // get all selectable employees for the original LM
+                    Dictionary<int, string> allSelectableSubstitutes = GetSelectableEmployees(item.reportToID);
+                    Dictionary<int, string> finalSelectableSubstitutes = new Dictionary<int, string>();
+
+                    foreach (var dict in allSelectableSubstitutes)
                     {
-                        deptID = (int)reader[0];
-                        string searchString = "Select Employee.Employee_ID, First_Name, Last_Name FROM dbo.Employee Where Department_ID='" + deptID + "' AND Employee_ID !='" + userID + "'AND Account_Status != 'False'";
-                        using (var connection1 = new SqlConnection(connectionString))
-                        {
-                            command = new SqlCommand(searchString, connection1);
-                            connection1.Open();
-                            using (var readerA = command.ExecuteReader())
-                            {
-                                while (readerA.Read())
-                                {
-                                    fullName = (string)readerA[1] + " " + (string)readerA[2];
-                                    if (!substitute.substituteListOptions.ContainsKey((int)reader[0]))
-                                    {
-                                        substitute.substituteListOptions.Add((int)readerA[0], fullName);
-                                    }                             
-                                }
-                            }
-                            connection1.Close();
-                        }
+                        // is this employee id already in the Reporting_Map table (for this original_LM)?
+                        // if not, then add him/her to the list
+                        if (!distinctList.Select(m => m.toID).ToList().Contains(dict.Key))
+                            finalSelectableSubstitutes.Add(dict.Key, dict.Value);
                     }
+
+                    selectableSubstitutes.Add(item.reportToID, finalSelectableSubstitutes);
                 }
-                connection.Close();
             }
 
-            // Include the employees who are line managers
-            connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            queryString = "Select dbo.Employee.Employee_ID, dbo.Employee.First_Name, dbo.Employee.Last_Name FROM dbo.Employee_Role, dbo.Employee WHERE " +
-                "dbo.Employee_Role.Employee_ID = dbo.Employee.Employee_ID" +
-                " AND dbo.Employee_Role.Role_ID = 4 AND dbo.Employee.Employee_ID !='" + userID + "'AND dbo.Employee.Account_Status != 'False'";
-            //@todo: remove hardcoding of role_id
-            using (var connection = new SqlConnection(connectionString))
-            {
-                var command = new SqlCommand(queryString, connection);
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        fullName = (string)reader[1] + " " + (string)reader[2];
-                        if (!substitute.substituteListOptions.ContainsKey((int)reader[0]))
-                        {
-                            substitute.substituteListOptions.Add((int)reader[0], fullName);
-                        }                                                             
-                    }
-                }
-                connection.Close();
-            }
+            SetMessageViewBags();
+            ViewData["SelectableSubstitute"] = selectableSubstitutes;
+            ViewData["EmployeeNames"] = DBEmployeeList();
+            ViewData["LoggedID"] = GetLoggedInID();
 
-            return View(substitute);
+            return View(GetReportingList(loggedInID));
         }
-        
-        //to add or remove substitute lm from db 
+
         [HttpPost]
-        public ActionResult Index (Models.selectSubstitute newSubstitute)
+        public ActionResult Promote(int reportToID, int subLevel, FormCollection form)
         {
-            string userID = " ";
+            int selectedSubID = Convert.ToInt32(form[reportToID.ToString()]);
+            int lmRoleID = DBRoleList().FirstOrDefault(obj => obj.Value == "LM").Key;
+            int loggedInID = GetLoggedInID();
 
-            //to get the id of the person logged in as 
-            var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
-            if (claimsIdentity != null)
+            string queryString;
+
+            // gives the substitute employee a new LM role
+            queryString = "INSERT INTO dbo.Employee_Role(Employee_ID, Role_ID) VALUES('" + selectedSubID + "', '" + lmRoleID + "')";
+            DBExecuteQuery(queryString);
+
+            // updates the highest substitution level to in-active
+            queryString = "UPDATE dbo.Reporting_Map SET Is_Active = 'False' WHERE Original_ID = '" + reportToID + "' AND Substitution_Level = '" + subLevel + "'";
+            DBExecuteQuery(queryString);
+
+            // adds a new record to the Reporting_Map with the selected substitute as active 
+            queryString = "INSERT INTO dbo.Reporting_Map(Original_ID, From_ID, To_ID, Substitution_Level, Is_Active) VALUES('" + reportToID + "', '" + loggedInID + "', '" + selectedSubID + "', '" + ((subLevel != 0) ? (subLevel+1) : 1) + "', 'True')";
+            DBExecuteQuery(queryString);
+
+            var names = DBEmployeeList();
+            TempData["SuccessMessage"] = "<b>" + names[selectedSubID] + "</b> is the new substitute for <b>" + names[reportToID] + "</b>'s subordinates.";      // @MANDY
+
+            return RedirectToAction("Index");
+        }
+
+        public ActionResult Demote(int reportToID, int subLevel)
+        {
+            string queryString;
+            // note that the Reporting_Map substitution level starts from null (no substitute selected).
+            // so if the original LM retrieves his/her permissions, it needs to demote all levels greater or equal to 1
+            // else if a substitute is retrieving the permission from a sub-substitute, then it needs to demote all levels greater than his/her level
+            string comparison = (reportToID == GetLoggedInID()) ? ">=" : ">";
+
+            // demoting employees
+            queryString = "SELECT To_ID FROM dbo.Reporting_Map WHERE Original_ID = '" + reportToID + "' AND Substitution_Level " + comparison + " '" + subLevel + "'";
+            DemoteRole(queryString);
+
+            // removing the records from the Reporting_Map
+            queryString = "DELETE FROM dbo.Reporting_Map WHERE Original_ID = '" + reportToID + "' AND Substitution_Level " + comparison + " '" + subLevel + "'";
+            DBExecuteQuery(queryString);
+
+            // updating the highest substitution level in-active to active
+            queryString = "UPDATE dbo.Reporting_Map SET Is_Active = 'True' WHERE Original_ID = '" + reportToID + "' AND Substitution_Level = '" + subLevel + "'";
+            DBExecuteQuery(queryString);
+
+            var names = DBEmployeeList();
+            TempData["SuccessMessage"] = "Success Message.";        // @MANDY
+
+            return RedirectToAction("Index");
+        }
+
+        private void DemoteRole(string queryString)
+        {
+            // holds the list of employes to be demoted (can be in a chain)
+            List<int> demotionList = new List<int>();
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            using (var connection = new SqlConnection(connectionString))
             {
-                var c = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
-                if (c != null)
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
                 {
-                    userID = c.Value;
+                    while (reader.Read())
+                    {
+                        demotionList.Add((int)reader["To_ID"]);
+                    }
                 }
+                connection.Close();
             }
 
-            int tempSubstituteID = 0;
-            
-            if (newSubstitute.toTransferBack) //transferring LM role back
+            // removes the LM role for each employee in the list
+            foreach (int empID in demotionList)
             {
-                //to remove the substitute id from the database 
-                var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-                string insertString = "Update dbo.Department SET Substitute_LM_ID = NULL Where Line_Manager_ID= '"+userID+"'";
-                using (var connection = new SqlConnection(connectionString))
-                {
-                    var command = new SqlCommand(insertString, connection);
-                    connection.Open();
-                    using (var reader = command.ExecuteReader())
-                        connection.Close();
-                }
-
-                //todo: remove LM role from substitute
-                Response.Write("<script> alert ('Successfully transfered authority back.')</script>");
+                queryString = "DELETE FROM dbo.Employee_Role WHERE Emp_Role_ID = '" + GetEmpRoleID(empID) + "'";
+                DBExecuteQuery(queryString);
             }
-            else //transferring LM role to substitute            
+        }
+
+        private int GetEmpRoleID(int empID)
+        {
+            int lmRoleID = DBRoleList().FirstOrDefault(obj => obj.Value == "LM").Key;
+            string queryString = "SELECT MAX(Emp_Role_ID) AS ERoleID FROM dbo.Employee_Role WHERE Employee_ID = '" + empID + "' AND Role_ID = '" + lmRoleID + "'";
+            int empRoleID = 0;
+
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            using (var connection = new SqlConnection(connectionString))
             {
-                //get the Employee_ID of the person selected in the list to appoint as substitute
-                var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-                string queryString = "Select Employee.Employee_ID From dbo.Employee Where Employee_Id='" + newSubstitute.substituteStaffID + "'";
-                using (var connection = new SqlConnection(connectionString))
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
                 {
-                    var command = new SqlCommand(queryString, connection);
-                    connection.Open();
-                    using (var reader = command.ExecuteReader())
-                        while (reader.Read())
-                        {
-                            tempSubstituteID = (int)reader[0];
-                        }
+                    while (reader.Read())
+                    {
+                        empRoleID = (int)reader["ERoleID"];
+                    }
                 }
-
-                //add the id of the substitute into the Department table 
-                string insertString = "Update dbo.Department SET Substitute_LM_ID ='" + tempSubstituteID + "' Where Line_Manager_ID='"+userID+"'";
-                using (var connection = new SqlConnection(connectionString))
-                {
-                    var command = new SqlCommand(insertString, connection);
-                    connection.Open();
-                    using (var reader = command.ExecuteReader())
-                        connection.Close();
-                }
-                //Add LM role to substitute, if the person is not already an LM
-                queryString = "Select Employee_Role.Role_ID From dbo.Employee_Role Where Employee_Id='" + tempSubstituteID + "'";
-                using (var connection = new SqlConnection(connectionString))
-                {
-                    var command = new SqlCommand(queryString, connection);
-                    connection.Open();
-                    bool found = false;
-                    using (var reader = command.ExecuteReader())
-                        while (reader.Read())
-                        {
-                            if ((int)reader[0] == 4)
-                            {
-                                found = true;
-                            }
-                        }
-                        if (!found)
-                        {
-                            insertString = "INSERT into dbo.Employee_Role (Employee_ID, Role_ID) VALUES ('" + tempSubstituteID + "','4')";
-                            using (var connection2 = new SqlConnection(connectionString))
-                            {
-                                var command2 = new SqlCommand(insertString, connection2);
-                                connection2.Open();
-                                using (var reader2 = command2.ExecuteReader())
-                                    connection2.Close();
-                            }
-                        }
-                    connection.Close();
-                }               
-                
-                Response.Write("<script> alert ('Successfully added substitute line manager.')</script>");
+                connection.Close();
             }
-            return Index();
-        } 
+
+            return empRoleID;
+        }
+
+        private Dictionary<int, string> GetSelectableEmployees(int reportToID)
+        {
+            List<sEmployeeModel> allEmployees = GetEmployeeModel();
+            Dictionary<int, string> selectableEmp = new Dictionary<int, string>();
+
+            foreach (sEmployeeModel emp in allEmployees)
+            {
+                // is this employee a line manager or substitute line manager? and not the original line manager of the subordinates
+                if ((emp.reportsToLineManagerID == reportToID || emp.isLM) && emp.staffID != reportToID)
+                    selectableEmp.Add((int)emp.staffID, emp.firstName + " " + emp.lastName);
+            }
+
+            return selectableEmp;
+        }
     }
 }

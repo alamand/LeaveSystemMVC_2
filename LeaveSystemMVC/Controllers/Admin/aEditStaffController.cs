@@ -151,7 +151,7 @@ namespace LeaveSystemMVC.Controllers
         {
             bool isExist = false;
             string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            var queryString = "SELECT Employee_ID FROM dbo.Reporting WHERE Employee_ID = " + emp.staffID + " AND Reporting_ID = " + emp.reportsToLineManagerID + " AND " +
+            var queryString = "SELECT Employee_ID FROM dbo.Reporting WHERE Employee_ID = " + emp.staffID + " AND Report_To_ID = " + emp.reportsToLineManagerID + " AND " +
                 "Start_Date <= SYSDATETIME() AND End_Date > SYSDATETIME()";
 
             using (var connection = new SqlConnection(connectionString))

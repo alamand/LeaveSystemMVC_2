@@ -20,18 +20,46 @@ namespace LeaveSystemMVC.Controllers
         [HttpGet]
         public ActionResult Index()
         {
+            int loggedInID = GetLoggedInID();
+            Boolean substituted = false;
             List<sLeaveModel> retrievedApplications = new List<sLeaveModel>();
+            List<lmReporting> reportingList = GetReportingList(loggedInID);
+            List<sLeaveModel> leaveList = null;
 
-            // retrieve all applications that reports to this user
-            var leaveList = GetLeaveModel("Reporting.Reporting_ID", GetLoggedInID());
-            
-            // extract all pending applications
-            foreach (var leave in leaveList)
+            foreach (var reporting in reportingList)
             {
-                if (leave.leaveStatusName.Equals("Pending_LM"))
-                    retrievedApplications.Add(leave);
+                if (reporting.toID == loggedInID && reporting.isActive == true && leaveList == null)
+                {
+                    // retrieve all applications that reports to this user
+                    leaveList = GetLeaveModel("Reporting.Report_To_ID", reporting.reportToID);
+
+                    // extract all pending applications
+                    foreach (var leave in leaveList)
+                    {
+                        if (leave.leaveStatusName.Equals("Pending_LM"))
+                            retrievedApplications.Add(leave);
+                    }
+                }
+
+                if (reporting.reportToID == loggedInID && reporting.isActive != null)
+                    substituted = true;
             }
-                        
+
+            if (!substituted)
+            {
+                leaveList = null;
+                // retrieve all applications that reports to this user
+                leaveList = GetLeaveModel("Reporting.Report_To_ID", loggedInID);
+
+                // extract all pending applications
+                foreach (var leave in leaveList)
+                {
+                    if (leave.leaveStatusName.Equals("Pending_LM"))
+                        retrievedApplications.Add(leave);
+                }
+            }
+            
+
             ViewBag.SuccessMessage = TempData["SuccessMessage"];
             ViewBag.WarningMessage = TempData["WarningMessage"];
 
