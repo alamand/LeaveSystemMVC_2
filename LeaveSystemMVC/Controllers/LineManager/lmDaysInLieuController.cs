@@ -48,35 +48,43 @@ namespace LeaveSystemMVC.Controllers
         [HttpPost]
         public ActionResult Index(hrDaysInLieu dil)
         {
-            string queryString = "INSERT INTO dbo.Days_In_Lieu VALUES ('" + dil.employeeID + "' , '" + dil.date.ToString("yyyy-MM-dd") + "' , '" + dil.numOfDays + "' , '" + dil.comment + "')";
-            DBExecuteQuery(queryString);
-
-            int dilID = DBLeaveTypeList().FirstOrDefault(obj => obj.Value == "DIL").Key;
-
-            //Check if DIL leave type exists for this employee.
-            Boolean isExists = IsLeaveBalanceExists(dil.employeeID, dilID);
-
-            // if it exists, then get the leave balance ID, and update the audit trail (modified_by) and leave balance
-            // else, insert a new record to the leave balance, and insert a new (created_by) in the audit trail
-            if (isExists)
+            if (dil.date.Year != DateTime.Now.Year)
             {
-                Tuple<int, decimal> balTuple = DBGetAuditDILLeaveBalance(dil.employeeID, dilID);
-                DBUpdateDILAudit(balTuple.Item1, balTuple.Item2, (balTuple.Item2 + dil.numOfDays), dil.comment);
-                queryString = "UPDATE dbo.Leave_Balance SET Balance = Balance + '" + dil.numOfDays + "' WHERE Employee_ID = '" + dil.employeeID + "' AND Leave_Type_ID = " + dilID;
-                DBExecuteQuery(queryString);
+                TempData["ErrorMessage"] = "You must select a date from the present year.";
+                return Index(dil.employeeID);
             }
             else
             {
-                queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_Type_ID, Balance) VALUES ('" + dil.employeeID + "' , '" + dilID + "' , '" + dil.numOfDays + "')";
+                string queryString = "INSERT INTO dbo.Days_In_Lieu VALUES ('" + dil.employeeID + "' , '" + dil.date.ToString("yyyy-MM-dd") + "' , '" + dil.numOfDays + "' , '" + dil.comment + "')";
                 DBExecuteQuery(queryString);
-                Tuple<int, decimal> balTuple = DBGetAuditDILLeaveBalance(dil.employeeID, dilID);
-                DBInsertDILAudit(balTuple.Item1, dil.numOfDays, dil.comment);
+
+                int dilID = DBLeaveTypeList().FirstOrDefault(obj => obj.Value == "DIL").Key;
+
+                //Check if DIL leave type exists for this employee.
+                Boolean isExists = IsLeaveBalanceExists(dil.employeeID, dilID);
+
+                // if it exists, then get the leave balance ID, and update the audit trail (modified_by) and leave balance
+                // else, insert a new record to the leave balance, and insert a new (created_by) in the audit trail
+                if (isExists)
+                {
+                    Tuple<int, decimal> balTuple = DBGetAuditDILLeaveBalance(dil.employeeID, dilID);
+                    DBUpdateDILAudit(balTuple.Item1, balTuple.Item2, (balTuple.Item2 + dil.numOfDays), dil.comment);
+                    queryString = "UPDATE dbo.Leave_Balance SET Balance = Balance + '" + dil.numOfDays + "' WHERE Employee_ID = '" + dil.employeeID + "' AND Leave_Type_ID = " + dilID;
+                    DBExecuteQuery(queryString);
+                }
+                else
+                {
+                    queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_Type_ID, Balance) VALUES ('" + dil.employeeID + "' , '" + dilID + "' , '" + dil.numOfDays + "')";
+                    DBExecuteQuery(queryString);
+                    Tuple<int, decimal> balTuple = DBGetAuditDILLeaveBalance(dil.employeeID, dilID);
+                    DBInsertDILAudit(balTuple.Item1, dil.numOfDays, dil.comment);
+                }
+
+                sEmployeeModel emp = GetEmployeeModel(dil.employeeID);
+                TempData["SuccessMessage"] = "<b>" + emp.firstName + " " + emp.lastName + "</b> has been credited successfully.";
+
+                return RedirectToAction("Index");
             }
-
-            sEmployeeModel emp = GetEmployeeModel(dil.employeeID);
-            TempData["SuccessMessage"] = "<b>" + emp.firstName + " " + emp.lastName + "</b> has been credited successfully.";
-
-            return RedirectToAction("Index");           
         }
 
         [HttpPost]
