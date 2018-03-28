@@ -372,7 +372,7 @@ namespace LeaveSystemMVC.Controllers
 
             bool isValidHours = false;
             // checks that the hours are between 6am and 10pm
-            if ((model.shortStartTime.Hours >= 6 && model.shortEndTime.Hours <= 21))
+            if ((model.shortStartTime.Hours >= 6 && model.shortEndTime.TotalHours <= 21) || (model.shortStartTime.Hours >= 6 && model.shortEndTime.TotalHours == 22 && model.shortEndTime.Minutes == 0))
                 isValidHours = true;
 
             // applies for leave ONLY if the date is not a weekend or public holiday,

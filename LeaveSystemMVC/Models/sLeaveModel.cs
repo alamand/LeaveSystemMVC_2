@@ -73,7 +73,7 @@ namespace LeaveSystemMVC.Models
 
         [DisplayName("Phone Number")]
         [Required(ErrorMessage = "Phone number is required.")]
-        [StringLength(15, MinimumLength = 10, ErrorMessage = "Phone number is not the correct length.")]
+        [StringLength(15, MinimumLength = 12, ErrorMessage = "Phone number is not the correct length.")]
         [DataType(DataType.PhoneNumber, ErrorMessage = "You must provide a phone number in international format, starting with a + symbol.")]
         [RegularExpression(@"^\+[1-9]{1}[0-9]{3,14}$", ErrorMessage = "You must provide a phone number in international format, starting with a + symbol, and without spaces.")]
         public string contactDetails { get; set; }
