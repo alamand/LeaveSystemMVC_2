@@ -37,7 +37,7 @@ namespace LeaveSystemMVC.Controllers.HumanResources
 
         private string GetFilteredQuery(int leaveType, string sDate, string eDate)
         {
-            var queryString = "SELECT Employee.Employee_ID, First_Name, Last_Name, Value_Before, Value_After, Comment " +
+            var queryString = "SELECT Employee.Employee_ID, First_Name, Last_Name, Value_Before, Value_After, Comment, Leave_Name " +
                 "FROM dbo.Employee " +
                 "LEFT JOIN dbo.Leave_Balance ON Employee.Employee_ID = Leave_Balance.Employee_ID " +
                 "INNER JOIN dbo.Department ON Employee.Department_ID = Department.Department_ID " +
@@ -45,13 +45,13 @@ namespace LeaveSystemMVC.Controllers.HumanResources
                 "LEFT JOIN dbo.Audit_Leave_Balance ON Leave_Balance.Leave_Balance_ID = Audit_Leave_Balance.Leave_Balance_ID";
 
             if (leaveType >= 0)
-                queryString += " AND Leave_Balance.Leave_Type_ID = " + leaveType;
+                queryString += " AND Leave_Balance.Leave_Type_ID = '" + leaveType + "'";
 
             if (sDate.Length > 0)
-                queryString += " AND Audit_Leave_Balance.Modified_On >= '" + sDate + "'";
+                queryString += " AND (Audit_Leave_Balance.Modified_On >= '" + sDate + "' OR Audit_Leave_Balance.Created_On >= '" + sDate + "')";
 
             if (eDate.Length > 0)
-                queryString += " AND Audit_Leave_Balance.Modified_On <= '" + eDate + "'";
+                queryString += " AND (Audit_Leave_Balance.Modified_On <= '" + eDate + "' OR Audit_Leave_Balance.Created_On <= '" + eDate + "')";
 
             queryString += " ORDER BY First_Name, Last_Name";
 
@@ -75,10 +75,16 @@ namespace LeaveSystemMVC.Controllers.HumanResources
                         int empID = (int)reader["Employee_ID"];
                         string firstName = (string)reader["First_Name"];
                         string lastName = (string)reader["Last_Name"];
+                        string leaveType = (string)reader["Leave_Name"];
                         decimal vBefore = decimal.Parse((reader["Value_Before"] != DBNull.Value) ? (string)reader["Value_Before"] : "0");
                         decimal vAfter = decimal.Parse((reader["Value_After"] != DBNull.Value) ? (string)reader["Value_After"] : "0");
-                        decimal consuption = vBefore - vAfter;
                         string comment = (reader["Comment"] != DBNull.Value) ? (string)reader["Comment"] : "";
+
+                        decimal consuption = 0;
+                        if (leaveType.Equals("Compassionate") || leaveType.Equals("Unpaid"))
+                            consuption = vAfter - vBefore;
+                        else
+                            consuption = vBefore - vAfter;
 
                         if (!comment.Equals("Leave quota per annum") && !comment.Equals("Monthly reset"))
                         {
