@@ -18,8 +18,6 @@ namespace LeaveSystemMVC.Controllers.HumanResources
             string queryString = GetFilteredQuery(filterLeaveType, filterStartDate, filterEndDate);
             var model = GetTotalConsumption(queryString);
 
-
-            Output(filterLeaveType.ToString());
             ViewData["LeaveTypeList"] = DBLeaveTypeList();
             ViewData["SelectedLeaveType"] = filterLeaveType;
             ViewData["SelectedStartDate"] = filterStartDate;
@@ -39,28 +37,23 @@ namespace LeaveSystemMVC.Controllers.HumanResources
 
         private string GetFilteredQuery(int leaveType, string sDate, string eDate)
         {
-            var queryString = "SELECT Employee.Employee_ID, First_Name, Last_Name, Value_Before, Value_After " +
+            var queryString = "SELECT Employee.Employee_ID, First_Name, Last_Name, Value_Before, Value_After, Comment " +
                 "FROM dbo.Employee " +
                 "LEFT JOIN dbo.Leave_Balance ON Employee.Employee_ID = Leave_Balance.Employee_ID " +
                 "INNER JOIN dbo.Department ON Employee.Department_ID = Department.Department_ID " +
                 "INNER JOIN dbo.Leave_Type ON Leave_Balance.Leave_Type_ID = Leave_Type.Leave_Type_ID " +
                 "LEFT JOIN dbo.Audit_Leave_Balance ON Leave_Balance.Leave_Balance_ID = Audit_Leave_Balance.Leave_Balance_ID";
 
-            // adds a filter query if a leave type is selected from the dropdown, note that -1 represents All Types
             if (leaveType >= 0)
-            {
                 queryString += " AND Leave_Balance.Leave_Type_ID = " + leaveType;
-            }
 
             if (sDate.Length > 0)
-            {
                 queryString += " AND Audit_Leave_Balance.Modified_On >= '" + sDate + "'";
-            }
 
             if (eDate.Length > 0)
-            {
                 queryString += " AND Audit_Leave_Balance.Modified_On <= '" + eDate + "'";
-            }
+
+            queryString += " ORDER BY First_Name, Last_Name";
 
             return queryString;
         }
@@ -85,15 +78,19 @@ namespace LeaveSystemMVC.Controllers.HumanResources
                         decimal vBefore = decimal.Parse((reader["Value_Before"] != DBNull.Value) ? (string)reader["Value_Before"] : "0");
                         decimal vAfter = decimal.Parse((reader["Value_After"] != DBNull.Value) ? (string)reader["Value_After"] : "0");
                         decimal consuption = vBefore - vAfter;
+                        string comment = (reader["Comment"] != DBNull.Value) ? (string)reader["Comment"] : "";
 
-                        if (empConsumptionList.Any(m => m.Item1 == empID))
+                        if (!comment.Equals("Leave quota per annum") && !comment.Equals("Monthly reset"))
                         {
-                            int indx = empConsumptionList.FindIndex(m => m.Item1 == empID);
-                            consuption += empConsumptionList[indx].Item3;
-                            empConsumptionList.RemoveAt(indx);
-                        }
+                            if (empConsumptionList.Any(m => m.Item1 == empID))
+                            {
+                                int indx = empConsumptionList.FindIndex(m => m.Item1 == empID);
+                                consuption += empConsumptionList[indx].Item3;
+                                empConsumptionList.RemoveAt(indx);
+                            }
 
-                        empConsumptionList.Add(new Tuple<int, string, decimal>(empID, firstName + " " + lastName, consuption));
+                            empConsumptionList.Add(new Tuple<int, string, decimal>(empID, firstName + " " + lastName, consuption));
+                        }
                     }
                 }
                 connection.Close();
