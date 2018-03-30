@@ -211,6 +211,7 @@
     <Compile Include="Controllers\HumanResources\hrAdministerEmploymentController.cs" />
     <Compile Include="Controllers\HumanResources\hrCreditLeaveBalanceController.cs" />
     <Compile Include="Controllers\HumanResources\hrDaysInLieuController.cs" />
+    <Compile Include="Controllers\HumanResources\hrLeaveAuditController.cs" />
     <Compile Include="Controllers\HumanResources\hrProbationAdministrationController.cs" />
     <Compile Include="Controllers\HumanResources\hrEditBalanceController.cs" />
     <Compile Include="Controllers\HumanResources\hrEditDefaultLeaveDurationController.cs" />
@@ -1797,6 +1798,8 @@
     <Content Include="Views\hrEmployeeLeaveHistory\View.cshtml" />
     <Content Include="Views\hrAdministerEmployment\Index.cshtml" />
     <Content Include="Views\Shared\PageNotFound.cshtml" />
+    <Content Include="Views\hrLeaveAudit\Index.cshtml" />
+    <Content Include="Views\hrLeaveAudit\View.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\DB_Backup\" />
