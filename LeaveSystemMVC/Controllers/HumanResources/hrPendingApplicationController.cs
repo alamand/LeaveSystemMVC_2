@@ -511,20 +511,13 @@ namespace LeaveSystemMVC.Controllers
             string comment = "Approved Leave Application";
 
             if (deductDIL > 0)
-            {
-                DBUpdateBalance(leave.employeeID, lb.daysInLieuID, lb.daysInLieu - deductDIL);
-                DBUpdateAuditBalance(DBLeaveBalanceID(leave.employeeID, lb.daysInLieuID), leave.leaveAppID, lb.daysInLieu, lb.daysInLieu - deductDIL, comment);
-            }
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.daysInLieuID, lb.daysInLieu, lb.daysInLieu - deductDIL, comment);
+
             if (deductAnnual > 0)
-            {
-                DBUpdateBalance(leave.employeeID, lb.annualID, lb.annual - deductAnnual);
-                DBUpdateAuditBalance(DBLeaveBalanceID(leave.employeeID, lb.annualID), leave.leaveAppID, lb.annual, lb.annual - deductAnnual, comment);
-            }
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.annualID, lb.annual, lb.annual - deductAnnual, comment);
+
             if (addUnpaid > 0)
-            {
-                DBUpdateBalance(leave.employeeID, lb.unpaidID, lb.unpaid + addUnpaid);
-                DBUpdateAuditBalance(DBLeaveBalanceID(leave.employeeID, lb.unpaidID), leave.leaveAppID, lb.unpaid, lb.unpaid + addUnpaid, comment);
-            }
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.unpaidID, lb.unpaid, lb.unpaid + addUnpaid, comment);
 
             string message;
             message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by human resources.";
@@ -586,25 +579,16 @@ namespace LeaveSystemMVC.Controllers
             string comment = "Approved Leave Application";
 
             if (deductSick > 0)
-            {
-                DBUpdateBalance(leave.employeeID, lb.sickID, (lb.sick - deductSick));
-                DBUpdateAuditBalance(DBLeaveBalanceID(leave.employeeID, lb.sickID), leave.leaveAppID, lb.sick, lb.sick - deductSick, comment);
-            }
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.sickID, lb.sick, lb.sick - deductSick, comment);
+            
             if (deductDIL > 0)
-            {
-                DBUpdateBalance(leave.employeeID, lb.daysInLieuID, (lb.daysInLieu - deductDIL));
-                DBUpdateAuditBalance(DBLeaveBalanceID(leave.employeeID, lb.daysInLieuID), leave.leaveAppID, lb.daysInLieu, lb.daysInLieu - deductDIL, comment);
-            }
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.daysInLieuID, lb.daysInLieu, lb.daysInLieu - deductDIL, comment);
+
             if (deductAnnual > 0)
-            {
-                DBUpdateBalance(leave.employeeID, lb.annualID, (lb.annual - deductAnnual));
-                DBUpdateAuditBalance(DBLeaveBalanceID(leave.employeeID, lb.annualID), leave.leaveAppID, lb.annual, lb.annual - deductAnnual, comment);
-            }
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.annualID, lb.annual, lb.annual - deductAnnual, comment);
+
             if (addUnpaid > 0)
-            {
-                DBUpdateBalance(leave.employeeID, lb.unpaidID, (lb.unpaid + addUnpaid));
-                DBUpdateAuditBalance(DBLeaveBalanceID(leave.employeeID, lb.unpaidID), leave.leaveAppID, lb.unpaid, lb.unpaid + addUnpaid, comment);
-            }
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.unpaidID, lb.unpaid, lb.unpaid + addUnpaid, comment);
 
             string message;
             message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by human resources.";
@@ -669,25 +653,16 @@ namespace LeaveSystemMVC.Controllers
             string comment = "Approved Leave Application";
 
             if (deductMaternity > 0)
-            {
-                DBUpdateBalance(leave.employeeID, lb.maternityID, lb.maternity - deductMaternity);
-                DBUpdateAuditBalance(DBLeaveBalanceID(leave.employeeID, lb.maternityID), leave.leaveAppID, lb.maternity, lb.maternity - deductMaternity, comment);
-            }
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.maternityID, lb.maternity, lb.maternity - deductMaternity, comment);
+
             if (deductDIL > 0)
-            {
-                DBUpdateBalance(leave.employeeID, lb.daysInLieuID, (lb.daysInLieu - deductDIL));
-                DBUpdateAuditBalance(DBLeaveBalanceID(leave.employeeID, lb.daysInLieuID), leave.leaveAppID, lb.daysInLieu, lb.daysInLieu - deductDIL, comment);
-            }
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.daysInLieuID, lb.daysInLieu, lb.daysInLieu - deductDIL, comment);
+
             if (deductAnnual > 0)
-            {
-                DBUpdateBalance(leave.employeeID, lb.annualID, lb.annual - deductAnnual);
-                DBUpdateAuditBalance(DBLeaveBalanceID(leave.employeeID, lb.annualID), leave.leaveAppID, lb.annual, lb.annual - deductAnnual, comment);
-            }
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.annualID, lb.annual, lb.annual - deductAnnual, comment);
+
             if (addUnpaid > 0)
-            {
-                DBUpdateBalance(leave.employeeID, lb.unpaidID, (lb.unpaid + addUnpaid));
-                DBUpdateAuditBalance(DBLeaveBalanceID(leave.employeeID, lb.daysInLieuID), leave.leaveAppID, lb.unpaidID, lb.unpaidID + addUnpaid, comment);
-            }
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.unpaidID, lb.unpaid, lb.unpaid + addUnpaid, comment);
 
             string message;
             message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by human resources.";
@@ -751,25 +726,16 @@ namespace LeaveSystemMVC.Controllers
             string comment = "Approved Leave Application";
 
             if (addCompassionate > 0)
-            {
-                DBUpdateBalance(leave.employeeID, lb.compassionateID, (lb.compassionate + addCompassionate));
-                DBUpdateAuditBalance(DBLeaveBalanceID(leave.employeeID, lb.compassionateID), leave.leaveAppID, lb.compassionate, lb.compassionate + addCompassionate, comment);
-            }
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.compassionateID, lb.compassionate, lb.compassionate + addCompassionate, comment);
+
             if (deductDIL > 0)
-            {
-                DBUpdateBalance(leave.employeeID, lb.daysInLieuID, (lb.daysInLieu - deductDIL));
-                DBUpdateAuditBalance(DBLeaveBalanceID(leave.employeeID, lb.daysInLieuID), leave.leaveAppID, lb.daysInLieu, lb.daysInLieu - deductDIL, comment);
-            }
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.daysInLieuID, lb.daysInLieu, lb.daysInLieu - deductDIL, comment);
+
             if (deductAnnual > 0)
-            {
-                DBUpdateBalance(leave.employeeID, lb.annualID, (lb.annual - deductAnnual));
-                DBUpdateAuditBalance(DBLeaveBalanceID(leave.employeeID, lb.annualID), leave.leaveAppID, lb.annual, lb.annual - deductAnnual, comment);
-            }
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.annualID, lb.annual, lb.annual - deductAnnual, comment);
+
             if (addUnpaid > 0)
-            {
-                DBUpdateBalance(leave.employeeID, lb.unpaidID, (lb.unpaid + addUnpaid));
-                DBUpdateAuditBalance(DBLeaveBalanceID(leave.employeeID, lb.unpaidID), leave.leaveAppID, lb.unpaid, lb.unpaid + addUnpaid, comment);
-            }
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.unpaidID, lb.unpaid, lb.unpaid + addUnpaid, comment);
 
             string message;
             message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by human resources.";
@@ -795,8 +761,7 @@ namespace LeaveSystemMVC.Controllers
                 int approvedID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Approved").Key;
                 DBUpdateLeave(leave, approvedID);
 
-                DBUpdateBalance(leave.employeeID, lb.shortHoursID, lb.shortHours - (decimal)span.TotalHours);
-                DBUpdateAuditBalance(DBLeaveBalanceID(leave.employeeID, lb.shortHoursID), leave.leaveAppID, lb.shortHours, lb.shortHours - (decimal)span.TotalHours, "Approved Leave Application");
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.shortHoursID, lb.shortHours, lb.shortHours - (decimal)span.TotalHours, "Approved Leave Application");
 
                 string message;
                 message = "Your " + leave.leaveTypeName + " leave application for " + leave.startDate.ToShortDateString() + " from " + leave.shortStartTime + " to " + leave.shortEndTime + " with ID " + leave.leaveAppID + " has been approved by human resources.";
@@ -826,8 +791,7 @@ namespace LeaveSystemMVC.Controllers
                 int approvedID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Approved").Key;
                 DBUpdateLeave(leave, approvedID);
 
-                DBUpdateBalance(leave.employeeID, lb.daysInLieuID, lb.daysInLieu - numOfDays);
-                DBUpdateAuditBalance(DBLeaveBalanceID(leave.employeeID, lb.daysInLieuID), leave.leaveAppID, lb.daysInLieu, lb.daysInLieu - numOfDays, "Approved Leave Application");
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.daysInLieuID, lb.daysInLieu, lb.daysInLieu - numOfDays, "Approved Leave Application");
 
                 string message;
                 message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by human resources.";
@@ -857,8 +821,7 @@ namespace LeaveSystemMVC.Controllers
                 int approvedID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Approved").Key;
                 DBUpdateLeave(leave, approvedID);
 
-                DBUpdateBalance(leave.employeeID, lb.pilgrimageID, lb.pilgrimage - lb.pilgrimage);
-                DBUpdateAuditBalance(DBLeaveBalanceID(leave.employeeID, lb.pilgrimageID), leave.leaveAppID, lb.pilgrimage, lb.pilgrimage - lb.pilgrimage, "Approved Leave Application");
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.pilgrimageID, lb.pilgrimage, lb.pilgrimage - lb.pilgrimage, "Approved Leave Application");
 
                 string message;
                 message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by human resources.";
@@ -885,8 +848,7 @@ namespace LeaveSystemMVC.Controllers
             int approvedID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Approved").Key;
             DBUpdateLeave(leave, approvedID);
 
-            DBUpdateBalance(leave.employeeID, lb.unpaidID, lb.unpaid + numOfDays);
-            DBUpdateAuditBalance(DBLeaveBalanceID(leave.employeeID, lb.unpaidID), leave.leaveAppID, lb.unpaid, lb.unpaid + numOfDays, "Approved Leave Application");
+            DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.unpaidID, lb.unpaid, lb.unpaid + numOfDays, "Approved Leave Application");
 
             string message;
             message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by human resources.";
@@ -906,40 +868,36 @@ namespace LeaveSystemMVC.Controllers
                        "WHERE Leave_Application_ID = '" + leave.leaveAppID + "' ";
             DBExecuteQuery(queryString);
 
-            string quditString = "INSERT INTO dbo.Audit_Leave_Application (Leave_Application_ID, Column_Name, Value_Before, Value_After, Modified_By, Modified_On) " +
+            string auditString = "INSERT INTO dbo.Audit_Leave_Application (Leave_Application_ID, Column_Name, Value_Before, Value_After, Modified_By, Modified_On) " +
                   "VALUES('" + leave.leaveAppID + "', 'Leave_Status_ID', '" + previousStatus + "','" + approvalID + "','" + GetLoggedInID() + "','" + DateTime.Today.ToString("yyyy-MM-dd") + "')";
-            DBExecuteQuery(quditString);
+            DBExecuteQuery(auditString);
         }
 
-        private void DBUpdateBalance(int empID, int leaveID, decimal balance)
+        private void DBUpdateBalance(int empID, int appID, int leaveID, decimal valBefore, decimal valAfter, string comment)
         {
-            string queryString = "UPDATE dbo.Leave_Balance SET Balance = '" + balance + "' " +
-                       "WHERE Employee_ID = '" + empID + "' AND Leave_Type_ID = '" + leaveID + "' ";
-            DBExecuteQuery(queryString);
-        }
+            string queryString;
+            int balanceID;
 
-        private int DBLeaveBalanceID(int empID, int typeID)
-        {
-            var queryString = "SELECT Leave_Balance_ID FROM dbo.Leave_Balance WHERE Employee_ID = '" + empID + "' AND Leave_Type_ID = '" + typeID + "'";
-            int leaveBalanceID = 0;
-
-
-            string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            using (var connection = new SqlConnection(connectionString))
+            if (IsLeaveBalanceExists(empID, leaveID))
             {
-                var command = new SqlCommand(queryString, connection);
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        leaveBalanceID = (int)reader["Leave_Balance_ID"];
-                    }
-                }
-                connection.Close();
-            }
+                queryString = "UPDATE dbo.Leave_Balance SET Balance = " + valAfter + " WHERE Employee_ID = " + empID + " AND Leave_Type_ID = " + leaveID;
+                DBExecuteQuery(queryString);
 
-            return leaveBalanceID;
+                balanceID = GetEmpBalanceID(empID, leaveID);
+                queryString = "INSERT INTO dbo.Audit_Leave_Balance (Leave_Balance_ID, Leave_Application_ID, Column_Name, Value_Before, Value_After, Modified_By, Modified_On, Comment) " +
+                   "VALUES('" + balanceID + "','" + appID + "', 'Balance' ,'" + valBefore + "','" + valAfter + "','" + GetLoggedInID() + "','" + DateTime.Today.ToString("yyyy-MM-dd") + "','" + comment + "')";
+                DBExecuteQuery(queryString);
+            }
+            else
+            {
+                queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_Type_ID, Balance) VALUES(" + empID + "," + leaveID + "," + valAfter + ")";
+                DBExecuteQuery(queryString);
+
+                balanceID = GetEmpBalanceID(empID, leaveID);
+                queryString = "INSERT INTO dbo.Audit_Leave_Balance (Leave_Balance_ID, Leave_Application_ID, Column_Name, Value_After, Created_By, Created_On, Comment) " +
+                    "VALUES('" + balanceID + "','" + appID + "', 'Balance','" + valAfter + "','" + GetLoggedInID() + "','" + DateTime.Today.ToString("yyyy-MM-dd") + "','" + comment + "')";
+                DBExecuteQuery(queryString);
+            }
         }
 
         private List<sLeaveModel> GetLeaveHistory(int empID)

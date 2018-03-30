@@ -390,6 +390,29 @@ namespace LeaveSystemMVC.Controllers
             return isExist;
         }
 
+        protected int GetEmpBalanceID(int empID, int leaveTypeID)
+        {
+            string queryString = "SELECT Leave_Balance_ID FROM dbo.Leave_Balance WHERE Employee_ID = '" + empID + "' AND Leave_Type_ID = '" + leaveTypeID + "'";
+            int leaveBalID = 0;
+
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        leaveBalID = (int)reader["Leave_Balance_ID"];
+                    }
+                }
+                connection.Close();
+            }
+
+            return leaveBalID;
+        }
+
         protected int GetSubstituteID(int empID)
         {
             string queryString2 = "SELECT dbo.Employee.Substitute_ID FROM dbo.Employee WHERE dbo.Employee.Employee_ID = '" + empID + "'";
