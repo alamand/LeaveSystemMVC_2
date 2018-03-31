@@ -22,8 +22,8 @@
             using (Html.BeginForm("Promote", "lmSelectSubstitute", new { reportToID = myList[0].reportToID, subLevel = ((myList[0].subLevel != null) ? myList[0].subLevel : 0) }, FormMethod.Post, new { enctype = "multipart/form-data" }))
             {
                 <div class="row">
-                    <div class="col-md-3">
-                        @Html.DisplayName("Original LM: " + empNames[list[i].reportToID])
+                    <div class="col-md-4">
+                        @Html.DisplayName("Original line manager: " + empNames[list[i].reportToID])
                     </div>
                 </div>
                 <br />
@@ -35,7 +35,7 @@
                     </div>
                     <div class="col-md-2">
                         <button type="submit" value="Promote" class="btn btn-info col-md-12">
-                            <span class="glyphicon glyphicon-education" aria-hidden="true"></span> Promote
+                            <span class="glyphicon glyphicon-education" aria-hidden="true"></span> Nominate
                         </button>
                     </div>
                     <div class="col-md-4">
@@ -67,18 +67,18 @@
             List<LeaveSystemMVC.Models.lmReporting> demoteList = new List<LeaveSystemMVC.Models.lmReporting>(Model.Where(x => x.reportToID == list[i].reportToID && x.isActive == list[i].isActive).ToList());
             <div class="row">
                 <div class="col-md-4">
-                    @Html.DisplayName("Original LM: " + empNames[list[i].reportToID])
+                    @Html.DisplayName("Original line manager: " + empNames[list[i].reportToID])
                 </div>
             </div>
             <br />
             <div class="row">
                 <div class="col-md-offset-1 col-md-4">
-                    @Html.DisplayName("Current LM: " + empNames[(int)(list.Where(m => m.reportToID == list[i].reportToID && m.isActive == true).ToList()[0].toID)])
+                    @Html.DisplayName("Current line manager: " + empNames[(int)(list.Where(m => m.reportToID == list[i].reportToID && m.isActive == true).ToList()[0].toID)])
                 </div>
                 <div class="col-md-2">
                     <a href="@Url.Action("Demote", "lmSelectSubstitute", new { reportToID = demoteList[0].reportToID, subLevel = demoteList[0].subLevel }, null)" class="btn btn-warning col-md-12">
                         <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>
-                        Demote
+                        Withdraw
                     </a>
                 </div>
                 <div class="col-md-4">
@@ -108,8 +108,8 @@
             using (Html.BeginForm("Promote", "lmSelectSubstitute", new { reportToID = promoteList[0].reportToID, subLevel = ((promoteList[0].subLevel != null) ? promoteList[0].subLevel : 0) }, FormMethod.Post, new { enctype = "multipart/form-data" }))
             {
                 <div class="row">
-                    <div class="col-md-3">
-                        @Html.DisplayName("Original LM: " + empNames[list[i].reportToID])
+                    <div class="col-md-4">
+                        @Html.DisplayName("Original line manager: " + empNames[list[i].reportToID])
                     </div>
                 </div>
                 <br />
@@ -121,7 +121,7 @@
                     </div>
                     <div class="col-md-2">
                         <button type="submit" value="Promote" class="btn btn-info col-md-12">
-                            <span class="glyphicon glyphicon-education" aria-hidden="true"></span> Promote
+                            <span class="glyphicon glyphicon-education" aria-hidden="true"></span> Nominate
                         </button>
                     </div>
                     <div class="col-md-4">

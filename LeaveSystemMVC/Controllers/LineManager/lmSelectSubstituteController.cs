@@ -81,7 +81,7 @@ namespace LeaveSystemMVC.Controllers
             DBExecuteQuery(queryString);
 
             var names = DBEmployeeList();
-            TempData["SuccessMessage"] = "<b>" + names[selectedSubID] + "</b> is the new substitute for <b>" + names[reportToID] + "</b>'s subordinates.";      // @MANDY
+            TempData["SuccessMessage"] = "<b>" + names[selectedSubID] + "</b> is the new substitute for <b>" + names[reportToID] + "</b>'s subordinates.";
 
             return RedirectToAction("Index");
         }
@@ -107,7 +107,7 @@ namespace LeaveSystemMVC.Controllers
             DBExecuteQuery(queryString);
 
             var names = DBEmployeeList();
-            TempData["SuccessMessage"] = "Success Message.";        // @MANDY
+            TempData["SuccessMessage"] = "Your line manager role has been successfully returned to you.";
 
             return RedirectToAction("Index");
         }

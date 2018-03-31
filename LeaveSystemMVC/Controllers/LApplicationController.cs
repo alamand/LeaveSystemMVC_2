@@ -42,6 +42,14 @@ namespace LeaveSystemMVC.Controllers
             sleaveBalanceModel leaveBalance = GetLeaveBalanceModel(GetLoggedInID());
             ModelState.Clear();
 
+            Output("File size: " + file.ContentLength);
+            if (file.ContentLength > 10240)
+            {
+                Output("Too large file in LApplication");
+                ModelState.AddModelError("documentation", "The size of the file exceeds the maximum limit.");
+                return View(model);
+            }
+
             // checks if the dates are the same, and if the end date is before than start date (sets ModelState to invalid if one of them is true)
             CompareDates(model.startDate, model.returnDate);
 
@@ -543,9 +551,7 @@ namespace LeaveSystemMVC.Controllers
                 }          
                     
                 leaveTypes.Remove(leaveTypes.FirstOrDefault(obj => obj.Value == "DIL").Key);
-                Output(leaveTypes.Count.ToString());
-                leaveNames.Remove(leaveNames.FirstOrDefault(obj => obj.Value == "Days in Lieu").Key);
-                Output(leaveNames.Count.ToString());
+                leaveNames.Remove(leaveNames.FirstOrDefault(obj => obj.Value == "Days in Lieu").Key);                
             }
 
             return new Tuple<Dictionary<int, string>, Dictionary<int, string>>(leaveTypes, leaveNames);
