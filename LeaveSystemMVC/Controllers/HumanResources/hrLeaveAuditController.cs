@@ -37,21 +37,27 @@ namespace LeaveSystemMVC.Controllers.HumanResources
 
         private string GetFilteredQuery(int leaveType, string sDate, string eDate)
         {
-            var queryString = "SELECT Employee.Employee_ID, First_Name, Last_Name, Value_Before, Value_After, Comment, Leave_Name " +
+            var queryString = "SELECT Employee.Employee_ID, First_Name, Last_Name, Value_Before, Value_After, Leave_Name, Leave.Start_Date " +
                 "FROM dbo.Employee " +
                 "LEFT JOIN dbo.Leave_Balance ON Employee.Employee_ID = Leave_Balance.Employee_ID " +
                 "INNER JOIN dbo.Department ON Employee.Department_ID = Department.Department_ID " +
                 "INNER JOIN dbo.Leave_Type ON Leave_Balance.Leave_Type_ID = Leave_Type.Leave_Type_ID " +
-                "LEFT JOIN dbo.Audit_Leave_Balance ON Leave_Balance.Leave_Balance_ID = Audit_Leave_Balance.Leave_Balance_ID";
+                "LEFT JOIN dbo.Audit_Leave_Balance ON Leave_Balance.Leave_Balance_ID = Audit_Leave_Balance.Leave_Balance_ID " +
+                "AND Audit_Leave_Balance.Comment != 'Leave quota per annum' AND Audit_Leave_Balance.Comment != 'Monthly reset'";
 
             if (leaveType >= 0)
                 queryString += " AND Leave_Balance.Leave_Type_ID = '" + leaveType + "'";
 
+            queryString += " LEFT JOIN dbo.Leave ON Leave.Leave_Application_ID = Audit_Leave_Balance.Leave_Application_ID";
+
             if (sDate.Length > 0)
-                queryString += " AND (Audit_Leave_Balance.Modified_On >= '" + sDate + "' OR Audit_Leave_Balance.Created_On >= '" + sDate + "')";
+                queryString += " WHERE (Leave.Start_Date >= '" + sDate + "' OR Leave.Start_Date IS NULL)";
 
             if (eDate.Length > 0)
-                queryString += " AND (Audit_Leave_Balance.Modified_On <= '" + eDate + "' OR Audit_Leave_Balance.Created_On <= '" + eDate + "')";
+            {
+                queryString += (sDate.Length > 0) ? " AND" : " WHERE";
+                queryString += " (Leave.Start_Date <= '" + eDate + "' OR Leave.Start_Date IS NULL)";
+            }
 
             queryString += " ORDER BY First_Name, Last_Name";
 
@@ -78,7 +84,6 @@ namespace LeaveSystemMVC.Controllers.HumanResources
                         string leaveType = (string)reader["Leave_Name"];
                         decimal vBefore = decimal.Parse((reader["Value_Before"] != DBNull.Value) ? (string)reader["Value_Before"] : "0");
                         decimal vAfter = decimal.Parse((reader["Value_After"] != DBNull.Value) ? (string)reader["Value_After"] : "0");
-                        string comment = (reader["Comment"] != DBNull.Value) ? (string)reader["Comment"] : "";
 
                         decimal consuption = 0;
                         if (leaveType.Equals("Compassionate") || leaveType.Equals("Unpaid"))
@@ -86,17 +91,14 @@ namespace LeaveSystemMVC.Controllers.HumanResources
                         else
                             consuption = vBefore - vAfter;
 
-                        if (!comment.Equals("Leave quota per annum") && !comment.Equals("Monthly reset"))
+                        if (empConsumptionList.Any(m => m.Item1 == empID))
                         {
-                            if (empConsumptionList.Any(m => m.Item1 == empID))
-                            {
-                                int indx = empConsumptionList.FindIndex(m => m.Item1 == empID);
-                                consuption += empConsumptionList[indx].Item3;
-                                empConsumptionList.RemoveAt(indx);
-                            }
-
-                            empConsumptionList.Add(new Tuple<int, string, decimal>(empID, firstName + " " + lastName, consuption));
+                            int indx = empConsumptionList.FindIndex(m => m.Item1 == empID);
+                            consuption += empConsumptionList[indx].Item3;
+                            empConsumptionList.RemoveAt(indx);
                         }
+
+                        empConsumptionList.Add(new Tuple<int, string, decimal>(empID, firstName + " " + lastName, consuption));
                     }
                 }
                 connection.Close();

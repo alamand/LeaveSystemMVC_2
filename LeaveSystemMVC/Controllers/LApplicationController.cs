@@ -42,10 +42,8 @@ namespace LeaveSystemMVC.Controllers
             sleaveBalanceModel leaveBalance = GetLeaveBalanceModel(GetLoggedInID());
             ModelState.Clear();
 
-            Output("File size: " + file.ContentLength);
-            if (file.ContentLength > 10240)
+            if (file != null && file.ContentLength > 10240)
             {
-                Output("Too large file in LApplication");
                 ModelState.AddModelError("documentation", "The size of the file exceeds the maximum limit.");
                 return View(model);
             }
