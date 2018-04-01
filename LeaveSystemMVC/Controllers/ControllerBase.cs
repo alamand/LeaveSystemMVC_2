@@ -241,7 +241,7 @@ namespace LeaveSystemMVC.Controllers
             sEmployeeModel latestEmployment = employmentList[employmentList.Count - 1];
             TimeSpan diff = DateTime.Today - latestEmployment.empStartDate;
             double years = diff.TotalDays / 365.25;
-            if (DBReligionList()[emp.religionID].Equals("Muslim") && emp.gender == 'M' && years >= 5)
+            if (DBReligionList()[emp.religionID].Equals("Muslim") && years >= 5)
             {
                 return true;
             }
