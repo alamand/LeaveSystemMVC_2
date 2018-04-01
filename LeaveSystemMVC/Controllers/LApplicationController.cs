@@ -42,12 +42,6 @@ namespace LeaveSystemMVC.Controllers
             sleaveBalanceModel leaveBalance = GetLeaveBalanceModel(GetLoggedInID());
             ModelState.Clear();
 
-            if (file != null && file.ContentLength > 10240)
-            {
-                ModelState.AddModelError("documentation", "The size of the file exceeds the maximum limit.");
-                return View(model);
-            }
-
             // checks if the dates are the same, and if the end date is before than start date (sets ModelState to invalid if one of them is true)
             CompareDates(model.startDate, model.returnDate);
 

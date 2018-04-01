@@ -124,7 +124,7 @@ namespace LeaveSystemMVC.Controllers
                 queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_Type_ID, Balance) Values('" + staff_id + "','" + leaveTypes.compassionateID + "','0')";
             DBExecuteQuery(queryString);
 
-            if (DBReligionList()[employee.religionID].Equals("Muslim") && employee.gender == 'M')
+            if (DBReligionList()[employee.religionID].Equals("Muslim"))
             {
                 if (IsLeaveBalanceExist(leaveTypes.pilgrimageID, staff_id))
                     queryString = "UPDATE dbo.Leave_Balance SET Balance = " + leaveTypes.pilgrimage + " WHERE Employee_ID = " + staff_id + " AND Leave_Type_ID = " + leaveTypes.pilgrimageID;
@@ -132,6 +132,21 @@ namespace LeaveSystemMVC.Controllers
                     queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_Type_ID, Balance) Values('" + staff_id + "','" + leaveTypes.pilgrimageID + "','" + leaveTypes.pilgrimage + "')";
                 DBExecuteQuery(queryString);
             }
+
+            if (employee.gender == 'F')
+            {
+                if (IsLeaveBalanceExist(leaveTypes.maternityID, staff_id))
+                    queryString = "UPDATE dbo.Leave_Balance SET Balance = " + leaveTypes.maternity + " WHERE Employee_ID = " + staff_id + " AND Leave_Type_ID = " + leaveTypes.maternityID;
+                else
+                    queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_Type_ID, Balance) Values('" + staff_id + "','" + leaveTypes.maternityID + "','" + leaveTypes.maternity + "')";
+                DBExecuteQuery(queryString);
+            }
+
+            if (IsLeaveBalanceExist(leaveTypes.shortHoursID, staff_id))
+                queryString = "UPDATE dbo.Leave_Balance SET Balance = " + leaveTypes.shortHours + " WHERE Employee_ID = " + staff_id + " AND Leave_Type_ID = " + leaveTypes.shortHoursID;
+            else
+                queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_Type_ID, Balance) Values('" + staff_id + "','" + leaveTypes.shortHoursID + "','" + leaveTypes.shortHours + "')";
+            DBExecuteQuery(queryString);
         }
 
         // gets the staffs start date from the database
