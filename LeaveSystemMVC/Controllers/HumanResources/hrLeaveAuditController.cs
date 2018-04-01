@@ -18,7 +18,7 @@ namespace LeaveSystemMVC.Controllers.HumanResources
             string queryString = GetFilteredQuery(filterLeaveType, filterStartDate, filterEndDate);
             var model = GetTotalConsumption(queryString);
 
-            ViewData["LeaveTypeList"] = DBLeaveTypeList();
+            ViewData["LeaveTypeList"] = DBLeaveNameList();
             ViewData["SelectedLeaveType"] = filterLeaveType;
             ViewData["SelectedStartDate"] = filterStartDate;
             ViewData["SelectedEndDate"] = filterEndDate;

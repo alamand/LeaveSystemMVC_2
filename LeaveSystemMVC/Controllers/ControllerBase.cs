@@ -359,7 +359,7 @@ namespace LeaveSystemMVC.Controllers
                             shortEndTime = (!DBNull.Value.Equals(reader["End_Hrs"])) ? (TimeSpan)reader["End_Hrs"] : new TimeSpan(0, 0, 0, 0, 0),
                             leaveStatusID = (int)reader["Leave_Status_ID"],
                             leaveStatusName = (string)reader["Status_Name"],
-                            //leaveStatusDisplayName = (string)reader["Display_Name"],
+                            leaveStatusDisplayName = (string)reader["Display_Name"],
                             hrComment = (!DBNull.Value.Equals(reader["HR_Comment"])) ? (string)reader["HR_Comment"] : "",
                             lmComment = (!DBNull.Value.Equals(reader["LM_Comment"])) ? (string)reader["LM_Comment"] : "",
                             email = (!DBNull.Value.Equals(reader["Personal_Email"])) ? (string)reader["Personal_Email"] : ""
