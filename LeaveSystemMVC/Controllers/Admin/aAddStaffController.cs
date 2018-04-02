@@ -85,11 +85,10 @@ namespace LeaveSystemMVC.Controllers
 
         private void AddReportingTo(sEmployeeModel emp)
         {
-            // @TODO: need to fix the dates
             if (emp.reportsToLineManagerID != 0 && emp.reportsToLineManagerID != null)
             {
-                var queryString = "INSERT INTO dbo.Reporting (Employee_ID, Report_To_ID, Start_Date) " +
-                    "VALUES('" + emp.staffID + "', '" + emp.reportsToLineManagerID + "', '" + emp.empStartDate.ToString("yyyy-MM-dd") + "')";
+                var queryString = "INSERT INTO dbo.Reporting (Employee_ID, Report_To_ID) " +
+                    "VALUES('" + emp.staffID + "', '" + emp.reportsToLineManagerID + "')";
                 DBExecuteQuery(queryString);
             }
         }

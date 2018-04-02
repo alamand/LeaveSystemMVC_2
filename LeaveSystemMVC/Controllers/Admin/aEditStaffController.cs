@@ -111,17 +111,15 @@ namespace LeaveSystemMVC.Controllers
             // updates the employee's record if a reporting to line manager was selected or de-selected
             if (!IsReportingToExist(emp))
             {
-                queryString = "UPDATE dbo.Reporting SET End_Date = SYSDATETIME() WHERE End_Date IS NULL AND Employee_ID = " + emp.staffID;
-                DBExecuteQuery(queryString);
                 if (emp.reportsToLineManagerID != 0)
                 {
-                    queryString = "INSERT INTO dbo.Reporting VALUES (" + emp.reportsToLineManagerID + "," + emp.staffID + ",SYSDATETIME(),NULL,NULL)";
+                    queryString = "INSERT INTO dbo.Reporting VALUES (" + emp.staffID + "," + emp.reportsToLineManagerID + ")";
                     DBExecuteQuery(queryString);
                 }
             } 
             else
             {
-                queryString = "INSERT INTO dbo.Reporting VALUES (" + emp.reportsToLineManagerID + "," + emp.staffID + ",SYSDATETIME(),NULL,NULL)";
+                queryString = "INSERT INTO dbo.Reporting VALUES (" + emp.staffID + "," + emp.reportsToLineManagerID + ")";
                 DBExecuteQuery(queryString);
             }
         }
@@ -151,8 +149,7 @@ namespace LeaveSystemMVC.Controllers
         {
             bool isExist = false;
             string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            var queryString = "SELECT Employee_ID FROM dbo.Reporting WHERE Employee_ID = " + emp.staffID + " AND Report_To_ID = " + emp.reportsToLineManagerID + " AND " +
-                "Start_Date <= SYSDATETIME() AND End_Date > SYSDATETIME()";
+            var queryString = "SELECT Employee_ID FROM dbo.Reporting WHERE Employee_ID = " + emp.staffID + " AND Report_To_ID = " + emp.reportsToLineManagerID;
 
             using (var connection = new SqlConnection(connectionString))
             {

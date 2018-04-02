@@ -445,7 +445,7 @@ namespace LeaveSystemMVC.Controllers
                         int balID = (int)reader["Leave_Balance_ID"];
                         int leaveType = (int)reader["Leave_Type_ID"];
                         decimal currentBalance = (decimal)reader["Balance"];
-                        decimal valBefore = decimal.Parse((string)reader["Value_Before"]);
+                        decimal valBefore = (!DBNull.Value.Equals(reader["Value_Before"])) ? decimal.Parse((string)reader["Value_Before"]) : (decimal)0.0;
                         decimal valAfter = decimal.Parse((string)reader["Value_After"]);
                         string comment = (string)reader["Comment"];
 
