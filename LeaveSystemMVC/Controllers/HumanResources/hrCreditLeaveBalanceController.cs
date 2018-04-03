@@ -20,7 +20,7 @@ namespace LeaveSystemMVC.Controllers
             List<sleaveBalanceModel> empBalance = new List<sleaveBalanceModel>();
             foreach (var emp in allEmployees)
             {
-                if (emp.accountStatus == true && emp.onProbation == false)
+                if (emp.accountStatus == true && emp.onProbation == false && emp.isStaff)
                 {
                     empBalance.Add(GetLeaveBalanceModel((int)emp.staffID));
                     employees.Add((int)emp.staffID, emp.firstName + " " + emp.lastName);
