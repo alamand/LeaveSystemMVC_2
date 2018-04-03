@@ -15,14 +15,19 @@ namespace LeaveSystemMVC.Controllers
         // GET: hrCreditLeaveBalance
         public ActionResult Index()
         {
-            var ActiveEmployees = DBStaffList(1);
+            var allEmployees = GetEmployeeModel();
+            Dictionary<int, string> employees = new Dictionary<int, string>();
             List<sleaveBalanceModel> empBalance = new List<sleaveBalanceModel>();
-            foreach (int empID in ActiveEmployees.Keys)
+            foreach (var emp in allEmployees)
             {
-                empBalance.Add(GetLeaveBalanceModel(empID));
+                if (emp.accountStatus == true && emp.onProbation == false)
+                {
+                    empBalance.Add(GetLeaveBalanceModel((int)emp.staffID));
+                    employees.Add((int)emp.staffID, emp.firstName + " " + emp.lastName);
+                }
             }
 
-            ViewBag.employeeList = ActiveEmployees;
+            ViewBag.employeeList = employees;
             ViewBag.defaultBalance = GetLeaveBalanceModel();
             ViewBag.SuccessMessage = TempData["SuccessMessage"];
             return View(empBalance);
