@@ -205,7 +205,7 @@ namespace LeaveSystemMVC.Controllers
             var holidayList = new List<hrHolidaysCalender>();
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
 
-            string queryString = "SELECT * FROM dbo.Public_Holiday WHERE year(Date) = " + filterYear;
+            string queryString = "SELECT * FROM dbo.Public_Holiday WHERE year(Date) = " + ((filterYear == null) ? 0 : filterYear);
 
             using (var connection = new SqlConnection(connectionString))
             {
