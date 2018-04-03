@@ -20,13 +20,20 @@ namespace LeaveSystemMVC.Controllers
             // if the filter is not selected (commonly when the page is loaded for the first time), display the current year.
             filterYear = (filterYear == null) ? DateTime.Now.Year : filterYear;
 
-            var model = GetHolidayList(filterYear);
+            var yearList = YearList();
+
+            List<hrHolidaysCalender> model = GetHolidayList(filterYear);
+            if (model.Count == 0 && yearList.Count > 0)
+            {
+                model = GetHolidayList(yearList.Keys.First());
+                filterYear = yearList.Keys.First();
+            }
 
             // to be passed between methods
             TempData["filterYear"] = filterYear;
 
             // dropdown list for filtering
-            ViewData["YearList"] = YearList();
+            ViewData["YearList"] = yearList;
 
             //user selected year
             ViewData["SelectedYear"] = filterYear;
