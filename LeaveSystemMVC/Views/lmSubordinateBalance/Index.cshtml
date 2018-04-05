@@ -28,8 +28,8 @@
 
                     <div class="form-horizontal">
                         <div class="row">
-                            <div class="col-md-1 col-md-offset-1">
-                                <p style="padding-top: 8px;">Search</p>
+                            <div class="col-md-2">
+                                <p style="padding-top: 8px;" class="pull-right">Search</p>
                             </div>
                             <div class="col-md-3">
                                 <div class="input-group">
@@ -41,8 +41,8 @@
                                     </span>
                                 </div>
                             </div>
-                            <div class="col-md-1 col-md-offset-1">
-                                <p style="padding-top: 8px;">Sort By</p>
+                            <div class="col-md-2">
+                                <p style="padding-top: 8px;" class="pull-right">Sort By</p>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-horizontal">
@@ -57,39 +57,54 @@
         </div>
     </div>
     
-    <table class="table">
-        <tr>
-            <th>Employee ID</th>
-            <th>Name</th>
-            <th>Annual Leave</th>
-            <th>Sick Leave</th>
-            <th>Compassionate Leave</th>
-            <th>Short Leave</th>
-            <th>Maternity Leave</th>
-            <th>Days in Lieu</th>
-            <th>Pilgrimage</th>
-            <th>Unpaid</th>
-        </tr>
-        @foreach (var tuple in Model)
-        {
+    <table class="table table-striped">
+        <thead>
             <tr>
-                <td>@tuple.Item1.staffID </td>
-                <td>@tuple.Item1.firstName @tuple.Item1.lastName</td>
-                <td>@tuple.Item2.annual</td>
-                <td>@tuple.Item2.sick</td>
-                <td>@tuple.Item2.compassionate</td>
-                <td>@tuple.Item2.shortHours</td>
-                @if (tuple.Item1.gender == 'F')
-                { <td>@tuple.Item2.maternity</td> }
-                else
-                { <td></td> }
-                <td>@tuple.Item2.daysInLieu</td>
-                @if (religionList[tuple.Item1.religionID].Equals("Muslim"))
-                { <td>@tuple.Item2.pilgrimage</td> }
-                else
-                { <td></td> }
-                <td>@tuple.Item2.unpaid</td>
+                <th style="text-align: center">Employee ID</th>
+                <th style="text-align: center">Name</th>
+                <th colspan="3"></th>
+                <th style="text-align: center">Leave Type</th>
             </tr>
+            <tr>
+                <th colspan="2"></th>
+                <th style="text-align: center">Annual</th>
+                <th style="text-align: center">Sick</th>
+                <th style="text-align: center">Compassionate</th>
+                <th style="text-align: center">Short Hours</th>
+                <th style="text-align: center">Maternity</th>
+                <th style="text-align: center">Days in Lieu</th>
+                <th style="text-align: center">Pilgrimage</th>
+                <th style="text-align: center">Unpaid</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var tuple in Model)
+            {
+                <tr>
+                    <td style="text-align: center">@tuple.Item1.staffID </td>
+                    <td style="text-align: center">@tuple.Item1.firstName @tuple.Item1.lastName</td>
+                    <td style="text-align: center">@tuple.Item2.annual</td>
+                    <td style="text-align: center">@tuple.Item2.sick</td>
+                    <td style="text-align: center">@tuple.Item2.compassionate</td>
+                    <td style="text-align: center">@tuple.Item2.shortHours</td>
+                    @if (tuple.Item1.gender == 'F')
+                    {
+                        <td style="text-align: center">@tuple.Item2.maternity</td> }
+                    else
+                    {
+                        <td></td>
+                    }
+                    <td style="text-align: center">@tuple.Item2.daysInLieu</td>
+                    @if (religionList[tuple.Item1.religionID].Equals("Muslim"))
+                    {
+                        <td style="text-align: center">@tuple.Item2.pilgrimage</td> 
+                    }
+                    else
+                    {
+                        <td></td>
+                    }
+                    <td style="text-align: center">@tuple.Item2.unpaid</td>
+                </tr>
         }
     </table>
 </div>

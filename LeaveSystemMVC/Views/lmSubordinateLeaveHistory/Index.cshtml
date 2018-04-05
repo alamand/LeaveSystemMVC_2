@@ -24,8 +24,8 @@
 
                     <div class="form-horizontal">
                         <div class="row">
-                            <div class="col-md-1 col-md-offset-1">
-                                <p style="padding-top: 8px;">Search</p>
+                            <div class="col-md-2">
+                                <p style="padding-top: 8px;" class="pull-right">Search</p>
                             </div>
                             <div class="col-md-3">
                                 <div class="input-group">
@@ -37,8 +37,8 @@
                                     </span>
                                 </div>
                             </div>
-                            <div class="col-md-1 col-md-offset-1">
-                                <p style="padding-top: 8px;">Sort By</p>
+                            <div class="col-md-2">
+                                <p style="padding-top: 8px;" class="pull-right">Sort By</p>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-horizontal">
@@ -49,16 +49,16 @@
                         <br />
 
                         <div class="row">
-                            <div class="col-md-1 col-md-offset-1">
-                                <p style="padding-top: 8px;">Leave Type</p>
+                            <div class="col-md-2">
+                                <p style="padding-top: 8px;" class="pull-right">Leave Type</p>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-horizontal">
                                     @Html.DropDownList("selectedLeaveType", new SelectList(typeList, "Key", "Value"), new { @selected = ViewData["SelectedLeaveType"], @class = "form-control", @onchange = "this.form.submit();" })
                                 </div>
                             </div>
-                            <div class="col-md-1 col-md-offset-1">
-                                <p style="padding-top: 8px;">App. Status</p>
+                            <div class="col-md-2">
+                                <p style="padding-top: 8px;" class="pull-right">Application Status</p>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-horizontal">
@@ -69,8 +69,8 @@
                         <br />
 
                         <div class="row">
-                            <div class="col-md-1 col-md-offset-1">
-                                <p style="padding-top: 8px;">Between</p>
+                            <div class="col-md-2">
+                                <p style="padding-top: 8px;" class="pull-right">Start Date Between</p>
                             </div>
                             <div class="col-md-7">
                                 <div class="input-group input-daterange">
@@ -90,14 +90,14 @@
     <div class="row">
         <table class="table">
             <tr>
-                <th>App. ID</th>
-                <th>Employee Name</th>
-                <th>Leave Type</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Duration</th>
-                <th>Status</th>
-                <th>View</th>
+                <th style="text-align: center">App. ID</th>
+                <th style="text-align: center">Employee Name</th>
+                <th style="text-align: center">Leave Type</th>
+                <th style="text-align: center">Start Date</th>
+                <th style="text-align: center">End Date</th>
+                <th style="text-align: center">Duration</th>
+                <th style="text-align: center">Status</th>
+                <th style="text-align: center">View</th>
             </tr>
 
             @foreach (var item in Model)
@@ -108,13 +108,13 @@
                 string reDt = item.returnDate.ToString();
                 reDt = reDt.Substring(0, 10);
                 <tr>
-                    <td>@Html.DisplayFor(modelItem => item.leaveAppID)</td>
-                    <td>@Html.DisplayFor(modelItem => item.employeeName)</td>
-                    <td>@Html.DisplayFor(modelItem => item.leaveTypeName)</td>
-                    <td>@Html.DisplayFor(modelItem => stDt)</td>
-                    <td>@Html.DisplayFor(modelItem => reDt)</td>
-                    <td>@Html.DisplayFor(modelItem => item.leaveDuration)</td>
-                    <td>@Html.DisplayFor(modelItem => item.leaveStatusName)</td>
+                    <td style="text-align: center">@Html.DisplayFor(modelItem => item.leaveAppID)</td>
+                    <td style="text-align: center">@Html.DisplayFor(modelItem => item.employeeName)</td>
+                    <td style="text-align: center">@Html.DisplayFor(modelItem => item.leaveTypeName)</td>
+                    <td style="text-align: center">@Html.DisplayFor(modelItem => stDt)</td>
+                    <td style="text-align: center">@Html.DisplayFor(modelItem => reDt)</td>
+                    <td style="text-align: center">@Html.DisplayFor(modelItem => item.leaveDuration)</td>
+                    <td style="text-align: center">@Html.DisplayFor(modelItem => item.leaveStatusName)</td>
                     <td style="text-align:center">
                         <a href="@Url.Action("View", "lmSubordinateLeaveHistory", new { appID = item.leaveAppID }, null)">
                             <span class="glyphicon glyphicon-file" aria-hidden="true"></span>

@@ -111,17 +111,20 @@
                     </div>
                 </div>
             </div>
-            <a href="@Url.Action("Index", "lmSubordinateLeaveHistory")" class="btn btn-default col-md-offset-4 col-md-3">
-                <span class="glyphicon glyphicon-circle-arrow-left" aria-hidden="true"></span>
-                Back
-            </a>
-            @if (Model.startDate > DateTime.Today && Model.leaveStatusName.Equals("Approved"))
-            {
-                <a href="@Url.Action("Cancel", "lmSubordinateLeaveHistory", new { applicationID = Model.leaveAppID }, null)" class="btn btn-danger col-md-offset-1 col-md-4">
-                    <span class="glyphicon glyphicon glyphicon-erase" aria-hidden="true"></span>
-                    Cancel Application
+            <div class="col-md-offset-3">
+                <a href="@Url.Action("Index", "lmSubordinateLeaveHistory")" class="btn btn-default col-md-3">
+                    <span class="glyphicon glyphicon-circle-arrow-left" aria-hidden="true"></span>
+                    Back
                 </a>
-            }
+
+                @if (Model.startDate > DateTime.Today && Model.leaveStatusName.Equals("Approved"))
+                {
+                    <a href="@Url.Action("Cancel", "lmSubordinateLeaveHistory", new { applicationID = Model.leaveAppID }, null)" class="btn btn-danger col-md-offset-1 col-md-5">
+                        <span class="glyphicon glyphicon glyphicon-erase" aria-hidden="true"></span>
+                        Cancel Application
+                    </a>
+                }
+            </div>
         </div>
     </div>
 </div>

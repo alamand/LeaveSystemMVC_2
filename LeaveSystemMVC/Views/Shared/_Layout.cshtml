@@ -18,7 +18,7 @@
                         <a class="col-sm-offset-0" href="/Home/Index"><img src="~/Content/GIMEL_logo.jpg" height="55" width="auto" /></a>
                         <ul class="nav navbar-nav navbar-right ">
                             <li><p style="padding-top:15px">Logged in as <b>@Session["UserName"]</b></p></li>
-                            <li><a href="/Auth/Logout" class="navbar-link">Log Out</a></li>
+                            <li><a href="/Auth/Logout" class="navbar-link" style="color:mediumblue">Log Out</a></li>
                         </ul>
                     </div>
                 </div><!-- /.navbar-collapse -->
@@ -34,10 +34,10 @@
             @RenderBody()
         </div>
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <hr>
                 <footer>
-                    <p>&copy; @DateTime.Now.Year - Leave Management System</p>
+                    <p style="text-align: center">&copy; @DateTime.Now.Year - Leave Management System</p>
                 </footer>
             </div>
         </div>

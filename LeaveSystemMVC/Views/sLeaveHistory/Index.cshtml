@@ -8,13 +8,13 @@
     @Html.Partial("../_Message")
     <table class="table">
         <tr>
-            <th>App. ID</th>
-            <th>Leave Type</th>
-            <th>Start Date</th>
-            <th>End Date</th>
-            <th>Duration</th>
-            <th>Status</th>
-            <th>View</th>
+            <th style="text-align: center">App. ID</th>
+            <th style="text-align: center">Leave Type</th>
+            <th style="text-align: center">Start Date</th>
+            <th style="text-align: center">End Date</th>
+            <th style="text-align: center">Duration</th>
+            <th style="text-align: center">Status</th>
+            <th style="text-align: center">View</th>
         </tr>
 
         @foreach (var item in Model)
@@ -25,13 +25,13 @@
             string reDt = item.returnDate.ToString();
             reDt = reDt.Substring(0, 10);
             <tr>
-                <td>@Html.DisplayFor(modelItem => item.leaveAppID)</td>
-                <td>@Html.DisplayFor(modelItem => item.leaveTypeName)</td>
-                <td>@Html.DisplayFor(modelItem => stDt)</td>
-                <td>@Html.DisplayFor(modelItem => reDt)</td>
-                <td>@Html.DisplayFor(modelItem => item.leaveDuration)</td>
-                <td>@Html.DisplayFor(modelItem => item.leaveStatusDisplayName)</td>
-                <td style="text-align:center">
+                <td style="text-align: center">@Html.DisplayFor(modelItem => item.leaveAppID)</td>
+                <td style="text-align: center">@Html.DisplayFor(modelItem => item.leaveTypeName)</td>
+                <td style="text-align: center">@Html.DisplayFor(modelItem => stDt)</td>
+                <td style="text-align: center">@Html.DisplayFor(modelItem => reDt)</td>
+                <td style="text-align: center">@Html.DisplayFor(modelItem => item.leaveDuration)</td>
+                <td style="text-align: center">@Html.DisplayFor(modelItem => item.leaveStatusDisplayName)</td>
+                <td style="text-align: center">
                     <a href="@Url.Action("View", "sLeaveHistory", new { appID = item.leaveAppID }, null)">
                         <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
                     </a>
