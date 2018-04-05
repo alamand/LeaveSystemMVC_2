@@ -16,7 +16,7 @@
         <div class="panel-heading">
             <div class="text-muted bootstrap-admin-box-title">Leave Details</div>
         </div>
-              
+
         <div class="bootstrap-admin-panel-content">
             <div class="form-horizontal">
                 @using (Html.BeginForm("Select", "LApplication", FormMethod.Post))
@@ -38,7 +38,7 @@
                 {
                     @Html.AntiForgeryToken()
                     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                        
+
                     if (selectedLeaveTypeID != 0)
                     {
                         <hr />
@@ -68,4 +68,13 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(document).on('click', '.browse', function(){
+          var file = $(this).parent().parent().parent().find('.file');
+          file.trigger('click');
+        });
+        $(document).on('change', '.file', function(){
+          $(this).parent().find('.form-control').val($(this).val().replace(/C:\\fakepath\\/i, ''));
+        });
+    </script>
 }

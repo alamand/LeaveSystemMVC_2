@@ -63,12 +63,22 @@
 
 <!--support docs-->
 <div class="row">
-    <div class="col-md-3" style="white-space:nowrap">
+    <div class="col-md-2" style="white-space:nowrap">
         @Html.LabelFor(model => model.documentation, htmlAttributes: new { @class = "control-label col-md-4" })
     </div>
 
-    <div class="col-md-6">
-        <input type="file" name="file" />
+    <div class="col-md-5">
+        <div class="form-control" style="padding-top: 0px;">
+            <div class="form-group">
+                <input type="file" name="file" class="file" style=" visibility: hidden; position: absolute;">
+                <div class="input-group">
+                    <input type="text" class="form-control" disabled placeholder="Upload Document">
+                    <span class="input-group-btn">
+                        <button class="browse btn btn-primary input-small" type="button"><i class="glyphicon glyphicon-search"></i></button>
+                    </span>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <hr />
