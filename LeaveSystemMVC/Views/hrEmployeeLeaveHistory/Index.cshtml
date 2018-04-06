@@ -126,7 +126,7 @@
                     <td style="text-align: center">@Html.DisplayFor(modelItem => stDt)</td>
                     <td style="text-align: center">@Html.DisplayFor(modelItem => reDt)</td>
                     <td style="text-align: center">@Html.DisplayFor(modelItem => item.leaveDuration)</td>
-                    <td style="text-align: center">@Html.DisplayFor(modelItem => item.leaveStatusName)</td>
+                    <td style="text-align: center">@Html.DisplayFor(modelItem => item.leaveStatusDisplayName)</td>
                     <td style="text-align:center">
                         <a href="@Url.Action("View", "hrEmployeeLeaveHistory", new { appID = item.leaveAppID }, null)">
                             <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
