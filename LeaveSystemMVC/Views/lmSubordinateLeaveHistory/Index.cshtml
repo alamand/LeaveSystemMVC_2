@@ -29,7 +29,7 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="input-group">
-                                    @Html.TextBox("enteredSearch", "", new { @Value = ViewData["EnteredSearch"], @class = "form-control", @placeholder = "Search by ID or name..." })
+                                    @Html.TextBox("enteredSearch", "", new { @Value = ViewData["EnteredSearch"], @class = "form-control", @placeholder = "Search by name..." })
                                     <span class="input-group-btn">
                                         <button type="submit" class="btn btn-default">
                                             <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
@@ -114,7 +114,7 @@
                     <td style="text-align: center">@Html.DisplayFor(modelItem => stDt)</td>
                     <td style="text-align: center">@Html.DisplayFor(modelItem => reDt)</td>
                     <td style="text-align: center">@Html.DisplayFor(modelItem => item.leaveDuration)</td>
-                    <td style="text-align: center">@Html.DisplayFor(modelItem => item.leaveStatusName)</td>
+                    <td style="text-align: center">@Html.DisplayFor(modelItem => item.leaveStatusDisplayName)</td>
                     <td style="text-align:center">
                         <a href="@Url.Action("View", "lmSubordinateLeaveHistory", new { appID = item.leaveAppID }, null)">
                             <span class="glyphicon glyphicon-file" aria-hidden="true"></span>

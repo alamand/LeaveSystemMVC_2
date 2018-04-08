@@ -67,7 +67,7 @@ namespace LeaveSystemMVC.Controllers
                 {
                     queryString = "INSERT INTO dbo.Employment_Period (Employee_ID, Emp_Start_Date) VALUES ('" + latestEmployment.staffID + "', '" + latestEmployment.empStartDate.ToString("yyyy-MM-dd") + "')";
                     DBExecuteQuery(queryString);
-                    TempData["SuccessMessage"] = "You have successfully updated employment period for <b>" + DBEmployeeList()[(int)latestEmployment.staffID] + "</b>.";
+                    TempData["SuccessMessage"] = "You have successfully updated the employment period for <b>" + DBEmployeeList()[(int)latestEmployment.staffID] + "</b>.";
                 }
                 else
                 {

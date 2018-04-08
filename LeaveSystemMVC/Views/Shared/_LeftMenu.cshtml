@@ -6,7 +6,7 @@
             <li role="presentation" class="nav-divider"></li>
             <li role="presentation" class="dropdown-header" style="font-size:14pt">Staff Member</li>
             @Html.MenuItem("Home", "Index", "Home")
-            @Html.MenuItem("View Leave Balances", "Index", "sLeaveBalance")
+            @Html.MenuItem("Leave Balances", "Index", "sLeaveBalance")
             @Html.MenuItem("Apply for Leave", "Index", "LApplication")      
             @Html.MenuItem("Pending Applications", "Index", "sLeaveStatus")
             @Html.MenuItem("Processed Applications", "Index", "sLeaveHistory")
@@ -26,7 +26,7 @@
         @if (User.IsInRole("HR_Responsible"))
         {
             <li role="presentation" class="nav-divider"></li>
-            <li role="presentation" class="dropdown-header"style="font-size:14pt">HR Responsible</li>
+            <li role="presentation" class="dropdown-header"style="font-size:14pt">HR Manager</li>
             @Html.MenuItem("Pending Approvals", "Index", "hrPendingApplication")
             @Html.MenuItem("Public Holidays", "Index", "hrHolidaysCalender")                
             @Html.MenuItem("Employee Leave History", "Index", "hrEmployeeLeaveHistory")
