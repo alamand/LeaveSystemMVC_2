@@ -76,7 +76,7 @@ namespace LeaveSystemMVC.Controllers
 
             double annualBalance = 0;
             
-            // calculate annual leave balance where each month the staff recieves 1.8 annual credit
+            // calculate annual leave balance where each month the staff recieves 1.833 annual credit
             // gets the date when the staff started
             DateTime startDate = GetStartDate(staff_id);
 
@@ -85,12 +85,12 @@ namespace LeaveSystemMVC.Controllers
                 // gets the last date of the year
                 DateTime endYearDate = new DateTime(startDate.Year, 12, 31);
 
-                // ((Total days of employement duration + remaining days of the years) / days in a month) * 1.8
+                // ((Total days of employement duration + remaining days of the years) / days in a month) * 1.833
                 // and round it, e.g.: 1.0=1.0, 1.2=1.0, 1.3=1.5, 1.6=1.5, 1.8=2.0, 2.2=2.0 and so on... 
-                annualBalance = Math.Round((endYearDate.Subtract(startDate).TotalDays / 30) * 1.8, MidpointRounding.AwayFromZero);
+                annualBalance = Math.Round((endYearDate.Subtract(startDate).TotalDays / 30) * 1.833, MidpointRounding.AwayFromZero);
 
                 // can not exceed more than 22 days
-                annualBalance = (annualBalance > 22) ? 22 : annualBalance;
+                annualBalance = (annualBalance > (double)leaveTypes.annual) ? (double)leaveTypes.annual : annualBalance;
             }
             else
             {   
