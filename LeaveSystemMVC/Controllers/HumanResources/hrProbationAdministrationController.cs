@@ -96,7 +96,7 @@ namespace LeaveSystemMVC.Controllers
             {   
                 // as it is a new year, and the staff is employeed the year before
                 // he or she should get all the credit for this year
-                annualBalance = 22;
+                annualBalance = (double)leaveTypes.annual;
             }
                 
 
