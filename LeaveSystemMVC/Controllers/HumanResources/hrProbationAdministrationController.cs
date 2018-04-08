@@ -87,7 +87,7 @@ namespace LeaveSystemMVC.Controllers
 
                 // ((Total days of employement duration + remaining days of the years) / days in a month) * 1.833
                 // and round it, e.g.: 1.0=1.0, 1.2=1.0, 1.3=1.5, 1.6=1.5, 1.8=2.0, 2.2=2.0 and so on... 
-                annualBalance = Math.Round((endYearDate.Subtract(startDate).TotalDays / 30) * 1.833, MidpointRounding.AwayFromZero);
+                annualBalance = Math.Round((endYearDate.Subtract(startDate).TotalDays / 30) * ((double)leaveTypes.annual/12), MidpointRounding.AwayFromZero);
 
                 // can not exceed more than 22 days
                 annualBalance = (annualBalance > (double)leaveTypes.annual) ? (double)leaveTypes.annual : annualBalance;
