@@ -109,8 +109,14 @@ namespace LeaveSystemMVC.Controllers
             Dictionary<string, decimal> balanceDeduction = new Dictionary<string, decimal>();
             sleaveBalanceModel leaveBalance = GetLeaveBalanceModel(leave.employeeID);
 
+            // these leave types use half days
+            if (leave.leaveTypeName.Equals("Annual") || leave.leaveTypeName.Equals("Sick") || leave.leaveTypeName.Equals("Compassionate") || leave.leaveTypeName.Equals("Unpaid") || leave.leaveTypeName.Equals("DIL"))
+            {
+                AdjustHalfDays(leave);
+            }
+
             // gets the total number of days, this involves excluding weekends and public holidays
-            int numOfDays = GetNumOfDays(leave.startDate, leave.returnDate);
+            decimal numOfDays = GetNumOfDays(leave.startDate, leave.returnDate);
 
             switch (leave.leaveTypeName)
             {
@@ -158,7 +164,27 @@ namespace LeaveSystemMVC.Controllers
             return balanceDeduction;
         }
 
-        private Dictionary<string, decimal> LeaveAppAnnual(sleaveBalanceModel lb, int numOfDays)
+        private void AdjustHalfDays(sLeaveModel model)
+        {
+            //half a day of leave
+            if (model.startDate.Equals(model.returnDate) && (model.isStartDateHalfDay == true || model.isReturnDateHalfDay == true))
+            {
+                model.returnDate = model.returnDate.AddDays(0.5);
+            }
+            else
+            {
+                if (model.isStartDateHalfDay == true && !IsPublicHoliday(model.startDate)) // leave starts at 12pm on startDate
+                {
+                    model.startDate = model.startDate.AddDays(0.5);
+                }
+                if (model.isReturnDateHalfDay == true && !IsPublicHoliday(model.returnDate)) // leave ends at 12pm on returnDate
+                {
+                    model.returnDate = model.returnDate.AddDays(0.5);
+                }
+            }
+        }
+
+        private Dictionary<string, decimal> LeaveAppAnnual(sleaveBalanceModel lb, decimal numOfDays)
         {
             Dictionary<string, decimal> balanceDeduction = new Dictionary<string, decimal>();
 
@@ -200,7 +226,7 @@ namespace LeaveSystemMVC.Controllers
             return balanceDeduction;
         }
 
-        private Dictionary<string, decimal> LeaveAppSick(sleaveBalanceModel lb, int numOfDays)
+        private Dictionary<string, decimal> LeaveAppSick(sleaveBalanceModel lb, decimal numOfDays)
         {
             Dictionary<string, decimal> balanceDeduction = new Dictionary<string, decimal>();
 
@@ -255,7 +281,7 @@ namespace LeaveSystemMVC.Controllers
             return balanceDeduction;
         }
 
-        private Dictionary<string, decimal> LeaveAppMaternity(sleaveBalanceModel lb, int numOfDays)
+        private Dictionary<string, decimal> LeaveAppMaternity(sleaveBalanceModel lb, decimal numOfDays)
         {
             Dictionary<string, decimal> balanceDeduction = new Dictionary<string, decimal>();
 
@@ -309,7 +335,7 @@ namespace LeaveSystemMVC.Controllers
             return balanceDeduction;
         }
 
-        private Dictionary<string, decimal> LeaveAppCompassionate(sleaveBalanceModel lb, int numOfDays)
+        private Dictionary<string, decimal> LeaveAppCompassionate(sleaveBalanceModel lb, decimal numOfDays)
         {
             Dictionary<string, decimal> balanceDeduction = new Dictionary<string, decimal>();
             decimal maxDIL = GetLeaveBalanceModel().compassionate;
@@ -365,12 +391,11 @@ namespace LeaveSystemMVC.Controllers
             return balanceDeduction;
         }
 
-        private int GetNumOfDays(DateTime sDate, DateTime eDate)
+        private decimal GetNumOfDays(DateTime sDate, DateTime eDate)
         {
-            // @TODO: Test for all cases
             TimeSpan diff = eDate - sDate;
-            int numOfDays = diff.Days;          // number of days excluding public holidays and weekends
-            int fullNumOfDays = numOfDays;      // number of days including public holidays and weekends
+            decimal numOfDays = diff.Days + (diff.Hours / (decimal)24.0); //number of days and hours excluding public holidays and weekends
+            decimal fullNumOfDays = numOfDays; // number of days including public holidays and weekends
 
             // exclude weekend
             // go through each day from start date up to number of days
@@ -403,7 +428,7 @@ namespace LeaveSystemMVC.Controllers
                         DateTime day = (DateTime)reader["Date"];
                         for (var i = 0; i < fullNumOfDays; i++)
                         {
-                            if (sDate.AddDays(i).Equals(day))
+                            if (((sDate.AddDays(i)).Date).Equals(day.Date))
                             {
                                 numOfDays--;
                             }
@@ -537,7 +562,7 @@ namespace LeaveSystemMVC.Controllers
             sleaveBalanceModel lb = GetLeaveBalanceModel(leave.employeeID);
 
             // gets the total number of days, this involves excluding weekends and public holidays
-            int numOfDays = GetNumOfDays(leave.startDate, leave.returnDate);
+            decimal numOfDays = GetNumOfDays(leave.startDate, leave.returnDate);
 
             // does the user have enough balance?
             if (lb.daysInLieu >= numOfDays)
@@ -565,7 +590,7 @@ namespace LeaveSystemMVC.Controllers
             sleaveBalanceModel lb = GetLeaveBalanceModel(leave.employeeID);
 
             // gets the total number of days, this involves excluding weekends and public holidays
-            int numOfDays = GetNumOfDays(leave.startDate, leave.returnDate);
+            decimal numOfDays = GetNumOfDays(leave.startDate, leave.returnDate);
 
             // does the user have enough balance?
             if (lb.pilgrimage >= numOfDays)
@@ -592,8 +617,11 @@ namespace LeaveSystemMVC.Controllers
         {
             sleaveBalanceModel lb = GetLeaveBalanceModel(leave.employeeID);
 
+            if (!leave.leaveTypeName.Equals("Maternity"))
+                AdjustHalfDays(leave);
+
             // gets the total number of days, this involves excluding weekends and public holidays
-            int numOfDays = GetNumOfDays(leave.startDate, leave.returnDate);
+            decimal numOfDays = GetNumOfDays(leave.startDate, leave.returnDate);
 
             int approvedID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Pending_HR").Key;
             DBUpdateLeave(leave, approvedID);

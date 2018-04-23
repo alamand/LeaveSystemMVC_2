@@ -30,6 +30,13 @@ namespace LeaveSystemMVC.Models
 
         [Display(Name = "Reporting Back Date")]
         [Required(ErrorMessage = "Reporting Back Date is required.")]
+
+        [DisplayName("Half Day")]
+        public bool isStartDateHalfDay { get; set; }
+
+        [DisplayName("Half Day")]
+        public bool isReturnDateHalfDay { get; set; }
+
         public DateTime returnDate { get; set; }
 
         [Display(Name = "Duration")]

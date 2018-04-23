@@ -315,7 +315,7 @@ namespace LeaveSystemMVC.Controllers
         protected List<sLeaveModel> GetLeaveModel(string listFor = "", int id = 0)
         {
             var queryString = "SELECT Leave_Application_ID, Employee.Employee_ID, First_Name, Last_Name, Leave.Start_Date, Leave.Reporting_Back_Date, Leave.Leave_Type_ID, Leave_Name, " +
-                "Contact_Outside_UAE, Comment, Documentation, Flight_Ticket, Total_Leave, Start_Hrs, End_Hrs, Leave.Leave_Status_ID, Status_Name, Leave_Status.Display_Name, HR_Comment, LM_Comment, Leave.Personal_Email " +
+                "Contact_Outside_UAE, Comment, Documentation, Flight_Ticket, Total_Leave, Start_Hrs, End_Hrs, Leave.Leave_Status_ID, Status_Name, Leave_Status.Display_Name, HR_Comment, LM_Comment, Leave.Personal_Email, Is_Half_Start_Date, Is_Half_Reporting_Back_Date " +
                 "FROM dbo.Leave, dbo.Employee, dbo.Leave_Type, dbo.Leave_Status, dbo.Department, dbo.Reporting " +
                 "WHERE Leave.Employee_ID = Employee.Employee_ID AND Leave.Leave_Type_ID = Leave_Type.Leave_Type_ID AND " +
                 "Leave.Leave_Status_ID = Leave_Status.Leave_Status_ID AND Department.Department_ID = Employee.Department_ID AND Employee.Employee_ID = Reporting.Employee_ID";
@@ -362,7 +362,9 @@ namespace LeaveSystemMVC.Controllers
                             leaveStatusDisplayName = (string)reader["Display_Name"],
                             hrComment = (!DBNull.Value.Equals(reader["HR_Comment"])) ? (string)reader["HR_Comment"] : "",
                             lmComment = (!DBNull.Value.Equals(reader["LM_Comment"])) ? (string)reader["LM_Comment"] : "",
-                            email = (!DBNull.Value.Equals(reader["Personal_Email"])) ? (string)reader["Personal_Email"] : ""
+                            email = (!DBNull.Value.Equals(reader["Personal_Email"])) ? (string)reader["Personal_Email"] : "",
+                            isStartDateHalfDay = (!DBNull.Value.Equals(reader["Is_Half_Start_Date"])) ? (bool)reader["Is_Half_Start_Date"] : false,
+                            isReturnDateHalfDay = (!DBNull.Value.Equals(reader["Is_Half_Reporting_Back_Date"])) ? (bool)reader["Is_Half_Reporting_Back_Date"] : false
                         };
                         leaveList.Add(leave);
                     }
@@ -814,6 +816,31 @@ namespace LeaveSystemMVC.Controllers
                 connection.Close();
             }
             return list;
+        }
+
+        protected bool IsPublicHoliday(DateTime date)
+        {
+            bool isPublicHoliday = false;
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            string queryString = "SELECT * FROM dbo.Public_Holiday WHERE Date = '" + date.ToString("yyyy-MM-dd") + "'";
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        DateTime day = (DateTime)reader["Date"];
+                        isPublicHoliday = date.Equals(day) ? true : false;
+                    }
+                }
+                connection.Close();
+            }
+
+            return isPublicHoliday;
         }
     }
 }

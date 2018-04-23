@@ -43,10 +43,18 @@ namespace LeaveSystemMVC.Controllers
             ModelState.Clear();
 
             // checks if the dates are the same, and if the end date is before than start date (sets ModelState to invalid if one of them is true)
-            CompareDates(model.startDate, model.returnDate);
+            CompareDates(model.startDate, model.returnDate, model);
 
-            // gets the total number of days, this involves excluding weekends and public holidays
-            int numOfDays = GetNumOfDays(model.startDate, model.returnDate);
+            if (ModelState.IsValid)
+            {
+                // these leave types use half days
+                if (model.leaveTypeName.Equals("Annual") || model.leaveTypeName.Equals("Sick") || model.leaveTypeName.Equals("Compassionate") || model.leaveTypeName.Equals("Unpaid") || model.leaveTypeName.Equals("DIL"))
+                {
+                    AdjustHalfDays(model);
+                }
+
+                // gets the total number of days, this involves excluding weekends and public holidays
+                decimal numOfDays = GetNumOfDays(model.startDate, model.returnDate);
 
             if ((model.leaveTypeName.Equals("Short_Hours")) || (numOfDays > 0 && (model.shortStartTime != null || model.shortEndTime != null)))
             {
@@ -102,9 +110,36 @@ namespace LeaveSystemMVC.Controllers
                 return RedirectToAction("Index");
             else
                 return View(model);
+            }
+            else
+            {
+                SetViewData(emp, model.leaveTypeID);
+                SetMessageViewBags();
+                return View(model);
+            }
         }
 
-        private void LeaveAppAnnual(sLeaveModel model, sleaveBalanceModel lb, sEmployeeModel emp, HttpPostedFileBase file, int numOfDays)
+        private void AdjustHalfDays(sLeaveModel model)
+        {
+            //half a day of leave
+            if (model.startDate.Equals(model.returnDate) && (model.isStartDateHalfDay == true || model.isReturnDateHalfDay == true))
+            {
+                model.returnDate = model.returnDate.AddDays(0.5);
+            }
+            else
+            {
+                if (model.isStartDateHalfDay == true && !IsPublicHoliday(model.startDate)) // leave starts at 12pm on startDate
+                {
+                    model.startDate = model.startDate.AddDays(0.5);
+                }
+                if (model.isReturnDateHalfDay == true && !IsPublicHoliday(model.returnDate)) // leave ends at 12pm on returnDate
+                {
+                    model.returnDate = model.returnDate.AddDays(0.5);
+                }
+            }
+        }
+
+        private void LeaveAppAnnual(sLeaveModel model, sleaveBalanceModel lb, sEmployeeModel emp, HttpPostedFileBase file, decimal numOfDays)
         {
             // keeps track of how much credit points should be deducted from each balance type
             decimal deductDIL = 0;
@@ -156,7 +191,7 @@ namespace LeaveSystemMVC.Controllers
             }
         }
 
-        private void LeaveAppSick(sLeaveModel model, sleaveBalanceModel lb, sEmployeeModel emp, HttpPostedFileBase file, int numOfDays)
+        private void LeaveAppSick(sLeaveModel model, sleaveBalanceModel lb, sEmployeeModel emp, HttpPostedFileBase file, decimal numOfDays)
         {
             // keeps track of how much credit points should be deducted from each balance type
             decimal deductDIL = 0;
@@ -289,7 +324,7 @@ namespace LeaveSystemMVC.Controllers
             }
         }
 
-        private void LeaveAppCompassionate(sLeaveModel model, sleaveBalanceModel lb, sEmployeeModel emp, HttpPostedFileBase file, int numOfDays)
+        private void LeaveAppCompassionate(sLeaveModel model, sleaveBalanceModel lb, sEmployeeModel emp, HttpPostedFileBase file, decimal numOfDays)
         {
             decimal maxDIL = GetLeaveBalanceModel().compassionate;
 
@@ -418,7 +453,7 @@ namespace LeaveSystemMVC.Controllers
             }
         }
 
-        private void LeaveAppPilgrimage(sLeaveModel model, sleaveBalanceModel lb, sEmployeeModel emp, HttpPostedFileBase file, int numOfDays)
+        private void LeaveAppPilgrimage(sLeaveModel model, sleaveBalanceModel lb, sEmployeeModel emp, HttpPostedFileBase file, decimal numOfDays)
         {
             if (ModelState.IsValid)
             {
@@ -447,7 +482,7 @@ namespace LeaveSystemMVC.Controllers
             }
         }
 
-        private void LeaveAppUnpaid(sLeaveModel model, sEmployeeModel emp, HttpPostedFileBase file, int numOfDays)
+        private void LeaveAppUnpaid(sLeaveModel model, sEmployeeModel emp, HttpPostedFileBase file, decimal numOfDays)
         {
             if (ModelState.IsValid)
             {
@@ -468,7 +503,7 @@ namespace LeaveSystemMVC.Controllers
             }
         }
 
-        private void LeaveAppDIL(sLeaveModel model, sEmployeeModel emp, sleaveBalanceModel lb, HttpPostedFileBase file, int numOfDays)
+        private void LeaveAppDIL(sLeaveModel model, sEmployeeModel emp, sleaveBalanceModel lb, HttpPostedFileBase file, decimal numOfDays)
         {
             if (ModelState.IsValid)
             {
@@ -540,10 +575,11 @@ namespace LeaveSystemMVC.Controllers
                 {
                     leaveTypes.Remove(pilgrimageID);
                     leaveNames.Remove(pilgrimageID);
-                }          
-                    
-                leaveTypes.Remove(leaveTypes.FirstOrDefault(obj => obj.Value == "DIL").Key);
-                leaveNames.Remove(leaveNames.FirstOrDefault(obj => obj.Value == "Days in Lieu").Key);                
+                }
+
+                int key = leaveTypes.FirstOrDefault(obj => obj.Value == "DIL").Key;
+                leaveTypes.Remove(key);
+                leaveNames.Remove(key);
             }
 
             return new Tuple<Dictionary<int, string>, Dictionary<int, string>>(leaveTypes, leaveNames);
@@ -554,9 +590,9 @@ namespace LeaveSystemMVC.Controllers
             int leaveAppID = DBLastIdentity("Leave_Application_ID", "dbo.Leave");
             string message = "";
             if (!lm.leaveTypeName.Equals("Short_Hours"))
-                message = "Your " + lm.leaveTypeName + " leave application from " + lm.startDate.ToShortDateString() + " to " + lm.returnDate.ToShortDateString() + " with ID: " + leaveAppID + " has been sent to your line manager for approval.";
+                message = "Your " + lm.leaveTypeName + " leave application from " + lm.startDate.ToShortDateString() + " to " + lm.returnDate.ToShortDateString() + " with ID " + leaveAppID + " has been sent to your line manager for approval.";
             else
-                message = "Your " + lm.leaveTypeName + " leave application for " + lm.startDate.ToShortDateString() + " from " + lm.shortStartTime + " to " + lm.shortEndTime + " with ID: " + leaveAppID + " has been sent to your line manager for approval.";
+                message = "Your " + lm.leaveTypeName + " leave application for " + lm.startDate.ToShortDateString() + " from " + lm.shortStartTime + " to " + lm.shortEndTime + " with ID " + leaveAppID + " has been sent to your line manager for approval.";
 
             MailMessage mail = new MailMessage();
             mail.From = new MailAddress("project_ict333@murdochdubai.ac.ae", "GIMEL LMS");
@@ -574,15 +610,15 @@ namespace LeaveSystemMVC.Controllers
             catch (Exception e){}
         }
 
-        private void ApplyLeave(sLeaveModel lm, int numOfDays=0, string fName="")
+        private void ApplyLeave(sLeaveModel lm, decimal numOfDays=0, string fName="")
         {
             int statusID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Pending_LM").Key;
 
             string queryString = "INSERT INTO dbo.Leave (Employee_ID, Documentation, Start_Date, Reporting_Back_Date, Start_Hrs, End_Hrs, Leave_Type_ID, " +
-                "Contact_Outside_UAE, Comment, Flight_Ticket, Total_Leave, Leave_Status_ID, Personal_Email) " +
+                "Contact_Outside_UAE, Comment, Flight_Ticket, Total_Leave, Leave_Status_ID, Personal_Email, Is_Half_Start_Date, Is_Half_Reporting_Back_Date) " +
                 "VALUES ('" + GetLoggedInID() + "','" + fName + "','" + lm.startDate.ToString("yyyy-MM-dd") + "','" + lm.returnDate.ToString("yyyy-MM-dd") + 
                 "','" + lm.shortStartTime.ToString() + "','" + lm.shortEndTime.ToString() + "','" + lm.leaveTypeID + "','" + lm.contactDetails + "','" + 
-                lm.comments + "','" + lm.bookAirTicket + "','" + numOfDays + "','" + statusID + "', '" + lm.email + "');";
+                lm.comments + "','" + lm.bookAirTicket + "','" + numOfDays + "','" + statusID + "', '" + lm.email + "', '" + lm.isStartDateHalfDay + "', '" + lm.isReturnDateHalfDay + "');";
             DBExecuteQuery(queryString);
 
             string quditString = "INSERT INTO dbo.Audit_Leave_Application (Leave_Application_ID, Column_Name, Value_After, Created_By, Created_On) " +
@@ -651,15 +687,22 @@ namespace LeaveSystemMVC.Controllers
             return nextApplicationID+1;
         }
 
-        private void CompareDates(DateTime sDate, DateTime rDate)
+        private void CompareDates(DateTime sDate, DateTime rDate, sLeaveModel model)
         {
             int result = DateTime.Compare(sDate, rDate);
             if (result > 0)
+            {
                 ModelState.AddModelError("endDate", "Reporting Back date cannot be earlier than Start Date.");
-            else if (result == 0)
+                TempData["ErrorMessage"] = "Reporting Back date cannot be earlier than Start Date.";
+            }
+            else if (result == 0 && ((model.isStartDateHalfDay == false && model.isReturnDateHalfDay == false))) //zero days is only an error if no checkboxes are selected
+            {
                 ModelState.AddModelError("endDate", "Start and Reporting Back dates cannot be the same.");
-            if(sDate.Year < DateTime.Now.Year)
+                TempData["ErrorMessage"] = "Start and Reporting Back dates cannot be the same.";
+            }
+            if (sDate.Year < DateTime.Now.Year)
                 ModelState.AddModelError("startDate", "Starting year cannot be before current year.");
+
             TimeSpan diff = rDate - sDate;
             if(diff.Days >= 1000)
                 ModelState.AddModelError("startDate", "Amount of leave exceeds maximum limit.");
@@ -674,14 +717,13 @@ namespace LeaveSystemMVC.Controllers
                 ModelState.AddModelError("shortEndTime", "Start and End Time cannot be the same.");
         }
 
-        private int GetNumOfDays(DateTime sDate, DateTime eDate)
+        private decimal GetNumOfDays(DateTime sDate, DateTime eDate)
         {
-            // @TODO: Test for all cases
             bool isWeekend = false;
             bool isPublicHoliday = false;
             TimeSpan diff = eDate - sDate;
-            int numOfDays = diff.Days;
-            int fullNumOfDays = numOfDays;
+            decimal numOfDays = diff.Days + (diff.Hours / (decimal)24.0); //must consider the hours too e.g. 0.5 hours of leave
+            decimal fullNumOfDays = numOfDays;
 
             for (var i = 0; i < fullNumOfDays; i++)
             {
@@ -713,7 +755,7 @@ namespace LeaveSystemMVC.Controllers
                         DateTime day = (DateTime)reader["Date"];
                         for (var i = 0; i < fullNumOfDays; i++)
                         {
-                            if (sDate.AddDays(i).Equals(day))
+                            if (((sDate.AddDays(i)).Date).Equals(day.Date)) //do not use the time portion for comparison
                             {
                                 numOfDays--;
                                 isPublicHoliday = true;
@@ -724,14 +766,14 @@ namespace LeaveSystemMVC.Controllers
                 connection.Close();
             }
 
-            if (numOfDays == 0 && isWeekend)
+            if (numOfDays <= 0 && isWeekend) //leave can go negative if numOfDays was 0.5
             {
                 ViewBag.WarningMessage = "The selected date(s) is/are weekend(s).";
                 ModelState.AddModelError("startDate", " ");
             }
 
 
-            if (numOfDays == 0 && isPublicHoliday)
+            if (numOfDays <= 0 && isPublicHoliday) //leave can go negative if numOfDays was 0.5
             {
                 ViewBag.WarningMessage = "The selected date(s) is/are public holiday(s).";
                 ModelState.AddModelError("startDate", " ");
@@ -772,32 +814,7 @@ namespace LeaveSystemMVC.Controllers
                 connection.Close();
             }
             return numOfPublicHolidays;
-        }
-
-        private bool IsPublicHoliday(DateTime date)
-        {
-            bool isPublicHoliday = false;
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "SELECT * FROM dbo.Public_Holiday WHERE Date = '" + date.ToString("yyyy-MM-dd") + "'";
-
-            using (var connection = new SqlConnection(connectionString))
-            {
-                var command = new SqlCommand(queryString, connection);
-                connection.Open();
-
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        DateTime day = (DateTime)reader["Date"];
-                        isPublicHoliday = date.Equals(day) ? true : false;
-                    }
-                }
-                connection.Close();
-            }
-
-            return isPublicHoliday;
-        }
+        }       
 
         private Dictionary<int, string> GetShortHourDurationList()
         {
