@@ -43,7 +43,8 @@ namespace LeaveSystemMVC.Controllers
             ModelState.Clear();
 
             // checks if the dates are the same, and if the end date is before than start date (sets ModelState to invalid if one of them is true)
-            CompareDates(model.startDate, model.returnDate, model);
+            if (!model.leaveTypeName.Equals("Short_Hours"))
+                CompareDates(model.startDate, model.returnDate, model);
 
             if (ModelState.IsValid)
             {
