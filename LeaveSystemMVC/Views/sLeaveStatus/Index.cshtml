@@ -20,10 +20,10 @@
         @foreach (var item in Model)
         {
             string stDt = item.startDate.ToString();
-            stDt = stDt.Substring(0, 9);
+            stDt = stDt.Substring(0, 10);
 
             string reDt = item.returnDate.ToString();
-            reDt = reDt.Substring(0, 9);
+            reDt = reDt.Substring(0, 10);
             <tr>
                 <td style="text-align: center">@Html.DisplayFor(modelItem => item.leaveAppID)</td>
                 <td style="text-align: center">@Html.DisplayFor(modelItem => item.leaveTypeName)</td>
