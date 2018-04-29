@@ -14,22 +14,22 @@
                 </h4>
             </div>
             <br />
-
             <div id="collapse1" class="panel-collapse collapse in">
                 @using (Html.BeginForm("Filter", "lmSubordinateLeaveHistory", FormMethod.Post))
                 {
                     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                     var orderByList = ViewData["OrderByList"] as Dictionary<string, string>;
+                    var statusList = ViewData["LeaveStatusList"] as Dictionary<int, string>;
+                    var typeList = ViewData["LeaveTypeList"] as Dictionary<int, string>;
 
                     <div class="form-horizontal">
                         <div class="row">
-                            <div class="col-md-1 col-md-offset-1">
-                                <p style="padding-top: 8px;">Search</p>
+                            <div class="col-md-2">
+                                <p style="padding-top: 8px;" class="pull-right">Search</p>
                             </div>
-                            <!-- <input class="form-control" id="searchFilter" type="text" placeholder="Search by app. ID or name..."> -->
                             <div class="col-md-3">
                                 <div class="input-group">
-                                    @Html.TextBox("enteredSearch", "", new { @Value = ViewData["EnteredSearch"], @class = "form-control", @placeholder = "Search by ID or name..." })
+                                    @Html.TextBox("enteredSearch", "", new { @Value = ViewData["EnteredSearch"], @class = "form-control", @placeholder = "Search by name..." })
                                     <span class="input-group-btn">
                                         <button type="submit" class="btn btn-default">
                                             <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
@@ -37,8 +37,8 @@
                                     </span>
                                 </div>
                             </div>
-                            <div class="col-md-1 col-md-offset-1">
-                                <p style="padding-top: 8px;">Sort By</p>
+                            <div class="col-md-2">
+                                <p style="padding-top: 8px;" class="pull-right">Sort By</p>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-horizontal">
@@ -49,8 +49,28 @@
                         <br />
 
                         <div class="row">
-                            <div class="col-md-1 col-md-offset-1">
-                                <p style="padding-top: 8px;">Between</p>
+                            <div class="col-md-2">
+                                <p style="padding-top: 8px;" class="pull-right">Leave Type</p>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-horizontal">
+                                    @Html.DropDownList("selectedLeaveType", new SelectList(typeList, "Key", "Value"), new { @selected = ViewData["SelectedLeaveType"], @class = "form-control", @onchange = "this.form.submit();" })
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <p style="padding-top: 8px;" class="pull-right">Application Status</p>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-horizontal">
+                                    @Html.DropDownList("selectedLeaveStatus", new SelectList(statusList, "Key", "Value"), new { @selected = ViewData["SelectedLeaveStatus"], @class = "form-control", @onchange = "this.form.submit();" })
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+
+                        <div class="row">
+                            <div class="col-md-2">
+                                <p style="padding-top: 8px;" class="pull-right">Start Date Between</p>
                             </div>
                             <div class="col-md-7">
                                 <div class="input-group input-daterange">
@@ -70,36 +90,36 @@
     <div class="row">
         <table class="table">
             <tr>
-                <th>App. ID</th>
-                <th>Employee Name</th>
-                <th>Leave Type</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Leave Duration</th>
-                <th>Start Time</th>
-                <th>End Time</th>
-                <th>Leave Status</th>
+                <th style="text-align: center">App. ID</th>
+                <th style="text-align: center">Employee Name</th>
+                <th style="text-align: center">Leave Type</th>
+                <th style="text-align: center">Start Date</th>
+                <th style="text-align: center">End Date</th>
+                <th style="text-align: center">Duration</th>
+                <th style="text-align: center">Status</th>
+                <th style="text-align: center">View</th>
             </tr>
 
             @foreach (var item in Model)
             {
-                <tr>
-                    @{
-                        string stDt = item.startDate.ToString();
-                        stDt = stDt.Substring(0, 10);
+                string stDt = item.startDate.ToString();
+                stDt = stDt.Substring(0, 10);
 
-                        string reDt = item.returnDate.ToString();
-                        reDt = reDt.Substring(0, 10);
-                    }
-                    <td>@Html.DisplayFor(modelItem => item.leaveAppID)</td>
-                    <td>@Html.DisplayFor(modelItem => item.employeeName)</td>
-                    <td>@Html.DisplayFor(modelItem => item.leaveTypeName)</td>
-                    <td>@Html.DisplayFor(modelItem => stDt)</td>
-                    <td>@Html.DisplayFor(modelItem => reDt)</td>
-                    <td>@Html.DisplayFor(modelItem => item.leaveDuration)</td>
-                    <td>@Html.DisplayFor(modelItem => item.shortStartTime)</td>
-                    <td>@Html.DisplayFor(modelItem => item.shortEndTime)</td>
-                    <td>@Html.DisplayFor(modelItem => item.leaveStatusName)</td>
+                string reDt = item.returnDate.ToString();
+                reDt = reDt.Substring(0, 10);
+                <tr>
+                    <td style="text-align: center">@Html.DisplayFor(modelItem => item.leaveAppID)</td>
+                    <td style="text-align: center">@Html.DisplayFor(modelItem => item.employeeName)</td>
+                    <td style="text-align: center">@Html.DisplayFor(modelItem => item.leaveTypeName)</td>
+                    <td style="text-align: center">@Html.DisplayFor(modelItem => stDt)</td>
+                    <td style="text-align: center">@Html.DisplayFor(modelItem => reDt)</td>
+                    <td style="text-align: center">@Html.DisplayFor(modelItem => item.leaveDuration)</td>
+                    <td style="text-align: center">@Html.DisplayFor(modelItem => item.leaveStatusDisplayName)</td>
+                    <td style="text-align:center">
+                        <a href="@Url.Action("View", "lmSubordinateLeaveHistory", new { appID = item.leaveAppID }, null)">
+                            <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
+                        </a>
+                    </td>
                 </tr>
             }
         </table>

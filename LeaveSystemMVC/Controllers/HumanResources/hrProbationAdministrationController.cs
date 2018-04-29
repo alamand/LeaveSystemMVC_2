@@ -71,9 +71,12 @@ namespace LeaveSystemMVC.Controllers
         {
             // holds default durations for all leave types
             sleaveBalanceModel leaveTypes = GetLeaveBalanceModel();
+            // hold this staff member's details
+            sEmployeeModel employee = GetEmployeeModel(staff_id);
+
             double annualBalance = 0;
             
-            // calculate annual leave balance where each month the staff recieves 1.8 annual credit
+            // calculate annual leave balance where each month the staff recieves 1.833 annual credit
             // gets the date when the staff started
             DateTime startDate = GetStartDate(staff_id);
 
@@ -82,18 +85,18 @@ namespace LeaveSystemMVC.Controllers
                 // gets the last date of the year
                 DateTime endYearDate = new DateTime(startDate.Year, 12, 31);
 
-                // ((Total days of employement duration + remaining days of the years) / days in a month) * 1.8
+                // ((Total days of employement duration + remaining days of the years) / days in a month) * 1.833
                 // and round it, e.g.: 1.0=1.0, 1.2=1.0, 1.3=1.5, 1.6=1.5, 1.8=2.0, 2.2=2.0 and so on... 
-                annualBalance = Math.Round((endYearDate.Subtract(startDate).TotalDays / 30) * 1.8, MidpointRounding.AwayFromZero);
+                annualBalance = Math.Round((endYearDate.Subtract(startDate).TotalDays / 30) * ((double)leaveTypes.annual/12), MidpointRounding.AwayFromZero);
 
                 // can not exceed more than 22 days
-                annualBalance = (annualBalance > 22) ? 22 : annualBalance;
+                annualBalance = (annualBalance > (double)leaveTypes.annual) ? (double)leaveTypes.annual : annualBalance;
             }
             else
             {   
                 // as it is a new year, and the staff is employeed the year before
                 // he or she should get all the credit for this year
-                annualBalance = 22;
+                annualBalance = (double)leaveTypes.annual;
             }
                 
 
@@ -104,21 +107,45 @@ namespace LeaveSystemMVC.Controllers
             // if it does, then update that record, else insert a new record
             // this is to avoid duplicate records with the same staff & leave id.
             if (IsLeaveBalanceExist(leaveTypes.annualID, staff_id))  
-                queryString = "UPDATE dbo.Leave_Balance SET Balance = " + (decimal)annualBalance + " WHERE Employee_ID = " + staff_id + " AND Leave_ID = " + leaveTypes.annualID;
+                queryString = "UPDATE dbo.Leave_Balance SET Balance = " + (decimal)annualBalance + " WHERE Employee_ID = " + staff_id + " AND Leave_Type_ID = " + leaveTypes.annualID;
             else
-                queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_ID, Balance) Values('" + staff_id + "','" + leaveTypes.annualID + "','" + (decimal)annualBalance + "')";
+                queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_Type_ID, Balance) Values('" + staff_id + "','" + leaveTypes.annualID + "','" + (decimal)annualBalance + "')";
             DBExecuteQuery(queryString);
 
             if (IsLeaveBalanceExist(leaveTypes.sickID, staff_id))
-                queryString = "UPDATE dbo.Leave_Balance SET Balance = " + leaveTypes.sick + " WHERE Employee_ID = " + staff_id + " AND Leave_ID = " + leaveTypes.sickID;
+                queryString = "UPDATE dbo.Leave_Balance SET Balance = " + leaveTypes.sick + " WHERE Employee_ID = " + staff_id + " AND Leave_Type_ID = " + leaveTypes.sickID;
             else
-                queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_ID, Balance) Values('" + staff_id + "','" + leaveTypes.sickID + "','" + leaveTypes.sick + "')";
+                queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_Type_ID, Balance) Values('" + staff_id + "','" + leaveTypes.sickID + "','" + leaveTypes.sick + "')";
             DBExecuteQuery(queryString);
 
             if (IsLeaveBalanceExist(leaveTypes.compassionateID, staff_id))
-                queryString = "UPDATE dbo.Leave_Balance SET Balance = " + leaveTypes.compassionate + " WHERE Employee_ID = " + staff_id + " AND Leave_ID = " + leaveTypes.compassionateID;
+                queryString = "UPDATE dbo.Leave_Balance SET Balance = 0 WHERE Employee_ID = " + staff_id + " AND Leave_Type_ID = " + leaveTypes.compassionateID;
             else
-                queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_ID, Balance) Values('" + staff_id + "','" + leaveTypes.compassionateID + "','" + leaveTypes.compassionate + "')";
+                queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_Type_ID, Balance) Values('" + staff_id + "','" + leaveTypes.compassionateID + "','0')";
+            DBExecuteQuery(queryString);
+
+            if (DBReligionList()[employee.religionID].Equals("Muslim"))
+            {
+                if (IsLeaveBalanceExist(leaveTypes.pilgrimageID, staff_id))
+                    queryString = "UPDATE dbo.Leave_Balance SET Balance = " + leaveTypes.pilgrimage + " WHERE Employee_ID = " + staff_id + " AND Leave_Type_ID = " + leaveTypes.pilgrimageID;
+                else
+                    queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_Type_ID, Balance) Values('" + staff_id + "','" + leaveTypes.pilgrimageID + "','" + leaveTypes.pilgrimage + "')";
+                DBExecuteQuery(queryString);
+            }
+
+            if (employee.gender == 'F')
+            {
+                if (IsLeaveBalanceExist(leaveTypes.maternityID, staff_id))
+                    queryString = "UPDATE dbo.Leave_Balance SET Balance = " + leaveTypes.maternity + " WHERE Employee_ID = " + staff_id + " AND Leave_Type_ID = " + leaveTypes.maternityID;
+                else
+                    queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_Type_ID, Balance) Values('" + staff_id + "','" + leaveTypes.maternityID + "','" + leaveTypes.maternity + "')";
+                DBExecuteQuery(queryString);
+            }
+
+            if (IsLeaveBalanceExist(leaveTypes.shortHoursID, staff_id))
+                queryString = "UPDATE dbo.Leave_Balance SET Balance = " + leaveTypes.shortHours + " WHERE Employee_ID = " + staff_id + " AND Leave_Type_ID = " + leaveTypes.shortHoursID;
+            else
+                queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_Type_ID, Balance) Values('" + staff_id + "','" + leaveTypes.shortHoursID + "','" + leaveTypes.shortHours + "')";
             DBExecuteQuery(queryString);
         }
 
@@ -155,7 +182,7 @@ namespace LeaveSystemMVC.Controllers
         {
             bool exists = false;
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "SELECT Count(*) From dbo.Leave_Balance WHERE Employee_ID = " + staff_id + " AND Leave_ID = " + leave_id;
+            string queryString = "SELECT Count(*) From dbo.Leave_Balance WHERE Employee_ID = " + staff_id + " AND Leave_Type_ID = " + leave_id;
             using (var connection = new SqlConnection(connectionString))
             {
                 var command = new SqlCommand(queryString, connection);

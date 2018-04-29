@@ -34,7 +34,6 @@ namespace LeaveSystemMVC.Controllers
         public ActionResult Index(sEmployeeModel emp)
         {
             UpdateEmployee(emp);        // updates data in dbo.Employee table
-            UpdateReportingTo(emp);     // updates data in dbo.Reporting table
             UpdateEmployeeRole(emp);    // updates data in dbo.Employee_Role table
 
             // sets ViewData for dropdowns
@@ -110,28 +109,19 @@ namespace LeaveSystemMVC.Controllers
             DBExecuteQuery(queryString);
 
             // updates the employee's record if a reporting to line manager was selected or de-selected
-            if (emp.reportsToLineManagerID != 0 && emp.reportsToLineManagerID != null)
-                queryString = "UPDATE dbo.Employee SET Reporting_ID = " + emp.reportsToLineManagerID + " WHERE Employee_ID = " + emp.staffID;
-            else
-                queryString = "UPDATE dbo.Employee SET Reporting_ID = NULL WHERE Employee_ID = " + emp.staffID;
-            DBExecuteQuery(queryString);
-        }
-
-        private void UpdateReportingTo(sEmployeeModel emp)
-        {
-            // @TODO: need to fix the dates
-
-            var queryString = "";
-            if (IsReportingToExist((int)emp.staffID))
+            if (!IsReportingToExist(emp))
             {
-                queryString = "UPDATE dbo.Reporting SET Reporting_ID = " + emp.reportsToLineManagerID + " WHERE Employee_ID = " + emp.staffID;
-            }
+                if (emp.reportsToLineManagerID != 0)
+                {
+                    queryString = "INSERT INTO dbo.Reporting VALUES (" + emp.staffID + "," + emp.reportsToLineManagerID + ")";
+                    DBExecuteQuery(queryString);
+                }
+            } 
             else
             {
-                queryString = "INSERT INTO dbo.Reporting (Employee_ID, Reporting_ID, Start_Date) " +
-                    "VALUES('" + emp.staffID + "', '" + emp.reportsToLineManagerID + "', '" + emp.empStartDate.ToString("yyyy-MM-dd") + "')";
+                queryString = "INSERT INTO dbo.Reporting VALUES (" + emp.staffID + "," + emp.reportsToLineManagerID + ")";
+                DBExecuteQuery(queryString);
             }
-            DBExecuteQuery(queryString);
         }
 
         private void UpdateEmployeeRole(sEmployeeModel emp)
@@ -155,11 +145,11 @@ namespace LeaveSystemMVC.Controllers
                 DBDeleteRole(empID, roleID);
         }
 
-        private bool IsReportingToExist(int empID)
+        private bool IsReportingToExist(sEmployeeModel emp)
         {
             bool isExist = false;
             string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            var queryString = "SELECT Employee_ID FROM dbo.Reporting WHERE Employee_ID = " + empID;
+            var queryString = "SELECT Employee_ID FROM dbo.Reporting WHERE Employee_ID = " + emp.staffID + " AND Report_To_ID = " + emp.reportsToLineManagerID;
 
             using (var connection = new SqlConnection(connectionString))
             {

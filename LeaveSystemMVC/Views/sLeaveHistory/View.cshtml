@@ -1,0 +1,174 @@
+﻿@model LeaveSystemMVC.Models.sLeaveModel
+@{ ViewBag.Title = "Processed Applications"; }
+@Html.Partial("_LeftMenu")
+
+<div class="col-md-10">
+    <h3>@ViewBag.Title</h3>
+    <hr />
+    @Html.Partial("../_Message")
+    @{
+        Boolean docIncluded = (Model.leaveTypeName.Equals("Pilgrimage") || Model.leaveTypeName.Equals("Short_Hours")) ? false : true;
+        Boolean approved = (Model.leaveStatusName.Equals("Approved")) ? true : false;
+    }
+
+    <div class="row">
+        @using (Html.BeginForm("Update", "sLeaveHistory", FormMethod.Post, new { model = Model, enctype = "multipart/form-data" }))
+        {
+            <div class="col-md-7">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <div class="text-muted bootstrap-admin-box-title">Application Details</div>
+                    </div>
+                    <div class="bootstrap-admin-panel-content">
+                        <div class="row">
+                            <dl class="dl-horizontal">
+                                @Html.HiddenFor(model => model.employeeID)
+                                @Html.HiddenFor(model => model.employeeName)
+
+                                <dt>@Html.DisplayNameFor(model => model.leaveAppID)</dt>
+                                <dd>@Html.DisplayFor(model => model.leaveAppID)</dd>
+                                @Html.HiddenFor(model => model.leaveAppID)
+
+                                <dt>@Html.DisplayNameFor(model => model.leaveStatusName)</dt>
+                                <dd>@Html.DisplayFor(model => model.leaveStatusName)</dd>
+                                @Html.HiddenFor(model => model.leaveStatusID)
+
+                                <dt>@Html.DisplayNameFor(model => model.employeeName)</dt>
+                                <dd>@Html.DisplayFor(model => model.employeeName)</dd>
+                                @Html.HiddenFor(model => model.employeeName)
+
+                                <dt>@Html.DisplayNameFor(model => model.leaveTypeName)</dt>
+                                <dd>@Html.DisplayFor(model => model.leaveTypeName)</dd>
+                                @Html.HiddenFor(model => model.leaveTypeID)
+                                @Html.HiddenFor(model => model.leaveTypeName)
+
+                                @{
+                                    string startDateString = Model.startDate.ToString("dd/MM/yyyy");
+                                    string returnDateString = Model.returnDate.ToString("dd/MM/yyyy");
+                                }
+
+                                <dt>@Html.DisplayNameFor(model => model.startDate)</dt>
+                                <dd>@Html.DisplayFor(sd => startDateString)</dd>
+                                @Html.HiddenFor(model => model.startDate)
+
+                                <dt>@Html.DisplayNameFor(model => model.returnDate)</dt>
+                                <dd>@Html.DisplayFor(rd => returnDateString)</dd>
+                                @Html.HiddenFor(model => model.returnDate)
+
+                                @if (!Model.leaveTypeName.Equals("Short_Hours"))
+                                {
+                                    <dt>@Html.DisplayNameFor(model => model.leaveDuration)</dt>
+                                    <dd>@Html.DisplayFor(model => model.leaveDuration)</dd>
+                                    @Html.HiddenFor(model => model.leaveDuration)
+                                }
+
+                                @if (Model.leaveTypeName.Equals("Short_Hours"))
+                                {
+                                    <dt>@Html.DisplayNameFor(model => model.shortStartTime)</dt>
+                                    <dd>@Html.DisplayFor(model => model.shortStartTime)</dd>
+                                    @Html.HiddenFor(model => model.shortStartTime)
+
+                                    <dt>@Html.DisplayNameFor(model => model.shortEndTime)</dt>
+                                    <dd>@Html.DisplayFor(model => model.shortEndTime)</dd>
+                                    @Html.HiddenFor(model => model.shortEndTime)
+                                }
+
+                                @if (docIncluded)
+                                {
+                                    <dt>@Html.DisplayNameFor(model => model.documentation)</dt>
+                                    <dd><a target="_blank" href='\App_Data\Documentation\@Model.leaveAppID-@Model.documentation'>@Html.DisplayFor(model => model.documentation)</a></dd>
+                                    @Html.HiddenFor(model => model.documentation)
+                                }
+
+                                <dt>@Html.DisplayNameFor(model => model.comments)</dt>
+                                <dd style="word-break: break-word">@Html.DisplayFor(model => model.comments)</dd>
+                                @Html.HiddenFor(model => model.comments)
+
+                                <dt>@Html.DisplayNameFor(model => model.lmComment)</dt>
+                                <dd style="word-break: break-word">@Html.DisplayFor(model => model.lmComment)</dd>
+                                @Html.HiddenFor(model => model.lmComment)
+
+                                <dt>@Html.DisplayNameFor(model => model.hrComment)</dt>
+                                <dd style="word-break: break-word">@Html.DisplayFor(model => model.hrComment)</dd>
+                                @Html.HiddenFor(model => model.hrComment)
+
+
+                                @if (Model.leaveTypeName.Equals("Annual"))
+                                {
+                                    <dt>@Html.DisplayNameFor(model => model.bookAirTicket)</dt>
+                                    <dd>@Html.DisplayFor(model => model.bookAirTicket)</dd>
+                                    @Html.HiddenFor(model => model.bookAirTicket)
+
+                                    <dt>@Html.DisplayNameFor(model => model.email)</dt>
+                                    <dd>@Html.DisplayFor(model => model.email)</dd>
+                                }
+
+                                @if (Model.leaveTypeName.Equals("Annual") || Model.leaveTypeName.Equals("Maternity"))
+                                {
+                                    <dt>@Html.DisplayNameFor(model => model.contactDetails)</dt>
+                                    <dd>@Html.DisplayFor(model => model.contactDetails)</dd>
+                                    @Html.HiddenFor(model => model.contactDetails)
+                                }
+                            </dl>
+                            <br />
+
+                        </div>
+                    </div>
+                </div>
+                <a href="@Url.Action("Index", "sLeaveHistory")" class="btn btn-default col-md-offset-4 col-md-3">
+                    <span class="glyphicon glyphicon-circle-arrow-left" aria-hidden="true"></span>
+                    Back
+                </a>
+            </div>
+
+            if (docIncluded && approved)
+            {
+                <div class="col-md-5">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <div class="text-muted bootstrap-admin-box-title">Update Application Details</div>
+                        </div>
+                        <div class="bootstrap-admin-panel-content">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.documentation, htmlAttributes: new { @class = "control-label" })
+                                            <div class="form-control" style="padding-top: 0px; padding-left: 0px; padding-right: 0px">
+                                                <div class="form-group">
+                                                    <input type="file" name="file" class="file" style=" visibility: hidden; position: absolute;">
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" disabled placeholder="Upload Document">
+                                                        <span class="input-group-btn">
+                                                            <button class="browse btn btn-primary input-small" type="button"><i class="glyphicon glyphicon-search"></i></button>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <button type="submit" value="Upload" class="btn btn-success col-md-offset-4 col-md-4">
+                                    <span class="glyphicon glyphicon-upload" aria-hidden="true"></span> Upload
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(document).on('click', '.browse', function(){
+          var file = $(this).parent().parent().parent().find('.file');
+          file.trigger('click');
+        });
+        $(document).on('change', '.file', function(){
+          $(this).parent().find('.form-control').val($(this).val().replace(/C:\\fakepath\\/i, ''));
+        });
+    </script>
+}

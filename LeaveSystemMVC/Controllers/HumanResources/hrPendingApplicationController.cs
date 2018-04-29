@@ -64,7 +64,7 @@ namespace LeaveSystemMVC.Controllers
                     break;
 
                 default:
-                    break; ;
+                    break;
             }
 
             if (TempData["SuccessMessage"] != null || TempData["WarningMessage"] != null)
@@ -78,8 +78,14 @@ namespace LeaveSystemMVC.Controllers
             Dictionary<string, decimal> balanceDeduction = new Dictionary<string, decimal>();
             sleaveBalanceModel leaveBalance = GetLeaveBalanceModel(leave.employeeID);
 
+            // these leave types use half days
+            if (leave.leaveTypeName.Equals("Annual") || leave.leaveTypeName.Equals("Sick") || leave.leaveTypeName.Equals("Compassionate") || leave.leaveTypeName.Equals("Unpaid") || leave.leaveTypeName.Equals("DIL"))
+            {
+                AdjustHalfDays(leave);
+            }
+
             // gets the total number of days, this involves excluding weekends and public holidays
-            int numOfDays = GetNumOfDays(leave.startDate, leave.returnDate);
+            decimal numOfDays = GetNumOfDays(leave.startDate, leave.returnDate);
 
             switch (leave.leaveTypeName)
             {
@@ -93,16 +99,19 @@ namespace LeaveSystemMVC.Controllers
 
                 case "Maternity":
                     TimeSpan diff = leave.returnDate - leave.startDate;
-                    balanceDeduction = LeaveAppMaternity(leaveBalance, (int)diff.Days);
+                    int numOfPublicHolidays = GetNumOfPublicHolidays(leave.startDate, leave.returnDate);
+                    // Maternity leave includes weekends but excludes public holidays
+                    numOfDays = diff.Days - numOfPublicHolidays;
+                    balanceDeduction = LeaveAppMaternity(leaveBalance, numOfDays);
                     break;
 
                 case "Compassionate":
-                    balanceDeduction.Add("Compassionate", (decimal)numOfDays);
+                    balanceDeduction = LeaveAppCompassionate(leaveBalance, numOfDays);
                     break;
 
-                case "Short_Hours_Per_Month":
+                case "Short_Hours":
                     TimeSpan span = (TimeSpan)leave.shortEndTime - (TimeSpan)leave.shortStartTime;
-                    balanceDeduction.Add("Short_Hours_Per_Month", (decimal)span.TotalHours);
+                    balanceDeduction.Add("Short_Hours", (decimal)span.TotalHours);
                     break;
 
                 case "Pilgrimage":
@@ -113,6 +122,10 @@ namespace LeaveSystemMVC.Controllers
                     balanceDeduction.Add("Unpaid", numOfDays);
                     break;
 
+                case "DIL":
+                    balanceDeduction.Add("DIL", numOfDays);
+                    break;
+
                 default:
                     break; ;
             }
@@ -120,7 +133,27 @@ namespace LeaveSystemMVC.Controllers
             return balanceDeduction;
         }
 
-        private Dictionary<string, decimal> LeaveAppAnnual(sleaveBalanceModel lb, int numOfDays)
+        private void AdjustHalfDays(sLeaveModel model)
+        {
+            //half a day of leave
+            if (model.startDate.Equals(model.returnDate) && (model.isStartDateHalfDay == true || model.isReturnDateHalfDay == true))
+            {
+                model.returnDate = model.returnDate.AddDays(0.5);
+            }
+            else
+            {
+                if (model.isStartDateHalfDay == true && !IsPublicHoliday(model.startDate)) // leave starts at 12pm on startDate
+                {
+                    model.startDate = model.startDate.AddDays(0.5);
+                }
+                if (model.isReturnDateHalfDay == true && !IsPublicHoliday(model.returnDate)) // leave ends at 12pm on returnDate
+                {
+                    model.returnDate = model.returnDate.AddDays(0.5);
+                }
+            }
+        }
+
+        private Dictionary<string, decimal> LeaveAppAnnual(sleaveBalanceModel lb, decimal numOfDays)
         {
             Dictionary<string, decimal> balanceDeduction = new Dictionary<string, decimal>();
 
@@ -162,7 +195,7 @@ namespace LeaveSystemMVC.Controllers
             return balanceDeduction;
         }
 
-        private Dictionary<string, decimal> LeaveAppSick(sleaveBalanceModel lb, int numOfDays)
+        private Dictionary<string, decimal> LeaveAppSick(sleaveBalanceModel lb, decimal numOfDays)
         {
             Dictionary<string, decimal> balanceDeduction = new Dictionary<string, decimal>();
 
@@ -217,7 +250,7 @@ namespace LeaveSystemMVC.Controllers
             return balanceDeduction;
         }
 
-        private Dictionary<string, decimal> LeaveAppMaternity(sleaveBalanceModel lb, int numOfDays)
+        private Dictionary<string, decimal> LeaveAppMaternity(sleaveBalanceModel lb, decimal numOfDays)
         {
             Dictionary<string, decimal> balanceDeduction = new Dictionary<string, decimal>();
 
@@ -271,12 +304,68 @@ namespace LeaveSystemMVC.Controllers
             return balanceDeduction;
         }
 
-        private int GetNumOfDays(DateTime sDate, DateTime eDate)
+        private Dictionary<string, decimal> LeaveAppCompassionate(sleaveBalanceModel lb, decimal numOfDays)
+        {
+            Dictionary<string, decimal> balanceDeduction = new Dictionary<string, decimal>();
+            decimal maxDIL = GetLeaveBalanceModel().compassionate;
+
+            // keeps track of how much credit points should be deducted from each balance type
+            decimal addCompassionate = 0;
+            decimal deductDIL = 0;
+            decimal deductAnnual = 0;
+            decimal addUnpaid = 0;
+
+            // deduction order: Compassionate --> DIL --> Annual --> Unpaid
+            // checks if the applicant has not exceeded the compassionate limit, if yes, then simply add to compassionate, 
+            // if not, deduct all the balance from DIL and the remainder from Annual balance. if Annual balance 
+            // is insufficient, deduct all the balance from DIL and the remainder from annual balance. 
+            // if annual balance is insufficient, deduct all from annual and then add the remaining number 
+            // of days to unpaid balance.
+            if (maxDIL < numOfDays)
+            {
+                addCompassionate = maxDIL;
+                if (maxDIL + lb.daysInLieu < numOfDays)
+                {
+                    deductDIL = lb.daysInLieu;
+                    if (maxDIL + lb.daysInLieu + lb.annual < numOfDays)
+                    {
+                        deductAnnual = lb.annual;
+                        addUnpaid = numOfDays - maxDIL - deductDIL - deductAnnual;
+                    }
+                    else
+                    {
+                        deductAnnual = numOfDays - maxDIL - deductDIL;
+                    }
+                }
+                else
+                {
+                    deductDIL = numOfDays - maxDIL;
+                }
+            }
+            else
+            {
+                addCompassionate = numOfDays;
+            }
+
+            // add what will be deducted in the dictionary
+            if (addCompassionate > 0)
+                balanceDeduction.Add("Compassionate", addCompassionate);
+            if (deductDIL > 0)
+                balanceDeduction.Add("DIL", deductDIL);
+            if (deductAnnual > 0)
+                balanceDeduction.Add("Annual", deductAnnual);
+            if (addUnpaid > 0)
+                balanceDeduction.Add("Unpaid", addUnpaid);
+
+            return balanceDeduction;
+        }
+
+        private decimal GetNumOfDays(DateTime sDate, DateTime eDate)
         {
             // @TODO: Test for all cases
             TimeSpan diff = eDate - sDate;
-            int numOfDays = diff.Days;          // number of days excluding public holidays and weekends
-            int fullNumOfDays = numOfDays;      // number of days including public holidays and weekends
+            decimal numOfDays = diff.Days + (diff.Hours / (decimal)24.0); //number of days and hours excluding public holidays and weekends
+            decimal fullNumOfDays = numOfDays; // number of days including public holidays and weekends
 
             // exclude weekend
             // go through each day from start date up to number of days
@@ -309,7 +398,7 @@ namespace LeaveSystemMVC.Controllers
                         DateTime day = (DateTime)reader["Date"];
                         for (var i = 0; i < fullNumOfDays; i++)
                         {
-                            if (sDate.AddDays(i).Equals(day))
+                            if (((sDate.AddDays(i)).Date).Equals(day.Date))
                             {
                                 numOfDays--;
                             }
@@ -322,12 +411,47 @@ namespace LeaveSystemMVC.Controllers
             return numOfDays;
         }
 
+        private int GetNumOfPublicHolidays(DateTime sDate, DateTime eDate)
+        {
+            TimeSpan diff = eDate - sDate;
+            int numOfDays = diff.Days;
+            int fullNumOfDays = numOfDays;
+            int numOfPublicHolidays = 0;
+
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            string queryString = "SELECT * FROM dbo.Public_Holiday WHERE Date BETWEEN'" + sDate.ToString("yyyy-MM-dd") + "' AND '" + eDate.ToString("yyyy-MM-dd") + "'";
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        DateTime day = (DateTime)reader["Date"];
+                        for (var i = 0; i < fullNumOfDays; i++)
+                        {
+                            if (sDate.AddDays(i).Equals(day))
+                            {
+                                numOfPublicHolidays++;
+                            }
+                        }
+                    }
+                }
+                connection.Close();
+            }
+            return numOfPublicHolidays;
+        }
+
         private void Reject(sLeaveModel leave)
         {
             int rejectedID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Rejected_HR").Key;
             DBUpdateLeave(leave, rejectedID);
 
-            string message = "Rejected";      //@TODO: write email
+            string message = "";
+            message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been rejected by human resources.";
             BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
 
             TempData["WarningMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>rejected</b> successfully.<br/>";
@@ -353,7 +477,7 @@ namespace LeaveSystemMVC.Controllers
                     ApproveCompassionate(leave);
                     break;
 
-                case "Short_Hours_Per_Month":
+                case "Short_Hours":
                     ApproveShortHours(leave);
                     break;
 
@@ -365,8 +489,12 @@ namespace LeaveSystemMVC.Controllers
                     ApproveUnpaid(leave);
                     break;
 
+                case "DIL":
+                    ApproveDIL(leave);
+                    break;
+
                 default:
-                    break; ;
+                    break;
             }
         }
 
@@ -374,8 +502,10 @@ namespace LeaveSystemMVC.Controllers
         {
             sleaveBalanceModel lb = GetLeaveBalanceModel(leave.employeeID);
 
+            AdjustHalfDays(leave);
+
             // gets the total number of days, this involves excluding weekends and public holidays
-            int numOfDays = GetNumOfDays(leave.startDate, leave.returnDate);
+            decimal numOfDays = GetNumOfDays(leave.startDate, leave.returnDate);
 
             // keeps track of how much credit points should be deducted from each balance type
             decimal deductDIL = 0;
@@ -406,12 +536,19 @@ namespace LeaveSystemMVC.Controllers
 
             int approvedID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Approved").Key;
             DBUpdateLeave(leave, approvedID);
+            string comment = "Approved Leave Application";
 
-            DBUpdateBalance(leave.employeeID, lb.daysInLieuID, lb.daysInLieu - deductDIL);
-            DBUpdateBalance(leave.employeeID, lb.annualID, lb.annual - deductAnnual);
-            DBUpdateBalance(leave.employeeID, lb.unpaidID, lb.unpaid + addUnpaid);
+            if (deductDIL > 0)
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.daysInLieuID, lb.daysInLieu, lb.daysInLieu - deductDIL, comment);
 
-            string message = "Approved"; //@TODO: Write an email
+            if (deductAnnual > 0)
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.annualID, lb.annual, lb.annual - deductAnnual, comment);
+
+            if (addUnpaid > 0)
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.unpaidID, lb.unpaid, lb.unpaid + addUnpaid, comment);
+
+            string message;
+            message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by human resources.";
 
             // sends a notification email to the applicant
             BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
@@ -425,17 +562,19 @@ namespace LeaveSystemMVC.Controllers
             sleaveBalanceModel lb = GetLeaveBalanceModel(leave.employeeID);
 
             // gets the total number of days, this involves excluding weekends and public holidays
-            int numOfDays = GetNumOfDays(leave.startDate, leave.returnDate);
+            decimal numOfDays = GetNumOfDays(leave.startDate, leave.returnDate);
 
             // keeps track of how much credit points should be deducted from each balance type
             decimal deductDIL = 0;
             decimal deductSick = 0;
+            decimal deductAnnual = 0;
             decimal addUnpaid = 0;
 
-            // deduction order: Sick --> DIL --> Unpaid
+            // deduction order: Sick --> DIL --> Annual --> Unpaid
             // checks if the applicant has enough balance in sick, if yes, then simply deduct from sick, 
             // if not, deduct all the balance from sick and the remainder from DIL balance. if DIL balance 
-            // is insufficient, deduct all the balance from DIL and then add the remaining number 
+            // is insufficient, deduct all the balance from DIL and the remainder from annual balance. 
+            // if annual balance is insufficient, deduct all from annual and then add the remaining number 
             // of days to unpaid balance.
             if (lb.sick < numOfDays)
             {
@@ -443,7 +582,15 @@ namespace LeaveSystemMVC.Controllers
                 if (lb.sick + lb.daysInLieu < numOfDays)
                 {
                     deductDIL = lb.daysInLieu;
-                    addUnpaid = numOfDays - deductSick - deductDIL;
+                    if (lb.sick + lb.daysInLieu + lb.annual < numOfDays)
+                    {
+                        deductAnnual = lb.annual;
+                        addUnpaid = numOfDays - deductSick - deductDIL - deductAnnual;
+                    }
+                    else
+                    {
+                        deductAnnual = numOfDays - deductSick - deductDIL;
+                    }
                 }
                 else
                 {
@@ -457,12 +604,22 @@ namespace LeaveSystemMVC.Controllers
 
             int approvedID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Approved").Key;
             DBUpdateLeave(leave, approvedID);
+            string comment = "Approved Leave Application";
 
-            DBUpdateBalance(leave.employeeID, lb.sickID, (lb.sick - deductSick));
-            DBUpdateBalance(leave.employeeID, lb.daysInLieuID, (lb.daysInLieu - deductDIL));
-            DBUpdateBalance(leave.employeeID, lb.unpaidID, (lb.unpaid + addUnpaid));
+            if (deductSick > 0)
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.sickID, lb.sick, lb.sick - deductSick, comment);
+            
+            if (deductDIL > 0)
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.daysInLieuID, lb.daysInLieu, lb.daysInLieu - deductDIL, comment);
 
-            string message = "Approved"; //@TODO: Write an email
+            if (deductAnnual > 0)
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.annualID, lb.annual, lb.annual - deductAnnual, comment);
+
+            if (addUnpaid > 0)
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.unpaidID, lb.unpaid, lb.unpaid + addUnpaid, comment);
+
+            string message;
+            message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by human resources.";
 
             // sends a notification email to the applicant
             BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
@@ -475,11 +632,12 @@ namespace LeaveSystemMVC.Controllers
         {
             sleaveBalanceModel lb = GetLeaveBalanceModel(leave.employeeID);
 
-            // Maternity leave includes weekends and public holidays
             TimeSpan diff = leave.returnDate - leave.startDate;
 
-            // the duration of leave is the number of days between the two dates
-            int numOfDays = diff.Days;
+            int numOfPublicHolidays = GetNumOfPublicHolidays(leave.startDate, leave.returnDate);
+
+            // Maternity leave includes weekends but excludes public holidays
+            int numOfDays = diff.Days - numOfPublicHolidays;
 
             // keeps track of how much credit points should be deducted from each balance type
             decimal deductMaternity = 0;
@@ -520,13 +678,22 @@ namespace LeaveSystemMVC.Controllers
 
             int approvedID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Approved").Key;
             DBUpdateLeave(leave, approvedID);
+            string comment = "Approved Leave Application";
 
-            DBUpdateBalance(leave.employeeID, lb.maternityID, lb.maternity - deductMaternity);
-            DBUpdateBalance(leave.employeeID, lb.daysInLieuID, (lb.daysInLieu - deductDIL));
-            DBUpdateBalance(leave.employeeID, lb.annualID, lb.annual - deductAnnual);
-            DBUpdateBalance(leave.employeeID, lb.unpaidID, (lb.unpaid + addUnpaid));
+            if (deductMaternity > 0)
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.maternityID, lb.maternity, lb.maternity - deductMaternity, comment);
 
-            string message = "Approved"; //@TODO: Write an email
+            if (deductDIL > 0)
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.daysInLieuID, lb.daysInLieu, lb.daysInLieu - deductDIL, comment);
+
+            if (deductAnnual > 0)
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.annualID, lb.annual, lb.annual - deductAnnual, comment);
+
+            if (addUnpaid > 0)
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.unpaidID, lb.unpaid, lb.unpaid + addUnpaid, comment);
+
+            string message;
+            message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by human resources.";
 
             // sends a notification email to the applicant
             BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
@@ -539,19 +706,93 @@ namespace LeaveSystemMVC.Controllers
         private void ApproveCompassionate(sLeaveModel leave)
         {
             sleaveBalanceModel lb = GetLeaveBalanceModel(leave.employeeID);
+            decimal maxDIL = GetLeaveBalanceModel().compassionate;
 
             // gets the total number of days, this involves excluding weekends and public holidays
-            int numOfDays = GetNumOfDays(leave.startDate, leave.returnDate);
+            decimal numOfDays = GetNumOfDays(leave.startDate, leave.returnDate);
+
+            // keeps track of how much credit points should be deducted from each balance type
+            decimal addCompassionate = 0;
+            decimal deductDIL = 0;
+            decimal deductAnnual = 0;
+            decimal addUnpaid = 0;
+
+            // deduction order: Compassionate --> DIL --> Annual --> Unpaid
+            // checks if the applicant has not exceeded the compassionate limit, if yes, then simply add to compassionate, 
+            // if not, deduct all the balance from DIL and the remainder from Annual balance. if Annual balance 
+            // is insufficient, deduct all the balance from DIL and the remainder from annual balance. 
+            // if annual balance is insufficient, deduct all from annual and then add the remaining number 
+            // of days to unpaid balance.
+            if (maxDIL < numOfDays)
+            {
+                addCompassionate = maxDIL;
+                if (maxDIL + lb.daysInLieu < numOfDays)
+                {
+                    deductDIL = lb.daysInLieu;
+                    if (maxDIL + lb.daysInLieu + lb.annual < numOfDays)
+                    {
+                        deductAnnual = lb.annual;
+                        addUnpaid = numOfDays - maxDIL - deductDIL - deductAnnual;
+                    }
+                    else
+                    {
+                        deductAnnual = numOfDays - maxDIL - deductDIL;
+                    }
+                }
+                else
+                {
+                    deductDIL = numOfDays - maxDIL;
+                }
+            }
+            else
+            {
+                addCompassionate = numOfDays;
+            }
+
+            int approvedID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Approved").Key;
+            DBUpdateLeave(leave, approvedID);
+            string comment = "Approved Leave Application";
+
+            if (addCompassionate > 0)
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.compassionateID, lb.compassionate, lb.compassionate + addCompassionate, comment);
+
+            if (deductDIL > 0)
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.daysInLieuID, lb.daysInLieu, lb.daysInLieu - deductDIL, comment);
+
+            if (deductAnnual > 0)
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.annualID, lb.annual, lb.annual - deductAnnual, comment);
+
+            if (addUnpaid > 0)
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.unpaidID, lb.unpaid, lb.unpaid + addUnpaid, comment);
+
+            string message;
+            message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by human resources.";
+
+            // sends a notification email to the applicant
+            BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
+
+            // sets the notification message to be displayed
+            TempData["SuccessMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>approved</b> successfully.<br/>";
+
+        }
+
+        private void ApproveShortHours(sLeaveModel leave)
+        {
+            sleaveBalanceModel lb = GetLeaveBalanceModel(leave.employeeID);
+
+            // gets the total number of hours
+            TimeSpan span = (TimeSpan)leave.shortEndTime - (TimeSpan)leave.shortStartTime;
 
             // does the user have enough balance?
-            if (lb.compassionate >= numOfDays)
+            if (lb.shortHours >= (decimal)span.TotalHours)
             {
                 int approvedID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Approved").Key;
                 DBUpdateLeave(leave, approvedID);
 
-                DBUpdateBalance(leave.employeeID, lb.compassionateID, lb.compassionate - numOfDays);
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.shortHoursID, lb.shortHours, lb.shortHours - (decimal)span.TotalHours, "Approved Leave Application");
 
-                string message = "Approved"; //@TODO: Write an email
+                string message;
+                message = "Your " + leave.leaveTypeName + " leave application for " + leave.startDate.ToShortDateString() + " from " + leave.shortStartTime + " to " + leave.shortEndTime + " with ID " + leave.leaveAppID + " has been approved by human resources.";
 
                 // sends a notification email to the applicant
                 BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
@@ -565,22 +806,23 @@ namespace LeaveSystemMVC.Controllers
             }
         }
 
-        private void ApproveShortHours(sLeaveModel leave)
+        private void ApproveDIL(sLeaveModel leave)
         {
             sleaveBalanceModel lb = GetLeaveBalanceModel(leave.employeeID);
 
-            // gets the total number of hours
-            TimeSpan span = (TimeSpan)leave.shortEndTime - (TimeSpan)leave.shortStartTime;
+            // gets the total number of days, this involves excluding weekends and public holidays
+            decimal numOfDays = GetNumOfDays(leave.startDate, leave.returnDate);
 
             // does the user have enough balance?
-            if (lb.shortHours >= (decimal)span.Hours)
+            if (lb.daysInLieu >= numOfDays)
             {
                 int approvedID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Approved").Key;
                 DBUpdateLeave(leave, approvedID);
 
-                DBUpdateBalance(leave.employeeID, lb.shortHoursID, lb.shortHours - (decimal)span.Hours);
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.daysInLieuID, lb.daysInLieu, lb.daysInLieu - numOfDays, "Approved Leave Application");
 
-                string message = "Approved"; //@TODO: Write an email
+                string message;
+                message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by human resources.";
 
                 // sends a notification email to the applicant
                 BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
@@ -599,7 +841,7 @@ namespace LeaveSystemMVC.Controllers
             sleaveBalanceModel lb = GetLeaveBalanceModel(leave.employeeID);
 
             // gets the total number of days, this involves excluding weekends and public holidays
-            int numOfDays = GetNumOfDays(leave.startDate, leave.returnDate);
+            decimal numOfDays = GetNumOfDays(leave.startDate, leave.returnDate);
 
             // does the user have enough balance?
             if (lb.pilgrimage >= numOfDays)
@@ -607,9 +849,10 @@ namespace LeaveSystemMVC.Controllers
                 int approvedID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Approved").Key;
                 DBUpdateLeave(leave, approvedID);
 
-                DBUpdateBalance(leave.employeeID, lb.pilgrimageID, lb.pilgrimage - lb.pilgrimage);
+                DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.pilgrimageID, lb.pilgrimage, lb.pilgrimage - lb.pilgrimage, "Approved Leave Application");
 
-                string message = "Approved"; //@TODO: Write an email
+                string message;
+                message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by human resources.";
 
                 // sends a notification email to the applicant
                 BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
@@ -627,15 +870,18 @@ namespace LeaveSystemMVC.Controllers
         {
             sleaveBalanceModel lb = GetLeaveBalanceModel(leave.employeeID);
 
+            AdjustHalfDays(leave);
+
             // gets the total number of days, this involves excluding weekends and public holidays
-            int numOfDays = GetNumOfDays(leave.startDate, leave.returnDate);
+            decimal numOfDays = GetNumOfDays(leave.startDate, leave.returnDate);
 
             int approvedID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Approved").Key;
             DBUpdateLeave(leave, approvedID);
 
-            DBUpdateBalance(leave.employeeID, lb.unpaidID, lb.unpaid + numOfDays);
+            DBUpdateBalance(leave.employeeID, leave.leaveAppID, lb.unpaidID, lb.unpaid, lb.unpaid + numOfDays, "Approved Leave Application");
 
-            string message = "Approved"; //@TODO: Write an email
+            string message;
+            message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by human resources.";
 
             // sends a notification email to the applicant
             BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
@@ -646,36 +892,42 @@ namespace LeaveSystemMVC.Controllers
 
         private void DBUpdateLeave(sLeaveModel leave, int approvalID)
         {
+            int previousStatus = leave.leaveStatusID;
             string queryString = "UPDATE dbo.Leave SET Leave_Status_ID = '" + approvalID + "', " +
                        "HR_Comment = '" + leave.hrComment + "' " +
                        "WHERE Leave_Application_ID = '" + leave.leaveAppID + "' ";
             DBExecuteQuery(queryString);
+
+            string auditString = "INSERT INTO dbo.Audit_Leave_Application (Leave_Application_ID, Column_Name, Value_Before, Value_After, Modified_By, Modified_On) " +
+                  "VALUES('" + leave.leaveAppID + "', 'Leave_Status_ID', '" + previousStatus + "','" + approvalID + "','" + GetLoggedInID() + "','" + DateTime.Today.ToString("yyyy-MM-dd") + "')";
+            DBExecuteQuery(auditString);
         }
 
-        private void DBUpdateBalance(int empID, int leaveID, decimal balance)
+        private void DBUpdateBalance(int empID, int appID, int leaveID, decimal valBefore, decimal valAfter, string comment)
         {
-            string queryString = "UPDATE dbo.Leave_Balance SET Balance = '" + balance + "' " +
-                       "WHERE Employee_ID = '" + empID + "' AND Leave_ID = '" + leaveID + "' ";
-            DBExecuteQuery(queryString);
-        }
+            string queryString;
+            int balanceID;
 
-        public void SendMail(string email, string message)
-        {
-            MailMessage mail = new MailMessage();
-            mail.From = new MailAddress("project_ict333@murdochdubai.ac.ae", "GIMEL LMS");
-            mail.To.Add(new MailAddress(email));
-            mail.Subject = "Leave Application Update";
-            mail.Body = message + Environment.NewLine;
-
-            SmtpClient client = new SmtpClient();
-            client.EnableSsl = true;
-            client.Credentials = new NetworkCredential("project_ict333@murdochdubai.ac.ae", "ict@333");
-            try
+            if (IsLeaveBalanceExists(empID, leaveID))
             {
-                client.Send(mail);
-                System.Diagnostics.Debug.WriteLine("Mail Sent");
+                queryString = "UPDATE dbo.Leave_Balance SET Balance = " + valAfter + " WHERE Employee_ID = " + empID + " AND Leave_Type_ID = " + leaveID;
+                DBExecuteQuery(queryString);
+
+                balanceID = GetEmpBalanceID(empID, leaveID);
+                queryString = "INSERT INTO dbo.Audit_Leave_Balance (Leave_Balance_ID, Leave_Application_ID, Column_Name, Value_Before, Value_After, Modified_By, Modified_On, Comment) " +
+                   "VALUES('" + balanceID + "','" + appID + "', 'Balance' ,'" + valBefore + "','" + valAfter + "','" + GetLoggedInID() + "','" + DateTime.Today.ToString("yyyy-MM-dd") + "','" + comment + "')";
+                DBExecuteQuery(queryString);
             }
-            catch (Exception e){}
+            else
+            {
+                queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_Type_ID, Balance) VALUES(" + empID + "," + leaveID + "," + valAfter + ")";
+                DBExecuteQuery(queryString);
+
+                balanceID = GetEmpBalanceID(empID, leaveID);
+                queryString = "INSERT INTO dbo.Audit_Leave_Balance (Leave_Balance_ID, Leave_Application_ID, Column_Name, Value_After, Created_By, Created_On, Comment) " +
+                    "VALUES('" + balanceID + "','" + appID + "', 'Balance','" + valAfter + "','" + GetLoggedInID() + "','" + DateTime.Today.ToString("yyyy-MM-dd") + "','" + comment + "')";
+                DBExecuteQuery(queryString);
+            }
         }
 
         private List<sLeaveModel> GetLeaveHistory(int empID)

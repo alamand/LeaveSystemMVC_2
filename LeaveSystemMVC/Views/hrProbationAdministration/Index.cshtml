@@ -1,20 +1,19 @@
 ﻿@{ViewBag.Title = "Probation Administration";}
 @Html.Partial("_LeftMenu")
-@{ ViewBag.Title = "Probation Administration"; }
+@{ ViewBag.Title = "Staff on Probation"; }
 
 <div class="col-md-10">
     <h4>@ViewBag.Title</h4>
-    <hr />
     @Html.Partial("../_Message")
     <div class="row">
         <table class="table">
             <tr>
-                <th>Employee ID</th>
-                <th>Name</th>
-                <th>Department</th>
-                <th>Start Date</th>
-                <th>Employment Duration</th>
-                <th>Confirmation</th>
+                <th style="text-align: center">Employee ID</th>
+                <th style="text-align: center">Name</th>
+                <th style="text-align: center">Department</th>
+                <th style="text-align: center">Start Date</th>
+                <th style="text-align: center">Employment Duration</th>
+                <th style="text-align: center">Confirmation</th>
             </tr>
             @{
                 var onProbation = ViewData["OnProbation"] as List<LeaveSystemMVC.Models.sEmployeeModel>;
@@ -22,10 +21,10 @@
                 foreach (LeaveSystemMVC.Models.sEmployeeModel onP in onProbation)
                 {
                     <tr>
-                        <td>@onP.staffID</td>
-                        <td>@onP.firstName @onP.lastName</td>
-                        <td>@ViewData["Department" + onP.staffID.ToString()]</td>
-                        <td>@onP.empStartDate.ToString().Substring(0, 10)</td>
+                        <td style="text-align: center">@onP.staffID</td>
+                        <td style="text-align: center">@onP.firstName @onP.lastName</td>
+                        <td style="text-align: center">@ViewData["Department" + onP.staffID.ToString()]</td>
+                        <td style="text-align: center">@onP.empStartDate.ToString().Substring(0, 10)</td>
                         @{
                             var totalDays = (int)@ViewData["Duration" + onP.staffID.ToString()];
                             var months = Math.Truncate((double)totalDays / 30);
@@ -35,41 +34,45 @@
                         {
                             if (days == 0)
                             {
-                        <td>Joined Today</td> }
+                                <td style="text-align: center">Joined Today</td> }
                             else if (days == 1)
                             {
-                        <td>@days day</td> }
+                                <td style="text-align: center">@days day</td> }
                             else
                             {
-                        <td>@days days</td> }
+                                <td style="text-align: center">@days days</td> }
                         }
                         else if (months == 1)
                         {
                             if (days == 0)
                             {
-                        <td>@months month</td> }
+                                <td style="text-align: center">@months month</td> }
                             else if (days == 1)
                             {
-                        <td>@months month, @days day</td> }
+                                <td style="text-align: center">@months month, @days day</td> }
                             else
                             {
-                        <td>@months month, @days days</td> }
+                                <td style="text-align: center">@months month, @days days</td> }
                         }
                         else
                         {
                             if (days == 0)
                             {
-                        <td>@months months</td> }
+                                <td style="text-align: center">@months months</td> }
                             else if (days == 1)
                             {
-                        <td>@months months, @days day</td> }
+                                <td style="text-align: center">@months months, @days day</td> }
                             else
                             {
-                        <td>@months months, @days days</td> }
+                                <td style="text-align: center">@months months, @days days</td> }
                         }
-                        <td><a href="@Url.Action("SetProbation", "hrProbationAdministration", new { id = onP.staffID }, null)">Confirm</a></td>
+                        <td style="text-align:center">
+                            <a href="@Url.Action("SetProbation", "hrProbationAdministration", new { id = onP.staffID }, null)">
+                                <span class="glyphicon glyphicon-ok" aria-hidden="true" style="color:green"></span>
+                            </a>
+                        </td>
                     </tr>
-                            }
+                }
             }
         </table>
     </div>

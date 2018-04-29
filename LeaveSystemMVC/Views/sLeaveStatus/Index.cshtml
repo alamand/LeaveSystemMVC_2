@@ -6,19 +6,16 @@
     <h3>@ViewBag.Title</h3>
     <hr />
     @Html.Partial("../_Message")
-    <table class="table" style="white-space:nowrap">
+    <table class="table">
         <tr>
-            <th>App. ID</th>
-            <th>Type</th>
-            <th>Start Date</th>
-            <th>End Date</th>
-            <th>Duration</th>
-            <th>Start Time</th>
-            <th>End Time</th>
-            <th>Status</th>
-            <th>HR Comment</th>
-            <th>LM Comment</th>
-            <th>Cancel</th>
+            <th style="text-align: center">App. ID</th>
+            <th style="text-align: center">Leave Type</th>
+            <th style="text-align: center">Start Date</th>
+            <th style="text-align: center">End Date</th>
+            <th style="text-align: center">Duration (hours)</th>
+            <th style="text-align: center">Status</th>
+            <th style="text-align: center">View</th>
+            <th style="text-align: center">Cancel</th>
         </tr>
         @foreach (var item in Model)
         {
@@ -27,19 +24,23 @@
 
             string reDt = item.returnDate.ToString();
             reDt = reDt.Substring(0, 9);
-
             <tr>
-                <td>@Html.DisplayFor(modelItem => item.leaveAppID)</td>
-                <td>@Html.DisplayFor(modelItem => item.leaveTypeName)</td>
-                <td>@Html.DisplayFor(modelItem => stDt)</td>
-                <td>@Html.DisplayFor(modelItem => reDt)</td>
-                <td>@Html.DisplayFor(modelItem => item.leaveDuration)</td>
-                <td>@Html.DisplayFor(modelItem => item.shortStartTime)</td>
-                <td>@Html.DisplayFor(modelItem => item.shortEndTime)</td>
-                <td>@Html.DisplayFor(modelItem => item.leaveStatusName)</td>
-                <td>@Html.DisplayFor(modelItem => item.hrComment)</td>
-                <td>@Html.DisplayFor(modelItem => item.lmComment)</td>
-                <td>@Html.ActionLink("Cancel", "Delete", "sLeaveStatus" , new { id = item.leaveAppID}, null)</td>
+                <td style="text-align: center">@Html.DisplayFor(modelItem => item.leaveAppID)</td>
+                <td style="text-align: center">@Html.DisplayFor(modelItem => item.leaveTypeName)</td>
+                <td style="text-align: center">@Html.DisplayFor(modelItem => stDt)</td>
+                <td style="text-align: center">@Html.DisplayFor(modelItem => reDt)</td>
+                <td style="text-align: center">@Html.DisplayFor(modelItem => item.leaveDuration)</td>
+                <td style="text-align: center">@Html.DisplayFor(modelItem => item.leaveStatusDisplayName)</td>
+                <td style="text-align: center">
+                    <a href="@Url.Action("View", "sLeaveStatus", new { appID = item.leaveAppID }, null)">
+                        <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
+                    </a>
+                </td>
+                <td style="text-align: center">
+                    <a href="@Url.Action("Cancel", "sLeaveStatus", new { appID = item.leaveAppID }, null)">
+                        <span class="glyphicon glyphicon-remove" aria-hidden="true" style="color:red"></span>
+                    </a>
+                </td>
             </tr>
         }
     </table>

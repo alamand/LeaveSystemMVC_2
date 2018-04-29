@@ -8,43 +8,47 @@
     @Html.Partial("../_Message")    
     <table class="table">
         <tr>
+            <th>Leave Type</th>
+            <th style="text-align: center">Balance (days)</th>
+        </tr>
+        <tr>
             <th>@Html.DisplayNameFor(Model => Model.annual)</th>
-            <td>@Html.DisplayFor(Model => Model.annual)</td>
+            <td style="text-align: center">@Html.DisplayFor(Model => Model.annual)</td>
         </tr>
         <tr>
             <th>@Html.DisplayNameFor(Model => Model.sick)</th>
-            <td>@Html.DisplayFor(Model => Model.sick)</td>
+            <td style="text-align: center">@Html.DisplayFor(Model => Model.sick)</td>
         </tr>
         <tr>
             <th>@Html.DisplayNameFor(Model => Model.compassionate)</th>
-            <td>@Html.DisplayFor(Model => Model.compassionate)</td>
+            <td style="text-align: center">@Html.DisplayFor(Model => Model.compassionate)</td>
         </tr>
         @if ((char)ViewData["Gender"] == 'F')
-        {
-            <tr>
-                <th>@Html.DisplayNameFor(Model => Model.maternity)</th>
-                <td>@Html.DisplayFor(Model => Model.maternity)</td>
-            </tr>
-        }
+    {
+        <tr>
+            <th>@Html.DisplayNameFor(Model => Model.maternity)</th>
+            <td style="text-align: center">@Html.DisplayFor(Model => Model.maternity)</td>
+        </tr>
+}
         <tr>
             <th>@Html.DisplayNameFor(Model => Model.daysInLieu)</th>
-            <td>@Html.DisplayFor(Model => Model.daysInLieu)</td>
+            <td style="text-align: center">@Html.DisplayFor(Model => Model.daysInLieu)</td>
         </tr>
         <tr>
             <th>@Html.DisplayNameFor(Model => Model.shortHours)</th>
-            <td>@Html.DisplayFor(Model => Model.shortHours)</td>
+            <td style="text-align: center">@Html.DisplayFor(Model => Model.shortHours)</td>
         </tr>
 
         <tr>
             <th>@Html.DisplayNameFor(Model => Model.unpaid)</th>
-            <td>@Html.DisplayFor(Model => Model.unpaid)</td>
+            <td style="text-align: center">@Html.DisplayFor(Model => Model.unpaid)</td>
         </tr>
-        @if (ViewData["Religion"].Equals("Muslim"))
-        {
+        @if ((bool)ViewData["Pilgrimage"])
+    {
         <tr>
             <th>@Html.DisplayNameFor(Model => Model.pilgrimage)</th>
-            <td>@Html.DisplayFor(Model => Model.pilgrimage)</td>
+            <td style="text-align: center">@Html.DisplayFor(Model => Model.pilgrimage)</td>
         </tr>
-        }
+}
     </table>
 </div>

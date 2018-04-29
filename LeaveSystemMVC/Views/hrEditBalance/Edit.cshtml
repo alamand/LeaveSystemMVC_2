@@ -15,80 +15,88 @@
         <table class="table">
             <tr>
                 <th>Balance Type</th>
-                <th>Current Balance</th>
-                <th>New Balance</th>
-                <th>Reason for Change</th>
+                <th style="text-align: center">Current Balance</th>
+                <th style="text-align: center">New Balance</th>
+                <th style="text-align: center">Reason for Change</th>
             </tr>
             <tr>
                 <td>@Html.LabelFor(model => model.annual)</td>
-                <td>@Model.annual</td>
-                <td>@Html.TextBoxFor(Model => Model.annual, new { @Value = Model.annual, style = "width:5em;", @class ="form-control" })</td>
-                <td>@Html.TextBoxFor(Model => Model.editCommentAnnual, new { @Value = Model.editCommentAnnual, @class = "form-control" })</td>
+                <td style="text-align: center">@Model.annual</td>
+                <td align="center">@Html.TextBoxFor(Model => Model.annual, new { @Value = Model.annual, style = "width:5em; text-align: center;", @class ="form-control" })</td>
+                <td>@Html.TextBoxFor(Model => Model.editCommentAnnual, new { @Value = Model.editCommentAnnual, @class = "form-control" }) 
+                    @Html.ValidationMessageFor(Model => Model.editCommentAnnual, "", new { @class = "text-danger" })</td>
                 @Html.HiddenFor(Model => Model.annualID)
             </tr>
             @if (ViewBag.gender == 'F') {
             <tr>
                 <td>@Html.LabelFor(model => model.maternity)</td>
-                <td>@Model.maternity </td>
-                <td>@Html.TextBoxFor(Model => Model.maternity, new { @Value = Model.maternity, style = "width:5em;", @class = "form-control" })</td>
-                <td>@Html.TextBoxFor(Model => Model.editCommentMaternity, new { @Value = Model.editCommentMaternity, @class = "form-control" })</td>
+                <td style="text-align: center">@Model.maternity </td>
+                <td align="center">@Html.TextBoxFor(Model => Model.maternity, new { @Value = Model.maternity, style = "width:5em; text-align: center;", @class = "form-control" })</td>
+                <td >@Html.TextBoxFor(Model => Model.editCommentMaternity, new { @Value = Model.editCommentMaternity, @class = "form-control" })
+                    @Html.ValidationMessageFor(Model => Model.editCommentMaternity, "", new { @class = "text-danger" })</td>
                 @Html.HiddenFor(Model => Model.maternityID)
             </tr>
             }
             <tr>
                 <td>@Html.LabelFor(model => model.sick)</td>
-                <td>@Model.sick</td>
-                <td>@Html.TextBoxFor(Model => Model.sick, new { @Value = Model.sick, style = "width:5em;", @class = "form-control" })</td>
-                <td>@Html.TextBoxFor(Model => Model.editCommentSick, new { @Value = Model.editCommentSick, @class = "form-control" })</td>
+                <td style="text-align: center">@Model.sick</td>
+                <td align="center">@Html.TextBoxFor(Model => Model.sick, new { @Value = Model.sick, style = "width:5em; text-align: center;", @class = "form-control" })</td>
+                <td>@Html.TextBoxFor(Model => Model.editCommentSick, new { @Value = Model.editCommentSick, @class = "form-control" })
+                    @Html.ValidationMessageFor(Model => Model.editCommentSick, "", new { @class = "text-danger" })</td>
                 @Html.HiddenFor(Model => Model.sickID)
             </tr>
             <tr>
                 <td>@Html.LabelFor(model => model.daysInLieu)</td>
-                <td>@Model.daysInLieu</td>
-                <td>@Html.TextBoxFor(Model => Model.daysInLieu, new { @Value = Model.daysInLieu, style = "width:5em;", @class = "form-control" })</td>
-                <td>@Html.TextBoxFor(Model => Model.editCommentDIL, new { @Value = Model.editCommentDIL, @class = "form-control" })</td>
+                <td style="text-align: center">@Model.daysInLieu</td>
+                <td align="center">@Html.TextBoxFor(Model => Model.daysInLieu, new { @Value = Model.daysInLieu, style = "width:5em; text-align: center;", @class = "form-control" })</td>
+                <td>@Html.TextBoxFor(Model => Model.editCommentDIL, new { @Value = Model.editCommentDIL, @class = "form-control" })
+                    @Html.ValidationMessageFor(Model => Model.editCommentDIL, "", new { @class = "text-danger" })</td>
                 @Html.HiddenFor(Model => Model.daysInLieuID)
             </tr>
             <tr>
                 <td>@Html.LabelFor(model => model.compassionate)</td>
-                <td>@Model.compassionate</td>
-                <td>@Html.TextBoxFor(Model => Model.compassionate, new { @Value = Model.compassionate, style = "width:5em;", @class = "form-control" })</td>
-                <td>@Html.TextBoxFor(Model => Model.editCommentCompassionate, new { @Value = Model.editCommentCompassionate, @class = "form-control" })</td>
+                <td style="text-align: center">@Model.compassionate</td>
+                <td align="center">@Html.TextBoxFor(Model => Model.compassionate, new { @Value = Model.compassionate, style = "width:5em; text-align: center;", @class = "form-control" })</td>
+                <td>@Html.TextBoxFor(Model => Model.editCommentCompassionate, new { @Value = Model.editCommentCompassionate, @class = "form-control" })
+                    @Html.ValidationMessageFor(Model => Model.editCommentCompassionate, "", new { @class = "text-danger" })</td>
                 @Html.HiddenFor(Model => Model.compassionateID)
             </tr>
             <tr>
                 <td>@Html.LabelFor(model => model.shortHours)</td>
-                <td>@Model.shortHours</td>
-                <td>@Html.TextBoxFor(Model => Model.shortHours, new { @Value = Model.shortHours, style = "width:5em;", @class = "form-control" })</td>
-                <td>@Html.TextBoxFor(Model => Model.editCommentShortHours, new { @Value = Model.editCommentShortHours, @class = "form-control" })</td>
+                <td style="text-align: center">@Model.shortHours</td>
+                <td align="center">@Html.TextBoxFor(Model => Model.shortHours, new { @Value = Model.shortHours, style = "width:5em; text-align: center;", @class = "form-control" })</td>
+                <td>@Html.TextBoxFor(Model => Model.editCommentShortHours, new { @Value = Model.editCommentShortHours, @class = "form-control" })
+                    @Html.ValidationMessageFor(Model => Model.editCommentShortHours, "", new { @class = "text-danger" })</td>
                 @Html.HiddenFor(Model => Model.shortHoursID)
             </tr>
             @if (ViewBag.religion.Equals("Muslim"))
             {
             <tr>
                 <td>@Html.LabelFor(model => model.pilgrimage)</td>
-                <td>@Model.pilgrimage</td>
-                <td>@Html.TextBoxFor(Model => Model.pilgrimage, new { @Value = Model.pilgrimage, style = "width:5em;", @class = "form-control" })</td>
-                <td>@Html.TextBoxFor(Model => Model.editCommentPilgrimage, new { @Value = Model.editCommentPilgrimage, @class = "form-control" })</td>
+                <td style="text-align: center">@Model.pilgrimage</td>
+                <td align="center">@Html.TextBoxFor(Model => Model.pilgrimage, new { @Value = Model.pilgrimage, style = "width:5em; text-align: center;", @class = "form-control" })</td>
+                <td>@Html.TextBoxFor(Model => Model.editCommentPilgrimage, new { @Value = Model.editCommentPilgrimage, @class = "form-control" })
+                    @Html.ValidationMessageFor(Model => Model.editCommentPilgrimage, "", new { @class = "text-danger" })</td>
                 @Html.HiddenFor(Model => Model.pilgrimageID)
             </tr>
             }
             <tr>
                 <td>@Html.LabelFor(model => model.unpaid)</td>
-                <td>@Model.unpaid</td>
-                <td>@Html.TextBoxFor(Model => Model.unpaid, new { @Value = Model.unpaid, style = "width:5em;", @class = "form-control" })</td>
-                <td>@Html.TextBoxFor(Model => Model.editCommentUnpaid, new { @Value = Model.editCommentUnpaid, @class = "form-control" })</td>
+                <td style="text-align: center">@Model.unpaid</td>
+                <td align="center">@Html.TextBoxFor(Model => Model.unpaid, new { @Value = Model.unpaid, style = "width:5em; text-align: center;", @class = "form-control" })</td>
+                <td>@Html.TextBoxFor(Model => Model.editCommentUnpaid, new { @Value = Model.editCommentUnpaid, @class = "form-control" })
+                    @Html.ValidationMessageFor(Model => Model.editCommentUnpaid, "", new { @class = "text-danger" })</td>
                 @Html.HiddenFor(Model => Model.unpaidID)
             </tr>
         </table>
-       
+
         <div class="col-md-offset-3">
             <a href="@Url.Action("Index", "hrEditBalance")" class="btn btn-default col-md-3">
                 <span class="glyphicon glyphicon-circle-arrow-left" aria-hidden="true"></span>
                 Back
             </a>
 
-            <button type="submit" value="Save" class="btn btn-default col-md-offset-1 col-md-3">
+            <button type="submit" value="Save" class="btn btn-success col-md-offset-1 col-md-3">
                 <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span> Save
             </button>
         </div>

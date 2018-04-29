@@ -1,0 +1,67 @@
+﻿@model List<Tuple<int, string, decimal>>
+
+@Html.Partial("_LeftMenu")
+@{ ViewBag.Title = "Leave Audit Information"; }
+
+<div class="col-md-10">
+    <h3>@ViewBag.title</h3>
+    <hr />
+    @Html.Partial("../_Message")
+    @using (Html.BeginForm("Filter", "hrLeaveAudit", FormMethod.Post))
+    {
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        var typeList = ViewData["LeaveTypeList"] as Dictionary<int, string>;
+
+        <div class="form-horizontal">
+            <div class="row ">
+                <div class="col-md-2 ">
+                    <p style="padding-top: 8px;" class="pull-right">Leave Type</p>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-horizontal">
+                        @Html.DropDownList("selectedLeaveType", new SelectList(typeList, "Key", "Value"), new { @selected = ViewData["SelectedLeaveType"], @class = "form-control", @onchange = "this.form.submit();" })
+                    </div>
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-md-1 col-md-offset-1">
+                    <p style="padding-top: 8px;" class="pull-right">Between</p>
+                </div>
+                <div class="col-md-7">
+                    <div class="input-group input-daterange">
+                        @Html.Editor("selectedStartDate", new { htmlAttributes = new { @class = "form-control", @type = "date", @Value = ViewData["SelectedStartDate"], @onchange = "this.form.submit();" } })
+                        <div class="input-group-addon">and</div>
+                        @Html.Editor("selectedEndDate", new { htmlAttributes = new { @class = "form-control", @type = "date", @Value = ViewData["SelectedEndDate"], @onchange = "this.form.submit();" } })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+    }
+
+    <div class="row">
+        <div class="col-md-offset-1 col-md-8">
+            <table class="table">
+                <tr>
+                    <th style="text-align: center">Employee ID</th>
+                    <th style="text-align: center">Employee Name</th>
+                    <th style="text-align: center">Total Duration</th>
+                </tr>
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td style="text-align: center">@Html.DisplayFor(modelItem => item.Item1)</td>
+                        <td style="text-align: center">@Html.DisplayFor(modelItem => item.Item2)</td>
+                        <td style="text-align: center">@Html.DisplayFor(modelItem => item.Item3)</td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

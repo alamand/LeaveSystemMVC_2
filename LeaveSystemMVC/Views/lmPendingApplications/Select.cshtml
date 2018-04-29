@@ -1,5 +1,5 @@
 ﻿@model LeaveSystemMVC.Models.sLeaveModel
-@{ ViewBag.Title = "Pending Applications"; }
+@{ ViewBag.Title = "Pending Approvals"; }
 @Html.Partial("_LeftMenu")
 
 <div class="col-md-10">
@@ -50,14 +50,14 @@
                             <dd>@Html.DisplayFor(rd => returnDateString)</dd>
                             @Html.HiddenFor(model => model.returnDate)
 
-                            @if (!Model.leaveTypeName.Equals("Short_Hours_Per_Month"))
+                            @if (!Model.leaveTypeName.Equals("Short_Hours"))
                             {
                                 <dt>@Html.DisplayNameFor(model => model.leaveDuration)</dt>
                                 <dd>@Html.DisplayFor(model => model.leaveDuration)</dd>
                                 @Html.HiddenFor(model => model.leaveDuration)
                             }
 
-                            @if (Model.leaveTypeName.Equals("Short_Hours_Per_Month"))
+                            @if (Model.leaveTypeName.Equals("Short_Hours"))
                             {
                                 <dt>@Html.DisplayNameFor(model => model.shortStartTime)</dt>
                                 <dd>@Html.DisplayFor(model => model.shortStartTime)</dd>
@@ -74,7 +74,7 @@
                             @Html.HiddenFor(model => model.comments)
 
                             <dt>@Html.DisplayNameFor(model => model.documentation)</dt>
-                            <dd><a target="_blank" href='\App_Data\Documentation\@Model.leaveAppID-@Model.documentation'>@Html.DisplayFor(model => model.documentation)</a></dd>
+                            <dd style="word-break: break-word"><a target="_blank" href='\App_Data\Documentation\@Model.leaveAppID-@Model.documentation'>@Html.DisplayFor(model => model.documentation)</a></dd>
                             @Html.HiddenFor(model => model.documentation)
 
                             @if (Model.leaveTypeName.Equals("Annual"))
@@ -82,6 +82,9 @@
                                 <dt>@Html.DisplayNameFor(model => model.bookAirTicket)</dt>
                                 <dd>@Html.DisplayFor(model => model.bookAirTicket)</dd>
                                 @Html.HiddenFor(model => model.bookAirTicket)
+
+                                <dt>@Html.DisplayNameFor(model => model.email)</dt>
+                                <dd style="word-break: break-word">@Html.DisplayFor(model => model.email)</dd>
                             }
 
                             @if (Model.leaveTypeName.Equals("Annual") || Model.leaveTypeName.Equals("Maternity"))
@@ -92,16 +95,19 @@
                             }
 
                             <dt>@Html.DisplayNameFor(model => model.lmComment)</dt>
-                            <dd>@Html.TextAreaFor(model => model.lmComment, new { rows = "6", cols = "35" })</dd>
+                            <dd>
+                                <div>
+                                    @Html.TextAreaFor(model => model.lmComment, new { rows = "6", cols = "35" })
+                                    @Html.ValidationMessageFor(model => model.lmComment, "", new { @class = "text-danger" })
+                                </div>
+                            </dd>
                         </dl>
                         <hr />
                     </div>
-                    <div class="row">
-                        <div class="col-md-3 col-md-offset-2">
-                            <input type="submit" name="submit" id="submit" class="btn btn-success" value="Approve" />
-                        </div>
-                        <div class="col-md-3 col-md-offset-1">
-                            <input type="submit" name="submit" id="reject" class="btn btn-danger" value="Reject" />
+                    <div class="form-group">
+                        <div class="row col-md-offset-2">
+                            <input type="submit" name="submit" id="submit" class="btn btn-success col-md-4" value="Approve" />
+                            <input type="submit" name="submit" id="reject" class="btn btn-danger col-md-offset-1 col-md-4" value="Reject" />
                         </div>
                     </div>
                 </div>
@@ -125,15 +131,15 @@
                         <table class="table">
                             <tr>
                                 <th>Leave Type</th>
-                                <th>Balances</th>
-                                <th>Deductions</th>
+                                <th style="text-align: center">Balances</th>
+                                <th style="text-align: center">Deductions</th>
                             </tr>
                             <tr>
                                 <th>Annual</th>
-                                <td>@balance.annual.ToString()</td>
+                                <td style="text-align: center">@balance.annual.ToString()</td>
                                 @if (deduction.ContainsKey("Annual"))
                                 {
-                                    <td>-@deduction["Annual"].ToString()</td>
+                                    <td style="text-align: center">-@deduction["Annual"].ToString()</td>
                                 }
                                 else
                                 {
@@ -142,10 +148,10 @@
                             </tr>
                             <tr>
                                 <th>Sick</th>
-                                <td>@balance.sick.ToString()</td>
+                                <td style="text-align: center">@balance.sick.ToString()</td>
                                 @if (deduction.ContainsKey("Sick"))
                                 {
-                                    <td>-@deduction["Sick"].ToString()</td>
+                                    <td style="text-align: center">-@deduction["Sick"].ToString()</td>
                                 }
                                 else
                                 {
@@ -154,10 +160,10 @@
                             </tr>
                             <tr>
                                 <th>Compassionate</th>
-                                <td>@balance.compassionate.ToString()</td>
+                                <td style="text-align: center">@balance.compassionate.ToString()</td>
                                 @if (deduction.ContainsKey("Compassionate"))
                                 {
-                                    <td>-@deduction["Compassionate"].ToString()</td>
+                                    <td style="text-align: center">+@deduction["Compassionate"].ToString()</td>
                                 }
                                 else
                                 {
@@ -168,10 +174,10 @@
                             {
                                 <tr>
                                     <th>Maternity</th>
-                                    <td>@balance.maternity.ToString()</td>
+                                    <td style="text-align: center">@balance.maternity.ToString()</td>
                                     @if (deduction.ContainsKey("Maternity"))
                                     {
-                                        <td>-@deduction["Maternity"].ToString()</td>
+                                        <td style="text-align: center">-@deduction["Maternity"].ToString()</td>
                                     }
                                     else
                                     {
@@ -181,10 +187,10 @@
                             }
                             <tr>
                                 <th>Days In Lieu</th>
-                                <td>@balance.daysInLieu.ToString()</td>
+                                <td style="text-align: center">@balance.daysInLieu.ToString()</td>
                                 @if (deduction.ContainsKey("DIL"))
                                 {
-                                    <td>-@deduction["DIL"].ToString()</td>
+                                    <td style="text-align: center">-@deduction["DIL"].ToString()</td>
                                 }
                                 else
                                 {
@@ -193,10 +199,10 @@
                             </tr>
                             <tr>
                                 <th>Short Hours</th>
-                                <td>@balance.shortHours.ToString()</td>
-                                @if (deduction.ContainsKey("Short_Hours_Per_Month"))
+                                <td style="text-align: center">@balance.shortHours.ToString()</td>
+                                @if (deduction.ContainsKey("Short_Hours"))
                                 {
-                                    <td>-@deduction["Short_Hours_Per_Month"].ToString()</td>
+                                    <td style="text-align: center">-@deduction["Short_Hours"].ToString()</td>
                                 }
                                 else
                                 {
@@ -205,10 +211,10 @@
                             </tr>
                             <tr>
                                 <th>Unpaid</th>
-                                <td>@balance.unpaid.ToString()</td>
+                                <td style="text-align: center">@balance.unpaid.ToString()</td>
                                 @if (deduction.ContainsKey("Unpaid"))
                                 {
-                                    <td>+@deduction["Unpaid"].ToString()</td>
+                                    <td style="text-align: center">+@deduction["Unpaid"].ToString()</td>
                                 }
                                 else
                                 {
@@ -219,10 +225,10 @@
                             {
                                 <tr>
                                     <th>Pilgrimage</th>
-                                    <td>@balance.pilgrimage.ToString()</td>
+                                    <td style="text-align: center">@balance.pilgrimage.ToString()</td>
                                     @if (deduction.ContainsKey("Pilgrimage"))
                                     {
-                                        <td>-@deduction["Pilgrimage"].ToString()</td>
+                                        <td style="text-align: center">-@deduction["Pilgrimage"].ToString()</td>
                                     }
                                     else
                                     {
@@ -248,13 +254,13 @@
                     <div id="collapse3" class="panel-collapse collapse">
                         <table class="table">
                             <tr>
-                                <th>Leave Type</th>
-                                <th>Start Date</th>
-                                <th>End Date</th>
-                                <th>Duration</th>
-                                <th>Start Time</th>
-                                <th>End Time</th>
-                                <th>Status</th>
+                                <th style="text-align: center">Leave Type</th>
+                                <th style="text-align: center">Start Date</th>
+                                <th style="text-align: center">End Date</th>
+                                <th style="text-align: center">Duration</th>
+                                <th style="text-align: center">Start Time</th>
+                                <th style="text-align: center">End Time</th>
+                                <th style="text-align: center">Status</th>
                             </tr>
                             @{
                                 var leaveHistory = ViewData["LeaveHistory"] as List<LeaveSystemMVC.Models.sLeaveModel>;
@@ -267,21 +273,21 @@
                                     reDt = reDt.Substring(0, 10);
 
                                     <tr>
-                                        <td>@lv.leaveTypeName</td>
-                                        <td>@stDt</td>
-                                        <td>@reDt</td>
-                                        <td>@lv.leaveDuration</td>
-                                        @if (lv.leaveTypeName != "Short_Hours_Per_Month")
+                                        <td style="text-align: center">@lv.leaveTypeName</td>
+                                        <td style="text-align: center">@stDt</td>
+                                        <td style="text-align: center">@reDt</td>
+                                        <td style="text-align: center">@lv.leaveDuration</td>
+                                        @if (lv.leaveTypeName != "Short_Hours")
                                         {
                                             <td></td>
                                             <td></td>
                                         }
                                         else
                                         {
-                                            <td>@lv.shortStartTime</td>
-                                            <td>@lv.shortEndTime</td>
+                                            <td style="text-align: center">@lv.shortStartTime</td>
+                                            <td style="text-align: center">@lv.shortEndTime</td>
                                         }
-                                        <td>@lv.leaveStatusName</td>
+                                        <td style="text-align: center">@lv.leaveStatusName</td>
                                     </tr>
                                 }
                             }

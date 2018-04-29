@@ -25,11 +25,18 @@ namespace LeaveSystemMVC.Models
         public DateTime applicationDate { get; set; }
 
         [DisplayName("Start Date")]
-        [Required(ErrorMessage = "Start Date is required.")]
+        [Required(ErrorMessage = "A valid Start Date is required.")]
         public DateTime startDate { get; set; }
 
         [Display(Name = "Reporting Back Date")]
         [Required(ErrorMessage = "Reporting Back Date is required.")]
+
+        [DisplayName("Half Day")]
+        public bool isStartDateHalfDay { get; set; }
+
+        [DisplayName("Half Day")]
+        public bool isReturnDateHalfDay { get; set; }
+
         public DateTime returnDate { get; set; }
 
         [Display(Name = "Duration")]
@@ -44,9 +51,11 @@ namespace LeaveSystemMVC.Models
         public TimeSpan shortEndTime { get; set; }
 
         [DisplayName("Line Manager Comment")]
+        [StringLength(300, MinimumLength = 0, ErrorMessage = "Comment is too long.")]
         public string lmComment { get; set; }
 
         [DisplayName("HR Comment")]
+        [StringLength(300, MinimumLength = 0, ErrorMessage = "Comment is too long.")]
         public string hrComment { get; set; }
 
         [DisplayName("Leave Status ID")]
@@ -55,19 +64,31 @@ namespace LeaveSystemMVC.Models
         [DisplayName("Leave Status ID")]
         public string leaveStatusName { get; set; }
 
+        [DisplayName("Leave Status Name")]
+        public string leaveStatusDisplayName { get; set; }
+
         [DisplayName("Comments")]
+        [StringLength(300, MinimumLength = 0, ErrorMessage = "Comment is too long.")]
         public string comments { get; set; }
 
         [DisplayName("Documentation")]
+        [StringLength(300, MinimumLength = 0, ErrorMessage = "File name is too long.")]
         public string documentation { get; set; }
 
         [DisplayName("Book Air Ticket?")]
         public bool bookAirTicket { get; set; }
 
         [DisplayName("Phone Number")]
-        [Required(ErrorMessage = "Phone Number is required.")]
+        [Required(ErrorMessage = "Phone number is required.")]
+        [StringLength(15, MinimumLength = 12, ErrorMessage = "Phone number is not the correct length.")]
         [DataType(DataType.PhoneNumber, ErrorMessage = "You must provide a phone number in international format, starting with a + symbol.")]
-        [RegularExpression(@"^\+[1-9]{1}[0-9]{3,14}$", ErrorMessage = "You must provide a phone number in international format, starting with a + symbol.")]
+        [RegularExpression(@"^\+[1-9]{1}[0-9]{3,14}$", ErrorMessage = "You must provide a phone number in international format, starting with a + symbol, and without spaces.")]
         public string contactDetails { get; set; }
+
+        [Display(Name = "Personal email address")]
+        [Required(ErrorMessage = "Email Address is required.")]
+        [EmailAddress(ErrorMessage = "Invalid Email Address.")]
+        [StringLength(100, MinimumLength = 0, ErrorMessage = "Email Address is too long.")]
+        public string email { get; set; }
     }
 }

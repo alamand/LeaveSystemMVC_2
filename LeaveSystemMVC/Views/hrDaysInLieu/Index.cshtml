@@ -2,7 +2,7 @@
 @Html.Partial("_LeftMenu")
 @{ ViewBag.Title = "Credit Days in Lieu"; }
 
-<div class="col-md-10">
+<div class="col-md-6">
     <h3>@ViewBag.Title</h3>
     <hr />
     @Html.Partial("../_Message")
@@ -15,10 +15,10 @@
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <div class="form-horizontal">
             <div class="row ">
-                <div class="col-md-2" >
+                <div class="col-md-3" >
                     @Html.Label("Employee", new { @class = "control-label col-md-2" })
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-5">
                     <div class="form-horizontal">
                         @Html.DropDownList("selectedEmployee", new SelectList(employeeList, "Key", "Value"), new { @selected = selectedEmployee, @class = "form-control", @onchange = "this.form.submit();" })
                     </div>
@@ -40,18 +40,17 @@
                 <div class="container-fluid form-group">
                     @Html.HiddenFor(model => model.employeeID)
                     <div class="row">
-                        <div class="col-md-2">
+                        <div class="col-md-3">
                             @Html.LabelFor(model => model.date, "Date", htmlAttributes: new { @class = "control-label col-md-2" })
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-5">
                             @Html.TextBoxFor(model => model.date, new { @class = "form-control", type = "date" })
                             @Html.ValidationMessageFor(model => model.date, "", new { @class = "text-danger" })
                         </div>
                     </div>
                     <hr />
-
                     <div class="row">
-                        <div class="col-md-2">
+                        <div class="col-md-3">
                             @Html.LabelFor(model => model.numOfDays, "Duration", htmlAttributes: new { @class = "control-label col-md-4" })
                         </div>
 
@@ -67,7 +66,7 @@
                     <hr />
 
                     <div class="row">
-                        <div class="col-md-2">
+                        <div class="col-md-3">
                             @Html.LabelFor(model => model.comment, "Comments", htmlAttributes: new { @class = "control-label col-md-3" })
                         </div>
 
@@ -79,12 +78,15 @@
                     <hr />
                 </div>
 
-                <div class="row">
-                    <div class="form-group">
-                        <div class="col-md-offset-2 col-md-1">
-                            <input type="submit" value="Submit" class="btn btn-default" />
-                        </div>
-                    </div>
+                <div class="col-md-offset-3">
+                    <a href="@Url.Action("Index", "hrDaysInLieu")" class="btn btn-warning col-md-3">
+                        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                        Cancel
+                    </a>
+
+                    <button type="submit" value="Save" class="btn btn-success col-md-offset-1 col-md-3">
+                        <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span> Save
+                    </button>
                 </div>
             </div>
         }

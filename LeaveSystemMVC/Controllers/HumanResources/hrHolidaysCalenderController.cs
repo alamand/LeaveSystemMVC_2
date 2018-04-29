@@ -8,46 +8,37 @@ using System.Web.Mvc;
 using System.Globalization;
 using System.Collections;
 using System.Data;
+using LeaveSystemMVC.Models;
 
 namespace LeaveSystemMVC.Controllers
 {
-    public class hrHolidaysCalenderController : Controller
+    public class hrHolidaysCalenderController : ControllerBase
     {
         // GET: hrHolidaysCalender
         public ActionResult Index(int? filterYear = null)
         {
-            var model = new List<Models.hrHolidaysCalender>();
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            // if the filter is not selected (commonly when the page is loaded for the first time), display the current year.
+            filterYear = (filterYear == null) ? DateTime.Now.Year : filterYear;
 
-            if (filterYear == null)
+            var yearList = YearList();
+
+            List<hrHolidaysCalender> model = GetHolidayList(filterYear);
+            if (model.Count == 0 && yearList.Count > 0)
             {
-                filterYear = DateTime.Now.Year;
+                model = GetHolidayList(yearList.Keys.First());
+                filterYear = yearList.Keys.First();
             }
 
-            string queryString = "SELECT * FROM dbo.Public_Holiday WHERE year(Date) = " + filterYear;
+            // to be passed between methods
+            TempData["filterYear"] = filterYear;
 
-            using (var connection = new SqlConnection(connectionString))
-            {
-                var command = new SqlCommand(queryString, connection);
+            // dropdown list for filtering
+            ViewData["YearList"] = yearList;
 
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        var calender = new Models.hrHolidaysCalender();
-                        calender.holidayName = (string)reader["Name"];
-                        calender.startDate = (DateTime)reader["Date"];
-                        model.Add(calender);
-                    }
-                }
-
-                connection.Close();
-            }
-
-            ViewData["YearList"] = YearList();
+            //user selected year
             ViewData["SelectedYear"] = filterYear;
 
+            SetMessageViewBags();
             return View(model);
         }
 
@@ -84,278 +75,410 @@ namespace LeaveSystemMVC.Controllers
         [HttpGet]
         public ActionResult CreateHoliday()
         {
-            var model = new List<Models.hrHolidaysCalender>();
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            //var connectionString = ConfigurationManager.ConnectionStrings["CustomConnection"].ConnectionString;
-            string queryString = "Select * FROM dbo.Public_Holiday";
-            using (var connection = new SqlConnection(connectionString))
-            {
-                var command = new SqlCommand(queryString, connection);
-
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        var calender = new Models.hrHolidaysCalender();
-                        calender.holidayName = (string)reader["Name"];
-                        calender.startDate = (DateTime)reader["Date"];
-                        model.Add(calender);
-                    }
-                }
-
-                connection.Close();
-            }
-
             return View();
         }
 
         [HttpPost]
-        public ActionResult CreateHoliday([Bind(Exclude = "description")] Models.hrHolidaysCalender calender)
+        public ActionResult CreateHoliday(hrHolidaysCalender holiday)
         {
-            if (string.IsNullOrWhiteSpace(calender.holidayName))
+            if (holiday.holidayName.Length > 30)
             {
-                ModelState.AddModelError("holidayName", "A holiday name must be entered.");
-            }
-            if (!string.IsNullOrWhiteSpace(calender.holidayName) && calender.holidayName.Length > 30)
-            {
-                ModelState.AddModelError("holidayName", "The holiday name is too long. The name should be no greater than 30 characters.");
-            }
-            else if (string.IsNullOrEmpty(calender.startDate.ToString()))
-            {
-                ModelState.AddModelError("startDate", "The start date must not be left empty.");
+                ModelState.AddModelError("holidayName", "The holiday name is too long.");
             }
 
-            //Should be able to add holidays in the past e.g. when the announcement is made late.
-            /*else if (calender.startDate.Equals(DateTime.Today) || calender.startDate < DateTime.Today)
+            if (holiday.date.Year < DateTime.Today.Year)
             {
-                ModelState.AddModelError("startDate", "The Start Date cannot be the current or previous day.");
+                ModelState.AddModelError("date", "You cannot add a holiday to the previous year.");
             }
-            else if (calender.endDate.Equals(DateTime.Today) || calender.startDate < DateTime.Today)
-            {
-                ModelState.AddModelError("endDate", "The End Date cannot be the current or previous days");
-            }*/
 
             if (ModelState.IsValid)
-
             {
-                if (!isDateSame(calender.startDate, calender.endDate))
+                if (!IsPublicHoliday(holiday.date))
                 {
-                    string date = calender.startDate.ToString("yyyy-MM-dd");
-                    var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-                    //var connectionString = ConfigurationManager.ConnectionStrings["CustomConnection"].ConnectionString;
-
-                    int totalDay = totalDays(calender.startDate, calender.endDate);
-                    for (int i = 0; i <= totalDay; i++)
+                    if (holiday.date.Year >= DateTime.Today.Year)
                     {
-                        DateTime d = calender.startDate.AddDays(i);
-                        string date1 = d.ToString("yyyy-MM-dd");
-                        if (!isDateSame(d))
-                        {
-                            date1 = d.ToString("yyyy-MM-dd");
-                            string insert = "INSERT INTO dbo.Public_Holiday (Name, Date) VALUES('" + GetSqlString(calender.holidayName) + "','" + date1 + "')";
-                            using (var connection = new SqlConnection(connectionString))
-                            {
-                                var command = new SqlCommand(insert, connection);
-                                connection.Open();
-                                using (var reader = command.ExecuteReader())
-                                    connection.Close();
-                            }
-                            AddCredit(d);
-                        }
+                        string queryString = "INSERT INTO dbo.Public_Holiday (Name, Date) VALUES('" + holiday.holidayName + "','" + holiday.date.ToString("yyyy-MM-dd") + "')";
+                        DBExecuteQuery(queryString);
 
+                        // rebalance all employees with approved applications, 1 to indicate that a holiday is added
+                        RebalanceCredit(holiday.date, 1);
+
+                        string auditString = "INSERT INTO dbo.Audit_Public_Holiday (Public_Holiday_ID, Column_Name, Value_After, Created_By, Created_On) " +
+                            "VALUES('" + DBLastIdentity("Public_Holiday_ID", "dbo.Public_Holiday") + "', 'Date' ,'" + holiday.date.ToString("yyyy-MM-dd") + "','" + GetLoggedInID() + "','" + DateTime.Today.ToString("yyyy-MM-dd") + "')";
+                        DBExecuteQuery(auditString);
+
+                        TempData["SuccessMessage"] = "<b>" + holiday.holidayName + "</b> public holiday has been created successfully.<br/>";
                     }
-                    Response.Write("<script> alert('Success!');</script>");
+                    else
+                    {
+                        ViewBag.ErrorMessage = "You cannot add a holiday to the previous year.";
+                    }
                 }
-
-                else { ModelState.AddModelError("errorMessage", "This holiday already exists."); }
-
-                // return RedirectToAction("Display");
+                else
+                {
+                    ViewBag.ErrorMessage = "<b>" + holiday.date.ToString("yyyy-MM-dd") + "</b> is already a public holiday.";
+                }
             }
-            return CreateHoliday();
+
+            // if the holiday is created, then navigate to the holiday calendar page with the created holiday year as filter.
+            if (TempData["SuccessMessage"] != null)
+                return RedirectToAction("Index", new { filterYear = holiday.date.Year });
+            else
+                return View(holiday);
         }
 
-        public bool isDateSame(DateTime date)
+        public ActionResult Remove(int holidayID)
         {
+            var holiday = GetHoliday(holidayID);
+            string queryString = "DELETE FROM dbo.Public_Holiday WHERE Public_Holiday_ID = " + holidayID;
+            DBExecuteQuery(queryString);
+            
+            // rebalance all employees with approved applications, -1 to indicate that a holiday is removed
+            RebalanceCredit(holiday.date, -1);
+
+            string auditString = "INSERT INTO dbo.Audit_Public_Holiday (Public_Holiday_ID, Column_Name, Value_Before, Modified_By, Modified_On) " +
+                  "VALUES('" + holidayID + "', 'Date' ,'" + holiday.date.ToString("yyyy-MM-dd") + "','" + GetLoggedInID() + "','" + DateTime.Today.ToString("yyyy-MM-dd") + "')";
+            DBExecuteQuery(auditString);
+
+            TempData["SuccessMessage"] = "<b>" + holiday.holidayName + "</b> public holiday has been removed successfully.<br/>";
+
+            if (GetHolidayList(holiday.date.Year).Count > 0)
+                return RedirectToAction("Index", new { filterYear = TempData["filterYear"] });
+            else 
+                return RedirectToAction("Index", new { filterYear = DateTime.Now.Year }); 
+        }
+
+        private bool IsWeekend(DateTime date)
+        {
+            bool isWeekend = false;
+
+            if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Friday)
+                isWeekend = true;
+
+            return isWeekend;
+        }
+
+        private bool IsPublicHoliday(DateTime date)
+        {
+            bool isPublicHoliday = false;
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            //var connectionString = ConfigurationManager.ConnectionStrings["CustomConnection"].ConnectionString;
-            string queryString = "Select * FROM dbo.Public_Holiday where Date= '" + date.ToString("yyyy-MM-dd") + "'";
+            string queryString = "SELECT * FROM dbo.Public_Holiday WHERE Date = '" + date.ToString("yyyy-MM-dd") + "'";
+
             using (var connection = new SqlConnection(connectionString))
             {
                 var command = new SqlCommand(queryString, connection);
-
                 connection.Open();
-                try
-                {
-                    int dateCount = (int)command.ExecuteScalar();
-                    if (dateCount > 0)
-                    { return true; }
-                }
-                catch { return false; }
-                connection.Close();
-            }
 
-            return false;
-        }
-
-        public bool isDateSame(DateTime start, DateTime end)
-        {
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            //var connectionString = ConfigurationManager.ConnectionStrings["CustomConnection"].ConnectionString;
-            int totalDay = totalDays(start, end);
-            for (int i = 0; i <= totalDay; i++)
-            {
-                DateTime d = start.AddDays(i);
-                string date1 = d.ToString("yyyy-MM-dd");
-                if (isDateSame(d))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public int totalDays(DateTime start, DateTime end)
-        {
-            TimeSpan ts = start - end;
-            return Math.Abs(ts.Days);
-        }
-
-        public bool AddCredit(DateTime date)
-        {
-            int empid, appid, lid, status;
-            var details = new List<Emp>();
-            DateTime start, end;
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "Select * from dbo.Leave where Leave_Status_ID!='4' And year(Start_Date)='" + date.Year + "'";
-            using (var connection = new SqlConnection(connectionString))
-            {
-                var command = new SqlCommand(queryString, connection);
-                if (connection.State != ConnectionState.Open)
-                {
-                    connection.Close();
-                    connection.Open();
-                }
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        appid = (int)reader["Leave_Application_ID"];
-                        lid = (int)reader["Leave_ID"];
-                        empid = (int)reader["Employee_ID"];
-                        start = (DateTime)reader["Start_Date"];
-                        end = (DateTime)reader["Reporting_Back_Date"];
-                        status = (int)reader["Leave_Status_ID"];
-                        details.Add(new Emp(appid, empid, lid, start, end, status));
+                        DateTime day = (DateTime)reader["Date"];
+                        isPublicHoliday = date.Equals(day) ? true : false;
                     }
                 }
                 connection.Close();
-                foreach (var item in details)
-                {
-                    if (isDateCheck(date, item.start, item.end) && (item.status == 0 || item.status == 1))
-                    {
-                        if (date.DayOfWeek != DayOfWeek.Friday && date.DayOfWeek != DayOfWeek.Saturday) { AddHolidayBalance(item.app_id, item.emp_id, item.leave_id, 1, date); }
-                    }
-                    else if (isDateCheck(date, item.start, item.end) && (item.status == 2))
-                    {
-                        if (date.DayOfWeek != DayOfWeek.Friday && date.DayOfWeek != DayOfWeek.Saturday) { AddHolidayBalance(item.app_id, item.emp_id, item.leave_id, 0, date); }
-                    }
-                }
             }
-            return false;
+
+            return isPublicHoliday;
         }
 
-        public struct Emp
+        private hrHolidaysCalender GetHoliday(int holidayID)
         {
-            public Emp(int apid, int eid, int lid, DateTime strt, DateTime endDate, int stat) { app_id = apid; leave_id = lid; emp_id = eid; start = strt; end = endDate; status = stat; }
-            public int app_id { get; set; }
-            public int status { get; set; }
-            public int emp_id { get; set; }
-            public int leave_id { set; get; }
-            public DateTime start { get; set; }
-            public DateTime end { get; set; }
-        }
-
-        public bool isDateCheck(DateTime a, DateTime b_start, DateTime b_end)
-        {
-            int total = totalDays(b_start, b_end);
-            for (int i = 0; i <= total; i++)
-            {
-                if (a.CompareTo(b_start.AddDays(i)) == 0) { return true; }
-            }//else return false;
-            return false;
-        }
-
-        public void AddHolidayBalance(int appid, int eid, int lid, int bal, DateTime sdate)
-        {
-            //bal += getBalance(eid, lid);
+            var holiday = new hrHolidaysCalender();
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "Update dbo.Leave_Balance SET Balance= Balance + " + bal + " WHERE Employee_ID= '" + eid + "' And Leave_ID= '" + lid + "' ";
+            string queryString = "SELECT * FROM dbo.Public_Holiday WHERE Public_Holiday_ID = " + holidayID;
             using (var connection = new SqlConnection(connectionString))
             {
-                if (connection.State != ConnectionState.Open)
-                {
-                    connection.Close();
-                    connection.Open();
-                }
                 var command = new SqlCommand(queryString, connection);
-                using (var reader = command.ExecuteReader())
-                    connection.Close();
-            }
-            if (sdate.DayOfWeek != DayOfWeek.Friday && sdate.DayOfWeek != DayOfWeek.Saturday)
-            { DecrementTotalDays(appid, 1, eid, lid); }
-
-        }
-
-        public void DecrementTotalDays(int apid, int duration, int eid, int lid)
-        {
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "Update dbo.Leave SET Total_Leave= Total_Leave -" + duration + " WHERE Leave_Application_ID =" + apid + "";
-            using (var connection = new SqlConnection(connectionString))
-            {
-                if (connection.State != ConnectionState.Open)
-                {
-                    connection.Close();
-                    connection.Open();
-                }
-                var command = new SqlCommand(queryString, connection);
-                using (var reader = command.ExecuteReader())
-                    connection.Close();
-            }
-        }
-
-        public decimal getBalance(int eid, int lid)
-        {
-            decimal balance = 0;
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "Select * from dbo.Leave_Balance Where Employee_ID='" + eid + "' And Leave_ID='" + lid + "'";
-            using (var connection = new SqlConnection(connectionString))
-            {
-                if (connection.State != ConnectionState.Open)
-                {
-                    connection.Close();
-                    connection.Open();
-                }
-                var command = new SqlCommand(queryString, connection);
+                connection.Open();
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        balance = (decimal)reader["Balance"];
+                        holiday.holidayID = (int)reader["Public_Holiday_ID"];
+                        holiday.holidayName = (string)reader["Name"];
+                        holiday.date = (DateTime)reader["Date"];
                     }
                 }
                 connection.Close();
             }
-            return balance;
+
+            return holiday;
         }
 
-        public string GetSqlString(string fieldvalue)
+        private List<hrHolidaysCalender> GetHolidayList(int? filterYear = null)
         {
-            if (fieldvalue != null)
-                return fieldvalue.Replace("'", "''");
-            return fieldvalue;
+            var holidayList = new List<hrHolidaysCalender>();
+            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+
+            string queryString = "SELECT * FROM dbo.Public_Holiday WHERE year(Date) = " + ((filterYear == null) ? 0 : filterYear);
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var holiday = new hrHolidaysCalender
+                        {
+                            holidayID = (int)reader["Public_Holiday_ID"],
+                            holidayName = (string)reader["Name"],
+                            date = (DateTime)reader["Date"]
+                        };
+                        holidayList.Add(holiday);
+                    }
+                }
+                connection.Close();
+            }
+            return holidayList;
         }
+
+        private void RebalanceCredit(DateTime holiday, int addRemove)
+        {
+            if (!IsWeekend(holiday))
+            {
+                // extract all approved applications
+                foreach (var leave in GetLeaveModel())
+                {
+                    if (leave.leaveStatusName.Equals("Approved"))
+                    {
+                        // key: Leave Type
+                        // Value.Item1 : Leave Balance ID
+                        // Value.Item2 : Current Balance
+                        // Value.Item3 : Leave Application Duration
+                        // Value.Item4 : Public Holiday(s) Removed/Added
+                        Dictionary<int, Tuple<int, decimal, decimal, decimal>> audit = DBGetAuditLeave(leave.leaveAppID);
+                        sleaveBalanceModel leaveType = GetLeaveBalanceModel();
+
+                        if (leave.leaveTypeName.Equals("Short_Hours"))
+                        {
+                            if (leave.startDate == holiday)
+                            {
+                                TimeSpan span = leave.shortEndTime - leave.shortStartTime;
+                                // Public holiday added
+                                if (addRemove == 1)
+                                {
+                                    DBUpdateBalance(leave.employeeID, leaveType.shortHoursID, audit[leaveType.shortHoursID].Item3);
+                                    DBUpdateAuditBalance(audit[leaveType.shortHoursID].Item1, leave.leaveAppID, audit[leaveType.shortHoursID].Item2, (audit[leaveType.shortHoursID].Item2 + audit[leaveType.shortHoursID].Item3), "Added Public Holiday");
+                                }
+                                else
+                                {
+                                    DBUpdateBalance(leave.employeeID, leaveType.shortHoursID, -audit[leaveType.shortHoursID].Item3);
+                                    DBUpdateAuditBalance(audit[leaveType.shortHoursID].Item1, leave.leaveAppID, audit[leaveType.shortHoursID].Item2, (audit[leaveType.shortHoursID].Item2 - audit[leaveType.shortHoursID].Item3), "Removed Public Holiday");
+                                }
+                            }
+                        }
+                        else
+                        {
+                            int leaveTypeID = 0;
+                            DateTime date = leave.startDate;
+
+                            do
+                            {
+                                if (date == holiday)
+                                {
+                                    switch (leave.leaveTypeName)
+                                    {
+                                        case "Annual":
+                                            leaveTypeID = GetRebalancingLeaveTypeForAnnual(leave, audit, leaveType, addRemove);
+                                            break;
+
+                                        case "Sick":
+                                            leaveTypeID = GetRebalancingLeaveTypeForSick(leave, audit, leaveType, addRemove);
+                                            break;
+                                            
+                                        case "Compassionate":
+                                            leaveTypeID = GetRebalancingLeaveTypeForCompassionate(leave, audit, leaveType, addRemove);
+                                            break;
+
+                                        case "DIL":
+                                            leaveTypeID = leaveType.daysInLieuID;
+                                            break;
+
+                                        case "Pilgrimage":
+                                            leaveTypeID = leaveType.pilgrimageID;
+                                            break;
+
+                                        case "Unpaid":
+                                            leaveTypeID = leaveType.unpaidID;
+                                            break;
+
+                                        case "Maternity":
+                                            leaveTypeID = leaveType.maternityID;
+                                            break;
+
+                                        default:
+                                            break;
+                                    }
+
+                                    Dictionary<int, string> leaveTypeList = DBLeaveTypeList();
+                                    Boolean incremental = leaveTypeList[leaveTypeID].Equals("Unpaid") || leaveTypeList[leaveTypeID].Equals("Compassionate") ? true : false;
+
+                                    // note that here we are reducing the total days of leave by 1 and adding balance to the employee by 1, and vice versa
+                                    // if credit is positive, then we have added a holiday, which means subtract total leave days and add balance
+                                    // if credit is negative, then we have removed a holiday, which means add total leave days and subtract balance
+                                    DBUpdateLeave(leave.leaveAppID, -addRemove);
+                                    DBUpdateBalance(leave.employeeID, leaveTypeID, (incremental) ? -addRemove : addRemove);
+                                    DBUpdateAuditBalance(audit[leaveTypeID].Item1, leave.leaveAppID, audit[leaveTypeID].Item2, audit[leaveTypeID].Item2 + ((incremental) ? -addRemove : addRemove), (addRemove == 1) ? "Added Public Holiday" : "Removed Public Holiday");
+                                }
+                                // move to the next date
+                                date = date.AddDays(1);
+                                // loop back if the date did not reach the returning date
+                            } while (date < leave.returnDate);
+                        }
+                    }
+                }
+            }
+        }
+
+        private int GetRebalancingLeaveTypeForAnnual(sLeaveModel leave, Dictionary<int, Tuple<int, decimal, decimal, decimal>> audit, sleaveBalanceModel leaveType, int addRemove)
+        {
+            int leaveTypeID = 0;
+
+            foreach (KeyValuePair<int, Tuple<int, decimal, decimal, decimal>> pair in audit)
+            {
+                int key = pair.Key;
+                int balID = pair.Value.Item1;
+                decimal currBal = pair.Value.Item2;
+                decimal consumed = pair.Value.Item3;
+                decimal ph = pair.Value.Item4;
+                Output("Leave Type: " + key + " | Balance ID: " + balID + " | Current Balance: " + currBal + " | Consumed: " + consumed + " | PH: " + ph);
+            }
+
+            // Public holiday is added
+            if (addRemove == 1)
+            {
+                if (audit.ContainsKey(leaveType.unpaidID) && audit[leaveType.unpaidID].Item3 + audit[leaveType.unpaidID].Item4 < 0)
+                    leaveTypeID = leaveType.unpaidID;
+                else if (audit.ContainsKey(leaveType.annualID) && audit[leaveType.annualID].Item3 + audit[leaveType.annualID].Item4 > 0)
+                    leaveTypeID = leaveType.annualID;
+                else
+                    leaveTypeID = leaveType.daysInLieuID;
+            }
+            else
+            {
+                if (audit.ContainsKey(leaveType.daysInLieuID) && audit[leaveType.daysInLieuID].Item2 > 0)
+                    leaveTypeID = leaveType.daysInLieuID;
+                else if (audit.ContainsKey(leaveType.annualID) && audit[leaveType.annualID].Item2 > 0)
+                    leaveTypeID = leaveType.annualID;
+                else
+                    leaveTypeID = leaveType.unpaidID;
+            }
+
+            return leaveTypeID;
+        }
+
+        private int GetRebalancingLeaveTypeForSick(sLeaveModel leave, Dictionary<int, Tuple<int, decimal, decimal, decimal>> audit, sleaveBalanceModel leaveType, int addRemove)
+        {
+            int leaveTypeID = 0;
+
+            // Public holiday is added
+            if (addRemove == 1)
+            {
+                if (audit.ContainsKey(leaveType.unpaidID) && audit[leaveType.unpaidID].Item3 + audit[leaveType.unpaidID].Item4 < 0)
+                    leaveTypeID = leaveType.unpaidID;
+                else if (audit.ContainsKey(leaveType.annualID) && audit[leaveType.annualID].Item3 + audit[leaveType.annualID].Item4 > 0)
+                    leaveTypeID = leaveType.annualID;
+                else if (audit.ContainsKey(leaveType.sickID) && audit[leaveType.sickID].Item3 + audit[leaveType.sickID].Item4 > 0)
+                    leaveTypeID = leaveType.sickID;
+                else
+                    leaveTypeID = leaveType.daysInLieuID;
+            }
+            else
+            {
+                if (audit.ContainsKey(leaveType.daysInLieuID) && audit[leaveType.daysInLieuID].Item2 > 0)
+                    leaveTypeID = leaveType.daysInLieuID;
+                else if (audit.ContainsKey(leaveType.sickID) && audit[leaveType.sickID].Item2 > 0)
+                    leaveTypeID = leaveType.sickID;
+                else if (audit.ContainsKey(leaveType.annualID) && audit[leaveType.annualID].Item2 > 0)
+                    leaveTypeID = leaveType.annualID;
+                else
+                    leaveTypeID = leaveType.unpaidID;
+            }
+
+            return leaveTypeID;
+        }
+
+        private int GetRebalancingLeaveTypeForCompassionate(sLeaveModel leave, Dictionary<int, Tuple<int, decimal, decimal, decimal>> audit, sleaveBalanceModel leaveType, int addRemove)
+        {
+            int leaveTypeID = 0;
+
+            // Public holiday is added
+            if (addRemove == 1)
+            {
+                if (audit.ContainsKey(leaveType.unpaidID) && audit[leaveType.unpaidID].Item3 + audit[leaveType.unpaidID].Item4 < 0)
+                    leaveTypeID = leaveType.unpaidID;
+                else if (audit.ContainsKey(leaveType.daysInLieuID) && audit[leaveType.daysInLieuID].Item3 + audit[leaveType.daysInLieuID].Item4 > 0)
+                    leaveTypeID = leaveType.daysInLieuID;
+                else if (audit.ContainsKey(leaveType.annualID) && audit[leaveType.annualID].Item3 + audit[leaveType.annualID].Item4 > 0)
+                    leaveTypeID = leaveType.annualID;
+                else
+                    leaveTypeID = leaveType.compassionateID;
+            }
+            else
+            {
+                if (audit.ContainsKey(leaveType.compassionateID) && audit[leaveType.compassionateID].Item4 < leaveType.compassionate)
+                    leaveTypeID = leaveType.compassionateID;
+                else if (audit.ContainsKey(leaveType.annualID) && audit[leaveType.annualID].Item2 > 0)
+                    leaveTypeID = leaveType.annualID;
+                else if (audit.ContainsKey(leaveType.daysInLieuID) && audit[leaveType.daysInLieuID].Item2 > 0)
+                    leaveTypeID = leaveType.daysInLieuID;
+                else
+                    leaveTypeID = leaveType.unpaidID;
+            }
+
+            return leaveTypeID;
+        }
+
+        protected Dictionary<int, Tuple<int, decimal, decimal, decimal>> DBGetAuditLeave(int appID)
+        {
+            string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+
+            var queryString = "SELECT Leave_Balance.Leave_Balance_ID, Leave_Type_ID, Balance, Value_Before, Value_After, Comment FROM dbo.Leave_Balance, dbo.Audit_Leave_Balance " +
+                "WHERE Leave_Balance.Leave_Balance_ID = Audit_Leave_Balance.Leave_Balance_ID AND Leave_Application_ID = '" + appID + "'";
+            Dictionary<int, Tuple<int, decimal, decimal, decimal>> auditLeave = new Dictionary<int, Tuple<int, decimal, decimal, decimal>>();
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        int balID = (int)reader["Leave_Balance_ID"];
+                        int leaveType = (int)reader["Leave_Type_ID"];
+                        decimal currentBalance = (decimal)reader["Balance"];
+                        decimal valBefore = (!DBNull.Value.Equals(reader["Value_Before"])) ? decimal.Parse((string)reader["Value_Before"]) : (decimal)0.0;
+                        decimal valAfter = decimal.Parse((string)reader["Value_After"]);
+                        string comment = (string)reader["Comment"];
+
+                        if (comment.Equals("Approved Leave Application"))
+                            auditLeave.Add(leaveType, new Tuple<int, decimal, decimal, decimal>(balID, currentBalance, valBefore-valAfter, 0));
+                        else if (comment.Equals("Added Public Holiday") || comment.Equals("Removed Public Holiday"))
+                            auditLeave[leaveType] = new Tuple<int, decimal, decimal, decimal>(auditLeave[leaveType].Item1, auditLeave[leaveType].Item2, auditLeave[leaveType].Item3 ,auditLeave[leaveType].Item4 + valBefore - valAfter);
+                    }
+                }
+                connection.Close();
+            }
+
+            return auditLeave;
+        }
+
+        private void DBUpdateLeave(int appID, int duration)
+        {
+            string queryString = "UPDATE dbo.Leave SET Total_Leave = Total_Leave+'"+ duration + "' WHERE Leave_Application_ID = '" + appID + "'";
+            DBExecuteQuery(queryString);
+        }
+
+        private void DBUpdateBalance(int empID, int leaveTypeID, decimal balance)
+        {
+            string queryString = "UPDATE dbo.Leave_Balance SET Balance = Balance+'"+ balance + "' WHERE Employee_ID = '" + empID + "' AND Leave_Type_ID = '" + leaveTypeID + "'";
+            DBExecuteQuery(queryString);
+        }
+
     }
-
-
 }

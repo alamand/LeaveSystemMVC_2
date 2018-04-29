@@ -1,30 +1,97 @@
-﻿@model LeaveSystemMVC.Models.sleaveBalanceModel
+﻿@model List<LeaveSystemMVC.Models.sleaveBalanceModel>
+
 @Html.Partial("_LeftMenu")
-<div class="col-md-6">
-    @using (Html.BeginForm("Credit", "hrCreditLeaveBalance", FormMethod.Post))
+@{ ViewBag.Title = " Credit Organization-Wide Leave Quotas (once per annum)"; }
+
+<div class="col-md-10">
+    <h3>@ViewBag.Title</h3>
+    <hr />
+    @Html.Partial("../_Message")
+    @{ var quotaBalance = ViewBag.defaultBalance as LeaveSystemMVC.Models.sleaveBalanceModel;
+        var employeeList = ViewBag.employeeList as Dictionary<int, string>; }
+
+    <div class="row">
+        <div class="col-md-offset-3 col-md-6">
+            <div class="form-group has-feedback">
+                <i class="glyphicon glyphicon-search form-control-feedback"></i>
+                @Html.TextBox("searchInput", "", new { @class = "form-control", @placeholder = "Search by employee ID or name...", onkeyup = "search()" })
+            </div>
+        </div>
+    </div>
+    <br />
+
+    @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
+        <div class="row">
+            <table class="table" id="table">
+                <tr>
+                    <th>Employee ID</th>
+                    <th>Employee Name</th>
+                    <th style="text-align: center">Current DIL Balance</th>
+                    <th style="text-align: center">New Year DIL Balance</th>
 
-        <div class="form-horizontal">
-            <h4>Credit Leave Balances at the Start of Each Calendar Year</h4>
-            <hr />
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            <article>
-                <b>Note: Use this feature only at the start of the year to credit the organization's leave balances.
-                This feature will reset the balances of all staff members to the alloted quota per year, with the exception of annual leave.
-                For annual leave, the remaining balance is carried over to the next year.</b>
-            </article>
-            <hr />
+                    <th style="text-align: center">Current Annual Balance</th>
+                    <th style="text-align: center">New Year Annual Balance</th>
 
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="Credit Leave Balances of Organization" class="btn btn-default" />
-                </div>
-            </div>
+                </tr>
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    @Html.HiddenFor(model => Model[i].empId)
+                    <tr>
+                        <td>@Model[i].empId</td>
+                        <td>@employeeList[Model[i].empId]</td>
+
+                        @Html.HiddenFor(model => Model[i].daysInLieuID)
+                        <td style="text-align: center">@Html.DisplayFor(Model => Model[i].daysInLieu)</td>
+                        @{ var rollUpDIL = Model[i].daysInLieu + quotaBalance.daysInLieu; }
+                        <td align="center">@Html.TextBoxFor(Model => Model[i].daysInLieu, new { @Value = rollUpDIL, style = "width:5em; text-align: center", @class = "form-control" })</td>
+
+                        @Html.HiddenFor(model => Model[i].annualID)
+                        <td style="text-align: center">@Html.DisplayFor(Model => Model[i].annual)</td>
+                        @{ var rollUpAnnual = Model[i].annual + quotaBalance.annual; }
+                        <td align="center">@Html.TextBoxFor(Model => Model[i].annual, new { @Value = rollUpAnnual, style = "width:5em; text-align: center;", @class = "form-control" })</td>
+                    </tr>
+                }
+            </table>
+        </div>
+        <div class="col-md-offset-3">
+            <a href="@Url.Action("Index", "hrCreditLeaveBalance")" class="btn btn-warning col-md-3">
+                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                Undo all
+            </a>
+
+            <button type="submit" value="Save" class="btn btn-success col-md-offset-1 col-md-3">
+                <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span> Save
+            </button>
         </div>
     }
 </div>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+        
+    <script>
+        function search() {
+            // Declare variables
+            var input, filter, table, tr, tdID, tdName, i;
+            input = document.getElementById("searchInput");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("table");
+            tr = table.getElementsByTagName("tr");
+
+            // Loop through all table rows, and hide those who don't match the search query
+            for (i = 0; i < tr.length; i++) {
+                tdID = tr[i].getElementsByTagName("td")[0];
+                tdName = tr[i].getElementsByTagName("td")[1];
+                if (tdID || tdName) {
+                    if (tdID.innerHTML.toUpperCase().indexOf(filter) > -1 || tdName.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+    </script>
 }

@@ -6,23 +6,16 @@ namespace LeaveSystemMVC.Models
 {
     public class hrHolidaysCalender
     {
-        [Required]
+        public int holidayID { get; set; }
+
         [DisplayName("Holiday Name ")]
+        [Required(ErrorMessage = "Holiday name is required.")]
+        [StringLength(30, MinimumLength = 0, ErrorMessage = "Holiday name is too long.")]
         public string holidayName { set; get; }
 
-        [Required]
+        [Required(ErrorMessage = "Holiday date is required.")]
         [DisplayName("Date")]
         [DataType(DataType.Date)]
-        //[DisplayFormat(DataFormatString ="dd/MM/yyyy")]
-        public DateTime startDate { set; get; }
-
-        [Required]
-        [DisplayName("End Date")]
-        [DataType(DataType.Date)]
-        public DateTime endDate { set; get; }
-
-        [DisplayName("Description")]
-        public string description { set; get; }
-
+        public DateTime date { set; get; }
     }
 }

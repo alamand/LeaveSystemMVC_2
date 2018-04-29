@@ -13,7 +13,6 @@ using System.Net;
 using Hangfire;
 
 // @TODO: More testing and optimization
-// @Mandy: Give some good words for pop up messages.
 
 namespace LeaveSystemMVC.Controllers
 {
@@ -44,12 +43,21 @@ namespace LeaveSystemMVC.Controllers
             ModelState.Clear();
 
             // checks if the dates are the same, and if the end date is before than start date (sets ModelState to invalid if one of them is true)
-            CompareDates(model.startDate, model.returnDate);
+            if (!model.leaveTypeName.Equals("Short_Hours"))
+                CompareDates(model.startDate, model.returnDate, model);
 
-            // gets the total number of days, this involves excluding weekends and public holidays
-            int numOfDays = GetNumOfDays(model.startDate, model.returnDate);
+            if (ModelState.IsValid)
+            {
+                // these leave types use half days
+                if (model.leaveTypeName.Equals("Annual") || model.leaveTypeName.Equals("Sick") || model.leaveTypeName.Equals("Compassionate") || model.leaveTypeName.Equals("Unpaid") || model.leaveTypeName.Equals("DIL"))
+                {
+                    AdjustHalfDays(model);
+                }
 
-            if (numOfDays > 0 || (model.shortStartTime != null && model.shortEndTime != null))
+                // gets the total number of days, this involves excluding weekends and public holidays
+                decimal numOfDays = GetNumOfDays(model.startDate, model.returnDate);
+
+            if ((model.leaveTypeName.Equals("Short_Hours")) || (numOfDays > 0 && (model.shortStartTime != null || model.shortEndTime != null)))
             {
                 switch (model.leaveTypeName)
                 {
@@ -69,9 +77,9 @@ namespace LeaveSystemMVC.Controllers
                         LeaveAppCompassionate(model, leaveBalance, emp, file, numOfDays);
                         break;
 
-                    case "Short_Hours_Per_Month":
+                    case "Short_Hours":
                         int duration = Convert.ToInt32(form["selectedDuration"]);
-                        LeaveAppShortHours(model, leaveBalance, emp, duration);
+                        LeaveAppShortHours(model, leaveBalance, emp, duration);                        
                         break;
 
                     case "Pilgrimage":
@@ -82,25 +90,57 @@ namespace LeaveSystemMVC.Controllers
                         LeaveAppUnpaid(model, emp, file, numOfDays);
                         break;
 
+                    case "DIL":
+                        LeaveAppDIL(model, emp, leaveBalance, file, numOfDays);
+                        break;
+
                     default:
-                        break; ;
+                        break;
                 }
             }
             else
             {
-                ViewBag.WarningMessage = "The selected date(s) is/are weekend(s), and/or public holiday(s)";
+                TempData["ErrorMessage"] = "Invalid application. The selected date(s) is/are weekend(s), and/or public holiday(s), and/or the leave duration is zero.";
             }
 
             SetViewData(emp, model.leaveTypeID);
+            SetMessageViewBags();
 
             // if the application was submitted successfully, then display success message, else show the application page again.
             if (TempData["SuccessMessage"] != null)
                 return RedirectToAction("Index");
             else
                 return View(model);
+            }
+            else
+            {
+                SetViewData(emp, model.leaveTypeID);
+                SetMessageViewBags();
+                return View(model);
+            }
         }
 
-        private void LeaveAppAnnual(sLeaveModel model, sleaveBalanceModel lb, sEmployeeModel emp, HttpPostedFileBase file, int numOfDays)
+        private void AdjustHalfDays(sLeaveModel model)
+        {
+            //half a day of leave
+            if (model.startDate.Equals(model.returnDate) && (model.isStartDateHalfDay == true || model.isReturnDateHalfDay == true))
+            {
+                model.returnDate = model.returnDate.AddDays(0.5);
+            }
+            else
+            {
+                if (model.isStartDateHalfDay == true && !IsPublicHoliday(model.startDate)) // leave starts at 12pm on startDate
+                {
+                    model.startDate = model.startDate.AddDays(0.5);
+                }
+                if (model.isReturnDateHalfDay == true && !IsPublicHoliday(model.returnDate)) // leave ends at 12pm on returnDate
+                {
+                    model.returnDate = model.returnDate.AddDays(0.5);
+                }
+            }
+        }
+
+        private void LeaveAppAnnual(sLeaveModel model, sleaveBalanceModel lb, sEmployeeModel emp, HttpPostedFileBase file, decimal numOfDays)
         {
             // keeps track of how much credit points should be deducted from each balance type
             decimal deductDIL = 0;
@@ -133,32 +173,38 @@ namespace LeaveSystemMVC.Controllers
             {
                 // uploads the file to App_Data/Documentation
                 string fileName = UploadFile(file);
-                
-                // inserts the data to the database
-                ApplyLeave(model, numOfDays, fileName);
 
-                // sends a notification email to the applicant
-                BackgroundJob.Enqueue(() => SendMail(model, emp));
+                if (TempData["ErrorMessage"] == null)
+                {
+                    // inserts the data to the database
+                    ApplyLeave(model, numOfDays, fileName);
 
-                // sets the notification message to be displayed to the applicant
-                TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
-                TempData["SuccessMessage"] += (deductDIL > 0) ? deductDIL + " day(s) will be deducted from Days In Lieu balance.<br/>" : "";
-                TempData["SuccessMessage"] += (deductAnnual > 0) ? deductAnnual + " day(s) will be deducted from Annual balance.<br/>" : "";
-                TempData["SuccessMessage"] += (addUnpaid > 0) ? addUnpaid + " day(s) will be added to Unpaid balance.<br/>" : "";
+                    // sends a notification email to the applicant
+                    BackgroundJob.Enqueue(() => SendMail(model, emp));
+
+                    // sets the notification message to be displayed to the applicant
+                    TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
+                    TempData["SuccessMessage"] += (deductDIL > 0) ? deductDIL + " day(s) will be deducted from Days In Lieu balance.<br/>" : "";
+                    TempData["SuccessMessage"] += (deductAnnual > 0) ? deductAnnual + " day(s) will be deducted from Annual balance.<br/>" : "";
+                    TempData["SuccessMessage"] += (addUnpaid > 0) ? addUnpaid + " day(s) will be added to Unpaid balance.<br/>" : "";
+                }
+
             }
         }
 
-        private void LeaveAppSick(sLeaveModel model, sleaveBalanceModel lb, sEmployeeModel emp, HttpPostedFileBase file, int numOfDays)
+        private void LeaveAppSick(sLeaveModel model, sleaveBalanceModel lb, sEmployeeModel emp, HttpPostedFileBase file, decimal numOfDays)
         {
             // keeps track of how much credit points should be deducted from each balance type
             decimal deductDIL = 0;
             decimal deductSick = 0;
+            decimal deductAnnual = 0;
             decimal addUnpaid = 0;
 
-            // deduction order: Sick --> DIL --> Unpaid
+            // deduction order: Sick --> DIL --> Annual --> Unpaid
             // checks if the applicant has enough balance in sick, if yes, then simply deduct from sick, 
             // if not, deduct all the balance from sick and the remainder from DIL balance. if DIL balance 
-            // is insufficient, deduct all the balance from DIL and then add the remaining number 
+            // is insufficient, deduct all the balance from DIL and the remainder from annual balance. 
+            // if annual balance is insufficient, deduct all from annual and then add the remaining number 
             // of days to unpaid balance.
             if (lb.sick < numOfDays)
             {
@@ -166,7 +212,15 @@ namespace LeaveSystemMVC.Controllers
                 if (lb.sick + lb.daysInLieu < numOfDays)
                 {
                     deductDIL = lb.daysInLieu;
-                    addUnpaid = numOfDays - deductSick - deductDIL;
+                    if (lb.sick + lb.daysInLieu + lb.annual < numOfDays)
+                    {
+                        deductAnnual = lb.annual;
+                        addUnpaid = numOfDays - deductSick - deductDIL - deductAnnual;
+                    }
+                    else
+                    {
+                        deductAnnual = numOfDays - deductSick - deductDIL;
+                    }
                 }
                 else
                 {
@@ -182,28 +236,34 @@ namespace LeaveSystemMVC.Controllers
             {
                 // uploads the file to App_Data/Documentation
                 string fileName = UploadFile(file);
-                
-                // inserts the data to the database
-                ApplyLeave(model, numOfDays, fileName);
 
-                // sends a notification email to the applicant
-                BackgroundJob.Enqueue(() => SendMail(model, emp));
+                if (TempData["ErrorMessage"] == null)
+                {
+                    // inserts the data to the database
+                    ApplyLeave(model, numOfDays, fileName);
 
-                // sets the notification message to be displayed to the applicant
-                TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
-                TempData["SuccessMessage"] += (deductSick > 0) ? deductSick + " day(s) will be deducted from Sick balance.<br/>" : "";
-                TempData["SuccessMessage"] += (deductDIL > 0) ? deductDIL + " day(s) will be deducted from Days In Lieu balance.<br/>" : "";
-                TempData["SuccessMessage"] += (addUnpaid > 0) ? addUnpaid + " day(s) will be added to Unpaid balance.<br/>" : "";
+                    // sends a notification email to the applicant
+                    BackgroundJob.Enqueue(() => SendMail(model, emp));
+
+                    // sets the notification message to be displayed to the applicant
+                    TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
+                    TempData["SuccessMessage"] += (deductSick > 0) ? deductSick + " day(s) will be deducted from Sick balance.<br/>" : "";
+                    TempData["SuccessMessage"] += (deductDIL > 0) ? deductDIL + " day(s) will be deducted from Days In Lieu balance.<br/>" : "";
+                    TempData["SuccessMessage"] += (deductAnnual > 0) ? deductAnnual + " day(s) will be deducted from Annual balance.<br/>" : "";
+                    TempData["SuccessMessage"] += (addUnpaid > 0) ? addUnpaid + " day(s) will be added to Unpaid balance.<br/>" : "";
+                }
             }
         }
 
         private void LeaveAppMaternity(sLeaveModel model, sleaveBalanceModel lb, sEmployeeModel emp, HttpPostedFileBase file)
         {
-            // Maternity leave includes weekends and public holidays
+            
             TimeSpan diff = model.returnDate - model.startDate;
 
-            // the duration of leave is the number of days between the two dates
-            int numOfDays = diff.Days;
+            int numOfPublicHolidays = GetNumOfPublicHolidays(model.startDate, model.returnDate);
+
+            // Maternity leave includes weekends but excludes public holidays
+            int numOfDays = diff.Days - numOfPublicHolidays;
 
             // keeps track of how much credit points should be deducted from each balance type
             decimal deductMaternity = 0;
@@ -246,36 +306,9 @@ namespace LeaveSystemMVC.Controllers
             {
                 // uploads the file to App_Data/Documentation
                 string fileName = UploadFile(file);
-                    
-                // inserts the data to the database
-                ApplyLeave(model, numOfDays, fileName);
 
-                // sends a notification email to the applicant
-                BackgroundJob.Enqueue(() => SendMail(model, emp));
-
-                // sets the notification message to be displayed to the applicant
-                TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
-                TempData["SuccessMessage"] += (deductMaternity > 0) ? deductMaternity + " day(s) will be deducted from Maternity balance.<br/>" : "";
-                TempData["SuccessMessage"] += (deductDIL > 0) ? deductDIL + " day(s) will be deducted from Days In Lieu balance.<br/>" : "";
-                TempData["SuccessMessage"] += (deductAnnual > 0) ? deductAnnual + " day(s) will be deducted from Annual balance.<br/>" : "";
-                TempData["SuccessMessage"] += (addUnpaid > 0) ? addUnpaid + " day(s) will be added to Unpaid balance.<br/>" : "";
-            }
-        }
-
-        private void LeaveAppCompassionate(sLeaveModel model, sleaveBalanceModel lb, sEmployeeModel emp, HttpPostedFileBase file, int numOfDays)
-        {
-            if (ModelState.IsValid)
-            {
-                // does the user have enough balance?
-                if (lb.compassionate < numOfDays)
+                if (TempData["ErrorMessage"] == null)
                 {
-                    ViewBag.ErrorMessage = "You do not have enough balance.";
-                }
-                else
-                {
-                    // uploads the file to App_Data/Documentation
-                    string fileName = UploadFile(file);
-                   
                     // inserts the data to the database
                     ApplyLeave(model, numOfDays, fileName);
 
@@ -284,6 +317,75 @@ namespace LeaveSystemMVC.Controllers
 
                     // sets the notification message to be displayed to the applicant
                     TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
+                    TempData["SuccessMessage"] += (deductMaternity > 0) ? deductMaternity + " day(s) will be deducted from Maternity balance.<br/>" : "";
+                    TempData["SuccessMessage"] += (deductDIL > 0) ? deductDIL + " day(s) will be deducted from Days In Lieu balance.<br/>" : "";
+                    TempData["SuccessMessage"] += (deductAnnual > 0) ? deductAnnual + " day(s) will be deducted from Annual balance.<br/>" : "";
+                    TempData["SuccessMessage"] += (addUnpaid > 0) ? addUnpaid + " day(s) will be added to Unpaid balance.<br/>" : "";
+                }
+            }
+        }
+
+        private void LeaveAppCompassionate(sLeaveModel model, sleaveBalanceModel lb, sEmployeeModel emp, HttpPostedFileBase file, decimal numOfDays)
+        {
+            decimal maxDIL = GetLeaveBalanceModel().compassionate;
+
+            // keeps track of how much credit points should be deducted from each balance type
+            decimal addCompassionate = 0;
+            decimal deductDIL = 0;
+            decimal deductAnnual = 0;
+            decimal addUnpaid = 0;
+
+            // deduction order: Compassionate --> DIL --> Annual --> Unpaid
+            // checks if the applicant has not exceeded the compassionate limit, if yes, then simply add to compassionate, 
+            // if not, deduct all the balance from DIL and the remainder from Annual balance. if Annual balance 
+            // is insufficient, deduct all the balance from DIL and the remainder from annual balance. 
+            // if annual balance is insufficient, deduct all from annual and then add the remaining number 
+            // of days to unpaid balance.
+            if (maxDIL < numOfDays)
+            {
+                addCompassionate = maxDIL;
+                if (maxDIL + lb.daysInLieu < numOfDays)
+                {
+                    deductDIL = lb.daysInLieu;
+                    if (maxDIL + lb.daysInLieu + lb.annual < numOfDays)
+                    {
+                        deductAnnual = lb.annual;
+                        addUnpaid = numOfDays - maxDIL - deductDIL - deductAnnual;
+                    }
+                    else
+                    {
+                        deductAnnual = numOfDays - maxDIL - deductDIL;
+                    }
+                }
+                else
+                {
+                    deductDIL = numOfDays - maxDIL;
+                }
+            }
+            else
+            {
+                addCompassionate = numOfDays;
+            }
+
+            if (ModelState.IsValid)
+            {
+                // uploads the file to App_Data/Documentation
+                string fileName = UploadFile(file);
+
+                if (TempData["ErrorMessage"] == null)
+                {
+                    // inserts the data to the database
+                    ApplyLeave(model, numOfDays, fileName);
+
+                    // sends a notification email to the applicant
+                    BackgroundJob.Enqueue(() => SendMail(model, emp));
+
+                    // sets the notification message to be displayed to the applicant
+                    TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
+                    TempData["SuccessMessage"] += (addCompassionate > 0) ? addCompassionate + " day(s) will be added to Compassionate balance.<br/>" : "";
+                    TempData["SuccessMessage"] += (deductDIL > 0) ? deductDIL + " day(s) will be deducted from Days In Lieu balance.<br/>" : "";
+                    TempData["SuccessMessage"] += (deductAnnual > 0) ? deductAnnual + " day(s) will be deducted from Annual balance.<br/>" : "";
+                    TempData["SuccessMessage"] += (addUnpaid > 0) ? addUnpaid + " day(s) will be added to Unpaid balance.<br/>" : "";
                 }
             }
         }
@@ -304,15 +406,22 @@ namespace LeaveSystemMVC.Controllers
             // checks if the selected date is a public holiday
             bool isPublicHoliday = IsPublicHoliday(model.startDate);
 
-            // applys for leave ONLY if the date is not a weekend or public holiday,
-            // the leave duration is less than 2:30 hours, and the applicant has enough balance
+            bool isValidHours = false;
+            // checks that the hours are between 6am and 10pm
+            if ((model.shortStartTime.Hours >= 6 && model.shortEndTime.TotalHours <= 21) || (model.shortStartTime.Hours >= 6 && model.shortEndTime.TotalHours == 22 && model.shortEndTime.Minutes == 0))
+                isValidHours = true;
+
+            // applies for leave ONLY if the date is not a weekend or public holiday,
+            // the leave duration is less than 2:30 hours, the applicant has enough balance, and the times are within a valid range
             if (ModelState.IsValid)
             {
-                if (!isWeekend)
+                if (isValidHours)
                 {
-                    if (!isPublicHoliday)
+                    if (!isWeekend)
                     {
-                            if ((decimal)duration/60 <= lb.shortHours)
+                        if (!isPublicHoliday)
+                        {
+                            if ((decimal)duration / 60 <= lb.shortHours)
                             {
                                 // inserts the data to the database
                                 ApplyLeave(model);
@@ -325,31 +434,64 @@ namespace LeaveSystemMVC.Controllers
                             }
                             else
                             {
-                                ViewBag.ErrorMessage = "You do not have enough balance.";
+                                TempData["ErrorMessage"] = "You do not have enough balance.";
                             }
+                        }
+                        else
+                        {
+                            TempData["ErrorMessage"] = "The selected date is a public holiday.";
+                        }
                     }
                     else
                     {
-                        ViewBag.WarningMessage = "The selected date is a public holiday.";
+                        TempData["ErrorMessage"] = "The selected date is a weekend.";
                     }
                 }
                 else
                 {
-                    ViewBag.WarningMessage = "The selected date is a weekend.";
+                    TempData["ErrorMessage"] = "The selected hours are invalid.";
                 }
             }
         }
 
-        private void LeaveAppPilgrimage(sLeaveModel model, sleaveBalanceModel lb, sEmployeeModel emp, HttpPostedFileBase file, int numOfDays)
+        private void LeaveAppPilgrimage(sLeaveModel model, sleaveBalanceModel lb, sEmployeeModel emp, HttpPostedFileBase file, decimal numOfDays)
         {
             if (ModelState.IsValid)
             {
                 // does the user have enough balance?
-                if (lb.pilgrimage > numOfDays)
+                if (lb.pilgrimage < numOfDays)
                 {
+                    TempData["ErrorMessage"] = "You do not have enough balance.";
+                }
+                else
+                { 
                     // uploads the file to App_Data/Documentation
                     string fileName = UploadFile(file);
 
+                    if (TempData["ErrorMessage"] == null)
+                    {
+                        // inserts the data to the database
+                        ApplyLeave(model, numOfDays, fileName);
+
+                        // sends a notification email to the applicant
+                        BackgroundJob.Enqueue(() => SendMail(model, emp));
+
+                        // sets the notification message to be displayed to the applicant
+                        TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
+                    }
+                }
+            }
+        }
+
+        private void LeaveAppUnpaid(sLeaveModel model, sEmployeeModel emp, HttpPostedFileBase file, decimal numOfDays)
+        {
+            if (ModelState.IsValid)
+            {
+                // uploads the file to App_Data/Documentation
+                string fileName = UploadFile(file);
+
+                if (TempData["ErrorMessage"] == null)
+                {
                     // inserts the data to the database
                     ApplyLeave(model, numOfDays, fileName);
 
@@ -359,43 +501,51 @@ namespace LeaveSystemMVC.Controllers
                     // sets the notification message to be displayed to the applicant
                     TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
                 }
-                else
-                {
-                    ViewBag.ErrorMessage = "You do not have enough balance.";
-                }
             }
         }
 
-        private void LeaveAppUnpaid(sLeaveModel model, sEmployeeModel emp, HttpPostedFileBase file, int numOfDays)
+        private void LeaveAppDIL(sLeaveModel model, sEmployeeModel emp, sleaveBalanceModel lb, HttpPostedFileBase file, decimal numOfDays)
         {
             if (ModelState.IsValid)
             {
-                // uploads the file to App_Data/Documentation
-                string fileName = UploadFile(file);
+                // does the user have enough balance?
+                if (lb.daysInLieu < numOfDays)
+                {
+                    TempData["ErrorMessage"] = "You do not have enough balance.";
+                }
+                else
+                {
+                    // uploads the file to App_Data/Documentation
+                    string fileName = UploadFile(file);
 
-                // inserts the data to the database
-                ApplyLeave(model, numOfDays, fileName);
+                    if (TempData["ErrorMessage"] == null)
+                    {
+                        // inserts the data to the database
+                        ApplyLeave(model, numOfDays, fileName);
 
-                // sends a notification email to the applicant
-                BackgroundJob.Enqueue(() => SendMail(model, emp));
+                        // sends a notification email to the applicant
+                        BackgroundJob.Enqueue(() => SendMail(model, emp));
 
-                // sets the notification message to be displayed to the applicant
-                TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
+                        // sets the notification message to be displayed to the applicant
+                        TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
+                    }
+                }
             }
         }
 
         private void SetViewData(sEmployeeModel emp, int leaveID)
         {
-            var leaveTypes = GetAvailableLeaveTypes(emp);
-            ViewData["LeaveTypes"] = leaveTypes;
+            var leaveTypesNames = GetAvailableLeaveTypesAndNames(emp);
+            ViewData["LeaveTypesNames"] = leaveTypesNames;
             ViewData["SelectedLeaveTypeID"] = leaveID;
-            ViewData["SelectedLeaveTypeName"] = leaveTypes[leaveID];
+            ViewData["SelectedLeaveType"] = leaveTypesNames.Item1[leaveID];
             ViewData["ShortHourDuration"] = GetShortHourDurationList();
         }
 
-        private Dictionary<int, string> GetAvailableLeaveTypes(sEmployeeModel emp)
+        private Tuple<Dictionary<int, string>, Dictionary<int, string>> GetAvailableLeaveTypesAndNames(sEmployeeModel emp)
         {
             var leaveTypes = AddDefaultToDictionary(DBLeaveTypeList(), 0, "- Select Leave Type -");
+            var leaveNames = AddDefaultToDictionary(DBLeaveNameList(), 0, "- Select Leave Type -");
 
             // employees on probation can only apply for DIL leave, while off probation employees can apply for any.
             if (emp.onProbation)
@@ -406,41 +556,49 @@ namespace LeaveSystemMVC.Controllers
                     if (!entity.Value.Equals("DIL") && !entity.Value.Equals("Unpaid") && entity.Key != 0)
                     {
                         leaveTypes.Remove(entity.Key);
+                        leaveNames.Remove(entity.Key);
                     }
                 }
             }
             else
             {
+                // only female can apply for maternity leaves
                 if (emp.gender != 'F')
                 {
                     int maternityID = leaveTypes.FirstOrDefault(obj => obj.Value == "Maternity").Key;
                     leaveTypes.Remove(maternityID);
+                    leaveNames.Remove(maternityID);
                 }
 
-                if (!emp.religionID.Equals("Muslim"))
+                // only muslims with an employment period of 5 years or greater can apply for pilgrimage leave
+                int pilgrimageID = leaveTypes.FirstOrDefault(obj => obj.Value == "Pilgrimage").Key;
+                if (!IsPilgrimageAllowed(GetLoggedInID()))
                 {
-                    int pilgrimageID = leaveTypes.FirstOrDefault(obj => obj.Value == "Pilgrimage").Key;
                     leaveTypes.Remove(pilgrimageID);
+                    leaveNames.Remove(pilgrimageID);
                 }
 
-                leaveTypes.Remove(leaveTypes.FirstOrDefault(obj => obj.Value == "DIL").Key);
+                int key = leaveTypes.FirstOrDefault(obj => obj.Value == "DIL").Key;
+                leaveTypes.Remove(key);
+                leaveNames.Remove(key);
             }
 
-            return leaveTypes;
+            return new Tuple<Dictionary<int, string>, Dictionary<int, string>>(leaveTypes, leaveNames);
         }
 
         public void SendMail(sLeaveModel lm, sEmployeeModel emp)
         {
+            int leaveAppID = DBLastIdentity("Leave_Application_ID", "dbo.Leave");
             string message = "";
-            if (lm.shortStartTime == null && lm.shortEndTime == null)
-                message = "Your " + lm.leaveTypeName + " leave application from " + lm.startDate + " to " + lm.returnDate + " has been sent to your line manager for approval.";
+            if (!lm.leaveTypeName.Equals("Short_Hours"))
+                message = "Your " + lm.leaveTypeName + " leave application from " + lm.startDate.ToShortDateString() + " to " + lm.returnDate.ToShortDateString() + " with ID " + leaveAppID + " has been sent to your line manager for approval.";
             else
-                message = "Your " + lm.leaveTypeName + " leave application for " + lm.startDate + " from " + lm.shortStartTime + " to " + lm.shortEndTime + " has been sent to your line manager for approval.";
+                message = "Your " + lm.leaveTypeName + " leave application for " + lm.startDate.ToShortDateString() + " from " + lm.shortStartTime + " to " + lm.shortEndTime + " with ID " + leaveAppID + " has been sent to your line manager for approval.";
 
             MailMessage mail = new MailMessage();
             mail.From = new MailAddress("project_ict333@murdochdubai.ac.ae", "GIMEL LMS");
             mail.To.Add(new MailAddress(emp.email));
-            mail.Subject = "Leave Application Update";
+            mail.Subject = "Leave Application " + leaveAppID + " Update";
             mail.Body = message + Environment.NewLine;
 
             SmtpClient client = new SmtpClient();
@@ -449,19 +607,24 @@ namespace LeaveSystemMVC.Controllers
             try
             {
                 client.Send(mail);
-                System.Diagnostics.Debug.WriteLine("Mail Sent");
             }
             catch (Exception e){}
         }
 
-        private void ApplyLeave(sLeaveModel lm, int numOfDays=0, string fName="")
+        private void ApplyLeave(sLeaveModel lm, decimal numOfDays=0, string fName="")
         {
-            string queryString = "INSERT INTO dbo.Leave (Employee_ID, Documentation, Start_Date, Reporting_Back_Date, Start_Hrs, End_Hrs, Leave_ID, " +
-                "Contact_Outside_UAE, Comment, Flight_Ticket, Total_Leave, Leave_Status_ID) " +
+            int statusID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Pending_LM").Key;
+
+            string queryString = "INSERT INTO dbo.Leave (Employee_ID, Documentation, Start_Date, Reporting_Back_Date, Start_Hrs, End_Hrs, Leave_Type_ID, " +
+                "Contact_Outside_UAE, Comment, Flight_Ticket, Total_Leave, Leave_Status_ID, Personal_Email, Is_Half_Start_Date, Is_Half_Reporting_Back_Date) " +
                 "VALUES ('" + GetLoggedInID() + "','" + fName + "','" + lm.startDate.ToString("yyyy-MM-dd") + "','" + lm.returnDate.ToString("yyyy-MM-dd") + 
                 "','" + lm.shortStartTime.ToString() + "','" + lm.shortEndTime.ToString() + "','" + lm.leaveTypeID + "','" + lm.contactDetails + "','" + 
-                lm.comments + "','" + lm.bookAirTicket + "','" + numOfDays + "','0');";
+                lm.comments + "','" + lm.bookAirTicket + "','" + numOfDays + "','" + statusID + "', '" + lm.email + "', '" + lm.isStartDateHalfDay + "', '" + lm.isReturnDateHalfDay + "');";
             DBExecuteQuery(queryString);
+
+            string quditString = "INSERT INTO dbo.Audit_Leave_Application (Leave_Application_ID, Column_Name, Value_After, Created_By, Created_On) " +
+                  "VALUES('" + DBLastIdentity("Leave_Application_ID", "dbo.Leave") + "', 'Leave_Status_ID', '" + statusID + "','" + GetLoggedInID() + "','" + DateTime.Today.ToString("yyyy-MM-dd") + "')";
+            DBExecuteQuery(quditString);
         }
 
         private string UploadFile(HttpPostedFileBase file)
@@ -476,14 +639,25 @@ namespace LeaveSystemMVC.Controllers
                     // extract only the filename
                     fileName = Path.GetFileName(file.FileName);
                     string fName = GetNextApplicationID() + "-" + fileName;
-
-                    // store the file inside ~/App_Data/Documentation folder
-                    var path = Path.Combine(Server.MapPath("~/App_Data/Documentation"), fName);
-                    file.SaveAs(path);
+                    string ext = Path.GetExtension(file.FileName);
+                    if (ext != ".doc" && ext != ".docx" && ext != ".pdf" && ext != ".txt" && ext != ".rtf" &&
+                        ext != ".png" && ext != ".jpg" && ext != ".jpeg" && ext != ".bmp" &&
+                        ext != ".csv" && ext != ".xls" && ext != ".xlsx" && ext != ".odf")
+                    {
+                        TempData["ErrorMEssage"] = "You have selected an invalid file type. " +
+                            "<br /> Please upload one of the following file types; <b>.doc</b>, <b>.docx</b>, <b>.pdf</b>, <b>.txt</b>, <b>.rtf</b>, <b>.png</b>" +
+                            ", <b>.jpg</b>, <b>.jpg</b>, <b>.jpeg</b>, <b>.bmp</b>, <b>.csv</b>, <b>.xls</b>, <b>.xlsx</b> or <b>.odf</b>";
+                    }
+                    else
+                    {
+                        // store the file inside ~/App_Data/Documentation folder
+                        var path = Path.Combine(Server.MapPath("~/App_Data/Documentation"), fName);
+                        file.SaveAs(path);
+                    }
                 }
                 catch (Exception ex)
                 {
-                    ViewBag.ErrorMessage = "ERROR:" + ex.Message.ToString();
+                    TempData["ErrorMEssage"] = "ERROR:" + ex.Message.ToString();
                 }
             }
             return fileName;
@@ -514,13 +688,25 @@ namespace LeaveSystemMVC.Controllers
             return nextApplicationID+1;
         }
 
-        private void CompareDates(DateTime sDate, DateTime rDate)
+        private void CompareDates(DateTime sDate, DateTime rDate, sLeaveModel model)
         {
             int result = DateTime.Compare(sDate, rDate);
             if (result > 0)
+            {
                 ModelState.AddModelError("endDate", "Reporting Back date cannot be earlier than Start Date.");
-            else if (result == 0)
+                TempData["ErrorMessage"] = "Reporting Back date cannot be earlier than Start Date.";
+            }
+            else if (result == 0 && ((model.isStartDateHalfDay == false && model.isReturnDateHalfDay == false))) //zero days is only an error if no checkboxes are selected
+            {
                 ModelState.AddModelError("endDate", "Start and Reporting Back dates cannot be the same.");
+                TempData["ErrorMessage"] = "Start and Reporting Back dates cannot be the same.";
+            }
+            if (sDate.Year < DateTime.Now.Year)
+                ModelState.AddModelError("startDate", "Starting year cannot be before current year.");
+
+            TimeSpan diff = rDate - sDate;
+            if(diff.Days >= 1000)
+                ModelState.AddModelError("startDate", "Amount of leave exceeds maximum limit.");
         }
 
         private void CompareHours(TimeSpan sTime, TimeSpan eTime)
@@ -532,14 +718,13 @@ namespace LeaveSystemMVC.Controllers
                 ModelState.AddModelError("shortEndTime", "Start and End Time cannot be the same.");
         }
 
-        private int GetNumOfDays(DateTime sDate, DateTime eDate)
+        private decimal GetNumOfDays(DateTime sDate, DateTime eDate)
         {
-            // @TODO: Test for all cases
             bool isWeekend = false;
             bool isPublicHoliday = false;
             TimeSpan diff = eDate - sDate;
-            int numOfDays = diff.Days;
-            int fullNumOfDays = numOfDays;
+            decimal numOfDays = diff.Days + (diff.Hours / (decimal)24.0); //must consider the hours too e.g. 0.5 hours of leave
+            decimal fullNumOfDays = numOfDays;
 
             for (var i = 0; i < fullNumOfDays; i++)
             {
@@ -571,7 +756,7 @@ namespace LeaveSystemMVC.Controllers
                         DateTime day = (DateTime)reader["Date"];
                         for (var i = 0; i < fullNumOfDays; i++)
                         {
-                            if (sDate.AddDays(i).Equals(day))
+                            if (((sDate.AddDays(i)).Date).Equals(day.Date)) //do not use the time portion for comparison
                             {
                                 numOfDays--;
                                 isPublicHoliday = true;
@@ -582,14 +767,14 @@ namespace LeaveSystemMVC.Controllers
                 connection.Close();
             }
 
-            if (numOfDays == 0 && isWeekend)
+            if (numOfDays <= 0 && isWeekend) //leave can go negative if numOfDays was 0.5
             {
                 ViewBag.WarningMessage = "The selected date(s) is/are weekend(s).";
                 ModelState.AddModelError("startDate", " ");
             }
 
 
-            if (numOfDays == 0 && isPublicHoliday)
+            if (numOfDays <= 0 && isPublicHoliday) //leave can go negative if numOfDays was 0.5
             {
                 ViewBag.WarningMessage = "The selected date(s) is/are public holiday(s).";
                 ModelState.AddModelError("startDate", " ");
@@ -598,11 +783,15 @@ namespace LeaveSystemMVC.Controllers
             return numOfDays;
         }
 
-        private bool IsPublicHoliday(DateTime date)
+        private int GetNumOfPublicHolidays(DateTime sDate, DateTime eDate)
         {
-            bool isPublicHoliday = false;
+            TimeSpan diff = eDate - sDate;
+            int numOfDays = diff.Days;
+            int fullNumOfDays = numOfDays;
+            int numOfPublicHolidays = 0;
+
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "SELECT * FROM dbo.Public_Holiday WHERE Date = '" + date.ToString("yyyy-MM-dd") + "'";
+            string queryString = "SELECT * FROM dbo.Public_Holiday WHERE Date BETWEEN'" + sDate.ToString("yyyy-MM-dd") + "' AND '" + eDate.ToString("yyyy-MM-dd") + "'";
 
             using (var connection = new SqlConnection(connectionString))
             {
@@ -614,26 +803,32 @@ namespace LeaveSystemMVC.Controllers
                     while (reader.Read())
                     {
                         DateTime day = (DateTime)reader["Date"];
-                        isPublicHoliday = date.Equals(day) ? true : false;
+                        for (var i = 0; i < fullNumOfDays; i++)
+                        {
+                            if (sDate.AddDays(i).Equals(day))
+                            {
+                                numOfPublicHolidays++;
+                            }
+                        }
                     }
                 }
                 connection.Close();
             }
-
-            return isPublicHoliday;
-        }
+            return numOfPublicHolidays;
+        }       
 
         private Dictionary<int, string> GetShortHourDurationList()
         {
             var durationList = new Dictionary<int, string>
             {
-                { 30, "0:30 hrs" },
-                { 60, "1:00 hrs" },
+                { 30, "0:30 mins" },
+                { 60, "1:00 hr" },
                 { 90, "1:30 hrs" },
                 { 120, "2:00 hrs" },
                 { 150, "2:30 hrs" }
             };
             return durationList;
         }
+
     }
 }

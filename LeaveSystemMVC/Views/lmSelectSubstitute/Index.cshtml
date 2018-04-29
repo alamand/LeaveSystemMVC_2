@@ -1,60 +1,162 @@
-﻿
-<!--LM Select Substitute -->
-
-@model LeaveSystemMVC.Models.selectSubstitute
+﻿@model List<LeaveSystemMVC.Models.lmReporting>
 @Html.Partial("_LeftMenu")
-<div class="col-md-8">
-<h4>Select Substitute Line Manager</h4>
-    @using (Html.BeginForm())
+@{ ViewBag.Title = "Select Substitute"; }
+
+
+<div class="col-md-10">
+    <h3>@ViewBag.Title</h3>
+    <hr />
+    @Html.Partial("../_Message")
+    @{
+        var loggedID = ViewData["LoggedID"] as int?;
+        var selectableSubs = ViewData["SelectableSubstitute"] as Dictionary<int, Dictionary<int, String>>;
+        var empNames = ViewData["EmployeeNames"] as Dictionary<int, string>;
+        var list = Model.Select(m => new { m.reportToID, m.fromID, m.toID, m.isActive }).Distinct().ToList();
+    }
+
+    @for (int i = 0; i < list.Count; i++)
     {
-        @Html.AntiForgeryToken()
-
-        <div class="col-md-10">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <div class="text-muted bootstrap-admin-box-title">Application Details</div>
+        if (list[i].isActive == null)
+        {
+            List<LeaveSystemMVC.Models.lmReporting> myList = new List<LeaveSystemMVC.Models.lmReporting>(Model.Where(x => x.reportToID == list[i].reportToID).ToList());
+            using (Html.BeginForm("Promote", "lmSelectSubstitute", new { reportToID = myList[0].reportToID, subLevel = ((myList[0].subLevel != null) ? myList[0].subLevel : 0) }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                <div class="row">
+                    <div class="col-md-4">
+                        @Html.DisplayName("Original line manager: " + empNames[list[i].reportToID])
+                    </div>
                 </div>
-                <div class="bootstrap-admin-panel-content">
-                    <div class="form-horizontal">
-
-                        <div class="row">
-                            <div class="col-md-7" style="white-space:nowrap">
-
-                                <!--Displays a list of members in  the given department in the database-->
-
-                                @Html.LabelFor(model => model.substituteStaffID, "Select a Substitute", htmlAttributes: new { @class = "control-label col-md-2" })
-                            </div>
-                                        <div class="col-md-4">
-                                            @Html.DropDownListFor(model => model.substituteStaffID, new SelectList(Model.substituteListOptions, "Key", "Value"))
-                                            @Html.ValidationMessageFor(model => model.substituteStaffID, "", new { @class = "text-danger" })
-                                        </div>
-                                    </div>
-                               <hr />
-
-                        <div class="row">
-                            <div class="col-md-5" style="white-space:nowrap">
-                                <!--To get LM Authority Back -->
-                                @Html.LabelFor(model => model.toTransferBack, "Transfer Authority Back", htmlAttributes: new { @class = "control-label col-md-2" })
-                            </div>
-
-                            <div class="checkbox col-md-4">
-                                @Html.EditorFor(model => model.toTransferBack)
-                            </div>
+                <br />
+                <div class="row">
+                    <div class="col-md-offset-1 col-md-4">
+                        <div class="form-horizontal">
+                            @Html.DropDownList(myList[0].reportToID.ToString(), new SelectList(selectableSubs[myList[0].reportToID], "Key", "Value"), new { @class = "form-control" })
                         </div>
-                        <br /><br />
-                        <div class="form-group">
-                            <div class="col-md-offset-4 col-md-10">
-                                <input type="submit" value="Save" class="btn btn-default" />
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" value="Promote" class="btn btn-info col-md-12">
+                            <span class="glyphicon glyphicon-education" aria-hidden="true"></span> Nominate
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" class="" href="#@myList[0].reportToID.ToString()">Subordinate(s)</a>
+                                </h4>
+                            </div>
+                            <div id="@myList[0].reportToID.ToString()" class="panel-collapse collapse">
+                                <ul class="list-group">
+                                    @foreach (var subordinates in myList)
+                                    {
+                                        <li class="list-group-item">@Html.DisplayName(subordinates.employeeName)</li>
+                                    }
+                                </ul>
                             </div>
                         </div>
                     </div>
+                </div>
+                <hr />
+            }
+
+
+        }
+
+        if ((list[i].isActive == false && list[i].toID == loggedID) || (list[i].fromID == loggedID && list[i].reportToID == loggedID))
+        {
+            List<LeaveSystemMVC.Models.lmReporting> demoteList = new List<LeaveSystemMVC.Models.lmReporting>(Model.Where(x => x.reportToID == list[i].reportToID && x.isActive == list[i].isActive).ToList());
+            <div class="row">
+                <div class="col-md-4">
+                    @Html.DisplayName("Original line manager: " + empNames[list[i].reportToID])
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-md-offset-1 col-md-4">
+                    @Html.DisplayName("Current line manager: " + empNames[(int)(list.Where(m => m.reportToID == list[i].reportToID && m.isActive == true).ToList()[0].toID)])
+                </div>
+                <div class="col-md-2">
+                    <a href="@Url.Action("Demote", "lmSelectSubstitute", new { reportToID = demoteList[0].reportToID, subLevel = demoteList[0].subLevel }, null)" class="btn btn-warning col-md-12">
+                        <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>
+                        Withdraw
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" class="" href="#@demoteList[0].reportToID.ToString()">Subordinate(s)</a>
+                            </h4>
+                        </div>
+                        <div id="@demoteList[0].reportToID.ToString()" class="panel-collapse collapse">
+                            <ul class="list-group">
+                                @foreach (var subordinates in demoteList)
+                                {
+                                    <li class="list-group-item">@Html.DisplayName(subordinates.employeeName)</li>
+                                }
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
-                    }
+            <hr />
+        }
+
+        if (list[i].isActive == true && list[i].toID == loggedID)
+        {
+            List<LeaveSystemMVC.Models.lmReporting> promoteList = new List<LeaveSystemMVC.Models.lmReporting>(Model.Where(x => x.reportToID == list[i].reportToID && x.isActive == list[i].isActive).ToList());
+            using (Html.BeginForm("Promote", "lmSelectSubstitute", new { reportToID = promoteList[0].reportToID, subLevel = ((promoteList[0].subLevel != null) ? promoteList[0].subLevel : 0) }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                <div class="row">
+                    <div class="col-md-4">
+                        @Html.DisplayName("Original line manager: " + empNames[list[i].reportToID])
+                    </div>
                 </div>
+                <br />
+                <div class="row">
+                    <div class="col-md-offset-1 col-md-4">
+                        <div class="form-horizontal">
+                            @Html.DropDownList(promoteList[0].reportToID.ToString(), new SelectList(selectableSubs[promoteList[0].reportToID], "Key", "Value"), new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" value="Promote" class="btn btn-info col-md-12">
+                            <span class="glyphicon glyphicon-education" aria-hidden="true"></span> Nominate
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" class="" href="#@promoteList[0].reportToID.ToString()">Subordinate(s)</a>
+                                </h4>
+                            </div>
+                            <div id="@promoteList[0].reportToID.ToString()" class="panel-collapse collapse">
+                                <ul class="list-group">
+                                    @foreach (var subordinates in promoteList)
+                                    {
+                                        <li class="list-group-item">@Html.DisplayName(subordinates.employeeName)</li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+            }
+        }
+    }
+</div>
 
 
-                @section Scripts {
-                    @Scripts.Render("~/bundles/jqueryval")
-                }
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+         function SelectionChanged()
+         {
+              var url = '@Html.Raw(Url.Action("MyAction", "controllerName", new { param1=5, param2=2 }))';
+              window.location = url;
+         }
+    </script>
+}

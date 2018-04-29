@@ -6,42 +6,50 @@
     <h3>@ViewBag.title</h3>
     <hr />
     @Html.Partial("../_Message")
-
     <p>@Html.ActionLink("Create a new Holiday", "CreateHoliday")</p>
     @{
         var yearList = ViewData["YearList"] as Dictionary<int, string>;
-        var selectedYear = @ViewData["SelectedYear"];
+        var selectedYear = ViewData["SelectedYear"];
     }
-    @using (Html.BeginForm("FilterListByYear", "hrHolidaysCalender", FormMethod.Post))
+    @if (yearList.Count != 0)
     {
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <div class="form-horizontal">
-            <div class="row ">
-                <div class="col-md-2">
-                    @Html.Label("Filter by Year:", htmlAttributes: new { @class = "control-label" })
-                </div>
-                <div class="col-md-2">
-                    <div class="form-horizontal">
-                        @Html.DropDownList("selectedYear", new SelectList(yearList, "Key", "Value"), new { @selected = selectedYear, @class = "form-control", @onchange = "this.form.submit();" })
+        using (Html.BeginForm("FilterListByYear", "hrHolidaysCalender", FormMethod.Post))
+        {
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="form-horizontal">
+                <div class="row ">
+                    <div class="col-md-2">
+                        @Html.Label("Filter by Year:", htmlAttributes: new { @class = "control-label" })
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-horizontal">
+                            @Html.DropDownList("selectedYear", new SelectList(yearList, "Key", "Value"), new { @selected = selectedYear, @class = "form-control", @onchange = "this.form.submit();" })
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <br />
+            <br />
+        }
     }
     <div class="col-md-8">
         <div class="row">
             <table class="table">
                 <tr>
                     <th style="text-align:center">@Html.DisplayNameFor(model => model.holidayName)</th>
-                    <th style="text-align:center">@Html.DisplayNameFor(model => model.startDate)</th>
+                    <th style="text-align:center">@Html.DisplayNameFor(model => model.date)</th>
+                    <th style="text-align:center">@Html.DisplayName("Delete")</th>
                 </tr>
                 @foreach (var item in Model)
                 {
-                    <tr style="border:1px solid black;">
-                        <td style="border:1px solid black;">@Html.DisplayFor(modelItem => item.holidayName) </td>
-                        <td style="border:1px solid black; text-align:center">
-                            @Html.DisplayFor(modelItem => item.startDate.Year)/@Html.DisplayFor(modelItem => item.startDate.Month)/@Html.DisplayFor(modelItem => item.startDate.Day)
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => item.holidayName) </td>
+                        <td style="text-align:center">
+                            @Html.DisplayFor(modelItem => item.date.Year)/@Html.DisplayFor(modelItem => item.date.Month)/@Html.DisplayFor(modelItem => item.date.Day)
+                        </td>
+                        <td style="text-align:center">
+                            <a href="@Url.Action("Remove", "hrHolidaysCalender", new { holidayID = item.holidayID }, null)">
+                                <span class="glyphicon glyphicon-remove" aria-hidden="true" style="color:red"></span>
+                            </a>
                         </td>
                     </tr>
                 }

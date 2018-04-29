@@ -60,7 +60,9 @@ namespace LeaveSystemMVC.Controllers
 
         private string GetFilteredQuery(int deptID, int accStat, string search, string order)
         {
-            string queryString = "SELECT Employee_ID FROM dbo.Employee WHERE 1=1 ";
+            int staffRoleID = DBRoleList().FirstOrDefault(obj => obj.Value == "Staff").Key;
+            string queryString = "SELECT Employee.Employee_ID FROM dbo.Employee, dbo.Employee_Role " +
+                "WHERE Employee.Employee_ID = Employee_Role.Employee_ID AND Employee_Role.Role_ID = " + staffRoleID;
 
             // adds a filter query if a department is selected from the dropdown, note that 0 represents All Departments
             if (deptID > 0)
@@ -77,9 +79,8 @@ namespace LeaveSystemMVC.Controllers
             // adds a filter query if search box contains character(s), note that 0 length means the search box is empty
             if (search.Length > 0)
             {
-                queryString += " AND (Employee_ID LIKE '%" + search + "%' " +
-                    "OR First_Name LIKE '%" + search + "%' " +
-                    "OR Last_Name LIKE '%" + search + "%')";
+                queryString += " AND (Employee.Employee_ID LIKE '%" + search + "%' " +
+                    "OR CONCAT(First_Name, ' ', Last_Name) LIKE '%" + search + "%')";
             }
 
             if (order.Length > 0)
@@ -104,7 +105,6 @@ namespace LeaveSystemMVC.Controllers
             return orderByList;
         }
 
-
         public ActionResult Edit(int empID)
         {
             var emp = GetEmployeeModel(empID);
@@ -122,22 +122,14 @@ namespace LeaveSystemMVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                DBUpdateBalance(lb.empId, lb.annualID, lb.annual);
-                DBUpdateComment(lb.empId, lb.annualID, lb.editCommentAnnual);
-                DBUpdateBalance(lb.empId, lb.maternityID, lb.maternity);
-                DBUpdateComment(lb.empId, lb.maternityID, lb.editCommentMaternity);
-                DBUpdateBalance(lb.empId, lb.sickID, lb.sick);
-                DBUpdateComment(lb.empId, lb.sickID, lb.editCommentSick);
-                DBUpdateBalance(lb.empId, lb.compassionateID, lb.compassionate);
-                DBUpdateComment(lb.empId, lb.compassionateID, lb.editCommentCompassionate);
-                DBUpdateBalance(lb.empId, lb.daysInLieuID, lb.daysInLieu);
-                DBUpdateComment(lb.empId, lb.daysInLieuID, lb.editCommentDIL);
-                DBUpdateBalance(lb.empId, lb.shortHoursID, lb.shortHours);
-                DBUpdateComment(lb.empId, lb.shortHoursID, lb.editCommentShortHours);
-                DBUpdateBalance(lb.empId, lb.pilgrimageID, lb.pilgrimage);
-                DBUpdateComment(lb.empId, lb.pilgrimageID, lb.editCommentPilgrimage);
-                DBUpdateBalance(lb.empId, lb.unpaidID, lb.unpaid);
-                DBUpdateComment(lb.empId, lb.unpaidID, lb.editCommentUnpaid);
+                DBUpdateBalance(lb.empId, lb.annualID, lb.annual, lb.editCommentAnnual);
+                DBUpdateBalance(lb.empId, lb.maternityID, lb.maternity, lb.editCommentMaternity);
+                DBUpdateBalance(lb.empId, lb.sickID, lb.sick, lb.editCommentSick);
+                DBUpdateBalance(lb.empId, lb.compassionateID, lb.compassionate, lb.editCommentCompassionate);
+                DBUpdateBalance(lb.empId, lb.daysInLieuID, lb.daysInLieu, lb.editCommentDIL);
+                DBUpdateBalance(lb.empId, lb.shortHoursID, lb.shortHours, lb.editCommentShortHours);
+                DBUpdateBalance(lb.empId, lb.pilgrimageID, lb.pilgrimage, lb.editCommentPilgrimage);
+                DBUpdateBalance(lb.empId, lb.unpaidID, lb.unpaid, lb.editCommentUnpaid);
                 ViewBag.SuccessMessage = " The information has been updated successfully.";
             }
             else
@@ -148,21 +140,62 @@ namespace LeaveSystemMVC.Controllers
             return Edit(lb.empId);
         }
 
-        private void DBUpdateBalance(int employeeID, int leaveID, decimal balance)
+        private void DBUpdateBalance(int employeeID, int typeID, decimal balance, string comment)
         {
-            string insertQuery = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_ID, Balance) VALUES('" + employeeID + "','" + leaveID + "','" + balance + "')";
-            string updateQuery = "UPDATE dbo.Leave_Balance SET Balance = '" + balance + "' WHERE Leave_ID = '" + leaveID + "' AND Employee_ID = '" + employeeID + "'";
-            string queryString = (!IsLeaveBalanceExists(employeeID, leaveID) && balance > 0) ? insertQuery : updateQuery;
+            Boolean balanceExists = IsLeaveBalanceExists(employeeID, typeID);
+            Tuple<int, decimal> oldBalance = (balanceExists) ? DBGetBalanceBefore(employeeID, typeID) : null ;
+            string insertQuery = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_Type_ID, Balance, Last_Edit_Comment) VALUES('" + employeeID + "','" + typeID + "','" + balance + "','" + comment + "')";
+            string updateQuery = "UPDATE dbo.Leave_Balance SET Balance = '" + balance + "', Last_Edit_Comment = '" + comment + "' WHERE Leave_Type_ID = '" + typeID + "' AND Employee_ID = '" + employeeID + "'";
+            string queryString = (!balanceExists && balance > 0) ? insertQuery : updateQuery;
             DBExecuteQuery(queryString);
+
+            if (oldBalance == null)
+            {
+                if (balance > 0)
+                {
+                    Tuple<int, decimal> createdBalance = DBGetBalanceBefore(employeeID, typeID);
+                    queryString = "INSERT INTO dbo.Audit_Leave_Balance (Leave_Balance_ID, Column_Name, Value_After, Created_By, Created_On, Comment) " +
+                        "VALUES('" + createdBalance.Item1 + "', 'Balance' ,'" + createdBalance.Item2 + "','" + GetLoggedInID() + "','" + DateTime.Today.ToString("yyyy-MM-dd") + "','" + comment + "')";
+                    DBExecuteQuery(queryString);
+                }
+            }
+            else
+            {
+                if (oldBalance.Item2 != balance)
+                {
+                    queryString = "INSERT INTO dbo.Audit_Leave_Balance (Leave_Balance_ID, Column_Name, Value_Before, Value_After, Modified_By, Modified_On, Comment) " +
+                                      "VALUES('" + oldBalance.Item1 + "', 'Balance' ,'" + oldBalance.Item2 + "','" + balance + "','" + GetLoggedInID() + "','" + DateTime.Today.ToString("yyyy-MM-dd") + "','" + comment + "')";
+                    DBExecuteQuery(queryString);
+                }
+            }
         }
 
-        private void DBUpdateComment(int employeeID, int leaveID, String comment)
+
+        private Tuple<int, decimal> DBGetBalanceBefore(int empID, int typeID)
         {
-            if(comment != null)
+            var queryString = "SELECT Leave_Balance_ID, Balance FROM dbo.Leave_Balance WHERE Employee_ID = '" + empID + "' AND Leave_Type_ID = '" + typeID + "'";
+            Tuple<int, decimal> leaveBalance = null;
+
+
+            string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            using (var connection = new SqlConnection(connectionString))
             {
-                string updateQuery = "UPDATE dbo.Leave_Balance SET Last_Edit_Comment = '" + comment + "' WHERE Leave_ID = '" + leaveID + "' AND Employee_ID = '" + employeeID + "'";
-                DBExecuteQuery(updateQuery);
-            }            
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        int balanceID = (int)reader["Leave_Balance_ID"];
+                        decimal balance = (decimal)reader["Balance"];
+                        leaveBalance = new Tuple<int, decimal>(balanceID, balance);
+                    }
+                }
+                connection.Close();
+            }
+
+            return leaveBalance;
         }
+
     }
 }

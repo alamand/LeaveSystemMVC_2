@@ -27,11 +27,12 @@ namespace LeaveSystemMVC.Models
         [StringLength(100, MinimumLength = 1, ErrorMessage = "User Name is too long")]
         public string userName { get; set; }
 
+        [StringLength(20, MinimumLength = 1, ErrorMessage = "User Name is too long")]
         public string password { get; set; }
 
         [Display(Name = "Designation")]
         [Required(ErrorMessage = "Designation is required.")]
-        [StringLength(100, MinimumLength = 0, ErrorMessage = "Designation is too long.")]
+        [StringLength(50, MinimumLength = 0, ErrorMessage = "Designation is too long.")]
         public string designation{ get; set; }
 
         [Display(Name = "Email address")]
@@ -57,6 +58,7 @@ namespace LeaveSystemMVC.Models
         public DateTime empStartDate { get; set; }
 
         [Display(Name = "End Date")]
+        [Required(ErrorMessage = "End Date is required.")]
         [DataType(DataType.Date)]
         public DateTime empEndDate { get; set; }
 

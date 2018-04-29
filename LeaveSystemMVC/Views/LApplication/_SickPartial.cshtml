@@ -10,7 +10,13 @@
             @Html.TextBoxFor(model => model.startDate, new { @class = "form-control", type = "date" })
             @Html.ValidationMessageFor(model => model.startDate, "", new { @class = "text-danger" })
         </div>
-
+        <div class="col-md-2" style="white-space:nowrap">
+            @Html.CheckBoxFor(model => model.isStartDateHalfDay)
+            @Html.LabelFor(model => model.isStartDateHalfDay, "Half Day", htmlAttributes: new { @class = "control-label col-md-0" })
+        </div>
+    </div>
+    <hr />
+    <div class="row">
         <div class="col-xs-2" style="white-space:nowrap">
             @Html.LabelFor(model => model.returnDate, "Reporting Back", htmlAttributes: new { @class = "control-label col-md-3" })
         </div>
@@ -18,8 +24,11 @@
             @Html.TextBoxFor(model => model.returnDate, new { @class = "form-control", type = "date" })
             @Html.ValidationMessageFor(model => model.returnDate, "", new { @class = "text-danger" })
         </div>
+        <div class="col-md-2" style="white-space:nowrap">
+            @Html.CheckBoxFor(model => model.isReturnDateHalfDay)
+            @Html.LabelFor(model => model.isReturnDateHalfDay, "Half Day", htmlAttributes: new { @class = "control-label col-md-0" })
+        </div>
     </div>
-</div>
 <hr />
 
 <!--comment box-->
@@ -37,11 +46,21 @@
 
 <!--support docs-->
 <div class="row">
-    <div class="col-md-3" style="white-space:nowrap">
-        @Html.LabelFor(model => model.documentation, "Supporting Documents", htmlAttributes: new { @class = "control-label col-md-4" })
+    <div class="col-md-2" style="white-space:nowrap">
+        @Html.LabelFor(model => model.documentation, htmlAttributes: new { @class = "control-label col-md-4" })
     </div>
 
-    <div class="col-md-6">
-        @Html.TextBox("file", "", new { type = "file" })
+    <div class="col-md-5">
+        <div class="form-control" style="padding-top: 0px;">
+            <div class="form-group">
+                <input type="file" name="file" class="file" style=" visibility: hidden; position: absolute;">
+                <div class="input-group">
+                    <input type="text" class="form-control" disabled placeholder="Upload Document">
+                    <span class="input-group-btn">
+                        <button class="browse btn btn-primary input-small" type="button"><i class="glyphicon glyphicon-search"></i></button>
+                    </span>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

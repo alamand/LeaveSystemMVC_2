@@ -7,16 +7,16 @@
     <hr />
     @Html.Partial("../_Message")
     @{
-        var leaveTypes = ViewData["LeaveTypes"] as Dictionary<int, string>;
+        var leaveTypesNames = ViewData["LeaveTypesNames"] as Tuple<Dictionary<int, string>, Dictionary<int, string>>;
         var selectedLeaveTypeID = (int)ViewData["SelectedLeaveTypeID"];
-        var selectedLeaveTypeName = (string)ViewData["SelectedLeaveTypeName"];
+        var selectedLeaveType = (string)ViewData["SelectedLeaveType"];
     }
 
     <div class="panel panel-default">
         <div class="panel-heading">
             <div class="text-muted bootstrap-admin-box-title">Leave Details</div>
         </div>
-              
+
         <div class="bootstrap-admin-panel-content">
             <div class="form-horizontal">
                 @using (Html.BeginForm("Select", "LApplication", FormMethod.Post))
@@ -29,7 +29,7 @@
                         </div>
 
                         <div class="col-md-4">
-                            @Html.DropDownList("selectedLeaveTypeID", new SelectList(leaveTypes, "Key", "Value"), new { @selected = selectedLeaveTypeID, @class = "form-control", @onchange = "this.form.submit();" })
+                            @Html.DropDownList("selectedLeaveTypeID", new SelectList(leaveTypesNames.Item2, "Key", "Value"), new { @selected = selectedLeaveTypeID, @class = "form-control", @onchange = "this.form.submit();" })
                         </div>
                     </div>
                 }
@@ -38,18 +38,25 @@
                 {
                     @Html.AntiForgeryToken()
                     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                        
+
                     if (selectedLeaveTypeID != 0)
                     {
                         <hr />
                         @Html.HiddenFor(model => model.leaveTypeID, new { @Value = selectedLeaveTypeID })
-                        @Html.HiddenFor(model => model.leaveTypeName, new { @Value = leaveTypes[selectedLeaveTypeID] })
-                        @Html.Partial("_" + selectedLeaveTypeName + "Partial", Model)
+                        @Html.HiddenFor(model => model.leaveTypeName, new { @Value = leaveTypesNames.Item1[selectedLeaveTypeID] })
+                        @Html.Partial("_" + selectedLeaveType + "Partial", Model)
 
                         <hr />
                         <div class="form-group">
-                            <div class="col-md-offset-5 col-md-10">
-                                <input type="submit" value="Create" class="btn btn-default" />
+                            <div class="col-md-offset-3">
+                                <a href="@Url.Action("Index", "LApplication")" class="btn btn-warning col-md-3">
+                                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                                    Cancel
+                                </a>
+
+                                <button type="submit" value="Save" class="btn btn-success col-md-offset-1 col-md-3">
+                                    <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span> Submit
+                                </button>
                             </div>
                         </div>
                     }
@@ -61,4 +68,13 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(document).on('click', '.browse', function(){
+          var file = $(this).parent().parent().parent().find('.file');
+          file.trigger('click');
+        });
+        $(document).on('change', '.file', function(){
+          $(this).parent().find('.form-control').val($(this).val().replace(/C:\\fakepath\\/i, ''));
+        });
+    </script>
 }

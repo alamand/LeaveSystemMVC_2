@@ -15,64 +15,73 @@ namespace LeaveSystemMVC.Controllers
         // GET: hrCreditLeaveBalance
         public ActionResult Index()
         {
-            return View();
+            var allEmployees = GetEmployeeModel();
+            Dictionary<int, string> employees = new Dictionary<int, string>();
+            List<sleaveBalanceModel> empBalance = new List<sleaveBalanceModel>();
+            foreach (var emp in allEmployees)
+            {
+                if (emp.accountStatus == true && emp.onProbation == false && emp.isStaff)
+                {
+                    empBalance.Add(GetLeaveBalanceModel((int)emp.staffID));
+                    employees.Add((int)emp.staffID, emp.firstName + " " + emp.lastName);
+                }
+            }
+
+            ViewBag.employeeList = employees;
+            ViewBag.defaultBalance = GetLeaveBalanceModel();
+            ViewBag.SuccessMessage = TempData["SuccessMessage"];
+            return View(empBalance);
         }
 
         [HttpPost]
-        public ActionResult Credit()
+        public ActionResult Index(List<sleaveBalanceModel> model)
         {
-            var lb = GetLeaveBalanceModel();
-            if (ModelState.IsValid)
-            {
-                CreditBalance(lb.compassionateID, lb.compassionate);
-                CreditBalance(lb.maternityID, lb.maternity);
-                CreditBalance(lb.shortHoursID, lb.shortHours);
-                CreditBalance(lb.sickID, lb.sick);
-                CreditBalance(lb.unpaidID, lb.unpaid);
-                CreditAnnual(lb.annualID, lb.annual);
-                //CreditPilgrimage();
+            sleaveBalanceModel defaultBal = GetLeaveBalanceModel();
 
-                Response.Write("<script> alert('Success. The balance has been reset.');</script>");
+            foreach (var empBal in model)
+            {
+                UpdateLeaveBalance(empBal.empId, empBal.daysInLieuID, empBal.daysInLieu);
+                UpdateLeaveBalance(empBal.empId, empBal.annualID, empBal.annual);
+                UpdateLeaveBalance(empBal.empId, defaultBal.sickID, defaultBal.sick);
+
+                if (GetEmployeeModel(empBal.empId).gender == 'F')
+                    UpdateLeaveBalance(empBal.empId, defaultBal.maternityID, defaultBal.maternity);
             }
 
-            return View();
+            TempData["SuccessMessage"] = "Leave balances have been updated.";
+
+            return RedirectToAction("Index");
         }
 
-        public void CreditBalance(int leaveID, decimal duration)
+        private void UpdateLeaveBalance(int empID, int leaveID, decimal balance)
         {
-            string queryString = "UPDATE dbo.Leave_Balance SET Balance='" + duration + "' WHERE Leave_ID='" + leaveID + "'";
-            DBExecuteQuery(queryString);
-        }
+            string queryString = "";
+            int balanceID;
 
-        public void CreditAnnual(int leaveID, decimal duration)
-        {
-            var empList = new List<sleaveBalanceModel>();
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "SELECT Employee_ID, Balance FROM dbo.Leave_Balance WHERE Leave_ID = " + leaveID;
+            string comment = "Leave quota per annum";
 
-            using (var connection = new SqlConnection(connectionString))
+            if (IsLeaveBalanceExists(empID, leaveID))
             {
-                var command = new SqlCommand(queryString, connection);
+                balanceID = GetEmpBalanceID(empID, leaveID);
+                decimal prevBalance = DBGetLeaveBalance(balanceID);
 
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        var empID = (int)reader["Employee_ID"];
-                        var balance = (decimal)reader["Balance"];
-                        empList.Add(new sleaveBalanceModel{ empId = empID, annual = balance });
-                    }
-                }
-                connection.Close();
+                queryString = "UPDATE dbo.Leave_Balance SET Balance = " + balance + ", Last_Edit_Comment = 'Leave quota per annum' WHERE Employee_ID = " + empID + " AND Leave_Type_ID = " + leaveID;
+                DBExecuteQuery(queryString);
 
-                foreach (var item in empList)
-                {
-                    string queryUpdate = "UPDATE dbo.Leave_Balance SET Balance = '" + duration + item.annual + "' WHERE Leave_ID='" + leaveID + "' AND  Employee_ID = '" + item.empId + "'";
-                    DBExecuteQuery(queryUpdate);
-                }
+                queryString = "INSERT INTO dbo.Audit_Leave_Balance (Leave_Balance_ID, Column_Name, Value_Before, Value_After, Modified_By, Modified_On, Comment) " +
+                                     "VALUES('" + balanceID + "', 'Balance' ,'" + prevBalance + "','" + balance + "','" + GetLoggedInID() + "','" + DateTime.Today.ToString("yyyy-MM-dd") + "','" + comment + "')";
+                DBExecuteQuery(queryString);
+            }
+            else
+            {
+                queryString = "INSERT INTO dbo.Leave_Balance (Employee_ID, Leave_Type_ID, Balance, Last_Edit_Comment) VALUES(" + empID + "," + leaveID + "," + balance + ",'Leave quota per annum')";
+                DBExecuteQuery(queryString);
+
+                balanceID = GetEmpBalanceID(empID, leaveID);
+                queryString = "INSERT INTO dbo.Audit_Leave_Balance (Leave_Balance_ID, Column_Name, Value_After, Created_By, Created_On, Comment) " +
+                                     "VALUES('" + balanceID + "', 'Balance' ,'" + balance + "','" + GetLoggedInID() + "','" + DateTime.Today.ToString("yyyy-MM-dd") + "','" + comment + "')";
+                DBExecuteQuery(queryString);
             }
         }
-        
     }
 }
