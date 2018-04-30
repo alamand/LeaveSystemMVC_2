@@ -9,7 +9,7 @@ using Microsoft.SqlServer.Management.Smo;
 
 namespace LeaveSystemMVC.Controllers
 {
-    public class aBackupDatabaseController : Controller
+    public class aBackupDatabaseController : ControllerBase
     {
         // GET: aBackupDatabase
         public ActionResult Index()
@@ -114,11 +114,14 @@ namespace LeaveSystemMVC.Controllers
                     foreach (Table table in database.Tables)
                     {
                         // Sfc.Urn Magic
-                        foreach (string s in scripter.EnumScript(new Microsoft.SqlServer.Management.Sdk.Sfc.Urn[] { table.Urn }))
+                        if (!table.Schema.StartsWith("HangFire")) //exclude HangFire tables
                         {
-                            if (!lScripts.Contains(s))
+                            foreach (string s in scripter.EnumScript(new Microsoft.SqlServer.Management.Sdk.Sfc.Urn[] { table.Urn }))
                             {
-                                lScripts.Add(s);
+                                if (!lScripts.Contains(s))
+                                {
+                                    lScripts.Add(s);
+                                }
                             }
                         }
                     }

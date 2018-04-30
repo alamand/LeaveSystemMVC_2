@@ -7,7 +7,7 @@
     @Html.Partial("../_Message")
     <h5></h5>
     <div class="row">
-        <div class="col-md-3">
+        @*<div class="col-md-3">
             @using (Html.BeginForm("DownloadBAK", "aBackupDatabase", FormMethod.Post))
             {
                 @Html.AntiForgeryToken()
@@ -21,7 +21,7 @@
                     </div>
                 </div>
             }
-        </div>
+        </div>*@
         <div class="col-md-3">
             @using (Html.BeginForm("DownloadSQL", "aBackupDatabase", FormMethod.Post))
             {
