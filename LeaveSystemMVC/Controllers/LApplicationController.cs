@@ -596,14 +596,14 @@ namespace LeaveSystemMVC.Controllers
                 message = "Your " + lm.leaveTypeName + " leave application for " + lm.startDate.ToShortDateString() + " from " + lm.shortStartTime + " to " + lm.shortEndTime + " with ID " + leaveAppID + " has been sent to your line manager for approval.";
 
             MailMessage mail = new MailMessage();
-            mail.From = new MailAddress("project_ict333@murdochdubai.ac.ae", "GIMEL LMS");
+            mail.From = new MailAddress("leave@transnatedu.com", "TAG Leave System");
             mail.To.Add(new MailAddress(emp.email));
             mail.Subject = "Leave Application " + leaveAppID + " Update";
             mail.Body = message + Environment.NewLine;
 
             SmtpClient client = new SmtpClient();
             client.EnableSsl = true;
-            client.Credentials = new NetworkCredential("project_ict333@murdochdubai.ac.ae", "ict@333");
+            client.Credentials = new NetworkCredential("leave@transnatedu.com", "TagHr@007");
             try
             {
                 client.Send(mail);

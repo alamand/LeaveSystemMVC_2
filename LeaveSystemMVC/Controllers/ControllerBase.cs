@@ -544,20 +544,20 @@ namespace LeaveSystemMVC.Controllers
         public void SendMail(string email, string message)
         {
             MailMessage mail = new MailMessage();
-            mail.From = new MailAddress("project_ict333@murdochdubai.ac.ae", "GIMEL LMS");
+            mail.From = new MailAddress("leave@transnatedu.com", "TAG Leave System");
             mail.To.Add(new MailAddress(email));
             mail.Subject = "Leave Application Update";
             mail.Body = message + Environment.NewLine;
 
             SmtpClient client = new SmtpClient();
             client.EnableSsl = true;
-            client.Credentials = new NetworkCredential("project_ict333@murdochdubai.ac.ae", "ict@333");
+            client.Credentials = new NetworkCredential("leave@transnatedu.com", "TagHr@007");
             try
             {
                 client.Send(mail);
                 System.Diagnostics.Debug.WriteLine("Mail Sent");
             }
-            catch (Exception e) { }
+            catch (Exception e) { System.Diagnostics.Debug.WriteLine("Mail NOT sent" + e.ToString()); }
         }
 
         protected decimal DBGetLeaveBalance(int balID) {
