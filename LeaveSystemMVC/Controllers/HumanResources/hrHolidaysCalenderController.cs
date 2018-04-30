@@ -130,22 +130,30 @@ namespace LeaveSystemMVC.Controllers
         public ActionResult Remove(int holidayID)
         {
             var holiday = GetHoliday(holidayID);
-            string queryString = "DELETE FROM dbo.Public_Holiday WHERE Public_Holiday_ID = " + holidayID;
-            DBExecuteQuery(queryString);
-            
-            // rebalance all employees with approved applications, -1 to indicate that a holiday is removed
-            RebalanceCredit(holiday.date, -1);
+            if (holiday.date.Date.CompareTo(DateTime.Now.Date) < 0) //may not remove holidays that are in the past
+            {
+                TempData["ErrorMessage"] = "<b>" + holiday.holidayName + "</b> cannot be removed since the date has already passed.<br/>";
+                return RedirectToAction("Index", new { filterYear = DateTime.Now.Year });
+            }
+            else
+            {
+                string queryString = "DELETE FROM dbo.Public_Holiday WHERE Public_Holiday_ID = " + holidayID;
+                DBExecuteQuery(queryString);
 
-            string auditString = "INSERT INTO dbo.Audit_Public_Holiday (Public_Holiday_ID, Column_Name, Value_Before, Modified_By, Modified_On) " +
-                  "VALUES('" + holidayID + "', 'Date' ,'" + holiday.date.ToString("yyyy-MM-dd") + "','" + GetLoggedInID() + "','" + DateTime.Today.ToString("yyyy-MM-dd") + "')";
-            DBExecuteQuery(auditString);
+                // rebalance all employees with approved applications, -1 to indicate that a holiday is removed
+                RebalanceCredit(holiday.date, -1);
 
-            TempData["SuccessMessage"] = "<b>" + holiday.holidayName + "</b> public holiday has been removed successfully.<br/>";
+                string auditString = "INSERT INTO dbo.Audit_Public_Holiday (Public_Holiday_ID, Column_Name, Value_Before, Modified_By, Modified_On) " +
+                      "VALUES('" + holidayID + "', 'Date' ,'" + holiday.date.ToString("yyyy-MM-dd") + "','" + GetLoggedInID() + "','" + DateTime.Today.ToString("yyyy-MM-dd") + "')";
+                DBExecuteQuery(auditString);
 
-            if (GetHolidayList(holiday.date.Year).Count > 0)
-                return RedirectToAction("Index", new { filterYear = TempData["filterYear"] });
-            else 
-                return RedirectToAction("Index", new { filterYear = DateTime.Now.Year }); 
+                TempData["SuccessMessage"] = "<b>" + holiday.holidayName + "</b> public holiday has been removed successfully.<br/>";
+
+                if (GetHolidayList(holiday.date.Year).Count > 0)
+                    return RedirectToAction("Index", new { filterYear = TempData["filterYear"] });
+                else
+                    return RedirectToAction("Index", new { filterYear = DateTime.Now.Year });
+            }
         }
 
         private bool IsWeekend(DateTime date)

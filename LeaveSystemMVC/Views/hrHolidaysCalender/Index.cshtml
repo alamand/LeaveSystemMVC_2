@@ -41,17 +41,29 @@
                 </tr>
                 @foreach (var item in Model)
                 {
-                    <tr>
-                        <td>@Html.DisplayFor(modelItem => item.holidayName) </td>
-                        <td style="text-align:center">
-                            @Html.DisplayFor(modelItem => item.date.Year)/@Html.DisplayFor(modelItem => item.date.Month)/@Html.DisplayFor(modelItem => item.date.Day)
-                        </td>
-                        <td style="text-align:center">
-                            <a href="@Url.Action("Remove", "hrHolidaysCalender", new { holidayID = item.holidayID }, null)">
-                                <span class="glyphicon glyphicon-remove" aria-hidden="true" style="color:red"></span>
-                            </a>
-                        </td>
-                    </tr>
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.holidayName) </td>
+                    <td style="text-align:center">
+                        @Html.DisplayFor(modelItem => item.date.Year)/@Html.DisplayFor(modelItem => item.date.Month)/@Html.DisplayFor(modelItem => item.date.Day)
+                    </td>
+
+                    @{
+                        DateTime dt = item.date.Date;
+                        if (dt.CompareTo(DateTime.Now.Date) >= 0)
+                        {
+                            <td style="text-align:center">
+                                <a href="@Url.Action("Remove", "hrHolidaysCalender", new { holidayID = item.holidayID }, null)">
+                                    <span class="glyphicon glyphicon-remove" aria-hidden="true" style="color:red"></span>
+                                </a>
+                            </td>
+                        }
+                        else
+                        {
+                            <td style="text-align:center">                    
+                            </td>
+                        }
+                    }
+                </tr>
                 }
             </table>
         </div>
