@@ -83,12 +83,12 @@ namespace LeaveSystemMVC.Controllers
                 XFont fontBold = new XFont("Calibri", 12, XFontStyle.Bold, options);
 
                 // Add a logo to the top left of the page
-                XImage image = XImage.FromFile(Server.MapPath("~/App_Data/Images/Murdoch.png"));
+                XImage image = XImage.FromFile(Server.MapPath("~/Content/Murdoch_logo_transparent.gif"));
                 gfx.DrawImage(image, 0, 0, 150, 65);
 
                 // Add a logo to the top right of the page
-                image = XImage.FromFile(Server.MapPath("~/App_Data/Images/Global.png"));
-                gfx.DrawImage(image, 455, 0, 130, 65);
+                image = XImage.FromFile(Server.MapPath("~/Content/GIMEL_logo_old_small.png"));
+                gfx.DrawImage(image, 450, 10, 130, 55);
 
                 // Add a title to the top center of the page
                 gfx.DrawString("LEAVE APPLICATION", fontTitle, XBrushes.Black, new XRect(0, 15, page.Width, page.Height), XStringFormat.TopCenter);
