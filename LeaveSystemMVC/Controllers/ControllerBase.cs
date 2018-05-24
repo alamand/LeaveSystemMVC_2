@@ -560,6 +560,30 @@ namespace LeaveSystemMVC.Controllers
             catch (Exception e) { System.Diagnostics.Debug.WriteLine("Mail NOT sent" + e.ToString()); }
         }
 
+        protected Tuple<int, DateTime> DBGetLeaveApproval(int appID, string role)
+        {
+            int prevStatus = DBLeaveStatusList().FirstOrDefault(obj => obj.Value ==  (role.Equals("LM") ? "Pending_LM" : "Pending_HR")).Key;
+            var queryString = "SELECT Modified_By, Modified_On FROM dbo.Audit_Leave_Application WHERE Leave_Application_ID = '" + appID + "' AND (Value_Before = '" + prevStatus + "')" ;
+            int approvedByID = 0;
+            DateTime date = new DateTime();
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(queryString, connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        approvedByID = (int)reader["Modified_By"];
+                        date = (DateTime)reader["Modified_On"];
+                    }
+                }
+                connection.Close();
+            }
+            return new Tuple<int, DateTime>(approvedByID, date);
+        }
+
         protected decimal DBGetLeaveBalance(int balID) {
             var queryString = "SELECT Balance FROM dbo.Leave_Balance WHERE Leave_Balance_ID = '" + balID + "'";
             decimal balance = 0;
