@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Web.Mvc;
+using Microsoft.SqlServer.Management.Smo;
+using Microsoft.SqlServer.Management.Smo.Agent;
 using LeaveSystemMVC.Models;
 
 namespace LeaveSystemMVC.Controllers
@@ -67,6 +69,7 @@ namespace LeaveSystemMVC.Controllers
                 {
                     queryString = "INSERT INTO dbo.Employment_Period (Employee_ID, Emp_Start_Date) VALUES ('" + latestEmployment.staffID + "', '" + latestEmployment.empStartDate.ToString("yyyy-MM-dd") + "')";
                     DBExecuteQuery(queryString);
+                    ChangeAccountStatus((int)latestEmployment.staffID, true, latestEmployment.empStartDate);
                     TempData["SuccessMessage"] = "You have successfully updated the employment period for <b>" + DBEmployeeList()[(int)latestEmployment.staffID] + "</b>.";
                 }
                 else
@@ -86,6 +89,7 @@ namespace LeaveSystemMVC.Controllers
                     queryString = "UPDATE dbo.Employment_Period SET Emp_End_Date = '" + latestEmployment.empEndDate.ToString("yyyy-MM-dd") + "'" +
                     " WHERE Employee_ID = '" + latestEmployment.staffID + "' AND Emp_Start_Date = '" + latestEmployment.empStartDate.ToString("yyyy-MM-dd") + "'";
                     DBExecuteQuery(queryString);
+                    ChangeAccountStatus((int)latestEmployment.staffID, false, latestEmployment.empEndDate);
                     TempData["SuccessMessage"] = "You have successfully updated employment period for <b>" + DBEmployeeList()[(int)latestEmployment.staffID] + "</b>.";
                 }
                 else
@@ -144,6 +148,34 @@ namespace LeaveSystemMVC.Controllers
             }
 
             return isExist;
+        }
+
+        private void ChangeAccountStatus(int empID, Boolean status, DateTime date)
+        {
+            // Get instance of SQL Agent SMO object
+            Server server = new Server("."); 
+            JobServer jobServer = server.JobServer;
+
+            // Create a schedule, set it to be executed once at the specified date
+            JobSchedule schedule = new JobSchedule(jobServer, "Schedule_For_" + empID);
+            schedule.FrequencyTypes = FrequencyTypes.OneTime;
+            schedule.ActiveStartDate = date;
+            schedule.IsEnabled = true;
+            schedule.Create();
+
+            // Create Job and assign the schedule to it
+            Job job = new Job(jobServer, "Account_Status_" + DateTime.Now);
+            job.Create();
+            job.AddSharedSchedule(schedule.ID);
+            job.ApplyToTargetServer(server.Name);
+
+            // Create Job Step to activate/de-activate an account and delete the Job once done
+            JobStep step = new JobStep(job, status + "-" + empID);
+            step.Command = "UPDATE dbo.Employee SET Account_Status = '" + status + "' WHERE Employee_ID = '" + empID + "'; " +
+                "USE msdb; EXEC sp_delete_job @job_name = N'" + job.Name + "';";
+            step.SubSystem = AgentSubSystem.TransactSql;
+            step.DatabaseName = "LeaveSystem";
+            step.Create();
         }
     }
 }
