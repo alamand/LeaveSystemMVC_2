@@ -11,6 +11,10 @@
     {
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         var typeList = ViewData["LeaveTypeList"] as Dictionary<int, string>;
+            
+        <a href="@Url.Action("GenerateAnnualLeaveAuditPDF", "hrLeaveAudit")">
+            <span class="glyphicon glyphicon-file" aria-hidden="true"></span> Download PDF
+        </a>
 
         <div class="form-horizontal">
             <div class="row ">

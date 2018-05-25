@@ -6,6 +6,11 @@ using System.Web.Mvc;
 using System.Configuration;
 using System.Data.SqlClient;
 using LeaveSystemMVC.Models;
+using PdfSharp.Pdf;
+using PdfSharp.Drawing;
+using PdfSharp.Drawing.Layout;
+using System.Drawing;
+using System.Diagnostics;
 
 namespace LeaveSystemMVC.Controllers.HumanResources
 {
@@ -107,5 +112,119 @@ namespace LeaveSystemMVC.Controllers.HumanResources
             return empConsumptionList;
         }
 
+        [HttpGet]
+        public ActionResult GenerateAnnualLeaveAuditPDF()
+        {
+            try
+            {
+                #pragma warning disable CS0618 // Type or member is obsolete
+                List<sEmployeeModel> employeeList = GetEmployeeModel();
+
+                // Create a new PDF document
+                PdfDocument document = new PdfDocument();
+                document.Info.Title = "Annual Leave Audit " + (DateTime.Now.Year-1);
+                document.Info.Author = Session["UserName"].ToString();
+
+                // Create an empty page
+                PdfPage page = document.AddPage();
+
+                // Set page margins
+                page.TrimMargins.Top = 20;
+                page.TrimMargins.Right = 35;
+                page.TrimMargins.Left = 35;
+                page.TrimMargins.Bottom = 20;
+
+                // Get an XGraphics object for drawing
+                XGraphics gfx = XGraphics.FromPdfPage(page);
+
+                // Get an XTextFormatter object for writting multiple lines
+                XTextFormatter tf = new XTextFormatter(gfx);
+
+                // Create a font
+                XPdfFontOptions options = new XPdfFontOptions(PdfFontEncoding.WinAnsi);
+                XFont font = new XFont("Calibri", 9, XFontStyle.Regular, options);
+
+                int rowSize = 15;
+                int colSize = 60;
+                int nameColSize = 110;
+
+                // Top row
+                gfx.DrawRectangle(XPens.Black, new Rectangle(0, 0, nameColSize, rowSize));
+                gfx.DrawRectangle(XPens.Black, new Rectangle(nameColSize, 0, colSize, rowSize));
+                gfx.DrawRectangle(XPens.Black, new Rectangle(nameColSize + colSize, 0, colSize, rowSize));
+                gfx.DrawRectangle(XPens.Black, new Rectangle(nameColSize + (colSize * 2), 0, colSize, rowSize));
+                gfx.DrawRectangle(XPens.Black, new Rectangle(nameColSize + (colSize * 3), 0, (colSize * 5), rowSize));
+
+                // header row
+                gfx.DrawRectangle(XPens.Black, new Rectangle(0, rowSize, nameColSize, (rowSize * 4)));
+                for (int x = nameColSize; x < (colSize * 9); x += colSize)
+                {
+                    gfx.DrawRectangle(XPens.Black, new Rectangle(x, rowSize, colSize, (rowSize * 4)));
+                }
+
+                // data rows
+                int y = rowSize * 5;
+                for (int row = 0; row < employeeList.Count; row++)
+                {
+                    gfx.DrawRectangle(XPens.Black, new Rectangle(0, y, nameColSize, rowSize));
+                    for (int x = nameColSize; x < (colSize * 9); x += colSize)
+                    {
+                        gfx.DrawRectangle(XPens.Black, new Rectangle(x, y, colSize, rowSize));
+                    }
+                    y += rowSize;
+                }
+
+                // top row text
+                gfx.DrawString("Leave balance as of", font, XBrushes.Black, 2, 12);
+                DateTime endofThisYear = new DateTime(DateTime.Now.Year, 12, 31);
+                gfx.DrawString(endofThisYear.ToString("dd/MM/yyyy"), font, XBrushes.Black, 112, 12);
+                gfx.DrawString("Annual Leave", font, XBrushes.Black, 415, 12);
+
+                // header row text
+                int x2Position = rowSize + ((rowSize * 4) / 2) - (rowSize / 2) - 3;
+                int x3Position = rowSize + ((rowSize * 4) / 3) - (rowSize / 3) - 1;
+                int x4Position = rowSize + ((rowSize * 4) / 4) - (rowSize / 4) - 5;
+                int x5Position = rowSize + ((rowSize * 4) / 5) - (rowSize / 5) - 6;
+
+                tf.Alignment = XParagraphAlignment.Center;
+                gfx.DrawString("Name", font, XBrushes.Black, new XRect(0, rowSize, nameColSize, (rowSize * 4)), XStringFormat.Center);
+                gfx.DrawString("Joining Date", font, XBrushes.Black, new XRect(nameColSize, rowSize, colSize, (rowSize * 4)), XStringFormat.Center);
+                tf.DrawString("Leave Start Date", font, XBrushes.Black, new XRect((nameColSize + colSize), x2Position, colSize, (rowSize * 4)));
+                tf.DrawString("Closing Balance " + (DateTime.Now.Year - 1) + " as per HR", font, XBrushes.Black, new XRect((nameColSize + (colSize * 2)), x2Position, colSize, (rowSize * 4)));
+                tf.DrawString("Opening Balance " + (new DateTime(DateTime.Now.Year, 1, 1)).ToString("dd/MM/yyyy"), font, XBrushes.Black, new XRect((nameColSize + (colSize * 3)), x3Position, colSize, (rowSize * 4)));
+                tf.DrawString("Total Eligibility including opening bal (Days) upto " + (new DateTime(DateTime.Now.Year, 12, 31)).ToString("dd/MM/yyyy"), font, XBrushes.Black, new XRect((nameColSize + (colSize * 4)), x5Position, colSize, (rowSize * 4)));
+                tf.DrawString("Leave Consumption", font, XBrushes.Black, new XRect((nameColSize + (colSize * 6)), x2Position, colSize, (rowSize * 4)));
+                tf.DrawString("Closing Balance as at " + (new DateTime(DateTime.Now.Year, 12, 31)).ToString("dd/MM/yyyy"), font, XBrushes.Black, new XRect((nameColSize + (colSize * 7)), x3Position, colSize, (rowSize * 4)));
+
+                // data rows text
+                int yPosition = (rowSize * 6) - 3;
+                for (int i = 0; i < employeeList.Count; i++)
+                {
+                    int xPosition = 2;
+                    gfx.DrawString(employeeList[i].firstName + " " + employeeList[i].lastName, font, XBrushes.Black, xPosition, yPosition);
+                    gfx.DrawString(employeeList[i].empStartDate.ToString("dd/MM/yyyy"), font, XBrushes.Black, xPosition += nameColSize, yPosition);
+                    DateTime leaveStartDate = ((employeeList[i].empStartDate.Year >= DateTime.Now.Year-1) ? employeeList[i].empStartDate : new DateTime(DateTime.Now.Year-1, 1, 1));
+                    gfx.DrawString(leaveStartDate.ToString("dd/MM/yyyy"), font, XBrushes.Black, xPosition += colSize, yPosition);
+
+                    // @TODO: other datas to be filled
+                    yPosition += rowSize;
+                }
+    
+                #pragma warning restore CS0618 // Type or member is obsolete
+
+                // Save the document...
+                string xFileName = document.Info.Title + ".pdf";
+                string dlFile = Server.MapPath("~/App_Data/PDF_Reports") + "/" + xFileName;
+                document.Save(dlFile);
+                Process.Start(dlFile);
+                return File(dlFile, "application/force-download", xFileName);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.ErrorMessage = "ERROR:" + ex.Message.ToString();
+            }
+
+            return RedirectToAction("Index");
+        }
     }
 }
