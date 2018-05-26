@@ -10,9 +10,9 @@ using LeaveSystemMVC.Models;
 
 namespace LeaveSystemMVC.Controllers
 {
-    public class lmSelectSubstituteController : ControllerBase
+    public class lmAdministerSubstituteController : ControllerBase
     {
-        // GET: lmSelectSubstitute
+        // GET: lmAdministerSubstitute
         public ActionResult Index()
         {
             // gets everything from the Reporting_Map table

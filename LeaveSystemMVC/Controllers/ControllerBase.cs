@@ -319,8 +319,8 @@ namespace LeaveSystemMVC.Controllers
 
         protected List<sLeaveModel> GetLeaveModel(string listFor = "", int id = 0)
         {
-            var queryString = "SELECT Leave_Application_ID, Employee.Employee_ID, First_Name, Last_Name, Leave.Start_Date, Leave.Reporting_Back_Date, Leave.Leave_Type_ID, Leave_Name, " +
-                "Contact_Outside_UAE, Comment, Documentation, Flight_Ticket, Total_Leave, Start_Hrs, End_Hrs, Leave.Leave_Status_ID, Status_Name, Leave_Status.Display_Name, HR_Comment, LM_Comment, Leave.Personal_Email, Leave.Is_Half_Start_Date, Leave.Is_Half_Reporting_Back_Date " +
+            var queryString = "SELECT Leave_Application_ID, Employee.Employee_ID, First_Name, Last_Name, Leave.Start_Date, Leave.Reporting_Back_Date, Leave.Leave_Type_ID, Leave_Type.Leave_Name, Leave_Type.Display_Name as Leave_Type_Display, " +
+                "Contact_Outside_UAE, Comment, Documentation, Flight_Ticket, Total_Leave, Start_Hrs, End_Hrs, Leave.Leave_Status_ID, Status_Name, Leave_Status.Display_Name as Leave_Status_Display, HR_Comment, LM_Comment, Leave.Personal_Email, Leave.Is_Half_Start_Date, Leave.Is_Half_Reporting_Back_Date " +
                 "FROM dbo.Leave, dbo.Employee, dbo.Leave_Type, dbo.Leave_Status, dbo.Department, dbo.Reporting " +
                 "WHERE Leave.Employee_ID = Employee.Employee_ID AND Leave.Leave_Type_ID = Leave_Type.Leave_Type_ID AND " +
                 "Leave.Leave_Status_ID = Leave_Status.Leave_Status_ID AND Department.Department_ID = Employee.Department_ID AND Employee.Employee_ID = Reporting.Employee_ID";
@@ -355,6 +355,7 @@ namespace LeaveSystemMVC.Controllers
                             returnDate = (!DBNull.Value.Equals(reader["Reporting_Back_Date"])) ? (DateTime)reader["Reporting_Back_Date"] : new DateTime(0,0,0),
                             leaveTypeID = (int)reader["Leave_Type_ID"],
                             leaveTypeName = (string)reader["Leave_Name"],
+                            leaveTypeDisplayName = (string)reader["Leave_Type_Display"],
                             contactDetails = (!DBNull.Value.Equals(reader["Contact_Outside_UAE"])) ? (string)reader["Contact_Outside_UAE"] : "",
                             comments = (!DBNull.Value.Equals(reader["Comment"])) ? (string)reader["Comment"] : "",
                             documentation = (!DBNull.Value.Equals(reader["Documentation"])) ? (string)reader["Documentation"] : "",
@@ -364,7 +365,7 @@ namespace LeaveSystemMVC.Controllers
                             shortEndTime = (!DBNull.Value.Equals(reader["End_Hrs"])) ? (TimeSpan)reader["End_Hrs"] : new TimeSpan(0, 0, 0, 0, 0),
                             leaveStatusID = (int)reader["Leave_Status_ID"],
                             leaveStatusName = (string)reader["Status_Name"],
-                            leaveStatusDisplayName = (string)reader["Display_Name"],
+                            leaveStatusDisplayName = (string)reader["Leave_Status_Display"],
                             hrComment = (!DBNull.Value.Equals(reader["HR_Comment"])) ? (string)reader["HR_Comment"] : "",
                             lmComment = (!DBNull.Value.Equals(reader["LM_Comment"])) ? (string)reader["LM_Comment"] : "",
                             email = (!DBNull.Value.Equals(reader["Personal_Email"])) ? (string)reader["Personal_Email"] : "",
@@ -695,6 +696,12 @@ namespace LeaveSystemMVC.Controllers
             return DBListing(queryString, "Leave_Status_ID", "Status_Name");
         }
 
+        protected Dictionary<int, string> DBLeaveStatusNameList()
+        {
+            var queryString = "SELECT Leave_Status_ID, Display_Name FROM dbo.Leave_Status";
+            return DBListing(queryString, "Leave_Status_ID", "Display_Name");
+        }
+
         protected Dictionary<int, string> DBEmployeeList(int accountStatus = -1)
         {
             Dictionary<int, string> list = new Dictionary<int, string>();
@@ -784,6 +791,12 @@ namespace LeaveSystemMVC.Controllers
         {
             var queryString = "SELECT Leave_Type_ID, Leave_Name FROM dbo.Leave_Type";
             return DBListing(queryString, "Leave_Type_ID", "Leave_Name");
+        }
+
+        protected Dictionary<int, string> DBLeaveTypeNameList()
+        {
+            var queryString = "SELECT Leave_Type_ID, Display_Name FROM dbo.Leave_Type";
+            return DBListing(queryString, "Leave_Type_ID", "Display_Name");
         }
 
         protected Dictionary<int, string> DBLeaveNameList()

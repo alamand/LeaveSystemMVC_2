@@ -1768,7 +1768,7 @@
     <Content Include="Views\hrPendingApplication\Index.cshtml" />
     <Content Include="Views\hrSelectSubstitute\Index.cshtml" />
     <Content Include="Views\lmPendingApplications\Index.cshtml" />
-    <Content Include="Views\lmSelectSubstitute\Index.cshtml" />
+    <Content Include="Views\lmAdministerSubstitute\Index.cshtml" />
     <Content Include="Views\lmSubordinateBalance\Index.cshtml" />
     <Content Include="Views\lmSubordinateLeaveHistory\Index.cshtml" />
     <Content Include="Views\sLeaveBalance\Index.cshtml" />

@@ -15,6 +15,9 @@ namespace LeaveSystemMVC.Models
         [Display(Name = "Leave Type")]
         public string leaveTypeName { get; set; }
 
+        [DisplayName("Leave Type Name")]
+        public string leaveTypeDisplayName { get; set; }
+
         [Display(Name = "Employee ID")]
         public int employeeID { get; set; }
 
@@ -61,7 +64,7 @@ namespace LeaveSystemMVC.Models
         [DisplayName("Leave Status ID")]
         public int leaveStatusID { get; set; }
 
-        [DisplayName("Leave Status ID")]
+        [DisplayName("Leave Status")]
         public string leaveStatusName { get; set; }
 
         [DisplayName("Leave Status Name")]

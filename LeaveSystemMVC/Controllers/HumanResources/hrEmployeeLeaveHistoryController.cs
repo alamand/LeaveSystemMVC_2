@@ -30,7 +30,7 @@ namespace LeaveSystemMVC.Controllers
             ViewData["SelectedLeaveStatus"] = filterLeaveStatus;
             ViewData["OrderByList"] = OrderByList();
             ViewData["SelectedOrderBy"] = filterOrderBy;
-            ViewData["LeaveTypeList"] = AddDefaultToDictionary(DBLeaveTypeList(), -1, "All Types");
+            ViewData["LeaveTypeList"] = AddDefaultToDictionary(DBLeaveTypeNameList(), -1, "All Types");
             ViewData["SelectedLeaveType"] = filterLeaveType;
             ViewData["SelectedStartDate"] = filterStartDate;
             ViewData["SelectedEndDate"] = filterEndDate;
@@ -60,8 +60,8 @@ namespace LeaveSystemMVC.Controllers
 
         private string GetFilteredQuery(int deptID, int leaveType, int leaveStat, string search, string order, string sDate, string eDate)
         {
-            var queryString = "SELECT Leave_Application_ID, Employee.Employee_ID, First_Name, Last_Name, Leave.Start_Date, Leave.Reporting_Back_Date, Leave.Leave_Type_ID, Leave_Name, " +
-                "Contact_Outside_UAE, Comment, Documentation, Flight_Ticket, Total_Leave, Start_Hrs, End_Hrs, Leave.Leave_Status_ID, Status_Name, Leave_Status.Display_Name, HR_Comment, LM_Comment, Leave.Personal_Email, Leave.Is_Half_Start_Date, Leave.Is_Half_Reporting_Back_Date " +
+            var queryString = "SELECT Leave_Application_ID, Employee.Employee_ID, First_Name, Last_Name, Leave.Start_Date, Leave.Reporting_Back_Date, Leave.Leave_Type_ID, Leave_Name, Leave_Type.Display_Name as Leave_Type_Display, " +
+                "Contact_Outside_UAE, Comment, Documentation, Flight_Ticket, Total_Leave, Start_Hrs, End_Hrs, Leave.Leave_Status_ID, Status_Name, Leave_Status.Display_Name as Leave_Status_Display, HR_Comment, LM_Comment, Leave.Personal_Email, Leave.Is_Half_Start_Date, Leave.Is_Half_Reporting_Back_Date " +
                 "FROM dbo.Leave, dbo.Employee, dbo.Leave_Type, dbo.Leave_Status, dbo.Department, dbo.Reporting " +
                 "WHERE Leave.Employee_ID = Employee.Employee_ID AND Leave.Leave_Type_ID = Leave_Type.Leave_Type_ID AND " +
                 "Leave.Leave_Status_ID = Leave_Status.Leave_Status_ID AND Department.Department_ID = Employee.Department_ID AND Employee.Employee_ID = Reporting.Employee_ID " +
@@ -106,6 +106,10 @@ namespace LeaveSystemMVC.Controllers
             {
                 queryString += " ORDER BY " + order;
             }
+            else
+            {
+                queryString += " ORDER BY Leave_Application_ID ASC";
+            }
 
             return queryString;
         }
@@ -114,12 +118,16 @@ namespace LeaveSystemMVC.Controllers
         {
             var orderByList = new Dictionary<string, string>
             {
-                { "Employee.First_Name ASC", "First Name | Ascending" },
-                { "Employee.First_Name DESC", "First Name | Descending" },
-                { "Employee.Last_Name ASC", "Last Name | Ascending" },
-                { "Employee.Last_Name DESC", "Last Name | Descending" },
-                { "Employee.Employee_ID ASC", "Employee ID | Ascending" },
-                { "Employee.Employee_ID DESC", "Employee ID | Descending" }
+                { "Leave_Application_ID ASC", "App. ID | Ascending" },
+                { "Leave_Application_ID DESC", "App. ID | Descending" },
+                { "First_Name ASC", "First Name | Ascending" },
+                { "First_Name DESC", "First Name | Descending" },
+                { "Last_Name ASC", "Last Name | Ascending" },
+                { "Last_Name DESC", "Last Name | Descending" },
+                { "Leave_Name ASC", "Leave Type | Ascending" },
+                { "Leave_Name DESC", "Leave Type | Descending" },
+                { "Status_Name ASC", "Leave Status | Ascending" },
+                { "Status_Name DESC", "Leave Status | Descending" }
             };
             return orderByList;
         }
@@ -129,9 +137,9 @@ namespace LeaveSystemMVC.Controllers
             Dictionary<int, string> leaveStatusList = new Dictionary<int, string>();
 
             leaveStatusList.Add(-1, "All Statuses");
-            foreach (var status in DBLeaveStatusList())
+            foreach (var status in DBLeaveStatusNameList())
             {
-                if (!status.Value.Equals("Pending_LM") && !status.Value.Equals("Pending_HR"))
+                if (!status.Value.Equals("Pending with Line Manager") && !status.Value.Equals("Pending with Human Resources"))
                     leaveStatusList.Add(status.Key, status.Value);
             }
 
