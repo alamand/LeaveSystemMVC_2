@@ -9,110 +9,108 @@
     <div class="row">
         @using (Html.BeginForm("Select", "lmPendingApplications", FormMethod.Post, new { model = Model }))
         {
-        <div class="col-md-6">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <div class="text-muted bootstrap-admin-box-title">Application Details</div>
-                </div>
-                <div class="bootstrap-admin-panel-content">
-                    <div class="row">
-                        <dl class="dl-horizontal">
-                            @Html.HiddenFor(model => model.leaveStatusID)
-                            @Html.HiddenFor(model => model.leaveStatusName)
-
-                            <dt>@Html.DisplayNameFor(model => model.leaveAppID)</dt>
-                            <dd>@Html.DisplayFor(model => model.leaveAppID)</dd>
-                            @Html.HiddenFor(model => model.leaveAppID)
-
-                            <dt>@Html.DisplayNameFor(model => model.employeeID)</dt>
-                            <dd>@Html.DisplayFor(model => model.employeeID)</dd>
-                            @Html.HiddenFor(model => model.employeeID)
-
-                            <dt>@Html.DisplayNameFor(model => model.employeeName)</dt>
-                            <dd>@Html.DisplayFor(model => model.employeeName)</dd>
-                            @Html.HiddenFor(model => model.employeeName)
-
-                            <dt>@Html.DisplayNameFor(model => model.leaveTypeName)</dt>
-                            <dd>@Html.DisplayFor(model => model.leaveTypeName)</dd>
-                            @Html.HiddenFor(model => model.leaveTypeID)
-                            @Html.HiddenFor(model => model.leaveTypeName)
-
-                            @{
-                                string startDateString = Model.startDate.ToString("dd/MM/yyyy");
-                                string returnDateString = Model.returnDate.ToString("dd/MM/yyyy");
-                            }
-
-                            <dt>@Html.DisplayNameFor(model => model.startDate)</dt>
-                            <dd>@Html.DisplayFor(sd => startDateString)</dd>
-                            @Html.HiddenFor(model => model.startDate)
-
-                            <dt>@Html.DisplayNameFor(model => model.returnDate)</dt>
-                            <dd>@Html.DisplayFor(rd => returnDateString)</dd>
-                            @Html.HiddenFor(model => model.returnDate)
-
-                            @if (!Model.leaveTypeName.Equals("Short_Hours"))
-                            {
-                                <dt>@Html.DisplayNameFor(model => model.leaveDuration)</dt>
-                                <dd>@Html.DisplayFor(model => model.leaveDuration)</dd>
-                                @Html.HiddenFor(model => model.leaveDuration)
-                            }
-
-                            @if (Model.leaveTypeName.Equals("Short_Hours"))
-                            {
-                                <dt>@Html.DisplayNameFor(model => model.shortStartTime)</dt>
-                                <dd>@Html.DisplayFor(model => model.shortStartTime)</dd>
-                                @Html.HiddenFor(model => model.shortStartTime)
-
-                                <dt>@Html.DisplayNameFor(model => model.shortEndTime)</dt>
-                                <dd>@Html.DisplayFor(model => model.shortEndTime)</dd>
-                                @Html.HiddenFor(model => model.shortEndTime)
-
-                            }
-
-                            <dt>@Html.DisplayNameFor(model => model.comments)</dt>
-                            <dd style="word-break: break-word">@Html.DisplayFor(model => model.comments)</dd>
-                            @Html.HiddenFor(model => model.comments)
-
-                            <dt>@Html.DisplayNameFor(model => model.documentation)</dt>
-                            <dd style="word-break: break-word"><a target="_blank" href='\App_Data\Documentation\@Model.leaveAppID-@Model.documentation'>@Html.DisplayFor(model => model.documentation)</a></dd>
-                            @Html.HiddenFor(model => model.documentation)
-
-                            @if (Model.leaveTypeName.Equals("Annual"))
-                            {
-                                <dt>@Html.DisplayNameFor(model => model.bookAirTicket)</dt>
-                                <dd>@Html.DisplayFor(model => model.bookAirTicket)</dd>
-                                @Html.HiddenFor(model => model.bookAirTicket)
-
-                                <dt>@Html.DisplayNameFor(model => model.email)</dt>
-                                <dd style="word-break: break-word">@Html.DisplayFor(model => model.email)</dd>
-                            }
-
-                            @if (Model.leaveTypeName.Equals("Annual") || Model.leaveTypeName.Equals("Maternity"))
-                            {
-                                <dt>@Html.DisplayNameFor(model => model.contactDetails)</dt>
-                                <dd>@Html.DisplayFor(model => model.contactDetails)</dd>
-                                @Html.HiddenFor(model => model.contactDetails)
-                            }
-
-                            <dt>@Html.DisplayNameFor(model => model.lmComment)</dt>
-                            <dd>
-                                <div>
-                                    @Html.TextAreaFor(model => model.lmComment, new { rows = "6", cols = "35" })
-                                    @Html.ValidationMessageFor(model => model.lmComment, "", new { @class = "text-danger" })
-                                </div>
-                            </dd>
-                        </dl>
-                        <hr />
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+            <div class="col-md-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <div class="text-muted bootstrap-admin-box-title">Application Details</div>
                     </div>
-                    <div class="form-group">
-                        <div class="row col-md-offset-2">
-                            <input type="submit" name="submit" id="submit" class="btn btn-success col-md-4" value="Approve" />
-                            <input type="submit" name="submit" id="reject" class="btn btn-danger col-md-offset-1 col-md-4" value="Reject" />
+                    <div class="bootstrap-admin-panel-content">
+                        <div class="row">
+                            <dl class="dl-horizontal">
+                                @Html.HiddenFor(model => model.leaveStatusID)
+                                @Html.HiddenFor(model => model.leaveStatusName)
+
+                                <dt>@Html.DisplayNameFor(model => model.leaveAppID)</dt>
+                                <dd>@Html.DisplayFor(model => model.leaveAppID)</dd>
+                                @Html.HiddenFor(model => model.leaveAppID)
+
+                                <dt>@Html.DisplayNameFor(model => model.employeeID)</dt>
+                                <dd>@Html.DisplayFor(model => model.employeeID)</dd>
+                                @Html.HiddenFor(model => model.employeeID)
+
+                                <dt>@Html.DisplayNameFor(model => model.employeeName)</dt>
+                                <dd>@Html.DisplayFor(model => model.employeeName)</dd>
+                                @Html.HiddenFor(model => model.employeeName)
+
+                                <dt>@Html.DisplayNameFor(model => model.leaveTypeName)</dt>
+                                <dd>@Html.DisplayFor(model => model.leaveTypeName)</dd>
+                                @Html.HiddenFor(model => model.leaveTypeID)
+                                @Html.HiddenFor(model => model.leaveTypeName)
+
+                                @{
+                                    string startDateString = Model.startDate.ToString("dd/MM/yyyy");
+                                    string returnDateString = Model.returnDate.ToString("dd/MM/yyyy");
+                                }
+
+                                <dt>@Html.DisplayNameFor(model => model.startDate)</dt>
+                                <dd>@Html.DisplayFor(sd => startDateString)</dd>
+                                @Html.HiddenFor(model => model.startDate)
+
+                                <dt>@Html.DisplayNameFor(model => model.returnDate)</dt>
+                                <dd>@Html.DisplayFor(rd => returnDateString)</dd>
+                                @Html.HiddenFor(model => model.returnDate)
+
+                                @if (!Model.leaveTypeName.Equals("Short_Hours"))
+                                {
+                                    <dt>@Html.DisplayNameFor(model => model.leaveDuration)</dt>
+                                    <dd>@Html.DisplayFor(model => model.leaveDuration)</dd>
+                                    @Html.HiddenFor(model => model.leaveDuration)
+                                }
+
+                                @if (Model.leaveTypeName.Equals("Short_Hours"))
+                                {
+                                    <dt>@Html.DisplayNameFor(model => model.shortStartTime)</dt>
+                                    <dd>@Html.DisplayFor(model => model.shortStartTime)</dd>
+                                    @Html.HiddenFor(model => model.shortStartTime)
+
+                                    <dt>@Html.DisplayNameFor(model => model.shortEndTime)</dt>
+                                    <dd>@Html.DisplayFor(model => model.shortEndTime)</dd>
+                                    @Html.HiddenFor(model => model.shortEndTime)
+
+                                }
+
+                                <dt>@Html.DisplayNameFor(model => model.comments)</dt>
+                                <dd style="word-break: break-word">@Html.DisplayFor(model => model.comments)</dd>
+                                @Html.HiddenFor(model => model.comments)
+
+                                <dt>@Html.DisplayNameFor(model => model.documentation)</dt>
+                                <dd style="word-break: break-word"><a target="_blank" href='\App_Data\Documentation\@Model.leaveAppID-@Model.documentation'>@Html.DisplayFor(model => model.documentation)</a></dd>
+                                @Html.HiddenFor(model => model.documentation)
+
+                                @if (Model.leaveTypeName.Equals("Annual"))
+                                {
+                                    <dt>@Html.DisplayNameFor(model => model.bookAirTicket)</dt>
+                                    <dd>@Html.DisplayFor(model => model.bookAirTicket)</dd>
+                                    @Html.HiddenFor(model => model.bookAirTicket)
+
+                                    <dt>@Html.DisplayNameFor(model => model.email)</dt>
+                                    <dd style="word-break: break-word">@Html.DisplayFor(model => model.email)</dd>
+                                }
+
+                                @if (Model.leaveTypeName.Equals("Annual") || Model.leaveTypeName.Equals("Maternity"))
+                                {
+                                    <dt>@Html.DisplayNameFor(model => model.contactDetails)</dt>
+                                    <dd>@Html.DisplayFor(model => model.contactDetails)</dd>
+                                    @Html.HiddenFor(model => model.contactDetails)
+                                }
+
+                                <dt>@Html.DisplayNameFor(model => model.lmComment)</dt>
+                                <dd>@Html.TextAreaFor(model => model.lmComment, new { rows = "6", cols = "35" })</dd>
+                                <dd>@Html.ValidationMessageFor(model => model.lmComment, "", new { @class = "text-danger" })</dd>
+                            </dl>
+                            <hr />
+                        </div>
+                        <div class="form-group">
+                            <div class="row col-md-offset-2">
+                                <input type="submit" name="submit" id="submit" class="btn btn-success col-md-4" value="Approve" />
+                                <input type="submit" name="submit" id="reject" class="btn btn-danger col-md-offset-1 col-md-4" value="Reject" />
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
         }
         <div class="col-md-5">
             @{
@@ -299,3 +297,6 @@
     </div>
 </div>
 
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
