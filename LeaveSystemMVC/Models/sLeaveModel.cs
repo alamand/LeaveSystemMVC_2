@@ -40,6 +40,8 @@ namespace LeaveSystemMVC.Models
         [DisplayName("Half Day")]
         public bool isReturnDateHalfDay { get; set; }
 
+        [DisplayName("Return Date")]
+        [Required(ErrorMessage = "A valid Return Date is required.")]
         public DateTime returnDate { get; set; }
 
         [Display(Name = "Duration")]
