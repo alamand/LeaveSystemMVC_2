@@ -39,18 +39,18 @@
                 {
                     @Html.HiddenFor(model => Model[i].empId)
                     <tr>
-                        <td>@Model[i].empId</td>
+                        <td align="center">@Model[i].empId</td>
                         <td>@employeeList[Model[i].empId]</td>
 
                         @Html.HiddenFor(model => Model[i].daysInLieuID)
                         <td style="text-align: center">@Html.DisplayFor(Model => Model[i].daysInLieu)</td>
                         @{ var rollUpDIL = Model[i].daysInLieu + quotaBalance.daysInLieu; }
-                        <td align="center">@Html.TextBoxFor(Model => Model[i].daysInLieu, new { @Value = rollUpDIL, style = "width:5em; text-align: center", @class = "form-control" })</td>
+                        <td align="center">@Html.TextBoxFor(Model => Model[i].daysInLieu, new { @Value = rollUpDIL, style = "width:5em; text-align: center", @class = "form-control", @onkeypress = "return isNumberKey(event,this)" })</td>
 
                         @Html.HiddenFor(model => Model[i].annualID)
                         <td style="text-align: center">@Html.DisplayFor(Model => Model[i].annual)</td>
                         @{ var rollUpAnnual = Model[i].annual + quotaBalance.annual; }
-                        <td align="center">@Html.TextBoxFor(Model => Model[i].annual, new { @Value = rollUpAnnual, style = "width:5em; text-align: center;", @class = "form-control" })</td>
+                        <td align="center">@Html.TextBoxFor(Model => Model[i].annual, new { @Value = rollUpAnnual, style = "width:5em; text-align: center;", @class = "form-control", @onkeypress = "return isNumberKey(event,this)" })</td>
                     </tr>
                 }
             </table>
@@ -92,6 +92,19 @@
                     }
                 }
             }
+        }
+
+        function isNumberKey(evt, obj) {
+
+            var charCode = (evt.which) ? evt.which : event.keyCode
+            var value = obj.value;
+            var dotContains = value.indexOf(".") != -1;
+            if (dotContains)
+                if (charCode == 46) return false;
+            if (charCode == 46) return true;
+            if (charCode > 31 && (charCode < 48 || charCode > 57))
+                return false;
+            return true;
         }
     </script>
 }

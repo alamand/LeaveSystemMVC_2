@@ -22,8 +22,8 @@
             <tr>
                 <td>@Html.LabelFor(model => model.annual)</td>
                 <td style="text-align: center">@Model.annual</td>
-                <td align="center">@Html.TextBoxFor(Model => Model.annual, new { @Value = Model.annual, style = "width:5em; text-align: center;", @class ="form-control" })</td>
-                <td>@Html.TextBoxFor(Model => Model.editCommentAnnual, new { @Value = Model.editCommentAnnual, @class = "form-control" }) 
+                <td align="center">@Html.TextBoxFor(Model => Model.annual, new { @id = "annual", @OriginalValue = Model.annual, @Value = Model.annual, style = "width:5em; text-align: center;", @class ="form-control", @onkeypress = "return isNumberKey(event,this)", @onchange = "commentRequired(this.id)" })</td>
+                <td>@Html.TextBoxFor(Model => Model.editCommentAnnual, new { @id = "annual_Comment", @Value = Model.editCommentAnnual, @class = "form-control" }) 
                     @Html.ValidationMessageFor(Model => Model.editCommentAnnual, "", new { @class = "text-danger" })</td>
                 @Html.HiddenFor(Model => Model.annualID)
             </tr>
@@ -31,8 +31,8 @@
             <tr>
                 <td>@Html.LabelFor(model => model.maternity)</td>
                 <td style="text-align: center">@Model.maternity </td>
-                <td align="center">@Html.TextBoxFor(Model => Model.maternity, new { @Value = Model.maternity, style = "width:5em; text-align: center;", @class = "form-control" })</td>
-                <td >@Html.TextBoxFor(Model => Model.editCommentMaternity, new { @Value = Model.editCommentMaternity, @class = "form-control" })
+                <td align="center">@Html.TextBoxFor(Model => Model.maternity, new { @id = "maternity", @OriginalValue = Model.annual, @maternity = Model.maternity, style = "width:5em; text-align: center;", @class = "form-control", @onkeypress = "return isNumberKey(event,this)", @onchange = "commentRequired(this.id)" })</td>
+                <td >@Html.TextBoxFor(Model => Model.editCommentMaternity, new { @id = "maternity_Comment", @Value = Model.editCommentMaternity, @class = "form-control" })
                     @Html.ValidationMessageFor(Model => Model.editCommentMaternity, "", new { @class = "text-danger" })</td>
                 @Html.HiddenFor(Model => Model.maternityID)
             </tr>
@@ -40,32 +40,32 @@
             <tr>
                 <td>@Html.LabelFor(model => model.sick)</td>
                 <td style="text-align: center">@Model.sick</td>
-                <td align="center">@Html.TextBoxFor(Model => Model.sick, new { @Value = Model.sick, style = "width:5em; text-align: center;", @class = "form-control" })</td>
-                <td>@Html.TextBoxFor(Model => Model.editCommentSick, new { @Value = Model.editCommentSick, @class = "form-control" })
+                <td align="center">@Html.TextBoxFor(Model => Model.sick, new { @id = "sick", @OriginalValue = Model.sick, @Value = Model.sick, style = "width:5em; text-align: center;", @class = "form-control", @onkeypress = "return isNumberKey(event,this)", @onchange = "commentRequired(this.id)" })</td>
+                <td>@Html.TextBoxFor(Model => Model.editCommentSick, new { @id = "sick_Comment", @Value = Model.editCommentSick, @class = "form-control" })
                     @Html.ValidationMessageFor(Model => Model.editCommentSick, "", new { @class = "text-danger" })</td>
                 @Html.HiddenFor(Model => Model.sickID)
             </tr>
             <tr>
                 <td>@Html.LabelFor(model => model.daysInLieu)</td>
                 <td style="text-align: center">@Model.daysInLieu</td>
-                <td align="center">@Html.TextBoxFor(Model => Model.daysInLieu, new { @Value = Model.daysInLieu, style = "width:5em; text-align: center;", @class = "form-control" })</td>
-                <td>@Html.TextBoxFor(Model => Model.editCommentDIL, new { @Value = Model.editCommentDIL, @class = "form-control" })
+                <td align="center">@Html.TextBoxFor(Model => Model.daysInLieu, new { @id = "daysInLieu", @OriginalValue = Model.daysInLieu, @Value = Model.daysInLieu, style = "width:5em; text-align: center;", @class = "form-control", @onkeypress = "return isNumberKey(event,this)", @onchange = "commentRequired(this.id)" })</td>
+                <td>@Html.TextBoxFor(Model => Model.editCommentDIL, new { @id = "daysInLieu_Comment", @Value = Model.editCommentDIL, @class = "form-control"})
                     @Html.ValidationMessageFor(Model => Model.editCommentDIL, "", new { @class = "text-danger" })</td>
                 @Html.HiddenFor(Model => Model.daysInLieuID)
             </tr>
             <tr>
                 <td>@Html.LabelFor(model => model.compassionate)</td>
                 <td style="text-align: center">@Model.compassionate</td>
-                <td align="center">@Html.TextBoxFor(Model => Model.compassionate, new { @Value = Model.compassionate, style = "width:5em; text-align: center;", @class = "form-control" })</td>
-                <td>@Html.TextBoxFor(Model => Model.editCommentCompassionate, new { @Value = Model.editCommentCompassionate, @class = "form-control" })
+                <td align="center">@Html.TextBoxFor(Model => Model.compassionate, new { @id = "compassionate", @OriginalValue = Model.compassionate, @Value = Model.compassionate, style = "width:5em; text-align: center;", @class = "form-control", @onkeypress = "return isNumberKey(event,this)", @onchange = "commentRequired(this.id)" })</td>
+                <td>@Html.TextBoxFor(Model => Model.editCommentCompassionate, new { @id = "compassionate_Comment", @Value = Model.editCommentCompassionate, @class = "form-control" })
                     @Html.ValidationMessageFor(Model => Model.editCommentCompassionate, "", new { @class = "text-danger" })</td>
                 @Html.HiddenFor(Model => Model.compassionateID)
             </tr>
             <tr>
                 <td>@Html.LabelFor(model => model.shortHours)</td>
                 <td style="text-align: center">@Model.shortHours</td>
-                <td align="center">@Html.TextBoxFor(Model => Model.shortHours, new { @Value = Model.shortHours, style = "width:5em; text-align: center;", @class = "form-control" })</td>
-                <td>@Html.TextBoxFor(Model => Model.editCommentShortHours, new { @Value = Model.editCommentShortHours, @class = "form-control" })
+                <td align="center">@Html.TextBoxFor(Model => Model.shortHours, new { @id = "shortHours", @OriginalValue = Model.shortHours, @Value = Model.shortHours, style = "width:5em; text-align: center;", @class = "form-control", @onkeypress = "return isNumberKey(event,this)", @onchange = "commentRequired(this.id)" })</td>
+                <td>@Html.TextBoxFor(Model => Model.editCommentShortHours, new { @id = "shortHours_Comment", @Value = Model.editCommentShortHours, @class = "form-control" })
                     @Html.ValidationMessageFor(Model => Model.editCommentShortHours, "", new { @class = "text-danger" })</td>
                 @Html.HiddenFor(Model => Model.shortHoursID)
             </tr>
@@ -74,8 +74,8 @@
             <tr>
                 <td>@Html.LabelFor(model => model.pilgrimage)</td>
                 <td style="text-align: center">@Model.pilgrimage</td>
-                <td align="center">@Html.TextBoxFor(Model => Model.pilgrimage, new { @Value = Model.pilgrimage, style = "width:5em; text-align: center;", @class = "form-control" })</td>
-                <td>@Html.TextBoxFor(Model => Model.editCommentPilgrimage, new { @Value = Model.editCommentPilgrimage, @class = "form-control" })
+                <td align="center">@Html.TextBoxFor(Model => Model.pilgrimage, new { @id = "pilgrimage", @OriginalValue = Model.pilgrimage, @Value = Model.pilgrimage, style = "width:5em; text-align: center;", @class = "form-control", @onkeypress = "return isNumberKey(event,this)", @onchange = "commentRequired(this.id)" })</td>
+                <td>@Html.TextBoxFor(Model => Model.editCommentPilgrimage, new { @id = "pilgrimage_Comment", @Value = Model.editCommentPilgrimage, @class = "form-control" })
                     @Html.ValidationMessageFor(Model => Model.editCommentPilgrimage, "", new { @class = "text-danger" })</td>
                 @Html.HiddenFor(Model => Model.pilgrimageID)
             </tr>
@@ -83,8 +83,8 @@
             <tr>
                 <td>@Html.LabelFor(model => model.unpaid)</td>
                 <td style="text-align: center">@Model.unpaid</td>
-                <td align="center">@Html.TextBoxFor(Model => Model.unpaid, new { @Value = Model.unpaid, style = "width:5em; text-align: center;", @class = "form-control" })</td>
-                <td>@Html.TextBoxFor(Model => Model.editCommentUnpaid, new { @Value = Model.editCommentUnpaid, @class = "form-control" })
+                <td align="center">@Html.TextBoxFor(Model => Model.unpaid, new { @id = "unpaid", @OriginalValue = Model.unpaid, @Value = Model.unpaid, style = "width:5em; text-align: center;", @class = "form-control", @onkeypress = "return isNumberKey(event,this)", @onchange = "commentRequired(this.id)" })</td>
+                <td>@Html.TextBoxFor(Model => Model.editCommentUnpaid, new { @id = "unpaid_Comment", @Value = Model.editCommentUnpaid, @class = "form-control" })
                     @Html.ValidationMessageFor(Model => Model.editCommentUnpaid, "", new { @class = "text-danger" })</td>
                 @Html.HiddenFor(Model => Model.unpaidID)
             </tr>
@@ -106,4 +106,28 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        function commentRequired(valueField)
+        {
+            var newValue = parseFloat($("#" + valueField).val());
+            var OriginalValue = $("#" + valueField).attr("OriginalValue");
+            newValue.toFixed(2);
+            document.getElementById(valueField + "_Comment").required = (newValue != OriginalValue);
+        }
+
+        function isNumberKey(evt, obj) {
+
+            var charCode = (evt.which) ? evt.which : event.keyCode
+            var value = obj.value;
+            var dotContains = value.indexOf(".") != -1;
+            if (dotContains)
+                if (charCode == 46) return false;
+            if (charCode == 46) return true;
+            if (charCode > 31 && (charCode < 48 || charCode > 57))
+                return false;
+            return true;
+        }
+
+    </script>
 }

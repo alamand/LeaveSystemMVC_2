@@ -10,63 +10,83 @@
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
-    <div class="col-md-8">
-        <table class="table">
-            <tr>
-                <th class="col-md-2">Leave Type</th>
-                <th class="col-md-2" style="text-align: center">Default Quota</th>
-                <th class="col-md-2" style="text-align: center">New Default Quota</th>
-            </tr>
-            <tr>
-                @Html.HiddenFor(model => model.annualID)
-                <td>@Html.LabelFor(model => model.annual)</td>
-                <td style="text-align: center">@Model.annual</td>
-                <td align="center">@Html.EditorFor(model => model.annual, new { htmlAttributes = new { @style = "width:5em; text-align: center;", @class = "form-control", @Value = Model.annual } })</td>
-            </tr>
-            <tr>
-                @Html.HiddenFor(model => model.maternityID)
-                <td>@Html.LabelFor(model => model.maternity)</td>
-                <td style="text-align: center">@Model.maternity</td>
-                <td align="center">@Html.EditorFor(model => model.maternity, new { htmlAttributes = new { @style = "width:5em; text-align: center;", @class = "form-control", @Value = Model.maternity } })</td>
-            </tr>
-            <tr>
-                @Html.HiddenFor(model => model.sickID)
-                <td>@Html.LabelFor(model => model.sick)</td>
-                <td style="text-align: center">@Model.sick</td>
-                <td align="center">@Html.EditorFor(model => model.sick, new { htmlAttributes = new { @style = "width:5em; text-align: center;", @class = "form-control", @Value = Model.sick } })</td>
-            </tr>
-            <tr>
-                @Html.HiddenFor(model => model.compassionateID)
-                <td>@Html.LabelFor(model => model.compassionate)</td>
-                <td style="text-align: center">@Model.compassionate</td>
-                <td align="center">@Html.EditorFor(model => model.compassionate, new { htmlAttributes = new { @style = "width:5em; text-align: center;", @class = "form-control", @Value = Model.compassionate } })</td>
-            </tr>
-            <tr>
-                @Html.HiddenFor(model => model.shortHoursID)
-                <td>@Html.LabelFor(model => model.shortHours)</td>
-                <td style="text-align: center">@Model.shortHours</td>
-                <td align="center">@Html.EditorFor(model => model.shortHours, new { htmlAttributes = new { @style = "width:5em; text-align: center;", @class = "form-control", @Value = Model.shortHours } })</td>
-            </tr>
-            <tr>
-                @Html.HiddenFor(model => model.pilgrimageID)
-                <td>@Html.LabelFor(model => model.pilgrimage)</td>
-                <td style="text-align: center">@Model.pilgrimage</td>
-                <td align="center">@Html.EditorFor(model => model.pilgrimage, new { htmlAttributes = new { @style = "width:5em; text-align: center;", @class = "form-control", @Value = Model.pilgrimage } })</td>
-            </tr>
-        </table>
-        <hr />
+        <div class="col-md-8">
+            <table class="table">
+                <tr>
+                    <th class="col-md-2">Leave Type</th>
+                    <th class="col-md-2" style="text-align: center">Default Quota</th>
+                    <th class="col-md-2" style="text-align: center">New Default Quota</th>
+                </tr>
+                <tr>
+                    @Html.HiddenFor(model => model.annualID)
+                    <td>@Html.LabelFor(model => model.annual)</td>
+                    <td style="text-align: center">@Model.annual</td>
+                    <td align="center">@Html.EditorFor(model => model.annual, new { htmlAttributes = new { @style = "width:5em; text-align: center;", @class = "form-control", @Value = Model.annual, @onkeypress = "return isNumberKey(event,this)" } })</td>
+                </tr>
+                <tr>
+                    @Html.HiddenFor(model => model.maternityID)
+                    <td>@Html.LabelFor(model => model.maternity)</td>
+                    <td style="text-align: center">@Model.maternity</td>
+                    <td align="center">@Html.EditorFor(model => model.maternity, new { htmlAttributes = new { @style = "width:5em; text-align: center;", @class = "form-control", @Value = Model.maternity, @onkeypress = "return isNumberKey(event,this)" } })</td>
+                </tr>
+                <tr>
+                    @Html.HiddenFor(model => model.sickID)
+                    <td>@Html.LabelFor(model => model.sick)</td>
+                    <td style="text-align: center">@Model.sick</td>
+                    <td align="center">@Html.EditorFor(model => model.sick, new { htmlAttributes = new { @style = "width:5em; text-align: center;", @class = "form-control", @Value = Model.sick, @onkeypress = "return isNumberKey(event,this)" } })</td>
+                </tr>
+                <tr>
+                    @Html.HiddenFor(model => model.compassionateID)
+                    <td>@Html.LabelFor(model => model.compassionate)</td>
+                    <td style="text-align: center">@Model.compassionate</td>
+                    <td align="center">@Html.EditorFor(model => model.compassionate, new { htmlAttributes = new { @style = "width:5em; text-align: center;", @class = "form-control", @Value = Model.compassionate, @onkeypress = "return isNumberKey(event,this)" } })</td>
+                </tr>
+                <tr>
+                    @Html.HiddenFor(model => model.shortHoursID)
+                    <td>@Html.LabelFor(model => model.shortHours)</td>
+                    <td style="text-align: center">@Model.shortHours</td>
+                    <td align="center">@Html.EditorFor(model => model.shortHours, new { htmlAttributes = new { @style = "width:5em; text-align: center;", @class = "form-control", @Value = Model.shortHours, @onkeypress = "return isNumberKey(event,this)" } })</td>
+                </tr>
+                <tr>
+                    @Html.HiddenFor(model => model.pilgrimageID)
+                    <td>@Html.LabelFor(model => model.pilgrimage)</td>
+                    <td style="text-align: center">@Model.pilgrimage</td>
+                    <td align="center">@Html.EditorFor(model => model.pilgrimage, new { htmlAttributes = new { @style = "width:5em; text-align: center;", @class = "form-control", @Value = Model.pilgrimage, @onkeypress = "return isNumberKey(event,this)"} })</td>
+                </tr>
+            </table>
+            <hr />
 
-        <div class="col-md-offset-4">
-            <a href="@Url.Action("Index", "hrEditDefaultLeaveDuration")" class="btn btn-warning col-md-3">
-                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
-                Undo all
-            </a>
+            <div class="col-md-offset-4">
+                <a href="@Url.Action("Index", "hrEditDefaultLeaveDuration")" class="btn btn-warning col-md-3">
+                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                    Undo all
+                </a>
 
-            <button type="submit" value="Save" class="btn btn-success col-md-offset-1 col-md-3">
-                <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span> Save
-            </button>
+                <button type="submit" value="Save" class="btn btn-success col-md-offset-1 col-md-3">
+                    <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span> Save
+                </button>
+            </div>
+
         </div>
-
-    </div>
     }
 </div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        function isNumberKey(evt, obj) {
+
+            var charCode = (evt.which) ? evt.which : event.keyCode
+            var value = obj.value;
+            var dotContains = value.indexOf(".") != -1;
+            if (dotContains)
+                if (charCode == 46) return false;
+            if (charCode == 46) return true;
+            if (charCode > 31 && (charCode < 48 || charCode > 57))
+                return false;
+            return true;
+        }
+
+    </script>
+}
