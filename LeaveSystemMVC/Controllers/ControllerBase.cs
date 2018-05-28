@@ -924,7 +924,7 @@ namespace LeaveSystemMVC.Controllers
 
                 // Add a logo to the top left of the page
                 XImage image = XImage.FromFile(Server.MapPath("~/Content/TAG_logo.png"));
-                gfx.DrawImage(image, 0, 0, 150, 65);
+                gfx.DrawImage(image, 0, 0, 150, 50);
 
                 // Add a title to the top center of the page
                 gfx.DrawString("LEAVE APPLICATION", fontTitle, XBrushes.Black, new XRect(0, 15, page.Width, page.Height), XStringFormat.TopCenter);
@@ -947,13 +947,10 @@ namespace LeaveSystemMVC.Controllers
                 gfx.DrawString(leave.leaveAppID.ToString(), fontRegular, XBrushes.Black, xAxisValue, yAxis);
 
                 gfx.DrawString("Leave Type", fontBold, XBrushes.Black, xAxisTitle, yAxis += newLine);
-                gfx.DrawString(leave.leaveTypeName, fontRegular, XBrushes.Black, xAxisValue, yAxis);
+                gfx.DrawString(leave.leaveTypeDisplayName, fontRegular, XBrushes.Black, xAxisValue, yAxis);
 
                 gfx.DrawString("Leave Status", fontBold, XBrushes.Black, xAxisTitle, yAxis += newLine);
                 gfx.DrawString(leave.leaveStatusDisplayName, fontRegular, XBrushes.Black, xAxisValue, yAxis);
-
-                gfx.DrawString("Application Date", fontBold, XBrushes.Black, xAxisTitle, yAxis += newLine);
-                gfx.DrawString(leave.applicationDate.ToString("dd/MM/yyyy"), fontRegular, XBrushes.Black, xAxisValue, yAxis);
 
                 gfx.DrawString("Employee ID", fontBold, XBrushes.Black, xAxisTitle, yAxis += newLine);
                 gfx.DrawString(leave.employeeID.ToString(), fontRegular, XBrushes.Black, xAxisValue, yAxis);
@@ -993,7 +990,7 @@ namespace LeaveSystemMVC.Controllers
                 gfx.DrawString("Personal E-Mail", fontBold, XBrushes.Black, xAxisTitle + 20, yAxis = yAxis + 20);
                 gfx.DrawString(leave.email, fontRegular, XBrushes.Black, xAxisValue, yAxis);
 
-                gfx.DrawString("Comments", fontBold, XBrushes.Black, xAxisTitle, yAxis = yAxis + 20);
+                gfx.DrawString("Employee Comment", fontBold, XBrushes.Black, xAxisTitle, yAxis = yAxis + 20);
                 tf.DrawString(leave.comments, fontRegular, XBrushes.Black, new XRect(xAxisValue, yAxis - 10, 350, 100));
 
                 // Draw the header above the second box
@@ -1016,7 +1013,7 @@ namespace LeaveSystemMVC.Controllers
                 Tuple<int, DateTime> approvalHR = DBGetLeaveApproval(leave.leaveAppID, "HR");
                 sEmployeeModel approvalHREmployee = GetEmployeeModel(approvalHR.Item1);
 
-                gfx.DrawString("Received by HR Dept.", fontBold, XBrushes.Black, xAxisTitle, yAxis = yAxis + 100);
+                gfx.DrawString("HR Head", fontBold, XBrushes.Black, xAxisTitle, yAxis = yAxis + 100);
                 gfx.DrawString(approvalHREmployee.firstName + " " + approvalHREmployee.lastName, fontRegular, XBrushes.Black, xAxisValue, yAxis);
 
                 gfx.DrawString("Date", fontBold, XBrushes.Black, xAxisTitle, yAxis += newLine);
