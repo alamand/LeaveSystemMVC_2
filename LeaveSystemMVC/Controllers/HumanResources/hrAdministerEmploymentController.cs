@@ -1,23 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data.SqlClient;
 using System.Web.Mvc;
-using Microsoft.SqlServer.Management.Smo;
-using Microsoft.SqlServer.Management.Smo.Agent;
+using System.Data;
+using System.Data.SqlClient;
+using System.Collections.Generic;
 using LeaveSystemMVC.Models;
 
 namespace LeaveSystemMVC.Controllers
 {
-    public class hrAdministerEmploymentController : ControllerBase
+    public class hrAdministerEmploymentController : BaseController
     {
         // GET: hrAdministerEmployment
         public ActionResult Index(int selectedEmployee = 0)
         {
+            Dictionary dic = new Dictionary();
+
             SetMessageViewBags();
 
             // gets and stores to the ViewData all available Employees from the DB and adds a default key of 0 for de-selecting 
-            ViewData["EmployeeList"] = AddDefaultToDictionary(DBStaffList(), 0, "- Select Employee -");
+            ViewData["EmployeeList"] = dic.AddDefaultToDictionary(dic.GetStaff(), 0, "- Select Employee -");
 
             // this sets the default selection, or the user selection from the dropdown
             ViewData["selectedEmployee"] = selectedEmployee;
@@ -26,14 +26,14 @@ namespace LeaveSystemMVC.Controllers
             if (selectedEmployee != 0)
             {
                 // create a list of employment periods (note that this is with the same employee/staff ID)
-                List<sEmployeeModel> employmentList = GetEmploymentPeriod(selectedEmployee);
+                List<Employee> employmentList = GetEmploymentPeriod(selectedEmployee);
 
                 // does these employment periods ends with an End Date, in other words, does the last employment period has an End Date?
                 // if yes, then create a new empty employment period for the user to fill in the Start Date
                 // else, the user will have to fill in the End Date for the latest Start Date
                 if (IsEndDateExist(employmentList))
                 {
-                    sEmployeeModel emp = new sEmployeeModel();
+                    Employee emp = new Employee();
                     emp.staffID = selectedEmployee;
                     employmentList.Add(emp);
                 }
@@ -49,17 +49,18 @@ namespace LeaveSystemMVC.Controllers
         }
 
         [HttpPost]
-        public ActionResult Index(List<sEmployeeModel> employmentList)
+        public ActionResult Index(List<Employee> employmentList)
         {
-            string queryString;
+            Dictionary dic = new Dictionary();
+            DataBase db = new DataBase();
 
             // gets the latest employment period.
-            sEmployeeModel latestEmployment = employmentList[employmentList.Count - 1];
+            Employee latestEmployment = employmentList[employmentList.Count - 1];
 
             // checks if the start date for this employment period already exist in DB.
             // true if the DB has the Start Date and not the End Date
             // false if the DB does not have any record for this staff ID with this Start Date
-            Boolean startDateExist = IsStartDateExist((int)latestEmployment.staffID, latestEmployment.empStartDate);
+            bool startDateExist = IsStartDateExist(latestEmployment.staffID, latestEmployment.empStartDate);
 
             // if the DB does not have a record for this Start Date, and the Start Date is entered by the user.
             if (!startDateExist && !latestEmployment.empStartDate.ToShortDateString().Equals("01/01/0001"))
@@ -67,10 +68,16 @@ namespace LeaveSystemMVC.Controllers
                 // is the entered start date at least one day after the previous end date?
                 if (latestEmployment.empStartDate > employmentList[employmentList.Count-2].empEndDate)
                 {
-                    queryString = "INSERT INTO dbo.Employment_Period (Employee_ID, Emp_Start_Date) VALUES ('" + latestEmployment.staffID + "', '" + latestEmployment.empStartDate.ToString("yyyy-MM-dd") + "')";
-                    DBExecuteQuery(queryString);
-                    ChangeAccountStatus((int)latestEmployment.staffID, true, latestEmployment.empStartDate);
-                    TempData["SuccessMessage"] = "You have successfully updated the employment period for <b>" + DBEmployeeList()[(int)latestEmployment.staffID] + "</b>.";
+                    if (InsertEmploymentStartDate(latestEmployment.staffID, latestEmployment.empStartDate))
+                    {
+
+                        db.AddEmploymentPeriodSchedule((int)latestEmployment.staffID, latestEmployment.empStartDate, true);
+                        TempData["SuccessMessage"] = "You have successfully updated the employment period for <b>" + dic.GetEmployee()[(int)latestEmployment.staffID] + "</b>.";
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "Something went wrong. Please try again or contact technical support.";
+                    }
                 }
                 else
                 {
@@ -86,11 +93,15 @@ namespace LeaveSystemMVC.Controllers
                 // is the entered end date at least one day after the start date?
                 if (latestEmployment.empEndDate > latestEmployment.empStartDate)
                 {
-                    queryString = "UPDATE dbo.Employment_Period SET Emp_End_Date = '" + latestEmployment.empEndDate.ToString("yyyy-MM-dd") + "'" +
-                    " WHERE Employee_ID = '" + latestEmployment.staffID + "' AND Emp_Start_Date = '" + latestEmployment.empStartDate.ToString("yyyy-MM-dd") + "'";
-                    DBExecuteQuery(queryString);
-                    ChangeAccountStatus((int)latestEmployment.staffID, false, latestEmployment.empEndDate);
-                    TempData["SuccessMessage"] = "You have successfully updated employment period for <b>" + DBEmployeeList()[(int)latestEmployment.staffID] + "</b>.";
+                    if (UpdateEmploymentEndDate(latestEmployment.staffID, latestEmployment.empStartDate, latestEmployment.empEndDate))
+                    {
+                        db.AddEmploymentPeriodSchedule((int)latestEmployment.staffID, latestEmployment.empEndDate, false);
+                        TempData["SuccessMessage"] = "You have successfully updated employment period for <b>" + dic.GetEmployee()[(int)latestEmployment.staffID] + "</b>.";
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "Something went wrong. Please try again or contact technical support.";
+                    }
                 }
                 else
                 {
@@ -103,7 +114,7 @@ namespace LeaveSystemMVC.Controllers
             else
             {
                 // gets and stores to the ViewData all available Employees from the DB and adds a default key of 0 for de-selecting 
-                ViewData["EmployeeList"] = AddDefaultToDictionary(DBEmployeeList(), 0, "- Select Employee -");
+                ViewData["EmployeeList"] = dic.AddDefaultToDictionary(dic.GetEmployee(), 0, "- Select Employee -");
 
                 // this sets the default selection, or the user selection from the dropdown
                 ViewData["selectedEmployee"] = latestEmployment.staffID;
@@ -120,25 +131,42 @@ namespace LeaveSystemMVC.Controllers
             return RedirectToAction("Index", new { selectedEmployee = id });
         }
 
-        private Boolean IsStartDateExist(int empID, DateTime startDate)
+        private bool InsertEmploymentStartDate(int? empID, DateTime startDate)
         {
-            bool isExist = false;
-            string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            var queryString = "SELECT COUNT(*) FROM dbo.Employment_Period WHERE Employee_ID = '" + empID + "' AND Emp_Start_Date = '" + startDate.ToString("yyyy-MM-dd") + "' AND Emp_End_Date IS NULL";
-
-            using (var connection = new SqlConnection(connectionString))
-            {
-                var command = new SqlCommand(queryString, connection);
-                connection.Open();
-                isExist = ((int)command.ExecuteScalar() > 0) ? true : false;
-                connection.Close();
-            }
-            return isExist;
+            SqlCommand cmd = new SqlCommand();
+            cmd.Parameters.Add("@staffID", SqlDbType.Int).Value = (int)empID;
+            cmd.Parameters.Add("@startDate", SqlDbType.NChar).Value = startDate.ToString("yyyy-MM-dd");
+            cmd.CommandText = "INSERT INTO dbo.Employment_Period (Employee_ID, Emp_Start_Date) VALUES (@empID, @startDate)";
+            DataBase db = new DataBase();
+            bool success = db.Execute(cmd);
+            return success;
         }
 
-        private Boolean IsEndDateExist(List<sEmployeeModel> employmentList)
+        private bool UpdateEmploymentEndDate(int? empID, DateTime startDate, DateTime endDate)
         {
-            Boolean isExist = false;
+            SqlCommand cmd = new SqlCommand();
+            cmd.Parameters.Add("@empID", SqlDbType.Int).Value = (int)empID;
+            cmd.Parameters.Add("@startDate", SqlDbType.NChar).Value = startDate.ToString("yyyy-MM-dd");
+            cmd.Parameters.Add("@endDate", SqlDbType.NChar).Value = endDate.ToString("yyyy-MM-dd");
+            cmd.CommandText = "UPDATE dbo.Employment_Period SET Emp_End_Date = @endDate WHERE Employee_ID = @empID AND Emp_Start_Date = @startDate";
+            DataBase db = new DataBase();
+            bool success = db.Execute(cmd);
+            return success;
+        }
+
+        private bool IsStartDateExist(int? empID, DateTime startDate)
+        {
+            SqlCommand cmd = new SqlCommand();
+            cmd.Parameters.Add("@empID", SqlDbType.Int).Value = (int)empID;
+            cmd.Parameters.Add("@startDate", SqlDbType.NChar).Value = startDate.ToString("yyyy-MM-dd");
+            cmd.CommandText = "SELECT COUNT(*) FROM dbo.Employment_Period WHERE Employee_ID = @empID AND Emp_Start_Date = @startDate AND Emp_End_Date IS NULL";
+            DataBase db = new DataBase();
+            return db.Contains(cmd);
+        }
+
+        private bool IsEndDateExist(List<Employee> employmentList)
+        {
+            bool isExist = false;
             DateTime defaultDate = new DateTime(0001, 01, 01);
 
             foreach (var employment in employmentList)
@@ -148,34 +176,6 @@ namespace LeaveSystemMVC.Controllers
             }
 
             return isExist;
-        }
-
-        private void ChangeAccountStatus(int empID, Boolean status, DateTime date)
-        {
-            // Get instance of SQL Agent SMO object
-            Server server = new Server("."); 
-            JobServer jobServer = server.JobServer;
-
-            // Create a schedule, set it to be executed once at the specified date
-            JobSchedule schedule = new JobSchedule(jobServer, "Schedule_For_" + empID);
-            schedule.FrequencyTypes = FrequencyTypes.OneTime;
-            schedule.ActiveStartDate = date;
-            schedule.IsEnabled = true;
-            schedule.Create();
-
-            // Create Job and assign the schedule to it
-            Job job = new Job(jobServer, "Account_Status_" + DateTime.Now);
-            job.Create();
-            job.AddSharedSchedule(schedule.ID);
-            job.ApplyToTargetServer(server.Name);
-
-            // Create Job Step to activate/de-activate an account and delete the Job once done
-            JobStep step = new JobStep(job, status + "-" + empID);
-            step.Command = "UPDATE dbo.Employee SET Account_Status = '" + status + "' WHERE Employee_ID = '" + empID + "'; " +
-                "USE msdb; EXEC sp_delete_job @job_name = N'" + job.Name + "';";
-            step.SubSystem = AgentSubSystem.TransactSql;
-            step.DatabaseName = "LeaveSystem";
-            step.Create();
         }
     }
 }

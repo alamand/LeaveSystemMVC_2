@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
+using System.Collections.Generic;
+using LeaveSystemMVC.Models;
 
 namespace LeaveSystemMVC.Controllers
 {
-    public class sLeaveBalanceController : ControllerBase
+    public class sLeaveBalanceController : BaseController
     {
         // GET: sLeaveBalance
         public ActionResult Index()
@@ -23,5 +20,23 @@ namespace LeaveSystemMVC.Controllers
 
             return View(model);
         }
+
+        private bool IsPilgrimageAllowed(int empID)
+        {
+            Employee emp = GetEmployeeModel(empID);
+            List<Employee> employmentList = GetEmploymentPeriod(empID);
+
+            // gets the latest employment period.
+            Employee latestEmployment = employmentList[employmentList.Count - 1];
+            TimeSpan diff = DateTime.Today - latestEmployment.empStartDate;
+            double years = diff.TotalDays / 365.25;
+
+            Dictionary dic = new Dictionary();
+            if (dic.GetReligion()[emp.religionID].Equals("Muslim") && years >= 5)
+                return true;
+            else
+                return false;
+        }
+
     }
 }

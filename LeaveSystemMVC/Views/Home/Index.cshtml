@@ -1,9 +1,6 @@
 ﻿@Html.Partial("_LeftMenu")
 @{ ViewBag.Title = "Home"; }
-@if (User.IsInRole("Staff"))
-{
-    <br><br>
-}
+
 <div class="col-md-10">
     <h4>Welcome, @Session["UserName"]!</h4>
     Please select a menu option below. 

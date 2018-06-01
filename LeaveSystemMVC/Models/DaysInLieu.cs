@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace LeaveSystemMVC.Models
 {
-    public class hrDaysInLieu
+    public class DaysInLieu
     {
         public int employeeID { set; get; }
 

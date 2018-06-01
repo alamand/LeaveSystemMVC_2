@@ -1,4 +1,4 @@
-﻿@model LeaveSystemMVC.Models.sleaveBalanceModel
+﻿@model LeaveSystemMVC.Models.Balance
 @Html.Partial("_LeftMenu")
 @{ ViewBag.Title = "Edit Organization-wide Leave Quotas"; }
 
@@ -76,13 +76,12 @@
 
     <script>
         function isNumberKey(evt, obj) {
-
-            var charCode = (evt.which) ? evt.which : event.keyCode
+            var charCode = evt.which ? evt.which : event.keyCode;
             var value = obj.value;
-            var dotContains = value.indexOf(".") != -1;
+            var dotContains = value.indexOf(".") !== -1;
             if (dotContains)
-                if (charCode == 46) return false;
-            if (charCode == 46) return true;
+                if (charCode === 46) return false;
+            if (charCode === 46) return true;
             if (charCode > 31 && (charCode < 48 || charCode > 57))
                 return false;
             return true;

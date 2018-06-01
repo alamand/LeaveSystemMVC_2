@@ -1,20 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
+using System.Web.Mvc;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using System.Globalization;
-using System.Collections;
-using System.Data;
+using System.Diagnostics;
+using System.Collections.Generic;
 using LeaveSystemMVC.Models;
 
 namespace LeaveSystemMVC.Controllers
 {
-    public class hrHolidaysCalenderController : ControllerBase
+    public class hrHolidaysCalendarController : BaseController
     {
-        // GET: hrHolidaysCalender
+        // GET: hrHolidaysCalendar
         public ActionResult Index(int? filterYear = null)
         {
             // if the filter is not selected (commonly when the page is loaded for the first time), display the current year.
@@ -22,7 +19,7 @@ namespace LeaveSystemMVC.Controllers
 
             var yearList = YearList();
 
-            List<hrHolidaysCalender> model = GetHolidayList(filterYear);
+            List<Holiday> model = GetHolidayList(filterYear);
             if (model.Count == 0 && yearList.Count > 0)
             {
                 model = GetHolidayList(yearList.Keys.First());
@@ -52,23 +49,18 @@ namespace LeaveSystemMVC.Controllers
         public Dictionary<int, string> YearList()
         {
             Dictionary<int, string> years = new Dictionary<int, string>();
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "SELECT DISTINCT year(Date) as Year FROM dbo.Public_Holiday";
 
-            using (var connection = new SqlConnection(connectionString))
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.CommandText = "SELECT DISTINCT year(Date) as Year FROM dbo.Public_Holiday";
+            DataBase db = new DataBase();
+            DataTable dataTable = db.Fetch(cmd);
+
+            foreach (DataRow row in dataTable.Rows)
             {
-                var command = new SqlCommand(queryString, connection);
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        years.Add((int)reader["Year"], reader["Year"].ToString());
-                    }
-                }
-                connection.Close();
+                years.Add((int)row["Year"], row["Year"].ToString());
             }
-            
+
             return years;
         }
 
@@ -79,7 +71,7 @@ namespace LeaveSystemMVC.Controllers
         }
 
         [HttpPost]
-        public ActionResult CreateHoliday(hrHolidaysCalender holiday)
+        public ActionResult CreateHoliday(Holiday holiday)
         {
             if (holiday.holidayName.Length > 30)
             {
@@ -97,15 +89,17 @@ namespace LeaveSystemMVC.Controllers
                 {
                     if (holiday.date.Year >= DateTime.Today.Year)
                     {
-                        string queryString = "INSERT INTO dbo.Public_Holiday (Name, Date) VALUES('" + holiday.holidayName + "','" + holiday.date.ToString("yyyy-MM-dd") + "')";
-                        DBExecuteQuery(queryString);
+                        DataBase db = new DataBase();
+
+                        SqlCommand cmd = new SqlCommand();
+                        cmd.Parameters.Add("@name", SqlDbType.NChar).Value = holiday.holidayName;
+                        cmd.Parameters.Add("@date", SqlDbType.NChar).Value = holiday.date.ToString("yyyy-MM-dd");
+                        cmd.CommandText = "INSERT INTO dbo.Public_Holiday (Name, Date) VALUES(@name, @date)";
+                        db.Execute(cmd);
 
                         // rebalance all employees with approved applications, 1 to indicate that a holiday is added
                         RebalanceCredit(holiday.date, 1);
-
-                        string auditString = "INSERT INTO dbo.Audit_Public_Holiday (Public_Holiday_ID, Column_Name, Value_After, Created_By, Created_On) " +
-                            "VALUES('" + DBLastIdentity("Public_Holiday_ID", "dbo.Public_Holiday") + "', 'Date' ,'" + holiday.date.ToString("yyyy-MM-dd") + "','" + GetLoggedInID() + "','" + DateTime.Today.ToString("yyyy-MM-dd") + "')";
-                        DBExecuteQuery(auditString);
+                        AddPublicHolidayAudit(holiday.date);
 
                         TempData["SuccessMessage"] = "<b>" + holiday.holidayName + "</b> public holiday has been created successfully.<br/>";
                     }
@@ -137,15 +131,15 @@ namespace LeaveSystemMVC.Controllers
             }
             else
             {
-                string queryString = "DELETE FROM dbo.Public_Holiday WHERE Public_Holiday_ID = " + holidayID;
-                DBExecuteQuery(queryString);
+                DataBase db = new DataBase();
+                SqlCommand cmd = new SqlCommand();
+                cmd.Parameters.Add("@holidayID", SqlDbType.NChar).Value = holidayID;
+                cmd.CommandText = "DELETE FROM dbo.Public_Holiday WHERE Public_Holiday_ID = @holidayID";
+                db.Execute(cmd);
 
                 // rebalance all employees with approved applications, -1 to indicate that a holiday is removed
                 RebalanceCredit(holiday.date, -1);
-
-                string auditString = "INSERT INTO dbo.Audit_Public_Holiday (Public_Holiday_ID, Column_Name, Value_Before, Modified_By, Modified_On) " +
-                      "VALUES('" + holidayID + "', 'Date' ,'" + holiday.date.ToString("yyyy-MM-dd") + "','" + GetLoggedInID() + "','" + DateTime.Today.ToString("yyyy-MM-dd") + "')";
-                DBExecuteQuery(auditString);
+                RemovePublicHolidayAudit(holiday.date);
 
                 TempData["SuccessMessage"] = "<b>" + holiday.holidayName + "</b> public holiday has been removed successfully.<br/>";
 
@@ -156,97 +150,82 @@ namespace LeaveSystemMVC.Controllers
             }
         }
 
-        private bool IsWeekend(DateTime date)
+        private void AddPublicHolidayAudit(DateTime date)
         {
-            bool isWeekend = false;
-
-            if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Friday)
-                isWeekend = true;
-
-            return isWeekend;
+            DataBase db = new DataBase();
+            SqlCommand cmd = new SqlCommand();
+            cmd.Parameters.Add("@holidayID", SqlDbType.Int).Value = GetPublicHolidayLastIdentity();
+            cmd.Parameters.Add("@date", SqlDbType.NChar).Value = date.ToString("yyyy-MM-dd");
+            cmd.Parameters.Add("@createdBy", SqlDbType.Int).Value = GetLoggedInID();
+            cmd.Parameters.Add("@createdOn", SqlDbType.NChar).Value = DateTime.Today.ToString("yyyy-MM-dd");
+            cmd.CommandText = "INSERT INTO dbo.Audit_Public_Holiday (Public_Holiday_ID, Column_Name, Value_After, Created_By, Created_On) " +
+                "VALUES(@holidayID, 'Date', @date, @createdBy, @createdOn)";
+            db.Execute(cmd);
         }
 
-        private bool IsPublicHoliday(DateTime date)
+        private void RemovePublicHolidayAudit(DateTime date)
         {
-            bool isPublicHoliday = false;
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "SELECT * FROM dbo.Public_Holiday WHERE Date = '" + date.ToString("yyyy-MM-dd") + "'";
+            DataBase db = new DataBase();
+            SqlCommand cmd = new SqlCommand();
+            cmd.Parameters.Add("@holidayID", SqlDbType.Int).Value = GetPublicHolidayLastIdentity();
+            cmd.Parameters.Add("@date", SqlDbType.NChar).Value = date.ToString("yyyy-MM-dd");
+            cmd.Parameters.Add("@modifiedBy", SqlDbType.Int).Value = GetLoggedInID();
+            cmd.Parameters.Add("@modifiedOn", SqlDbType.NChar).Value = DateTime.Today.ToString("yyyy-MM-dd");
 
-            using (var connection = new SqlConnection(connectionString))
-            {
-                var command = new SqlCommand(queryString, connection);
-                connection.Open();
-
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        DateTime day = (DateTime)reader["Date"];
-                        isPublicHoliday = date.Equals(day) ? true : false;
-                    }
-                }
-                connection.Close();
-            }
-
-            return isPublicHoliday;
+            cmd.CommandText = "INSERT INTO dbo.Audit_Public_Holiday (Public_Holiday_ID, Column_Name, Value_Before, Modified_By, Modified_On) " +
+                "VALUES(@holidayID, 'Date', @date, @modifiedBy, @modifiedOn)";
+            db.Execute(cmd);
         }
 
-        private hrHolidaysCalender GetHoliday(int holidayID)
+        private Holiday GetHoliday(int holidayID)
         {
-            var holiday = new hrHolidaysCalender();
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "SELECT * FROM dbo.Public_Holiday WHERE Public_Holiday_ID = " + holidayID;
-            using (var connection = new SqlConnection(connectionString))
+            var holiday = new Holiday();
+            DataBase db = new DataBase();
+            SqlCommand cmd = new SqlCommand();
+            cmd.Parameters.Add("@holidayID", SqlDbType.NChar).Value = holidayID;
+            cmd.CommandText = "SELECT * FROM dbo.Public_Holiday WHERE Public_Holiday_ID = @holidayID";
+
+            DataTable dataTable = db.Fetch(cmd);
+            foreach (DataRow row in dataTable.Rows)
             {
-                var command = new SqlCommand(queryString, connection);
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        holiday.holidayID = (int)reader["Public_Holiday_ID"];
-                        holiday.holidayName = (string)reader["Name"];
-                        holiday.date = (DateTime)reader["Date"];
-                    }
-                }
-                connection.Close();
+                holiday.holidayID = (int)row["Public_Holiday_ID"];
+                holiday.holidayName = (string)row["Name"];
+                holiday.date = (DateTime)row["Date"];
             }
 
             return holiday;
         }
 
-        private List<hrHolidaysCalender> GetHolidayList(int? filterYear = null)
+        private List<Holiday> GetHolidayList(int? filterYear = null)
         {
-            var holidayList = new List<hrHolidaysCalender>();
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            var holidayList = new List<Holiday>();
 
-            string queryString = "SELECT * FROM dbo.Public_Holiday WHERE year(Date) = " + ((filterYear == null) ? 0 : filterYear);
+            DataBase db = new DataBase();
+            SqlCommand cmd = new SqlCommand();
+            filterYear = (filterYear == null) ? 0 : filterYear;
+            cmd.Parameters.Add("@filterYear", SqlDbType.Int).Value = filterYear;
+            cmd.CommandText = "SELECT * FROM dbo.Public_Holiday WHERE year(Date) = @filterYear";
+            db.Execute(cmd);
 
-            using (var connection = new SqlConnection(connectionString))
+            DataTable dataTable = db.Fetch(cmd);
+            foreach (DataRow row in dataTable.Rows)
             {
-                var command = new SqlCommand(queryString, connection);
-                connection.Open();
-                using (var reader = command.ExecuteReader())
+                var holiday = new Holiday
                 {
-                    while (reader.Read())
-                    {
-                        var holiday = new hrHolidaysCalender
-                        {
-                            holidayID = (int)reader["Public_Holiday_ID"],
-                            holidayName = (string)reader["Name"],
-                            date = (DateTime)reader["Date"]
-                        };
-                        holidayList.Add(holiday);
-                    }
-                }
-                connection.Close();
+                    holidayID = (int)row["Public_Holiday_ID"],
+                    holidayName = (string)row["Name"],
+                    date = (DateTime)row["Date"]
+                };
+                holidayList.Add(holiday);
+
             }
+
             return holidayList;
         }
 
         private void RebalanceCredit(DateTime holiday, int addRemove)
         {
-            if (!IsWeekend(holiday))
+            if (holiday.DayOfWeek != DayOfWeek.Saturday && holiday.DayOfWeek != DayOfWeek.Friday)
             {
                 // extract all approved applications
                 foreach (var leave in GetLeaveModel())
@@ -259,7 +238,7 @@ namespace LeaveSystemMVC.Controllers
                         // Value.Item3 : Leave Application Duration
                         // Value.Item4 : Public Holiday(s) Removed/Added
                         Dictionary<int, Tuple<int, decimal, decimal, decimal>> audit = DBGetAuditLeave(leave.leaveAppID);
-                        sleaveBalanceModel leaveType = GetLeaveBalanceModel();
+                        Balance leaveType = GetLeaveBalanceModel();
 
                         if (leave.leaveTypeName.Equals("Short_Hours"))
                         {
@@ -269,13 +248,13 @@ namespace LeaveSystemMVC.Controllers
                                 // Public holiday added
                                 if (addRemove == 1)
                                 {
-                                    DBUpdateBalance(leave.employeeID, leaveType.shortHoursID, audit[leaveType.shortHoursID].Item3);
-                                    DBUpdateAuditBalance(audit[leaveType.shortHoursID].Item1, leave.leaveAppID, audit[leaveType.shortHoursID].Item2, (audit[leaveType.shortHoursID].Item2 + audit[leaveType.shortHoursID].Item3), "Added Public Holiday");
+                                    UpdateBalance(leave.employeeID, leaveType.shortHoursID, audit[leaveType.shortHoursID].Item3);
+                                    UpdateAuditBalance(audit[leaveType.shortHoursID].Item1, leave.leaveAppID, audit[leaveType.shortHoursID].Item2, (audit[leaveType.shortHoursID].Item2 + audit[leaveType.shortHoursID].Item3), "Added Public Holiday");
                                 }
                                 else
                                 {
-                                    DBUpdateBalance(leave.employeeID, leaveType.shortHoursID, -audit[leaveType.shortHoursID].Item3);
-                                    DBUpdateAuditBalance(audit[leaveType.shortHoursID].Item1, leave.leaveAppID, audit[leaveType.shortHoursID].Item2, (audit[leaveType.shortHoursID].Item2 - audit[leaveType.shortHoursID].Item3), "Removed Public Holiday");
+                                    UpdateBalance(leave.employeeID, leaveType.shortHoursID, -audit[leaveType.shortHoursID].Item3);
+                                    UpdateAuditBalance(audit[leaveType.shortHoursID].Item1, leave.leaveAppID, audit[leaveType.shortHoursID].Item2, (audit[leaveType.shortHoursID].Item2 - audit[leaveType.shortHoursID].Item3), "Removed Public Holiday");
                                 }
                             }
                         }
@@ -322,15 +301,16 @@ namespace LeaveSystemMVC.Controllers
                                             break;
                                     }
 
-                                    Dictionary<int, string> leaveTypeList = DBLeaveTypeList();
-                                    Boolean incremental = leaveTypeList[leaveTypeID].Equals("Unpaid") || leaveTypeList[leaveTypeID].Equals("Compassionate") ? true : false;
+                                    Dictionary dic = new Dictionary();
+                                    Dictionary<int, string> leaveTypeList = dic.GetLeaveType();
+                                    bool incremental = leaveTypeList[leaveTypeID].Equals("Unpaid") || leaveTypeList[leaveTypeID].Equals("Compassionate") ? true : false;
 
                                     // note that here we are reducing the total days of leave by 1 and adding balance to the employee by 1, and vice versa
                                     // if credit is positive, then we have added a holiday, which means subtract total leave days and add balance
                                     // if credit is negative, then we have removed a holiday, which means add total leave days and subtract balance
-                                    DBUpdateLeave(leave.leaveAppID, -addRemove);
-                                    DBUpdateBalance(leave.employeeID, leaveTypeID, (incremental) ? -addRemove : addRemove);
-                                    DBUpdateAuditBalance(audit[leaveTypeID].Item1, leave.leaveAppID, audit[leaveTypeID].Item2, audit[leaveTypeID].Item2 + ((incremental) ? -addRemove : addRemove), (addRemove == 1) ? "Added Public Holiday" : "Removed Public Holiday");
+                                    UpdateLeave(leave.leaveAppID, -addRemove);
+                                    UpdateBalance(leave.employeeID, leaveTypeID, (incremental) ? -addRemove : addRemove);
+                                    UpdateAuditBalance(audit[leaveTypeID].Item1, leave.leaveAppID, audit[leaveTypeID].Item2, audit[leaveTypeID].Item2 + ((incremental) ? -addRemove : addRemove), (addRemove == 1) ? "Added Public Holiday" : "Removed Public Holiday");
                                 }
                                 // move to the next date
                                 date = date.AddDays(1);
@@ -342,7 +322,7 @@ namespace LeaveSystemMVC.Controllers
             }
         }
 
-        private int GetRebalancingLeaveTypeForAnnual(sLeaveModel leave, Dictionary<int, Tuple<int, decimal, decimal, decimal>> audit, sleaveBalanceModel leaveType, int addRemove)
+        private int GetRebalancingLeaveTypeForAnnual(Leave leave, Dictionary<int, Tuple<int, decimal, decimal, decimal>> audit, Balance leaveType, int addRemove)
         {
             int leaveTypeID = 0;
 
@@ -353,7 +333,7 @@ namespace LeaveSystemMVC.Controllers
                 decimal currBal = pair.Value.Item2;
                 decimal consumed = pair.Value.Item3;
                 decimal ph = pair.Value.Item4;
-                Output("Leave Type: " + key + " | Balance ID: " + balID + " | Current Balance: " + currBal + " | Consumed: " + consumed + " | PH: " + ph);
+                Debug.WriteLine("Leave Type: " + key + " | Balance ID: " + balID + " | Current Balance: " + currBal + " | Consumed: " + consumed + " | PH: " + ph);
             }
 
             // Public holiday is added
@@ -379,7 +359,7 @@ namespace LeaveSystemMVC.Controllers
             return leaveTypeID;
         }
 
-        private int GetRebalancingLeaveTypeForSick(sLeaveModel leave, Dictionary<int, Tuple<int, decimal, decimal, decimal>> audit, sleaveBalanceModel leaveType, int addRemove)
+        private int GetRebalancingLeaveTypeForSick(Leave leave, Dictionary<int, Tuple<int, decimal, decimal, decimal>> audit, Balance leaveType, int addRemove)
         {
             int leaveTypeID = 0;
 
@@ -410,7 +390,7 @@ namespace LeaveSystemMVC.Controllers
             return leaveTypeID;
         }
 
-        private int GetRebalancingLeaveTypeForCompassionate(sLeaveModel leave, Dictionary<int, Tuple<int, decimal, decimal, decimal>> audit, sleaveBalanceModel leaveType, int addRemove)
+        private int GetRebalancingLeaveTypeForCompassionate(Leave leave, Dictionary<int, Tuple<int, decimal, decimal, decimal>> audit, Balance leaveType, int addRemove)
         {
             int leaveTypeID = 0;
 
@@ -441,52 +421,81 @@ namespace LeaveSystemMVC.Controllers
             return leaveTypeID;
         }
 
-        protected Dictionary<int, Tuple<int, decimal, decimal, decimal>> DBGetAuditLeave(int appID)
+        private Dictionary<int, Tuple<int, decimal, decimal, decimal>> DBGetAuditLeave(int appID)
         {
-            string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-
-            var queryString = "SELECT Leave_Balance.Leave_Balance_ID, Leave_Type_ID, Balance, Value_Before, Value_After, Comment FROM dbo.Leave_Balance, dbo.Audit_Leave_Balance " +
-                "WHERE Leave_Balance.Leave_Balance_ID = Audit_Leave_Balance.Leave_Balance_ID AND Leave_Application_ID = '" + appID + "'";
             Dictionary<int, Tuple<int, decimal, decimal, decimal>> auditLeave = new Dictionary<int, Tuple<int, decimal, decimal, decimal>>();
 
-            using (var connection = new SqlConnection(connectionString))
-            {
-                var command = new SqlCommand(queryString, connection);
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        int balID = (int)reader["Leave_Balance_ID"];
-                        int leaveType = (int)reader["Leave_Type_ID"];
-                        decimal currentBalance = (decimal)reader["Balance"];
-                        decimal valBefore = (!DBNull.Value.Equals(reader["Value_Before"])) ? decimal.Parse((string)reader["Value_Before"]) : (decimal)0.0;
-                        decimal valAfter = decimal.Parse((string)reader["Value_After"]);
-                        string comment = (string)reader["Comment"];
+            DataBase db = new DataBase();
+            SqlCommand cmd = new SqlCommand();
+            cmd.Parameters.Add("@appID", SqlDbType.Int).Value = appID;
+            cmd.CommandText = "SELECT Leave_Balance.Leave_Balance_ID, Leave_Type_ID, Balance, Value_Before, Value_After, Comment FROM dbo.Leave_Balance, dbo.Audit_Leave_Balance " +
+                "WHERE Leave_Balance.Leave_Balance_ID = Audit_Leave_Balance.Leave_Balance_ID AND Leave_Application_ID = @appID";
 
-                        if (comment.Equals("Approved Leave Application"))
-                            auditLeave.Add(leaveType, new Tuple<int, decimal, decimal, decimal>(balID, currentBalance, valBefore-valAfter, 0));
-                        else if (comment.Equals("Added Public Holiday") || comment.Equals("Removed Public Holiday"))
-                            auditLeave[leaveType] = new Tuple<int, decimal, decimal, decimal>(auditLeave[leaveType].Item1, auditLeave[leaveType].Item2, auditLeave[leaveType].Item3 ,auditLeave[leaveType].Item4 + valBefore - valAfter);
-                    }
-                }
-                connection.Close();
+            DataTable dataTable = db.Fetch(cmd);
+            foreach (DataRow row in dataTable.Rows)
+            {
+                int balID = (int)row["Leave_Balance_ID"];
+                int leaveType = (int)row["Leave_Type_ID"];
+                decimal currentBalance = (decimal)row["Balance"];
+                decimal valBefore = (!DBNull.Value.Equals(row["Value_Before"])) ? decimal.Parse((string)row["Value_Before"]) : (decimal)0.0;
+                decimal valAfter = decimal.Parse((string)row["Value_After"]);
+                string comment = (string)row["Comment"];
+
+                if (comment.Equals("Approved Leave Application"))
+                    auditLeave.Add(leaveType, new Tuple<int, decimal, decimal, decimal>(balID, currentBalance, valBefore - valAfter, 0));
+                else if (comment.Equals("Added Public Holiday") || comment.Equals("Removed Public Holiday"))
+                    auditLeave[leaveType] = new Tuple<int, decimal, decimal, decimal>(auditLeave[leaveType].Item1, auditLeave[leaveType].Item2, auditLeave[leaveType].Item3, auditLeave[leaveType].Item4 + valBefore - valAfter);
             }
 
             return auditLeave;
         }
 
-        private void DBUpdateLeave(int appID, int duration)
+        private void UpdateLeave(int appID, int duration)
         {
-            string queryString = "UPDATE dbo.Leave SET Total_Leave = Total_Leave+'"+ duration + "' WHERE Leave_Application_ID = '" + appID + "'";
-            DBExecuteQuery(queryString);
+            DataBase db = new DataBase();
+            SqlCommand cmd = new SqlCommand();
+            cmd.Parameters.Add("@appID", SqlDbType.Int).Value = appID;
+            cmd.Parameters.Add("@duration", SqlDbType.Int).Value = duration;
+            cmd.CommandText = "UPDATE dbo.Leave SET Total_Leave = Total_Leave+@duration WHERE Leave_Application_ID = @appID";
+            db.Execute(cmd);
         }
 
-        private void DBUpdateBalance(int empID, int leaveTypeID, decimal balance)
+        private void UpdateBalance(int empID, int typeID, decimal balance)
         {
-            string queryString = "UPDATE dbo.Leave_Balance SET Balance = Balance+'"+ balance + "' WHERE Employee_ID = '" + empID + "' AND Leave_Type_ID = '" + leaveTypeID + "'";
-            DBExecuteQuery(queryString);
+            DataBase db = new DataBase();
+            SqlCommand cmd = new SqlCommand();
+            cmd.Parameters.Add("@empID", SqlDbType.Int).Value = empID;
+            cmd.Parameters.Add("@typeID", SqlDbType.Int).Value = typeID;
+            cmd.Parameters.Add("@balance", SqlDbType.Decimal).Value = balance;
+            cmd.CommandText = "UPDATE dbo.Leave_Balance SET Balance = Balance+@balance WHERE Employee_ID = @empID AND Leave_Type_ID = @typeID";
+            db.Execute(cmd);
         }
 
+        private void UpdateAuditBalance(int balanceID, int appID, decimal valueBefore, decimal valueAfter, string comment)
+        {
+            SqlCommand cmd = new SqlCommand();
+            cmd.Parameters.Add("@balanceID", SqlDbType.Int).Value = balanceID;
+            cmd.Parameters.Add("@appID", SqlDbType.Int).Value = appID;
+            cmd.Parameters.Add("@valueBefore", SqlDbType.Decimal).Value = valueBefore;
+            cmd.Parameters.Add("@valueAfter", SqlDbType.Decimal).Value = valueAfter;
+            cmd.Parameters.Add("@modifiedBy", SqlDbType.Int).Value = GetLoggedInID();
+            cmd.Parameters.Add("@modifiedOn", SqlDbType.NChar).Value = DateTime.Today.ToString("yyyy-MM-dd");
+            cmd.Parameters.Add("@comment", SqlDbType.NChar).Value = comment ?? "";
+            cmd.CommandText = "INSERT INTO dbo.Audit_Leave_Balance (Leave_Balance_ID, Leave_Application_ID, Column_Name, Value_Before, Value_After, Modified_By, Modified_On, Comment) " +
+                  "VALUES(@balanceID, @appID, 'Balance', @valueBefore, @valueAfter, @modifiedBy, @modifiedOn, @comment)";
+
+            DataBase db = new DataBase();
+            db.Execute(cmd);
+        }
+
+        private int GetPublicHolidayLastIdentity()
+        {
+            SqlCommand cmd = new SqlCommand();
+            cmd.CommandText = "SELECT MAX(Public_Holiday_ID) AS LastID FROM dbo.Public_Holiday";
+            DataBase db = new DataBase();
+            DataTable dataTable = db.Fetch(cmd);
+            int id = (int)dataTable.Rows[0][0];
+            return id;
+        }
     }
 }

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 
 namespace LeaveSystemMVC.Models
 {
-    public class lmReporting
+    public class Reporting
     {
         [DisplayName("Reporting ID ")]
         public int reportToID { get; set; }
@@ -22,7 +21,7 @@ namespace LeaveSystemMVC.Models
         public int? subLevel { get; set; }
 
         [DisplayName("Is Active? ")]
-        public Boolean? isActive { get; set; }
+        public bool? isActive { get; set; }
 
         [DisplayName("Employee Name ")]
         public String employeeName { get; set; }

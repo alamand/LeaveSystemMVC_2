@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
+using System.Configuration;
+using Hangfire;
+using Hangfire.SqlServer;
+using Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
-using Owin;
-using Hangfire;
-using System.Configuration;
-using Hangfire.SqlServer;
 
 namespace LeaveSystemMVC.App_Start
 {
@@ -24,7 +21,7 @@ namespace LeaveSystemMVC.App_Start
                 LoginPath = new PathString("/Auth/Login")
             });
 
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
             GlobalConfiguration.Configuration.UseSqlServerStorage(connectionString, new SqlServerStorageOptions { QueuePollInterval = TimeSpan.FromSeconds(1) });
 
             app.UseHangfireDashboard();

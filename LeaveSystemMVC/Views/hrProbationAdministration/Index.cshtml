@@ -16,9 +16,9 @@
                 <th style="text-align: center">Confirm?</th>
             </tr>
             @{
-                var onProbation = ViewData["OnProbation"] as List<LeaveSystemMVC.Models.sEmployeeModel>;
+                var onProbation = ViewData["OnProbation"] as List<LeaveSystemMVC.Models.Employee>;
 
-                foreach (LeaveSystemMVC.Models.sEmployeeModel onP in onProbation)
+                foreach (LeaveSystemMVC.Models.Employee onP in onProbation)
                 {
                     <tr>
                         <td style="text-align: center">@onP.staffID</td>

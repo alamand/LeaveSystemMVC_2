@@ -1,46 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
+using System.Data;
+using System.Data.SqlClient;
+using System.Collections.Generic;
 using LeaveSystemMVC.Models;
-
 
 namespace LeaveSystemMVC.Controllers
 {
-    public class lmSubordinateBalanceController : ControllerBase
+    public class lmSubordinateBalanceController : BaseController
     {
         // GET: lmSubordinateBalance
         public ActionResult Index(string filterSearch = "", string filterOrderBy = "")
         {
-            var model = new List<Tuple<sEmployeeModel, sleaveBalanceModel>>();
-
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = GetFilteredQuery(filterSearch, filterOrderBy); 
-
-            using (var connection = new SqlConnection(connectionString))
-            {
-                var command = new SqlCommand(queryString, connection);      // retrieve employee id, first and last name
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-                {
-                    // iterate through all employees in the database and add them all to the list
-                    while (reader.Read())
-                    {
-                        var employee = GetEmployeeModel((int)reader["Employee_ID"]);
-                        var leaveBalance = GetLeaveBalanceModel((int)reader["Employee_ID"]);
-                        model.Add(new Tuple<sEmployeeModel, sleaveBalanceModel>(employee, leaveBalance));
-                    }
-                }
-                connection.Close();
-            }
+            var model = GetFilteredBalances(filterSearch, filterOrderBy);
+            Dictionary dic = new Dictionary();
 
             ViewData["OrderByList"] = OrderByList();
             ViewData["SelectedOrderBy"] = filterOrderBy;
             ViewData["EnteredSearch"] = filterSearch;
-            ViewData["ReligionList"] = DBReligionList();
+            ViewData["ReligionList"] = dic.GetReligionName();
 
             return View(model);
         }
@@ -53,35 +31,49 @@ namespace LeaveSystemMVC.Controllers
             return RedirectToAction("Index", new { filterSearch = search, filterOrderBy = orderBy });
         }
 
-        private string GetFilteredQuery(string search, string order)
+        private List<Tuple<Employee, Balance>> GetFilteredBalances(string search, string order)
         {
-            int loggedInID = GetLoggedInID();
-            string queryString = "SELECT Employee.Employee_ID FROM dbo.Employee, dbo.Reporting WHERE Employee.Employee_ID = Reporting.Employee_ID AND (Report_To_ID = " + loggedInID;
+            List<Tuple<Employee, Balance>> model = new List<Tuple<Employee, Balance>>();
 
-            List<lmReporting> reportingList = GetReportingList(loggedInID);
+            int loggedInID = GetLoggedInID();
+            SqlCommand cmd = new SqlCommand();
+            cmd.Parameters.Add("@loggedInID", SqlDbType.Int).Value = loggedInID;
+            cmd.CommandText = "SELECT Employee.Employee_ID FROM dbo.Employee, dbo.Reporting WHERE Employee.Employee_ID = Reporting.Employee_ID AND (Report_To_ID = @loggedInID";
+
+            List<Reporting> reportingList = GetReportingList(loggedInID);
+            string reportToList = "";
             foreach (var reporting in reportingList)
             {
                 if (reporting.toID == loggedInID)
-                {
-                    queryString += " OR Report_To_ID = " + reporting.reportToID;
-                }
+                    reportToList += " OR Report_To_ID = " + reporting.reportToID;
             }
-            queryString += ")";
-
+            cmd.Parameters.Add("@reportToList", SqlDbType.NChar).Value = reportToList;
+            cmd.CommandText += reportToList + ")";
+            
             // adds a filter query if search box contains character(s), note that 0 length means the search box is empty
             if (search.Length > 0)
             {
-                queryString += " AND (Employee.Employee_ID LIKE '%" + search + "%' " +
-                    "OR First_Name LIKE '%" + search + "%' " +
-                    "OR Last_Name LIKE '%" + search + "%')";
+                cmd.Parameters.Add("@search", SqlDbType.NChar).Value = search;
+                cmd.CommandText += " AND (Employee.Employee_ID LIKE '%' + @search + '%' " +
+                    "OR First_Name LIKE '%' + @search + '%' " +
+                    "OR Last_Name LIKE '%' + @search + '%')";
             }
 
             if (order.Length > 0)
             {
-                queryString += " ORDER BY " + order;
+                cmd.CommandText += " ORDER BY " + order;
             }
 
-            return queryString;
+            DataBase db = new DataBase();
+            DataTable dataTable = db.Fetch(cmd);
+            foreach (DataRow row in dataTable.Rows)
+            {
+                var employee = GetEmployeeModel((int)row["Employee_ID"]);
+                var leaveBalance = GetLeaveBalanceModel((int)row["Employee_ID"]);
+                model.Add(new Tuple<Employee, Balance>(employee, leaveBalance));
+            }
+
+            return model;
         }
 
         private Dictionary<string, string> OrderByList()
@@ -97,7 +89,5 @@ namespace LeaveSystemMVC.Controllers
             };
             return orderByList;
         }
-
-
     }
 }

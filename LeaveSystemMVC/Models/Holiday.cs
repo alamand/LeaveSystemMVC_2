@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace LeaveSystemMVC.Models
 {
-    public class hrHolidaysCalender
+    public class Holiday
     {
         public int holidayID { get; set; }
 

@@ -206,12 +206,13 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.cs" />
-    <Compile Include="Controllers\ControllerBase.cs" />
+    <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\Admin\aAddStaffController.cs" />
     <Compile Include="Controllers\Admin\aBackupDatabaseController.cs" />
-    <Compile Include="Controllers\Admin\aBulkAddStaffController.cs" />
     <Compile Include="Controllers\Admin\aEditStaffController.cs" />
     <Compile Include="Controllers\AuthController.cs" />
+    <Compile Include="Models\Dictionary.cs" />
+    <Compile Include="Models\DataBase.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\HumanResources\hrAdministerEmploymentController.cs" />
@@ -221,7 +222,7 @@
     <Compile Include="Controllers\HumanResources\hrProbationAdministrationController.cs" />
     <Compile Include="Controllers\HumanResources\hrEditBalanceController.cs" />
     <Compile Include="Controllers\HumanResources\hrEditDefaultLeaveDurationController.cs" />
-    <Compile Include="Controllers\HumanResources\hrHolidaysCalenderController.cs" />
+    <Compile Include="Controllers\HumanResources\hrHolidaysCalendarController.cs" />
     <Compile Include="Controllers\HumanResources\hrPendingApplicationController.cs" />
     <Compile Include="Controllers\HumanResources\hrEmployeeLeaveHistoryController.cs" />
     <Compile Include="Controllers\HumanResources\hrSelectSubstituteController.cs" />
@@ -229,8 +230,8 @@
     <Compile Include="Controllers\LineManager\lmPendingApplicationsController.cs" />
     <Compile Include="Controllers\LineManager\lmSubordinateBalanceController.cs" />
     <Compile Include="Controllers\LineManager\lmSubordinateLeaveHistoryController.cs" />
-    <Compile Include="Controllers\LineManager\lmSelectSubstituteController.cs" />
-    <Compile Include="Controllers\LApplicationController.cs" />
+    <Compile Include="Controllers\LineManager\lmAdministerSubstituteController.cs" />
+    <Compile Include="Controllers\LeaveApplicationController.cs" />
     <Compile Include="Controllers\Staff\sLeaveBalanceController.cs" />
     <Compile Include="Controllers\Staff\sLeaveHistoryController.cs" />
     <Compile Include="Controllers\Staff\sLeaveStatusController.cs" />
@@ -241,13 +242,13 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="HtmlHelperExtensions\MenuExtensions.cs" />
-    <Compile Include="Models\hrDaysInLieu.cs" />
-    <Compile Include="Models\lmReporting.cs" />
-    <Compile Include="Models\hrHolidaysCalender.cs" />
-    <Compile Include="Models\sleaveBalanceModel.cs" />
-    <Compile Include="Models\sLeaveModel.cs" />
-    <Compile Include="Models\sEmployeeModel.cs" />
-    <Compile Include="Models\Users.cs" />
+    <Compile Include="Models\DaysInLieu.cs" />
+    <Compile Include="Models\Reporting.cs" />
+    <Compile Include="Models\Holiday.cs" />
+    <Compile Include="Models\Balance.cs" />
+    <Compile Include="Models\Leave.cs" />
+    <Compile Include="Models\Employee.cs" />
+    <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -1764,7 +1765,7 @@
     <Content Include="Views\hrCreditLeaveBalance\Index.cshtml" />
     <Content Include="Views\hrDaysInLieu\Index.cshtml" />
     <Content Include="Views\hrEmployeeLeaveHistory\Index.cshtml" />
-    <Content Include="Views\hrHolidaysCalender\Index.cshtml" />
+    <Content Include="Views\hrHolidaysCalendar\Index.cshtml" />
     <Content Include="Views\hrPendingApplication\Index.cshtml" />
     <Content Include="Views\hrSelectSubstitute\Index.cshtml" />
     <Content Include="Views\lmPendingApplications\Index.cshtml" />
@@ -1773,13 +1774,12 @@
     <Content Include="Views\lmSubordinateLeaveHistory\Index.cshtml" />
     <Content Include="Views\sLeaveBalance\Index.cshtml" />
     <Content Include="Views\sLeaveHistory\Index.cshtml" />
-    <Content Include="Views\aBulkAddStaff\Index.cshtml" />
-    <Content Include="Views\LApplication\Index.cshtml" />
+    <Content Include="Views\LeaveApplication\Index.cshtml" />
     <Content Include="Views\sLeaveStatus\Index.cshtml" />
     <Content Include="Views\Shared\_LeftMenu.cshtml" />
     <Content Include="Views\Auth\Login.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\hrHolidaysCalender\CreateHoliday.cshtml" />
+    <Content Include="Views\hrHolidaysCalendar\CreateHoliday.cshtml" />
     <Content Include="Views\lmPendingApplications\Select.cshtml" />
     <Content Include="Views\hrPendingApplication\Select.cshtml" />
     <Content Include="Views\hrEditDefaultLeaveDuration\Index.cshtml" />
@@ -1787,15 +1787,15 @@
     <Content Include="Views\hrEditBalance\Edit.cshtml" />
     <Content Include="Views\aBackupDatabase\Index.cshtml" />
     <Content Include="Views\hrProbationAdministration\Index.cshtml" />
-    <Content Include="Views\LApplication\_AnnualPartial.cshtml" />
-    <Content Include="Views\LApplication\_MaternityPartial.cshtml" />
-    <Content Include="Views\LApplication\_Short_HoursPartial.cshtml" />
-    <Content Include="Views\LApplication\_CompassionatePartial.cshtml" />
-    <Content Include="Views\LApplication\_SickPartial.cshtml" />
-    <Content Include="Views\LApplication\_PilgrimagePartial.cshtml" />
-    <Content Include="Views\LApplication\_DILPartial.cshtml" />
+    <Content Include="Views\LeaveApplication\_AnnualPartial.cshtml" />
+    <Content Include="Views\LeaveApplication\_MaternityPartial.cshtml" />
+    <Content Include="Views\LeaveApplication\_Short_HoursPartial.cshtml" />
+    <Content Include="Views\LeaveApplication\_CompassionatePartial.cshtml" />
+    <Content Include="Views\LeaveApplication\_SickPartial.cshtml" />
+    <Content Include="Views\LeaveApplication\_PilgrimagePartial.cshtml" />
+    <Content Include="Views\LeaveApplication\_DILPartial.cshtml" />
     <Content Include="Views\_Message.cshtml" />
-    <Content Include="Views\LApplication\_UnpaidPartial.cshtml" />
+    <Content Include="Views\LeaveApplication\_UnpaidPartial.cshtml" />
     <Content Include="Views\lmDaysInLieu\Index.cshtml" />
     <Content Include="Views\sLeaveHistory\View.cshtml" />
     <Content Include="Views\sLeaveStatus\View.cshtml" />
@@ -1804,12 +1804,10 @@
     <Content Include="Views\hrAdministerEmployment\Index.cshtml" />
     <Content Include="Views\Shared\PageNotFound.cshtml" />
     <Content Include="Views\hrLeaveAudit\Index.cshtml" />
-    <Content Include="Views\hrLeaveAudit\View.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\DB_Backup\" />
     <Folder Include="App_Data\Documentation\" />
-    <Folder Include="Views\Error\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">

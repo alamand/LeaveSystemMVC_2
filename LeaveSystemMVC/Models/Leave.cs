@@ -1,10 +1,10 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace LeaveSystemMVC.Models
 {
-    public class sLeaveModel
+    public class Leave
     {
         [Display(Name = "Leave Application ID")]
         public int leaveAppID { get; set; }

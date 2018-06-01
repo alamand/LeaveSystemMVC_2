@@ -1,4 +1,4 @@
-﻿@model LeaveSystemMVC.Models.sLeaveModel
+﻿@model LeaveSystemMVC.Models.Leave
 @Html.Partial("_LeftMenu")
 @{ ViewBag.Title = "Pending Approvals"; }
 
@@ -118,7 +118,7 @@
         }
         <div class="col-md-5">
             @{
-                var balance = ViewData["Balances"] as LeaveSystemMVC.Models.sleaveBalanceModel;
+                var balance = ViewData["Balances"] as LeaveSystemMVC.Models.Balance;
                 var deduction = ViewData["Preview"] as Dictionary<string, decimal>;
 
             }
@@ -265,8 +265,8 @@
                                 <th style="text-align: center">Status</th>
                             </tr>
                             @{
-                                var leaveHistory = ViewData["LeaveHistory"] as List<LeaveSystemMVC.Models.sLeaveModel>;
-                                foreach (LeaveSystemMVC.Models.sLeaveModel lv in leaveHistory)
+                                var leaveHistory = ViewData["LeaveHistory"] as List<LeaveSystemMVC.Models.Leave>;
+                                foreach (LeaveSystemMVC.Models.Leave lv in leaveHistory)
                                 {
                                     string stDt = lv.startDate.ToString();
                                     stDt = stDt.Substring(0, 10);

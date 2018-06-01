@@ -1,9 +1,11 @@
-﻿using LeaveSystemMVC.Models;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
+using System.Data;
+using System.Data.SqlClient;
+using LeaveSystemMVC.Models;
 
 namespace LeaveSystemMVC.Controllers
 {
-    public class hrEditDefaultLeaveDurationController : ControllerBase
+    public class hrEditDefaultLeaveDurationController : BaseController
     {
         // GET: hrEditDefaultLeaveDuration
         [HttpGet]
@@ -14,7 +16,7 @@ namespace LeaveSystemMVC.Controllers
         }
         
         [HttpPost]
-        public ActionResult Index(sleaveBalanceModel model)
+        public ActionResult Index(Balance model)
         {
             if (ModelState.IsValid)
             {
@@ -28,16 +30,19 @@ namespace LeaveSystemMVC.Controllers
             }
             else
             {
-                ViewBag.WarningMessage = "Update was not successful, please check your input(s) and try again.";
+                ViewBag.WarningMessage = "An error occured, please check your input and try again.";
             }
             return Index();
         }
 
-        public void UpdateBalance(int id, decimal duration)
+        public void UpdateBalance(int typeID, decimal duration)
         {
-            string queryUpdate = "UPDATE dbo.Leave_Type SET Duration='" + duration + "' WHERE Leave_Type_ID='" + id + "'";
-            DBExecuteQuery(queryUpdate);
+            SqlCommand cmd = new SqlCommand();
+            cmd.Parameters.Add("@typeID", SqlDbType.Int).Value = typeID;
+            cmd.Parameters.Add("@duration", SqlDbType.Int).Value = duration;
+            cmd.CommandText = "UPDATE dbo.Leave_Type SET Duration = @duration WHERE Leave_Type_ID = @typeID";
+            DataBase db = new DataBase();
+            db.Execute(cmd);
         }
     }
-
 }

@@ -3,12 +3,12 @@ using LeaveSystemMVC.Models;
 
 namespace LeaveSystemMVC.Controllers
 {
-    public class HomeController : ControllerBase
+    public class HomeController : BaseController
     {
         // GET: Home
         public ActionResult Index()
         {
-            sEmployeeModel emp = GetEmployeeModel(GetLoggedInID());
+            Employee emp = GetEmployeeModel(GetLoggedInID());
             Session["UserName"] = emp.firstName + " " + emp.lastName;
             return View();
         }

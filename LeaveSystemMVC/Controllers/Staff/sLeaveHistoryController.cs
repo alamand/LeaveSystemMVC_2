@@ -1,27 +1,21 @@
-﻿using LeaveSystemMVC.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.IO;
 using System.Web;
 using System.Web.Mvc;
-using System.Configuration;
+using System.Data;
 using System.Data.SqlClient;
-using System.Security.Claims;
-using System.IO;
-using System.Net.Mail;
-using System.Net;
-using Hangfire;
-
+using System.Collections.Generic;
+using LeaveSystemMVC.Models;
 
 namespace LeaveSystemMVC.Controllers
 {
-    public class sLeaveHistoryController : ControllerBase
+    public class sLeaveHistoryController : BaseController
     {
         // GET: sLeaveHistory
         public ActionResult Index()
         {
-            var model = new List<sLeaveModel>();
-            List<sLeaveModel> leaveList = GetLeaveModel("Employee.Employee_ID", GetLoggedInID());
+            var model = new List<Leave>();
+            List<Leave> leaveList = GetLeaveModel("Employee.Employee_ID", GetLoggedInID());
 
             foreach (var leave in leaveList)
             {
@@ -42,15 +36,20 @@ namespace LeaveSystemMVC.Controllers
         }
 
         [HttpPost]
-        public ActionResult Update(sLeaveModel model, HttpPostedFileBase file)
+        public ActionResult Update(Leave model, HttpPostedFileBase file)
         {
             string fileName = UploadFile(file, model.leaveAppID);
             if (fileName != "")
             {
                 if (TempData["ErrorMessage"] == null)
                 {
-                    String queryString = "UPDATE dbo.Leave SET Documentation = '" + fileName + "' WHERE Leave_Application_ID = " + model.leaveAppID;
-                    DBExecuteQuery(queryString);
+                    SqlCommand cmd = new SqlCommand();
+                    cmd.Parameters.Add("@fileName", SqlDbType.NChar).Value = fileName;
+                    cmd.Parameters.Add("@appID", SqlDbType.Int).Value = model.leaveAppID;
+                    cmd.CommandText = "UPDATE dbo.Leave SET Documentation = @fileName WHERE Leave_Application_ID = @appID";
+                    DataBase db = new DataBase();
+                    db.Execute(cmd);
+
                     TempData["SuccessMessage"] = "Your documentation has been uploaded successfully.";
                 }
             }
@@ -101,7 +100,6 @@ namespace LeaveSystemMVC.Controllers
         private void RemoveFile(int appID, String fName)
         {
             string dir = Server.MapPath("~/App_Data/Documentation") + "\\";
-            Output(dir);
 
             string[] fileList = Directory.GetFiles(dir, appID + "-*");
             foreach (string file in fileList)

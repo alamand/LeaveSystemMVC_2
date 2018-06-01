@@ -1,36 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using System.Configuration;
+using System.Data;
 using System.Data.SqlClient;
-using LeaveSystemMVC.Models;
+using System.Linq;
+using System.Collections.Generic;
 using Hangfire;
-using PdfSharp.Drawing;
-using PdfSharp.Pdf;
-using System.Diagnostics;
-using System.Drawing;
-using PdfSharp.Drawing.Layout;
+using LeaveSystemMVC.Models;
 
 namespace LeaveSystemMVC.Controllers
 {
-    public class hrEmployeeLeaveHistoryController : ControllerBase
+    public class hrEmployeeLeaveHistoryController : BaseController
     {
         // GET: hrEmployeeLeaveHistory
         public ActionResult Index(int filterDepartmentID = -1, int filterLeaveType = -1, int filterLeaveStatus = -1, string filterSearch = "", string filterOrderBy = "", string filterStartDate = "", string filterEndDate = "")
         {
-            string queryString = GetFilteredQuery(filterDepartmentID, filterLeaveType, filterLeaveStatus, filterSearch, filterOrderBy, filterStartDate, filterEndDate);
-            var model = GetLeaveModel(queryString);
+            var model = GetFilteredBalances(filterDepartmentID, filterLeaveType, filterLeaveStatus, filterSearch, filterOrderBy, filterStartDate, filterEndDate);
+            Dictionary dic = new Dictionary();
 
             ViewData["EnteredSearch"] = filterSearch;
-            ViewData["DepartmentList"] = AddDefaultToDictionary(DBDepartmentList(), -1, "All Departments");
+            ViewData["DepartmentList"] = dic.AddDefaultToDictionary(dic.GetDepartment(), -1, "All Departments");        // @TODO: change dic.GetDepartment() to dic.GetDepartmentName()
             ViewData["SelectedDepartment"] = filterDepartmentID;
             ViewData["LeaveStatusList"] = LeaveStatusList();
             ViewData["SelectedLeaveStatus"] = filterLeaveStatus;
             ViewData["OrderByList"] = OrderByList();
             ViewData["SelectedOrderBy"] = filterOrderBy;
-            ViewData["LeaveTypeList"] = AddDefaultToDictionary(DBLeaveTypeNameList(), -1, "All Types");
+            ViewData["LeaveTypeList"] = dic.AddDefaultToDictionary(dic.GetLeaveTypeName(), -1, "All Types");
             ViewData["SelectedLeaveType"] = filterLeaveType;
             ViewData["SelectedStartDate"] = filterStartDate;
             ViewData["SelectedEndDate"] = filterEndDate;
@@ -58,60 +52,73 @@ namespace LeaveSystemMVC.Controllers
             return RedirectToAction("Index", new { filterDepartmentID = deptID, filterLeaveType = leaveTypeID, filterLeaveStatus = leaveStatID, filterSearch = search, filterOrderBy = orderBy, filterStartDate = startDate, filterEndDate = endDate });
         }
 
-        private string GetFilteredQuery(int deptID, int leaveType, int leaveStat, string search, string order, string sDate, string eDate)
+        private List<Leave> GetFilteredBalances(int deptID, int leaveType, int leaveStat, string search, string order, string sDate, string eDate)
         {
-            var queryString = "SELECT Leave_Application_ID, Employee.Employee_ID, First_Name, Last_Name, Leave.Start_Date, Leave.Reporting_Back_Date, Leave.Leave_Type_ID, Leave_Name, Leave_Type.Display_Name as Leave_Type_Display, " +
-                "Contact_Outside_UAE, Comment, Documentation, Flight_Ticket, Total_Leave, Start_Hrs, End_Hrs, Leave.Leave_Status_ID, Status_Name, Leave_Status.Display_Name as Leave_Status_Display, HR_Comment, LM_Comment, Leave.Personal_Email, Leave.Is_Half_Start_Date, Leave.Is_Half_Reporting_Back_Date " +
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.CommandText = "SELECT Leave_Application_ID, Employee.Employee_ID, First_Name, Last_Name, Leave.Start_Date, " +
+                "Leave.Reporting_Back_Date, Leave.Leave_Type_ID, Leave_Name, Leave_Type.Display_Name as Leave_Type_Display, " +
+                "Contact_Outside_UAE, Comment, Documentation, Flight_Ticket, Total_Leave, Start_Hrs, End_Hrs, Leave.Leave_Status_ID, Status_Name, " +
+                "Leave_Status.Display_Name as Leave_Status_Display, HR_Comment, LM_Comment, Leave.Personal_Email, Is_Half_Start_Date, Is_Half_Reporting_Back_Date " +
                 "FROM dbo.Leave, dbo.Employee, dbo.Leave_Type, dbo.Leave_Status, dbo.Department, dbo.Reporting " +
                 "WHERE Leave.Employee_ID = Employee.Employee_ID AND Leave.Leave_Type_ID = Leave_Type.Leave_Type_ID AND " +
-                "Leave.Leave_Status_ID = Leave_Status.Leave_Status_ID AND Department.Department_ID = Employee.Department_ID AND Employee.Employee_ID = Reporting.Employee_ID " +
-                "AND Leave_Status.Status_Name != 'Pending_LM' AND Leave_Status.Status_Name != 'Pending_HR'";
+                "Leave.Leave_Status_ID = Leave_Status.Leave_Status_ID AND Department.Department_ID = Employee.Department_ID AND " +
+                "Employee.Employee_ID = Reporting.Employee_ID AND Leave_Status.Status_Name != 'Pending_LM' AND Leave_Status.Status_Name != 'Pending_HR'";
 
             // adds a filter query if a department is selected from the dropdown, note that -1 represents All Departments
             if (deptID >= 0)
             {
-                queryString += " AND Department.Department_ID = " + deptID;
+                cmd.Parameters.Add("@deptID", SqlDbType.Int).Value = deptID;
+                cmd.CommandText += " AND Department.Department_ID = @deptID";
             }
 
             // adds a filter query if a leave type is selected from the dropdown, note that -1 represents All Types
             if (leaveType >= 0)
             {
-                queryString += " AND Leave.Leave_Type_ID = " + leaveType;
+                cmd.Parameters.Add("@leaveType", SqlDbType.Int).Value = leaveType;
+                cmd.CommandText += " AND Leave.Leave_Type_ID = @leaveType";
             }
 
             // adds a filter query if a leave status is selected from the dropdown, note that -1 represents all status
             if (leaveStat >= 0)
             {
-                queryString += " AND Leave.Leave_Status_ID = " + leaveStat;
+                cmd.Parameters.Add("@leaveStat", SqlDbType.Int).Value = leaveStat;
+                cmd.CommandText += " AND Leave.Leave_Status_ID = @leaveStat";
             }
 
             // adds a filter query if search box contains character(s), note that 0 length means the search box is empty
             if (search.Length > 0)
             {
-                queryString += " AND (Employee.Employee_ID LIKE '%" + search + "%' " +
-                    "OR CONCAT(First_Name, ' ', Last_Name) LIKE '%" + search + "%')";
+                cmd.Parameters.Add("@search", SqlDbType.NChar).Value = search;
+                cmd.CommandText += " AND (Employee.Employee_ID LIKE '%' + @search + '%' " +
+                    "OR CONCAT(First_Name, ' ', Last_Name) LIKE '%' + @search + '%')";
             }
 
             if (sDate.Length > 0)
             {
-                queryString += " AND Leave.Start_Date >= '" + sDate + "'"; 
+                cmd.Parameters.Add("@sDate", SqlDbType.NChar).Value = sDate;
+                cmd.CommandText += " AND Leave.Start_Date >= @sDate";
             }
 
             if (eDate.Length > 0)
             {
-                queryString += " AND Leave.Start_Date <= '" + eDate + "'";
+                cmd.Parameters.Add("@eDate", SqlDbType.NChar).Value = eDate;
+                cmd.CommandText += " AND Leave.Start_Date <= @eDate";
             }
 
             if (order.Length > 0)
             {
-                queryString += " ORDER BY " + order;
+                cmd.CommandText += " ORDER BY " + order;
             }
             else
             {
-                queryString += " ORDER BY Leave_Application_ID ASC";
+                cmd.CommandText += " ORDER BY Leave_Application_ID ASC";
             }
 
-            return queryString;
+            DataBase db = new DataBase();
+            DataTable dataTable = db.Fetch(cmd);
+            
+            return GetLeaveModel(cmd);
         }
 
         private Dictionary<string, string> OrderByList()
@@ -134,40 +141,142 @@ namespace LeaveSystemMVC.Controllers
 
         private Dictionary<int, string> LeaveStatusList()
         {
-            Dictionary<int, string> leaveStatusList = new Dictionary<int, string>();
+            Dictionary<int, string> list = new Dictionary<int, string>();
+            Dictionary dic = new Dictionary();
+            Dictionary<int, string> temp = dic.GetLeaveStatusName();
 
-            leaveStatusList.Add(-1, "All Statuses");
-            foreach (var status in DBLeaveStatusNameList())
+            list.Add(-1, "All Statuses");
+            foreach (var status in dic.GetLeaveStatus())
             {
-                if (!status.Value.Equals("Pending with Line Manager") && !status.Value.Equals("Pending with Human Resources"))
-                    leaveStatusList.Add(status.Key, status.Value);
+                if (!status.Value.Equals("Pending_LM") && !status.Value.Equals("Pending_HR"))
+                    list.Add(status.Key, temp[status.Key]);
             }
 
-            return leaveStatusList;
+            return list;
         }
 
+        // @TODO: attempt to change applicationID to appID
         public ActionResult Cancel(int applicationID)
         {
-            sLeaveModel leaveModel = GetLeaveModel("Leave_Application_ID", applicationID)[0];
-            int cancelledID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Cancelled_HR").Key;
-            string queryString = "UPDATE dbo.Leave SET Leave_Status_ID = '" + cancelledID + "' WHERE Leave_Application_ID = '" + applicationID + "'";
-            DBExecuteQuery(queryString);
+            Leave leave = GetLeaveModel("Leave_Application_ID", applicationID)[0];
 
-            DBRefundLeaveBalance(applicationID);
+            UpdateLeaveStatus(applicationID);
+            RefundLeaveBalance(applicationID);
+            AuditLeaveApplication(applicationID);
 
-            int approvedID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Approved").Key;
-            string quditString = "INSERT INTO dbo.Audit_Leave_Application (Leave_Application_ID, Column_Name, Value_Before, Value_After, Modified_By, Modified_On) " +
-                  "VALUES('" + applicationID + "', 'Leave_Status_ID', '" + approvedID + "','" + cancelledID + "','" + GetLoggedInID() + "','" + DateTime.Today.ToString("yyyy-MM-dd") + "')";
-            DBExecuteQuery(quditString);
+            string message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() +
+               " to " + leave.returnDate.ToShortDateString() + " with ID " + applicationID + " has been cancelled by human resources.";
 
-            string message = "";
-            message = "Your " + leaveModel.leaveTypeName + " leave application from " + leaveModel.startDate.ToShortDateString() + " to " + leaveModel.returnDate.ToShortDateString() + " with ID " + applicationID + " has been cancelled by human resources.";
-            BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leaveModel.employeeID).email, message));
+            BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
 
             TempData["WarningMessage"] = "Leave application <b>" + applicationID + "</b> has been cancelled successfully.";
             return RedirectToAction("View", new { appID = applicationID });
         }
 
+        private void UpdateLeaveStatus(int appID)
+        {
+            Dictionary dic = new Dictionary();
+            int cancelledID = dic.GetLeaveStatus().FirstOrDefault(obj => obj.Value == "Cancelled_HR").Key;
 
+            SqlCommand cmd = new SqlCommand();
+            cmd.Parameters.Add("@appID", SqlDbType.Int).Value = appID;
+            cmd.Parameters.Add("@cancelledID", SqlDbType.Int).Value = cancelledID;
+            cmd.CommandText = "UPDATE dbo.Leave SET Leave_Status_ID = @cancelledID WHERE Leave_Application_ID = @appID";
+            DataBase db = new DataBase();
+            db.Execute(cmd);
+        }
+
+        private void RefundLeaveBalance(int appID)
+        {
+            Dictionary<int, decimal> audit = GetAuditLeaveBalance(appID);
+
+            foreach (KeyValuePair<int, decimal> pair in audit)
+            {
+                int balanceID = pair.Key;
+                decimal consumedBal = pair.Value;
+                decimal prevBalance = GetLeaveBalance(balanceID);
+                decimal newBalance = prevBalance + consumedBal;
+
+                SqlCommand cmd = new SqlCommand();
+                cmd.Parameters.Add("@balanceID", SqlDbType.Int).Value = balanceID;
+                cmd.Parameters.Add("@newBalance", SqlDbType.Decimal).Value = newBalance;
+                cmd.CommandText = "UPDATE dbo.Leave_Balance SET Balance = @newBalance WHERE Leave_Balance_ID = @balanceID";
+                DataBase db = new DataBase();
+                db.Execute(cmd);
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add("@balanceID", SqlDbType.Int).Value = balanceID;
+                cmd.Parameters.Add("@appID", SqlDbType.Int).Value = appID;
+                cmd.Parameters.Add("@valueBefore", SqlDbType.Decimal).Value = prevBalance;
+                cmd.Parameters.Add("@valueAfter", SqlDbType.Decimal).Value = newBalance;
+                cmd.Parameters.Add("@modifiedBy", SqlDbType.Int).Value = GetLoggedInID();
+                cmd.Parameters.Add("@modifiedOn", SqlDbType.NChar).Value = DateTime.Today.ToString("yyyy-MM-dd");
+                cmd.Parameters.Add("@comment", SqlDbType.NChar).Value = "Refund All Balances";
+                cmd.CommandText = "INSERT INTO dbo.Audit_Leave_Balance (Leave_Balance_ID, Leave_Application_ID, Column_Name, Value_Before, Value_After, Modified_By, Modified_On, Comment) " +
+                    "VALUES(@balanceID, @appID, 'Balance', @valueBefore, @valueAfter, @modifiedBy, @modifiedOn, @comment)";
+            }
+
+        }
+
+        private Dictionary<int, decimal> GetAuditLeaveBalance(int appID)
+        {
+            Dictionary<int, decimal> auditLeave = new Dictionary<int, decimal>();
+            SqlCommand cmd = new SqlCommand();
+            cmd.Parameters.Add("@appID", SqlDbType.Int).Value = appID;
+            cmd.CommandText = "SELECT Leave_Balance_ID, Value_Before, Value_After FROM dbo.Audit_Leave_Balance WHERE Leave_Application_ID = @appID ORDER BY Modified_On";
+            DataBase db = new DataBase();
+            DataTable dataTable = db.Fetch(cmd);
+
+            foreach (DataRow row in dataTable.Rows)
+            {
+                int balID = (int)row["Leave_Balance_ID"];
+                string valBefore = (string)row["Value_Before"];
+                string valAfter = (string)row["Value_After"];
+
+                if (auditLeave.ContainsKey(balID))
+                    auditLeave[balID] += decimal.Parse(valBefore) - decimal.Parse(valAfter);
+                else
+                    auditLeave.Add(balID, decimal.Parse(valBefore) - decimal.Parse(valAfter));
+            }
+
+            return auditLeave;
+        }
+
+        private void AuditLeaveApplication(int appID)
+        {
+            Dictionary dic = new Dictionary();
+            Dictionary<int, String> leaveStatus = dic.GetLeaveStatus();
+
+            int approvedID = leaveStatus.FirstOrDefault(obj => obj.Value == "Approved").Key;
+            int cancelledID = leaveStatus.FirstOrDefault(obj => obj.Value == "Cancelled_HR").Key;
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.Parameters.Add("@appID", SqlDbType.Int).Value = appID;
+            cmd.Parameters.Add("@approvedID", SqlDbType.Int).Value = approvedID;
+            cmd.Parameters.Add("@cancelledID", SqlDbType.Int).Value = cancelledID;
+            cmd.Parameters.Add("@modifiedBy", SqlDbType.Int).Value = GetLoggedInID();
+            cmd.Parameters.Add("@modifiedOn", SqlDbType.NChar).Value = DateTime.Today.ToString("yyyy-MM-dd");
+            cmd.CommandText = "INSERT INTO dbo.Audit_Leave_Application (Leave_Application_ID, Column_Name, Value_Before, Value_After, Modified_By, Modified_On) " +
+                 "VALUES(@appID, 'Leave_Status_ID', @approvedID, @cancelledID, @modifiedBy, @modifiedOn)";
+            DataBase db = new DataBase();
+            db.Execute(cmd);
+        }
+
+        private decimal GetLeaveBalance(int balID)
+        {
+            SqlCommand cmd = new SqlCommand();
+            cmd.Parameters.Add("@balID", SqlDbType.Int).Value = balID;
+            cmd.CommandText = "SELECT Balance FROM dbo.Leave_Balance WHERE Leave_Balance_ID = @balID";
+            DataBase db = new DataBase();
+            DataTable dataTable = db.Fetch(cmd);
+
+            decimal balance = 0;
+            foreach (DataRow row in dataTable.Rows)
+            {
+                balance = (decimal)row["Balance"];
+            }
+
+            return balance;
+        }
     }
 }

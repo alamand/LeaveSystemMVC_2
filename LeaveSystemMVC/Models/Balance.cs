@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace LeaveSystemMVC.Models
 {
-    public class sleaveBalanceModel
+    public class Balance
     {
         public int empId { get; set; } = 0;
 

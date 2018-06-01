@@ -1,4 +1,4 @@
-﻿@model List<LeaveSystemMVC.Models.sleaveBalanceModel>
+﻿@model List<LeaveSystemMVC.Models.Balance>
 
 @Html.Partial("_LeftMenu")
 @{ ViewBag.Title = " Credit Organization-Wide Leave Quotas (once per annum)"; }
@@ -7,7 +7,7 @@
     <h3>@ViewBag.Title</h3>
     <hr />
     @Html.Partial("../_Message")
-    @{ var quotaBalance = ViewBag.defaultBalance as LeaveSystemMVC.Models.sleaveBalanceModel;
+    @{ var quotaBalance = ViewBag.defaultBalance as LeaveSystemMVC.Models.Balance;
         var employeeList = ViewBag.employeeList as Dictionary<int, string>; }
 
     <div class="row">

@@ -1,22 +1,16 @@
-﻿/*
- * Author: M Hamza Rahimy
- */
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Web;
 using System.Web.Mvc;
-using LeaveSystemMVC.Models;
-using LeaveSystemMVC.CustomLibraries;
-using System.Configuration;
+using System.Data;
 using System.Data.SqlClient;
 using System.Security.Claims;
+using System.Collections.Generic;
 using Microsoft.Owin.Security;
+using LeaveSystemMVC.Models;
 
 namespace LeaveSystemMVC.Controllers
 {
     [AllowAnonymous]
-    public class AuthController : Controller
+    public class AuthController : BaseController
     {
         // GET: Auth
         [HttpGet]
@@ -26,140 +20,84 @@ namespace LeaveSystemMVC.Controllers
         }
 
         [HttpPost]
-        public ActionResult Login(Users model)
+        public ActionResult Login(User model)
         {
             if(!ModelState.IsValid)
+                return View(model);
+
+            if (model.UserID == null)
             {
+                ModelState.AddModelError("", "Invalid UserID or Password");
                 return View(model);
             }
 
-            if (model.UserID != null)
+            int enteredID;
+            bool isLoginNumeric = int.TryParse(model.UserID, out enteredID);
+
+            DataBase db = new DataBase();
+            SqlCommand cmd = new SqlCommand();
+
+            if (isLoginNumeric)
             {
-                int enteredID;
-                bool isLoginNumeric = int.TryParse(model.UserID, out enteredID);
-
-                /*Data returned from the database will
-                 be assigned to these variables.
-                 The critical ones are password, username
-                 and empID.*/
-                int empID = -1;
-                string password = "";
-                string firstName = "";
-                string lastName = "";
-                string username = "";
-                bool isActivated = false;
-                /////////////////////
-
-                List<string> empRoles = new List<string>();
-                var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-                string queryString;
-                if(isLoginNumeric)
-                {
-                    queryString = "Select Employee_ID, Password, First_Name, Last_Name, User_Name, Account_Status FROM dbo.Employee WHERE Employee_ID = '" + enteredID + "'";
-                }
-                else
-                {
-                    queryString = "Select Employee_ID, Password, First_Name, Last_Name, User_Name, Account_Status FROM dbo.Employee WHERE User_Name = '" + model.UserID + "'";
-                }
-                using (var connection = new SqlConnection(connectionString))
-                {
-                    var command = new SqlCommand(queryString, connection);
-                    connection.Open();
-                    using (var reader = command.ExecuteReader())
-                    {
-                        if(!reader.HasRows)
-                        {
-                            ModelState.AddModelError("", "Invalid UserID or Password");
-                            return View(model);
-                        }
-                        while(reader.Read())
-                        {
-                            empID = (int)reader[0];
-                            password = (string)reader[1];
-                            firstName = (string)reader[2];
-                            lastName = (string)reader[3];
-                            username = (string)reader[4];
-                            isActivated = (bool)reader[5];
-                        }
-                    }
-                    if(!isActivated)
-                    {
-                        connection.Close();
-                        ModelState.AddModelError("", "Account is disabled");
-                        return View(model);
-                    }
-                    //This if statement is unnecessary for the login procedure but it saves clock cycles.
-                    //When we don't have this if statement, we will go through the roles table trying to 
-                    //find roles that correspond to the employee ID -1 in the Employee_Role table.
-                    //Obviously it won't return anything unless the database is actually storing 
-                    //employee ID numbers below 0.
-                    //
-                    if (empID >= 0) 
-                    {
-                        queryString = "Select Role_Name From dbo.Role Full Join dbo.Employee_Role On dbo.Role.Role_ID = dbo.Employee_Role.Role_ID Where dbo.Employee_Role.Employee_ID = '" + empID + "'";
-                        command = new SqlCommand(queryString, connection);
-                        using (var reader = command.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                empRoles.Add((string)reader[0]);
-                            }
-                        }
-                    }
-                    connection.Close();
-                }
-
-
-                /*Check if the user entered an employeeID or username
-                    and then check if the username and password that were entered
-                    matches the ones returned from the database, if returned at all.
-                    Obviously if nothing was returned from the database than it
-                    will be a negative match.*/
-                if (isLoginNumeric)
-                {
-                    if (enteredID == empID && model.Password == password)
-                    {
-                        string fullName = firstName + " " + lastName;
-                        authenticateClaim(empID, fullName, empRoles);
-                        return RedirectToAction("Index", "Home");
-                    }
-                }
-                else
-                {
-                    if (model.UserID.Equals(username) && model.Password == password)
-                    {
-                        string fullName = firstName + " " + lastName;
-                        authenticateClaim(empID, fullName, empRoles);
-                        return RedirectToAction("Index", "Home");
-                    }
-                }
-                
+                cmd.Parameters.Add("@empID", SqlDbType.Int).Value = enteredID;
+                cmd.Parameters.Add("@password", SqlDbType.NChar).Value = model.Password;
+                cmd.CommandText = "SELECT Employee_ID FROM dbo.Employee WHERE Employee_ID = @empID AND Password = @password";
+            }
+            else
+            {
+                cmd.Parameters.Add("@username", SqlDbType.NChar).Value = model.UserID;
+                cmd.Parameters.Add("@password", SqlDbType.NChar).Value = model.Password;
+                cmd.CommandText = "SELECT Employee_ID FROM dbo.Employee WHERE User_Name = @username AND Password = @password";
             }
 
-            ModelState.AddModelError("", "Invalid UserID or Password");
-            return View(model);
+            DataTable dataTable = db.Fetch(cmd);
+
+            if (dataTable.Rows.Count == 0)
+            {
+                ModelState.AddModelError("", "Invalid UserID or Password");
+                return View(model);
+            }
+
+            enteredID = (int)dataTable.Rows[0]["Employee_ID"];
+            Employee employee = GetEmployeeModel(enteredID);
+
+            if (!employee.accountStatus)
+            {
+                ModelState.AddModelError("", "Account is disabled");
+                return View(model);
+            }
+
+            authenticateClaim(employee);
+            return RedirectToAction("Index", "Home");
         }
 
-        /*This implementation makes specific user data such as name, 
-         ID and roles persistent throughout their session until the
-         Logout action is called. The Login is effectively incomplete
-         without this.*/
-        private void authenticateClaim(int empID, string fullNameString, List<string> empRoles)
+        private void authenticateClaim(Employee employee)
         {
-            string idString = empID.ToString();
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, fullNameString),
-                new Claim(ClaimTypes.NameIdentifier, idString)
+            string idString = employee.staffID.ToString();
+            string fullName = employee.firstName + " " + employee.lastName;
+            Dictionary dic = new Dictionary();
+            Dictionary<int, string> roles = dic.GetRole();
 
-            };
-            foreach (var role in empRoles)
-            {
-                claims.Add(new Claim(ClaimTypes.Role, role));
-            }
+            var claims = new List<Claim>();
+            claims.Add(new Claim(ClaimTypes.Name, fullName));
+            claims.Add(new Claim(ClaimTypes.NameIdentifier, idString));
+
+            if (employee.isStaff)
+                claims.Add(new Claim(ClaimTypes.Role, "Staff"));
+
+            if (employee.isLM)
+                claims.Add(new Claim(ClaimTypes.Role, "LM"));
+
+            if (employee.isHR)
+                claims.Add(new Claim(ClaimTypes.Role, "HR"));
+
+            if (employee.isHRResponsible)
+                claims.Add(new Claim(ClaimTypes.Role, "HR_Responsible"));
+
+            if (employee.isAdmin)
+                claims.Add(new Claim(ClaimTypes.Role, "Admin"));
 
             var identity = new ClaimsIdentity(claims, "ApplicationCookie");
-
             var ctx = Request.GetOwinContext();
             var authManager = ctx.Authentication;
 
@@ -169,13 +107,11 @@ namespace LeaveSystemMVC.Controllers
         }
 
         /*Look into @ http://stackoverflow.com/questions/26182660/how-to-logout-user-in-owin-asp-net-mvc5 
-        http://stackoverflow.com/questions/17592530/cookie-is-not-delete-in-mvcc
-             */
+        http://stackoverflow.com/questions/17592530/cookie-is-not-delete-in-mvcc */
         public ActionResult Logout()
         {
             var ctx = Request.GetOwinContext();
             var authManager = ctx.Authentication;
-
             authManager.SignOut("ApplicationCookie");
             return RedirectToAction("Login", "Auth");
         }

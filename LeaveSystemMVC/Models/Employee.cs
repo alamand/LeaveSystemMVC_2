@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace LeaveSystemMVC.Models
 {
-    public class sEmployeeModel
+    public class Employee
     {
         [Display(Name = "Staff ID")]
         [Required(ErrorMessage = "5-digit Staff ID is required.")]

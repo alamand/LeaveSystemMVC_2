@@ -1,28 +1,28 @@
-﻿using LeaveSystemMVC.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.IO;
 using System.Web;
 using System.Web.Mvc;
-using System.Configuration;
+using System.Data;
 using System.Data.SqlClient;
-using System.Security.Claims;
-using System.IO;
-using System.Net.Mail;
+using System.Linq;
+using System.Diagnostics;
+using System.Configuration;
 using System.Net;
+using System.Net.Mail;
+using System.Collections.Generic;
 using Hangfire;
+using LeaveSystemMVC.Models;
 
 // @TODO: More testing and optimization
-
 namespace LeaveSystemMVC.Controllers
 {
-    public class LApplicationController : ControllerBase
+    public class LeaveApplicationController : BaseController
     {
-        // GET: LApplication
+        // GET: LeaveApplication
         [HttpGet]
         public ActionResult Index(int leaveTypeID = 0)
         {
-            sEmployeeModel emp = GetEmployeeModel(GetLoggedInID());
+            Employee emp = GetEmployeeModel(GetLoggedInID());
             SetViewData(emp, leaveTypeID);
             ViewBag.SuccessMessage = TempData["SuccessMessage"];
             return View();
@@ -36,10 +36,10 @@ namespace LeaveSystemMVC.Controllers
         }
 
         [HttpPost]
-        public ActionResult Index(HttpPostedFileBase file, sLeaveModel model, FormCollection form)
+        public ActionResult Index(HttpPostedFileBase file, Leave model, FormCollection form)
         {
-            sEmployeeModel emp = GetEmployeeModel(GetLoggedInID());
-            sleaveBalanceModel leaveBalance = GetLeaveBalanceModel(GetLoggedInID());
+            Employee emp = GetEmployeeModel(GetLoggedInID());
+            Balance leaveBalance = GetLeaveBalanceModel(GetLoggedInID());
             ModelState.Clear();
 
             // checks if the dates are the same, and if the end date is before than start date (sets ModelState to invalid if one of them is true)
@@ -120,7 +120,7 @@ namespace LeaveSystemMVC.Controllers
             }
         }
 
-        private void AdjustHalfDays(sLeaveModel model)
+        private void AdjustHalfDays(Leave model)
         {
             //half a day of leave
             if (model.startDate.Equals(model.returnDate) && (model.isStartDateHalfDay == true || model.isReturnDateHalfDay == true))
@@ -130,17 +130,14 @@ namespace LeaveSystemMVC.Controllers
             else
             {
                 if (model.isStartDateHalfDay == true && !IsPublicHoliday(model.startDate)) // leave starts at 12pm on startDate
-                {
                     model.startDate = model.startDate.AddDays(0.5);
-                }
+
                 if (model.isReturnDateHalfDay == true && !IsPublicHoliday(model.returnDate)) // leave ends at 12pm on returnDate
-                {
                     model.returnDate = model.returnDate.AddDays(0.5);
-                }
             }
         }
 
-        private void LeaveAppAnnual(sLeaveModel model, sleaveBalanceModel lb, sEmployeeModel emp, HttpPostedFileBase file, decimal numOfDays)
+        private void LeaveAppAnnual(Leave model, Balance lb, Employee emp, HttpPostedFileBase file, decimal numOfDays)
         {
             // keeps track of how much credit points should be deducted from each balance type
             decimal deductDIL = 0;
@@ -192,7 +189,7 @@ namespace LeaveSystemMVC.Controllers
             }
         }
 
-        private void LeaveAppSick(sLeaveModel model, sleaveBalanceModel lb, sEmployeeModel emp, HttpPostedFileBase file, decimal numOfDays)
+        private void LeaveAppSick(Leave model, Balance lb, Employee emp, HttpPostedFileBase file, decimal numOfDays)
         {
             // keeps track of how much credit points should be deducted from each balance type
             decimal deductDIL = 0;
@@ -255,7 +252,7 @@ namespace LeaveSystemMVC.Controllers
             }
         }
 
-        private void LeaveAppMaternity(sLeaveModel model, sleaveBalanceModel lb, sEmployeeModel emp, HttpPostedFileBase file)
+        private void LeaveAppMaternity(Leave model, Balance lb, Employee emp, HttpPostedFileBase file)
         {
             
             TimeSpan diff = model.returnDate - model.startDate;
@@ -325,7 +322,7 @@ namespace LeaveSystemMVC.Controllers
             }
         }
 
-        private void LeaveAppCompassionate(sLeaveModel model, sleaveBalanceModel lb, sEmployeeModel emp, HttpPostedFileBase file, decimal numOfDays)
+        private void LeaveAppCompassionate(Leave model, Balance lb, Employee emp, HttpPostedFileBase file, decimal numOfDays)
         {
             decimal maxDIL = GetLeaveBalanceModel().compassionate;
 
@@ -390,7 +387,7 @@ namespace LeaveSystemMVC.Controllers
             }
         }
 
-        private void LeaveAppShortHours(sLeaveModel model, sleaveBalanceModel lb, sEmployeeModel emp, int duration)
+        private void LeaveAppShortHours(Leave model, Balance lb, Employee emp, int duration)
         {
             // clears the model state as the endDate was not set in the View page
             ModelState.Clear();
@@ -454,7 +451,7 @@ namespace LeaveSystemMVC.Controllers
             }
         }
 
-        private void LeaveAppPilgrimage(sLeaveModel model, sleaveBalanceModel lb, sEmployeeModel emp, HttpPostedFileBase file, decimal numOfDays)
+        private void LeaveAppPilgrimage(Leave model, Balance lb, Employee emp, HttpPostedFileBase file, decimal numOfDays)
         {
             if (ModelState.IsValid)
             {
@@ -483,7 +480,7 @@ namespace LeaveSystemMVC.Controllers
             }
         }
 
-        private void LeaveAppUnpaid(sLeaveModel model, sEmployeeModel emp, HttpPostedFileBase file, decimal numOfDays)
+        private void LeaveAppUnpaid(Leave model, Employee emp, HttpPostedFileBase file, decimal numOfDays)
         {
             if (ModelState.IsValid)
             {
@@ -504,7 +501,7 @@ namespace LeaveSystemMVC.Controllers
             }
         }
 
-        private void LeaveAppDIL(sLeaveModel model, sEmployeeModel emp, sleaveBalanceModel lb, HttpPostedFileBase file, decimal numOfDays)
+        private void LeaveAppDIL(Leave model, Employee emp, Balance lb, HttpPostedFileBase file, decimal numOfDays)
         {
             if (ModelState.IsValid)
             {
@@ -533,7 +530,7 @@ namespace LeaveSystemMVC.Controllers
             }
         }
 
-        private void SetViewData(sEmployeeModel emp, int leaveID)
+        private void SetViewData(Employee emp, int leaveID)
         {
             var leaveTypesNames = GetAvailableLeaveTypesAndNames(emp);
             ViewData["LeaveTypesNames"] = leaveTypesNames;
@@ -542,10 +539,11 @@ namespace LeaveSystemMVC.Controllers
             ViewData["ShortHourDuration"] = GetShortHourDurationList();
         }
 
-        private Tuple<Dictionary<int, string>, Dictionary<int, string>> GetAvailableLeaveTypesAndNames(sEmployeeModel emp)
+        private Tuple<Dictionary<int, string>, Dictionary<int, string>> GetAvailableLeaveTypesAndNames(Employee emp)
         {
-            var leaveTypes = AddDefaultToDictionary(DBLeaveTypeList(), 0, "- Select Leave Type -");
-            var leaveNames = AddDefaultToDictionary(DBLeaveNameList(), 0, "- Select Leave Type -");
+            Dictionary dic = new Dictionary();
+            var leaveTypes = dic.AddDefaultToDictionary(dic.GetLeaveType(), 0, "- Select Leave Type -");
+            var leaveNames = dic.AddDefaultToDictionary(dic.GetLeaveType(), 0, "- Select Leave Type -");
 
             // employees on probation can only apply for DIL leave, while off probation employees can apply for any.
             if (emp.onProbation)
@@ -586,10 +584,28 @@ namespace LeaveSystemMVC.Controllers
             return new Tuple<Dictionary<int, string>, Dictionary<int, string>>(leaveTypes, leaveNames);
         }
 
-        public void SendMail(sLeaveModel lm, sEmployeeModel emp)
+        private bool IsPilgrimageAllowed(int empID)
         {
-            int leaveAppID = DBLastIdentity("Leave_Application_ID", "dbo.Leave");
+            Employee emp = GetEmployeeModel(empID);
+            List<Employee> employmentList = GetEmploymentPeriod(empID);
+
+            // gets the latest employment period.
+            Employee latestEmployment = employmentList[employmentList.Count - 1];
+            TimeSpan diff = DateTime.Today - latestEmployment.empStartDate;
+            double years = diff.TotalDays / 365.25;
+
+            Dictionary dic = new Dictionary();
+            if (dic.GetReligion()[emp.religionID].Equals("Muslim") && years >= 5)
+                return true;
+            else
+                return false;
+        }
+
+        public void SendMail(Leave lm, Employee emp)
+        {
+            int leaveAppID = GetLeaveLastIdentity();
             string message = "";
+
             if (!lm.leaveTypeName.Equals("Short_Hours"))
                 message = "Your " + lm.leaveTypeName + " leave application from " + lm.startDate.ToShortDateString() + " to " + lm.returnDate.ToShortDateString() + " with ID " + leaveAppID + " has been sent to your line manager for approval.";
             else
@@ -604,27 +620,67 @@ namespace LeaveSystemMVC.Controllers
             SmtpClient client = new SmtpClient();
             client.EnableSsl = true;
             client.Credentials = new NetworkCredential("leave@transnatedu.com", "TagHr@007");
+
             try
             {
                 client.Send(mail);
             }
-            catch (Exception e){}
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());            // @TODO: audit exception info
+            }
         }
 
-        private void ApplyLeave(sLeaveModel lm, decimal numOfDays=0, string fName="")
+        private void ApplyLeave(Leave lm, decimal numOfDays = 0, string fileName = "")
         {
-            int statusID = DBLeaveStatusList().FirstOrDefault(obj => obj.Value == "Pending_LM").Key;
+            Dictionary dic = new Dictionary();
+            int statusID = dic.GetLeaveStatus().FirstOrDefault(obj => obj.Value == "Pending_LM").Key;
 
-            string queryString = "INSERT INTO dbo.Leave (Employee_ID, Documentation, Start_Date, Reporting_Back_Date, Start_Hrs, End_Hrs, Leave_Type_ID, " +
+            DataBase db = new DataBase();
+            SqlCommand cmd = new SqlCommand();
+            cmd.Parameters.Add("@empID", SqlDbType.Int).Value = GetLoggedInID();
+            cmd.Parameters.Add("@fileName", SqlDbType.NChar).Value = fileName;
+            cmd.Parameters.Add("@sDate", SqlDbType.NChar).Value = lm.startDate.ToString("yyyy-MM-dd");
+            cmd.Parameters.Add("@eDate", SqlDbType.NChar).Value = lm.returnDate.ToString("yyyy-MM-dd");
+            cmd.Parameters.Add("@sTime", SqlDbType.NChar).Value = lm.shortStartTime.ToString();
+            cmd.Parameters.Add("@eTime", SqlDbType.NChar).Value = lm.shortEndTime.ToString();
+            cmd.Parameters.Add("@leaveTypeID", SqlDbType.Int).Value = lm.leaveTypeID;
+            cmd.Parameters.Add("@contactDetails", SqlDbType.NChar).Value = lm.contactDetails ?? "";
+            cmd.Parameters.Add("@comments", SqlDbType.NChar).Value = lm.comments ?? "";
+            cmd.Parameters.Add("@bookAirTicket", SqlDbType.Bit).Value = lm.bookAirTicket;
+            cmd.Parameters.Add("@numOfDays", SqlDbType.Decimal).Value = numOfDays;
+            cmd.Parameters.Add("@statusID", SqlDbType.Int).Value = statusID;
+            cmd.Parameters.Add("@email", SqlDbType.NChar).Value = lm.email ?? "";
+            cmd.Parameters.Add("@isStartDateHalfDay", SqlDbType.Bit).Value = lm.isStartDateHalfDay;
+            cmd.Parameters.Add("@isReturnDateHalfDay", SqlDbType.Bit).Value = lm.isReturnDateHalfDay;
+            cmd.CommandText = "INSERT INTO dbo.Leave (Employee_ID, Documentation, Start_Date, Reporting_Back_Date, Start_Hrs, End_Hrs, Leave_Type_ID, " +
                 "Contact_Outside_UAE, Comment, Flight_Ticket, Total_Leave, Leave_Status_ID, Personal_Email, Is_Half_Start_Date, Is_Half_Reporting_Back_Date) " +
-                "VALUES ('" + GetLoggedInID() + "','" + fName + "','" + lm.startDate.ToString("yyyy-MM-dd") + "','" + lm.returnDate.ToString("yyyy-MM-dd") + 
-                "','" + lm.shortStartTime.ToString() + "','" + lm.shortEndTime.ToString() + "','" + lm.leaveTypeID + "','" + lm.contactDetails + "','" + 
-                lm.comments + "','" + lm.bookAirTicket + "','" + numOfDays + "','" + statusID + "', '" + lm.email + "', '" + lm.isStartDateHalfDay + "', '" + lm.isReturnDateHalfDay + "');";
-            DBExecuteQuery(queryString);
+                "VALUES (@empID, @fileName, @sDate, @eDate, @sTime, @eTime, @leaveTypeID, @contactDetails, @comments, @bookAirTicket, @numOfDays, @statusID, @email, @isStartDateHalfDay, @isReturnDateHalfDay);";
+            db.Execute(cmd);
 
-            string quditString = "INSERT INTO dbo.Audit_Leave_Application (Leave_Application_ID, Column_Name, Value_After, Created_By, Created_On) " +
-                  "VALUES('" + DBLastIdentity("Leave_Application_ID", "dbo.Leave") + "', 'Leave_Status_ID', '" + statusID + "','" + GetLoggedInID() + "','" + DateTime.Today.ToString("yyyy-MM-dd") + "')";
-            DBExecuteQuery(quditString);
+            cmd.Parameters.Add("@lastIdentity", SqlDbType.Int).Value = GetLeaveLastIdentity();
+            cmd.Parameters.Add("@createdBy", SqlDbType.Int).Value = GetLoggedInID();
+            cmd.Parameters.Add("@createdOn", SqlDbType.NChar).Value = DateTime.Today.ToString("yyyy-MM-dd");
+            cmd.CommandText = "INSERT INTO dbo.Audit_Leave_Application (Leave_Application_ID, Column_Name, Value_After, Created_By, Created_On) " +
+                  "VALUES(@lastIdentity, 'Leave_Status_ID', @statusID, @createdBy, @createdOn)";
+            db.Execute(cmd);
+        }
+
+        private int GetNextApplicationID()
+        {
+            int nextApplicationID = 0;
+            SqlCommand sqlCommand = new SqlCommand();
+            sqlCommand.CommandText = "SELECT Leave_Application_ID FROM dbo.Leave";
+            DataBase db = new DataBase();
+            DataTable dataTable = db.Fetch(sqlCommand);
+
+            foreach (DataRow row in dataTable.Rows)
+            {
+                if ((int)row["Leave_Application_ID"] > nextApplicationID)
+                    nextApplicationID = (int)row["Leave_Application_ID"];
+            }
+
+            return nextApplicationID + 1;
         }
 
         private string UploadFile(HttpPostedFileBase file)
@@ -660,35 +716,11 @@ namespace LeaveSystemMVC.Controllers
                     TempData["ErrorMEssage"] = "ERROR:" + ex.Message.ToString();
                 }
             }
+
             return fileName;
         }
 
-        private int GetNextApplicationID()
-        {
-            // this is used for naming the uploaded file
-            int nextApplicationID = 0;
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "SELECT Leave_Application_ID FROM dbo.Leave";
-
-            using (var connection = new SqlConnection(connectionString))
-            {
-                var command = new SqlCommand(queryString, connection);
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        if ((int)reader["Leave_Application_ID"] > nextApplicationID)
-                            nextApplicationID = (int)reader["Leave_Application_ID"];
-                    }
-                }
-                connection.Close();
-            }
-
-            return nextApplicationID+1;
-        }
-
-        private void CompareDates(DateTime sDate, DateTime rDate, sLeaveModel model)
+        private void CompareDates(DateTime sDate, DateTime rDate, Leave model)
         {
             int result = DateTime.Compare(sDate, rDate);
             if (result > 0)
@@ -734,6 +766,7 @@ namespace LeaveSystemMVC.Controllers
                         numOfDays--;
                         isWeekend = true;
                         break;
+
                     case DayOfWeek.Friday:
                         numOfDays--;
                         isWeekend = true;
@@ -790,30 +823,23 @@ namespace LeaveSystemMVC.Controllers
             int fullNumOfDays = numOfDays;
             int numOfPublicHolidays = 0;
 
-            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            string queryString = "SELECT * FROM dbo.Public_Holiday WHERE Date BETWEEN'" + sDate.ToString("yyyy-MM-dd") + "' AND '" + eDate.ToString("yyyy-MM-dd") + "'";
+            SqlCommand cmd = new SqlCommand();
+            cmd.Parameters.Add("@sDate", SqlDbType.NChar).Value = sDate.ToString("yyyy-MM-dd");
+            cmd.Parameters.Add("@eDate", SqlDbType.NChar).Value = eDate.ToString("yyyy-MM-dd");
+            cmd.CommandText = "SELECT * FROM dbo.Public_Holiday WHERE Date BETWEEN @sDate AND @eDate";
+            DataBase db = new DataBase();
+            DataTable dataTable = db.Fetch(cmd);
 
-            using (var connection = new SqlConnection(connectionString))
+            foreach (DataRow row in dataTable.Rows)
             {
-                var command = new SqlCommand(queryString, connection);
-                connection.Open();
-
-                using (var reader = command.ExecuteReader())
+                DateTime day = (DateTime)row["Date"];
+                for (var i = 0; i < fullNumOfDays; i++)
                 {
-                    while (reader.Read())
-                    {
-                        DateTime day = (DateTime)reader["Date"];
-                        for (var i = 0; i < fullNumOfDays; i++)
-                        {
-                            if (sDate.AddDays(i).Equals(day))
-                            {
-                                numOfPublicHolidays++;
-                            }
-                        }
-                    }
+                    if (sDate.AddDays(i).Equals(day))
+                        numOfPublicHolidays++;
                 }
-                connection.Close();
             }
+
             return numOfPublicHolidays;
         }       
 
@@ -830,5 +856,14 @@ namespace LeaveSystemMVC.Controllers
             return durationList;
         }
 
+        private int GetLeaveLastIdentity()
+        {
+            SqlCommand cmd = new SqlCommand();
+            cmd.CommandText = "SELECT MAX(Leave_Application_ID) AS LastID FROM dbo.Leave";
+            DataBase db = new DataBase();
+            DataTable dataTable = db.Fetch(cmd);
+            int id = (int)dataTable.Rows[0][0];
+            return id;
+        }
     }
 }

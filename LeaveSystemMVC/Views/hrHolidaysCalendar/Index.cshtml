@@ -1,4 +1,4 @@
-﻿@model IEnumerable<LeaveSystemMVC.Models.hrHolidaysCalender>
+﻿@model IEnumerable<LeaveSystemMVC.Models.Holiday>
 @Html.Partial("_LeftMenu")
 @{ ViewBag.Title = "Holidays Calendar"; }
 
@@ -13,7 +13,7 @@
     }
     @if (yearList.Count != 0)
     {
-        using (Html.BeginForm("FilterListByYear", "hrHolidaysCalender", FormMethod.Post))
+        using (Html.BeginForm("FilterListByYear", "hrHolidaysCalendar", FormMethod.Post))
         {
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             <div class="form-horizontal">
@@ -52,7 +52,7 @@
                         if (dt.CompareTo(DateTime.Now.Date) >= 0)
                         {
                             <td style="text-align:center">
-                                <a href="@Url.Action("Remove", "hrHolidaysCalender", new { holidayID = item.holidayID }, null)">
+                                <a href="@Url.Action("Remove", "hrHolidaysCalendar", new { holidayID = item.holidayID }, null)">
                                     <span class="glyphicon glyphicon-remove" aria-hidden="true" style="color:red"></span>
                                 </a>
                             </td>
