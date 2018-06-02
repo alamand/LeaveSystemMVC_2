@@ -90,6 +90,7 @@ namespace LeaveSystemMVC.Controllers
         private void UpdateEmployee(Employee emp)
         {
             SqlCommand cmd = new SqlCommand();
+            cmd.Parameters.Add("@empID", SqlDbType.Int).Value = (emp.staffID != null) ? emp.staffID : 0;
             cmd.Parameters.Add("@firstName", SqlDbType.NChar).Value = emp.firstName;
             cmd.Parameters.Add("@lastName", SqlDbType.NChar).Value = emp.lastName;
             cmd.Parameters.Add("@userName", SqlDbType.NChar).Value = emp.userName.ToLower();
@@ -103,16 +104,12 @@ namespace LeaveSystemMVC.Controllers
             cmd.Parameters.Add("@status", SqlDbType.Bit).Value = emp.accountStatus;
             cmd.CommandText = "UPDATE dbo.Employee SET First_Name = @firstName, Last_Name = @lastName, User_Name = @userName, " +
                 "Designation =  @designation, Email = @email, Gender = @gender, PH_No = @phoneNo, Nationality_ID = @nationalityID , " +
-                "Religion_ID = @religionID, Date_Of_Birth = @dateOfBirth, Account_Status = @status WHERE Employee_ID = " + emp.staffID;
+                "Religion_ID = @religionID, Date_Of_Birth = @dateOfBirth, Account_Status = @status WHERE Employee_ID = @empID";
 
             DataBase db = new DataBase();
             db.Execute(cmd);
 
             // updates the employee's record if a department was selected or de-selected
-            cmd.Parameters.Clear();
-            cmd.Parameters.Add("@staffID", SqlDbType.Int).Value = (int)emp.staffID;
-
-            // true if the department is selected
             if (emp.deptID != 0 && emp.deptID != null)
             {
                 cmd.Parameters.Add("@deptID", SqlDbType.Int).Value = (int)emp.deptID;
@@ -122,8 +119,23 @@ namespace LeaveSystemMVC.Controllers
             {
                 cmd.CommandText = "UPDATE dbo.Employee SET Department_ID = NULL WHERE Employee_ID = @staffID";
             }
-
             db.Execute(cmd);
+
+            // @TODO: Fix this
+            cmd.Parameters.Add("@reportTo", SqlDbType.Int).Value = (emp.reportsToLineManagerID != null) ? emp.reportsToLineManagerID : 0;
+            if (!IsReportingToExist(emp.staffID, emp.reportsToLineManagerID))
+            {
+                if (emp.reportsToLineManagerID != 0)
+                {
+                    cmd.CommandText = "INSERT INTO dbo.Reporting VALUES (@empID, @reportTo)";
+                    db.Execute(cmd);
+                }
+            }
+            else
+            {
+                cmd.CommandText = "INSERT INTO dbo.Reporting VALUES (@empID, @reportTo)";
+                db.Execute(cmd);
+            }
         }
 
         private void UpdateReportingTo(int? empID, int? reportToID)

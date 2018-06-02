@@ -90,8 +90,7 @@ namespace LeaveSystemMVC.Controllers
             if (search.Length > 0)
             {
                 cmd.Parameters.Add("@search", SqlDbType.NChar).Value = search;
-                cmd.CommandText += " AND (Employee.Employee_ID LIKE '%' + @search + '%' " +
-                    "OR CONCAT(First_Name, ' ', Last_Name) LIKE '%' + @search + '%')";
+                cmd.CommandText += " AND CONCAT(First_Name, ' ', Last_Name) LIKE '%' + @search + '%'";
             }
 
             if (sDate.Length > 0)
