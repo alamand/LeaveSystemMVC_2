@@ -211,6 +211,7 @@
     <Compile Include="Controllers\Admin\aBackupDatabaseController.cs" />
     <Compile Include="Controllers\Admin\aEditStaffController.cs" />
     <Compile Include="Controllers\AuthController.cs" />
+    <Compile Include="Models\Email.cs" />
     <Compile Include="Models\Dictionary.cs" />
     <Compile Include="Models\DataBase.cs" />
     <Compile Include="Controllers\ErrorController.cs" />

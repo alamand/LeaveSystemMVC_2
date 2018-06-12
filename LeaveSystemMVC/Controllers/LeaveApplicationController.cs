@@ -5,12 +5,8 @@ using System.Web.Mvc;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Diagnostics;
 using System.Configuration;
-using System.Net;
-using System.Net.Mail;
 using System.Collections.Generic;
-using Hangfire;
 using LeaveSystemMVC.Models;
 
 // @TODO: More testing and optimization
@@ -176,8 +172,8 @@ namespace LeaveSystemMVC.Controllers
                     // inserts the data to the database
                     ApplyLeave(model, numOfDays, fileName);
 
-                    // sends a notification email to the applicant
-                    BackgroundJob.Enqueue(() => SendMail(model, emp));
+                    Employee empLM = GetEmployeeModel((int)emp.reportsToLineManagerID);
+                    new Email().PendingLeaveApplicationByLM(emp, empLM, model);
 
                     // sets the notification message to be displayed to the applicant
                     TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
@@ -239,8 +235,8 @@ namespace LeaveSystemMVC.Controllers
                     // inserts the data to the database
                     ApplyLeave(model, numOfDays, fileName);
 
-                    // sends a notification email to the applicant
-                    BackgroundJob.Enqueue(() => SendMail(model, emp));
+                    Employee empLM = GetEmployeeModel((int)emp.reportsToLineManagerID);
+                    new Email().PendingLeaveApplicationByLM(emp, empLM, model);
 
                     // sets the notification message to be displayed to the applicant
                     TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
@@ -309,8 +305,8 @@ namespace LeaveSystemMVC.Controllers
                     // inserts the data to the database
                     ApplyLeave(model, numOfDays, fileName);
 
-                    // sends a notification email to the applicant
-                    BackgroundJob.Enqueue(() => SendMail(model, emp));
+                    Employee empLM = GetEmployeeModel((int)emp.reportsToLineManagerID);
+                    new Email().PendingLeaveApplicationByLM(emp, empLM, model);
 
                     // sets the notification message to be displayed to the applicant
                     TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
@@ -374,8 +370,8 @@ namespace LeaveSystemMVC.Controllers
                     // inserts the data to the database
                     ApplyLeave(model, numOfDays, fileName);
 
-                    // sends a notification email to the applicant
-                    BackgroundJob.Enqueue(() => SendMail(model, emp));
+                    Employee empLM = GetEmployeeModel((int)emp.reportsToLineManagerID);
+                    new Email().PendingLeaveApplicationByLM(emp, empLM, model);
 
                     // sets the notification message to be displayed to the applicant
                     TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
@@ -423,8 +419,8 @@ namespace LeaveSystemMVC.Controllers
                                 // inserts the data to the database
                                 ApplyLeave(model);
 
-                                // sends a notification email to the applicant
-                                BackgroundJob.Enqueue(() => SendMail(model, emp));
+                                Employee empLM = GetEmployeeModel((int)emp.reportsToLineManagerID);
+                                new Email().PendingLeaveApplicationByLM(emp, empLM, model);
 
                                 // sets the notification message to be displayed to the applicant
                                 TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + duration + " minutes</b> has been submitted successfully.<br/>";
@@ -470,8 +466,8 @@ namespace LeaveSystemMVC.Controllers
                         // inserts the data to the database
                         ApplyLeave(model, numOfDays, fileName);
 
-                        // sends a notification email to the applicant
-                        BackgroundJob.Enqueue(() => SendMail(model, emp));
+                        Employee empLM = GetEmployeeModel((int)emp.reportsToLineManagerID);
+                        new Email().PendingLeaveApplicationByLM(emp, empLM, model);
 
                         // sets the notification message to be displayed to the applicant
                         TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
@@ -492,8 +488,8 @@ namespace LeaveSystemMVC.Controllers
                     // inserts the data to the database
                     ApplyLeave(model, numOfDays, fileName);
 
-                    // sends a notification email to the applicant
-                    BackgroundJob.Enqueue(() => SendMail(model, emp));
+                    Employee empLM = GetEmployeeModel((int)emp.reportsToLineManagerID);
+                    new Email().PendingLeaveApplicationByLM(emp, empLM, model);
 
                     // sets the notification message to be displayed to the applicant
                     TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
@@ -520,8 +516,8 @@ namespace LeaveSystemMVC.Controllers
                         // inserts the data to the database
                         ApplyLeave(model, numOfDays, fileName);
 
-                        // sends a notification email to the applicant
-                        BackgroundJob.Enqueue(() => SendMail(model, emp));
+                        Employee empLM = GetEmployeeModel((int)emp.reportsToLineManagerID);
+                        new Email().PendingLeaveApplicationByLM(emp, empLM, model);
 
                         // sets the notification message to be displayed to the applicant
                         TempData["SuccessMessage"] = "Your " + model.leaveTypeName + " leave application for <b>" + numOfDays + " day(s)</b> has been submitted successfully.<br/>";
@@ -599,36 +595,6 @@ namespace LeaveSystemMVC.Controllers
                 return true;
             else
                 return false;
-        }
-
-        public void SendMail(Leave lm, Employee emp)
-        {
-            int leaveAppID = GetLeaveLastIdentity();
-            string message = "";
-
-            if (!lm.leaveTypeName.Equals("Short_Hours"))
-                message = "Your " + lm.leaveTypeName + " leave application from " + lm.startDate.ToShortDateString() + " to " + lm.returnDate.ToShortDateString() + " with ID " + leaveAppID + " has been sent to your line manager for approval.";
-            else
-                message = "Your " + lm.leaveTypeName + " leave application for " + lm.startDate.ToShortDateString() + " from " + lm.shortStartTime + " to " + lm.shortEndTime + " with ID " + leaveAppID + " has been sent to your line manager for approval.";
-
-            MailMessage mail = new MailMessage();
-            mail.From = new MailAddress("leave@transnatedu.com", "TAG Leave System");
-            mail.To.Add(new MailAddress(emp.email));
-            mail.Subject = "Leave Application " + leaveAppID + " Update";
-            mail.Body = message + Environment.NewLine;
-
-            SmtpClient client = new SmtpClient();
-            client.EnableSsl = true;
-            client.Credentials = new NetworkCredential("leave@transnatedu.com", "TagHr@007");
-
-            try
-            {
-                client.Send(mail);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.ToString());            // @TODO: audit exception info
-            }
         }
 
         private void ApplyLeave(Leave lm, decimal numOfDays = 0, string fileName = "")
@@ -805,7 +771,6 @@ namespace LeaveSystemMVC.Controllers
                 ViewBag.WarningMessage = "The selected date(s) is/are weekend(s).";
                 ModelState.AddModelError("startDate", " ");
             }
-
 
             if (numOfDays <= 0 && isPublicHoliday) //leave can go negative if numOfDays was 0.5
             {

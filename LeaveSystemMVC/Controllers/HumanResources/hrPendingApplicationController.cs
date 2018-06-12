@@ -4,7 +4,6 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Collections.Generic;
-using Hangfire;
 using LeaveSystemMVC.Models;
 
 namespace LeaveSystemMVC.Controllers
@@ -444,12 +443,12 @@ namespace LeaveSystemMVC.Controllers
 
             UpdateLeaveApplication(leave, rejectedID);
 
-            string message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + 
-                " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been rejected by human resources.";
-            
-            // sends a notification email to the applicant
-            BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
-            
+            Employee emp = GetEmployeeModel(leave.employeeID);
+            Employee empHR = GetEmployeeModel(GetLoggedInID());
+
+            Email email = new Email();
+            email.RejectedLeaveApplicationByHR(emp, empHR, leave);
+
             // sets the notification message to be displayed
             TempData["WarningMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>rejected</b> successfully.<br/>";
         }
@@ -547,11 +546,10 @@ namespace LeaveSystemMVC.Controllers
             if (addUnpaid > 0)
                 UpdateBalance(leave.employeeID, leave.leaveAppID, lb.unpaidID, lb.unpaid, lb.unpaid + addUnpaid, comment);
 
-            string message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + 
-                " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by human resources.";
-
-            // sends a notification email to the applicant
-            BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
+            Employee emp = GetEmployeeModel(leave.employeeID);
+            Employee empLM = GetEmployeeModel((int)emp.reportsToLineManagerID);
+            Employee empHR = GetEmployeeModel(GetLoggedInID());
+            new Email().ApprovedLeaveApplication(emp, empLM, empHR, leave);
 
             // sets the notification message to be displayed
             TempData["SuccessMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>approved</b> successfully.<br/>";
@@ -621,11 +619,10 @@ namespace LeaveSystemMVC.Controllers
             if (addUnpaid > 0)
                 UpdateBalance(leave.employeeID, leave.leaveAppID, lb.unpaidID, lb.unpaid, lb.unpaid + addUnpaid, comment);
 
-            string message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + 
-                " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by human resources.";
-
-            // sends a notification email to the applicant
-            BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
+            Employee emp = GetEmployeeModel(leave.employeeID);
+            Employee empLM = GetEmployeeModel((int)emp.reportsToLineManagerID);
+            Employee empHR = GetEmployeeModel(GetLoggedInID());
+            new Email().ApprovedLeaveApplication(emp, empLM, empHR, leave);
 
             // sets the notification message to be displayed
             TempData["SuccessMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>approved</b> successfully.<br/>";
@@ -698,11 +695,10 @@ namespace LeaveSystemMVC.Controllers
             if (addUnpaid > 0)
                 UpdateBalance(leave.employeeID, leave.leaveAppID, lb.unpaidID, lb.unpaid, lb.unpaid + addUnpaid, comment);
 
-            string message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + 
-                " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by human resources.";
-
-            // sends a notification email to the applicant
-            BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
+            Employee emp = GetEmployeeModel(leave.employeeID);
+            Employee empLM = GetEmployeeModel((int)emp.reportsToLineManagerID);
+            Employee empHR = GetEmployeeModel(GetLoggedInID());
+            new Email().ApprovedLeaveApplication(emp, empLM, empHR, leave);
 
             // sets the notification message to be displayed
             TempData["SuccessMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>approved</b> successfully.<br/>";
@@ -774,11 +770,10 @@ namespace LeaveSystemMVC.Controllers
             if (addUnpaid > 0)
                 UpdateBalance(leave.employeeID, leave.leaveAppID, lb.unpaidID, lb.unpaid, lb.unpaid + addUnpaid, comment);
 
-            string message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + 
-                " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by human resources.";
-
-            // sends a notification email to the applicant
-            BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
+            Employee emp = GetEmployeeModel(leave.employeeID);
+            Employee empLM = GetEmployeeModel((int)emp.reportsToLineManagerID);
+            Employee empHR = GetEmployeeModel(GetLoggedInID());
+            new Email().ApprovedLeaveApplication(emp, empLM, empHR, leave);
 
             // sets the notification message to be displayed
             TempData["SuccessMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>approved</b> successfully.<br/>";
@@ -804,11 +799,10 @@ namespace LeaveSystemMVC.Controllers
 
                 UpdateBalance(leave.employeeID, leave.leaveAppID, lb.shortHoursID, lb.shortHours, lb.shortHours - (decimal)span.TotalHours, comment);
 
-                string message = "Your " + leave.leaveTypeName + " leave application for " + leave.startDate.ToShortDateString() + " from " + leave.shortStartTime + 
-                    " to " + leave.shortEndTime + " with ID " + leave.leaveAppID + " has been approved by human resources.";
-
-                // sends a notification email to the applicant
-                BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
+                Employee emp = GetEmployeeModel(leave.employeeID);
+                Employee empLM = GetEmployeeModel((int)emp.reportsToLineManagerID);
+                Employee empHR = GetEmployeeModel(GetLoggedInID());
+                new Email().ApprovedLeaveApplication(emp, empLM, empHR, leave);
 
                 // sets the notification message to be displayed
                 TempData["SuccessMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>approved</b> successfully.<br/>";
@@ -838,11 +832,12 @@ namespace LeaveSystemMVC.Controllers
 
                 UpdateBalance(leave.employeeID, leave.leaveAppID, lb.daysInLieuID, lb.daysInLieu, lb.daysInLieu - numOfDays, comment);
 
-                string message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + 
-                    " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by human resources.";
+                Employee emp = GetEmployeeModel(leave.employeeID);
+                Employee empLM = GetEmployeeModel((int)emp.reportsToLineManagerID);
+                Employee empHR = GetEmployeeModel(GetLoggedInID());
 
-                // sends a notification email to the applicant
-                BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
+                Email email = new Email();
+                email.ApprovedLeaveApplication(emp, empLM, empHR, leave);
 
                 // sets the notification message to be displayed
                 TempData["SuccessMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>approved</b> successfully.<br/>";
@@ -872,11 +867,10 @@ namespace LeaveSystemMVC.Controllers
 
                 UpdateBalance(leave.employeeID, leave.leaveAppID, lb.pilgrimageID, lb.pilgrimage, lb.pilgrimage - lb.pilgrimage, comment);
 
-                string message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + 
-                    " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by human resources.";
-
-                // sends a notification email to the applicant
-                BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
+                Employee emp = GetEmployeeModel(leave.employeeID);
+                Employee empLM = GetEmployeeModel((int)emp.reportsToLineManagerID);
+                Employee empHR = GetEmployeeModel(GetLoggedInID());
+                new Email().ApprovedLeaveApplication(emp, empLM, empHR, leave);
 
                 // sets the notification message to be displayed
                 TempData["SuccessMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>approved</b> successfully.<br/>";
@@ -905,11 +899,10 @@ namespace LeaveSystemMVC.Controllers
 
             UpdateBalance(leave.employeeID, leave.leaveAppID, lb.unpaidID, lb.unpaid, lb.unpaid + numOfDays, comment);
 
-            string message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + 
-                " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by human resources.";
-
-            // sends a notification email to the applicant
-            BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
+            Employee emp = GetEmployeeModel(leave.employeeID);
+            Employee empLM = GetEmployeeModel((int)emp.reportsToLineManagerID);
+            Employee empHR = GetEmployeeModel(GetLoggedInID());
+            new Email().ApprovedLeaveApplication(emp, empLM, empHR, leave);
 
             // sets the notification message to be displayed
             TempData["SuccessMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>approved</b> successfully.<br/>";

@@ -6,7 +6,6 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Collections.Generic;
-using Hangfire;
 using LeaveSystemMVC.Models;
 
 namespace LeaveSystemMVC.Controllers
@@ -133,11 +132,9 @@ namespace LeaveSystemMVC.Controllers
 
             TempData["SuccessMessage"] = "Your leave application has been cancelled successfully.";
 
-            string message = "You have succesfully cancelled your " + leaveModel.leaveTypeName + " leave application from " + leaveModel.startDate.ToShortDateString() + 
-                " to " + leaveModel.returnDate.ToShortDateString() + " with ID " + appID + " .";
-
-            BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(GetLoggedInID()).email, message));
-
+            Employee emp = GetEmployeeModel(GetLoggedInID());
+            new Email().CancelledLeaveApplicationByStaff(emp, leaveModel);
+            
             return RedirectToAction("Index");
         }
     }

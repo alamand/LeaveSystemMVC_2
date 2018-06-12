@@ -4,7 +4,6 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Collections.Generic;
-using Hangfire;
 using LeaveSystemMVC.Models;
 
 namespace LeaveSystemMVC.Controllers
@@ -163,10 +162,9 @@ namespace LeaveSystemMVC.Controllers
             RefundLeaveBalance(applicationID);
             AuditLeaveApplication(applicationID);
 
-            string message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() +
-               " to " + leave.returnDate.ToShortDateString() + " with ID " + applicationID + " has been cancelled by human resources.";
-
-            BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
+            Employee emp = GetEmployeeModel(leave.employeeID);
+            Employee empHR = GetEmployeeModel(GetLoggedInID());
+            new Email().CancelledLeaveApplicationByLM(emp, empHR, leave);
 
             TempData["WarningMessage"] = "Leave application <b>" + applicationID + "</b> has been cancelled successfully.";
             return RedirectToAction("View", new { appID = applicationID });

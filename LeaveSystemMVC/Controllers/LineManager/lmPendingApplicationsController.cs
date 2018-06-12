@@ -4,7 +4,6 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Collections.Generic;
-using Hangfire;
 using LeaveSystemMVC.Models;
 
 namespace LeaveSystemMVC.Controllers
@@ -471,10 +470,9 @@ namespace LeaveSystemMVC.Controllers
             int rejectedID = dic.GetLeaveStatus().FirstOrDefault(obj => obj.Value == "Rejected_LM").Key;
             DBUpdateLeave(leave, rejectedID);
 
-            string message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + 
-                " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been rejected by your line manager.";
-
-            BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
+            Employee emp = GetEmployeeModel(leave.employeeID);
+            Employee empLM = GetEmployeeModel(GetLoggedInID());
+            new Email().RejectedLeaveApplicationByLM(emp, empLM, leave);
 
             TempData["WarningMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>rejected</b> successfully.<br/>";
         }
@@ -534,11 +532,7 @@ namespace LeaveSystemMVC.Controllers
                 int approvedID = dic.GetLeaveStatus().FirstOrDefault(obj => obj.Value == "Pending_HR").Key;
                 DBUpdateLeave(leave, approvedID);
 
-                string message = "Your " + leave.leaveTypeName + " leave application for " + leave.startDate.ToShortDateString() + " from " + leave.shortStartTime + 
-                    " to " + leave.shortEndTime + " with ID " + leave.leaveAppID + " has been approved by your line manager.";
-
-                // sends a notification email to the applicant
-                BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
+                SendApprovedEmail(leave);
 
                 // sets the notification message to be displayed
                 TempData["SuccessMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>approved</b> successfully.<br/>";
@@ -563,11 +557,7 @@ namespace LeaveSystemMVC.Controllers
                 int approvedID = dic.GetLeaveStatus().FirstOrDefault(obj => obj.Value == "Pending_HR").Key;
                 DBUpdateLeave(leave, approvedID);
 
-                string message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + 
-                    " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by your line manager.";
-
-                // sends a notification email to the applicant
-                BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
+                SendApprovedEmail(leave);
 
                 // sets the notification message to be displayed
                 TempData["SuccessMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>approved</b> successfully.<br/>";
@@ -592,11 +582,7 @@ namespace LeaveSystemMVC.Controllers
                 int approvedID = dic.GetLeaveStatus().FirstOrDefault(obj => obj.Value == "Pending_HR").Key;
                 DBUpdateLeave(leave, approvedID);
 
-                string message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + 
-                    " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by your line manager.";
-
-                // sends a notification email to the applicant
-                BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
+                SendApprovedEmail(leave);
 
                 // sets the notification message to be displayed
                 TempData["SuccessMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>approved</b> successfully.<br/>";
@@ -621,11 +607,7 @@ namespace LeaveSystemMVC.Controllers
             int approvedID = dic.GetLeaveStatus().FirstOrDefault(obj => obj.Value == "Pending_HR").Key;
             DBUpdateLeave(leave, approvedID);
 
-            string message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + 
-                " to " + leave.returnDate.ToShortDateString() + " with ID " + leave.leaveAppID + " has been approved by your line manager.";
-
-            // sends a notification email to the applicant
-            BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
+            SendApprovedEmail(leave);
 
             // sets the notification message to be displayed
             TempData["SuccessMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>approved</b> successfully.<br/>";
@@ -666,6 +648,28 @@ namespace LeaveSystemMVC.Controllers
             }
 
             return leaveHistory;
+        }
+
+        private void SendApprovedEmail(Leave leave)
+        {
+            Employee emp = GetEmployeeModel(leave.employeeID);
+            Employee empLM = GetEmployeeModel(GetLoggedInID());
+            Employee empHR = GetHRModel();
+
+            Email email = new Email();
+            email.PendingLeaveApplicationByHR(emp, empLM, empHR, leave);
+        }
+
+        private Employee GetHRModel()
+        {
+            List<Employee> empList = GetEmployeeModel();
+            Employee hrEmployee = null;
+            foreach (Employee emp in empList)
+            {
+                if (emp.isHRResponsible)
+                    hrEmployee = emp;
+            }
+            return hrEmployee;
         }
     }
 }

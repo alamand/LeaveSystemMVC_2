@@ -4,7 +4,6 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Collections.Generic;
-using Hangfire;
 using LeaveSystemMVC.Models;
 
 namespace LeaveSystemMVC.Controllers
@@ -175,10 +174,9 @@ namespace LeaveSystemMVC.Controllers
                   "VALUES(@appID, 'Leave_Status_ID', @approvedID, @cancelledID, @modifiedBy, @modifiedOn)";
             db.Execute(cmd);
 
-            string message = "Your " + leave.leaveTypeName + " leave application from " + leave.startDate.ToShortDateString() + 
-                " to " + leave.returnDate.ToShortDateString() + " with ID " + applicationID + " has been cancelled by your line manager.";
-
-            BackgroundJob.Enqueue(() => SendMail(GetEmployeeModel(leave.employeeID).email, message));
+            Employee emp = GetEmployeeModel(leave.employeeID);
+            Employee empLM = GetEmployeeModel(GetLoggedInID());
+            new Email().CancelledLeaveApplicationByLM(emp, empLM, leave);
 
             TempData["WarningMessage"] = "Leave application <b>" + applicationID + "</b> has been cancelled successfully.";
             return RedirectToAction("View", new { appID = applicationID });

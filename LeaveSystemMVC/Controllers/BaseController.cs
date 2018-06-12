@@ -6,8 +6,6 @@ using System.Linq;
 using System.Diagnostics;
 using System.Configuration;
 using System.Drawing;
-using System.Net;
-using System.Net.Mail;
 using System.Collections.Generic;
 using PdfSharp.Pdf;
 using PdfSharp.Drawing;
@@ -345,29 +343,6 @@ namespace LeaveSystemMVC.Controllers
             }
 
             return leaveList;
-        }
-
-        public void SendMail(string email, string message)
-        {
-            MailMessage mail = new MailMessage();
-            mail.From = new MailAddress("leave@transnatedu.com", "TAG Leave System");
-            mail.To.Add(new MailAddress(email));
-            mail.Subject = "Leave Application Update";
-            mail.Body = message + Environment.NewLine;
-
-            SmtpClient client = new SmtpClient();
-            client.EnableSsl = true;
-            client.Credentials = new NetworkCredential("leave@transnatedu.com", "TagHr@007");
-
-            try
-            {
-                client.Send(mail);
-                Debug.WriteLine("Mail Sent");
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine("Mail NOT sent" + e.ToString());
-            }
         }
 
         private Tuple<int, DateTime> GetLeaveApproval(int appID, string role)
