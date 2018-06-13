@@ -38,6 +38,7 @@
                                 <dd>@Html.DisplayFor(model => model.leaveTypeDisplayName)</dd>
                                 @Html.HiddenFor(model => model.leaveTypeID)
                                 @Html.HiddenFor(model => model.leaveTypeName)
+                                @Html.HiddenFor(model => model.leaveTypeDisplayName)
 
                                 @{
                                     string startDateString = Model.startDate.ToString("dd/MM/yyyy");

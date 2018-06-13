@@ -38,10 +38,11 @@
                                 <dd>@Html.DisplayFor(model => model.leaveTypeDisplayName)</dd>
                                 @Html.HiddenFor(model => model.leaveTypeID)
                                 @Html.HiddenFor(model => model.leaveTypeName)
+                                @Html.HiddenFor(model => model.leaveTypeDisplayName)
 
                                 @{
-                                    string startDateString = Model.startDate.ToString("dd/MM/yyyy");
-                                    string returnDateString = Model.returnDate.ToString("dd/MM/yyyy");
+        string startDateString = Model.startDate.ToString("dd/MM/yyyy");
+        string returnDateString = Model.returnDate.ToString("dd/MM/yyyy");
                                 }
 
                                 <dt>@Html.DisplayNameFor(model => model.startDate)</dt>
@@ -53,23 +54,23 @@
                                 @Html.HiddenFor(model => model.returnDate)
 
                                 @if (!Model.leaveTypeName.Equals("Short_Hours"))
-                                {
-                                    <dt>@Html.DisplayNameFor(model => model.leaveDuration)</dt>
-                                    <dd>@Html.DisplayFor(model => model.leaveDuration)</dd>
-                                    @Html.HiddenFor(model => model.leaveDuration)
-                                }
+    {
+                            <dt>@Html.DisplayNameFor(model => model.leaveDuration)</dt>
+                            <dd>@Html.DisplayFor(model => model.leaveDuration)</dd>
+                            @Html.HiddenFor(model => model.leaveDuration)
+}
 
                                 @if (Model.leaveTypeName.Equals("Short_Hours"))
-                                {
-                                    <dt>@Html.DisplayNameFor(model => model.shortStartTime)</dt>
-                                    <dd>@Html.DisplayFor(model => model.shortStartTime)</dd>
-                                    @Html.HiddenFor(model => model.shortStartTime)
+    {
+                            <dt>@Html.DisplayNameFor(model => model.shortStartTime)</dt>
+                            <dd>@Html.DisplayFor(model => model.shortStartTime)</dd>
+                            @Html.HiddenFor(model => model.shortStartTime)
 
-                                    <dt>@Html.DisplayNameFor(model => model.shortEndTime)</dt>
-                                    <dd>@Html.DisplayFor(model => model.shortEndTime)</dd>
-                                    @Html.HiddenFor(model => model.shortEndTime)
+                            <dt>@Html.DisplayNameFor(model => model.shortEndTime)</dt>
+                            <dd>@Html.DisplayFor(model => model.shortEndTime)</dd>
+                            @Html.HiddenFor(model => model.shortEndTime)
 
-                                }
+}
 
                                 <dt>@Html.DisplayNameFor(model => model.comments)</dt>
                                 <dd style="word-break: break-word">@Html.DisplayFor(model => model.comments) @Html.ValidationMessageFor(model => model.comments, "", new { @class = "text-danger" })</dd>
@@ -84,21 +85,21 @@
                                 @Html.HiddenFor(model => model.documentation)
 
                                 @if (Model.leaveTypeName.Equals("Annual"))
-                                {
-                                    <dt>@Html.DisplayNameFor(model => model.bookAirTicket)</dt>
-                                    <dd>@Html.DisplayFor(model => model.bookAirTicket)</dd>
-                                    @Html.HiddenFor(model => model.bookAirTicket)
+    {
+                            <dt>@Html.DisplayNameFor(model => model.bookAirTicket)</dt>
+                            <dd>@Html.DisplayFor(model => model.bookAirTicket)</dd>
+                            @Html.HiddenFor(model => model.bookAirTicket)
 
-                                    <dt>@Html.DisplayNameFor(model => model.email)</dt>
-                                    <dd style="word-break: break-word">@Html.DisplayFor(model => model.email)</dd>
-                                }
+                            <dt>@Html.DisplayNameFor(model => model.email)</dt>
+                            <dd style="word-break: break-word">@Html.DisplayFor(model => model.email)</dd>
+}
 
                                 @if (Model.leaveTypeName.Equals("Annual") || Model.leaveTypeName.Equals("Maternity"))
-                                {
-                                    <dt>@Html.DisplayNameFor(model => model.contactDetails)</dt>
-                                    <dd>@Html.DisplayFor(model => model.contactDetails)</dd>
-                                    @Html.HiddenFor(model => model.contactDetails)
-                                }
+    {
+                            <dt>@Html.DisplayNameFor(model => model.contactDetails)</dt>
+                            <dd>@Html.DisplayFor(model => model.contactDetails)</dd>
+                            @Html.HiddenFor(model => model.contactDetails)
+}
 
                                 <dt>@Html.DisplayNameFor(model => model.hrComment)</dt>
                                 <dd>@Html.TextAreaFor(model => model.hrComment, new { rows = "6", cols = "35" })</dd>

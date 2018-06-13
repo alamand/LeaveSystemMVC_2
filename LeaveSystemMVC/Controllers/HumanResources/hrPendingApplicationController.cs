@@ -445,9 +445,10 @@ namespace LeaveSystemMVC.Controllers
 
             Employee emp = GetEmployeeModel(leave.employeeID);
             Employee empHR = GetEmployeeModel(GetLoggedInID());
+            Employee empLM = GetEmployeeModel((int)emp.reportsToLineManagerID);
 
             Email email = new Email();
-            email.RejectedLeaveApplicationByHR(emp, empHR, leave);
+            email.RejectedLeaveApplicationByHR(emp, empLM, empHR, leave);
 
             // sets the notification message to be displayed
             TempData["WarningMessage"] = "Leave application ID <b>" + leave.leaveAppID + "</b> for <b>" + leave.employeeName + "</b> has been <b>rejected</b> successfully.<br/>";

@@ -16,16 +16,21 @@ namespace LeaveSystemMVC.Models
             string message;
 
             // message to the applicant
-            message = "Your leave application has been fully approved";
+            message = "Dear " + employee.firstName + " " + employee.lastName;
+            message += "\n\nYour " + leave.leaveTypeDisplayName + " leave application with ID " + leave.leaveAppID + " has been fully approved.";
+            message += "\n\nKind regards \nTAG HR team";
             BackgroundJob.Enqueue(() => SendMail(employee.email, message));
 
             // message to the line manager
-            message = "Johns leave application has been fully approved";
+            message = "Dear " + employeeLM.firstName + " " + employeeLM.lastName;
+            message += "\n\n" + employee.firstName + " " + employee.lastName + "\'s " + leave.leaveTypeDisplayName + " leave application with ID " + leave.leaveAppID + " has been fully approved.";
+            message += "\n\nKind regards \nTAG HR team";
             BackgroundJob.Enqueue(() => SendMail(employeeLM.email, message));
 
-
             // message to the human resources
-            message = "You have approved Johns leave application";
+            message = "Dear " + employeeHR.firstName + " " + employeeHR.lastName;
+            message += "\n\nYou have approved " + employee.firstName + " " + employee.lastName + "\'s " + leave.leaveTypeDisplayName + " leave application with ID " + leave.leaveAppID + ".";
+            message += "\n\nKind regards \nTAG HR team";
             BackgroundJob.Enqueue(() => SendMail(employeeHR.email, message));
         }
 
@@ -34,11 +39,15 @@ namespace LeaveSystemMVC.Models
             string message;
 
             // message to the applicant
-            message = "Your leave application has been submitted and now it is pending by LM";
+            message = "Dear " + employee.firstName + " " + employee.lastName;
+            message += "\n\nYour " + leave.leaveTypeDisplayName + " leave application has been submitted and is now pending approval by your line manager.";
+            message += "\n\nKind regards \nTAG HR team";
             BackgroundJob.Enqueue(() => SendMail(employee.email, message));
 
             // message to the line manager
-            message = "John has submitted a new leave application";
+            message = "Dear " + employeeLM.firstName + " " + employeeLM.lastName;
+            message += "\n\n" + employee.firstName + " " + employee.lastName + "\'s " + leave.leaveTypeDisplayName + " leave application is now pending your approval.";
+            message += "\n\nKind regards \nTAG HR team";
             BackgroundJob.Enqueue(() => SendMail(employeeLM.email, message));
         }
 
@@ -47,15 +56,21 @@ namespace LeaveSystemMVC.Models
             string message;
 
             // message to the applicant
-            message = "Your leave application has been approved by LM and now it is pending by HR";
+            message = "Dear " + employee.firstName + " " + employee.lastName;
+            message += "\n\nYour " + leave.leaveTypeDisplayName + " leave application with ID " + leave.leaveAppID + " has been approved by your line manager and is now pending approval by human resources.";
+            message += "\n\nKind regards \nTAG HR team";
             BackgroundJob.Enqueue(() => SendMail(employee.email, message));
 
             // message to the line manager
-            message = "You have approved Johns leave application, and now it is pending by HR";
+            message = "Dear " + employeeLM.firstName + " " + employeeLM.lastName;
+            message += "\n\n" + employee.firstName + " " + employee.lastName + "\'s " + leave.leaveTypeDisplayName + " leave application with ID " + leave.leaveAppID + " is now pending approval with human resources.";
+            message += "\n\nKind regards \nTAG HR team";
             BackgroundJob.Enqueue(() => SendMail(employeeHR.email, message));
 
             // message to the human resources
-            message = "John has submitted a new leave application";
+            message = "Dear " + employeeHR.firstName + " " + employeeHR.lastName;
+            message += "\n\n" + employee.firstName + " " + employee.lastName + "\'s " + leave.leaveTypeDisplayName + " leave application with ID " + leave.leaveAppID + " is now pending your approval.";
+            message += "\n\nKind regards \nTAG HR team";
             BackgroundJob.Enqueue(() => SendMail(employeeHR.email, message));
         }
 
@@ -64,24 +79,38 @@ namespace LeaveSystemMVC.Models
             string message;
 
             // message to the applicant
-            message = "Your leave application has been rejected by LM";
+            message = "Dear " + employee.firstName + " " + employee.lastName;
+            message += "\n\nYour " + leave.leaveTypeDisplayName + " leave application with ID " + leave.leaveAppID + " has been rejected by your line manager.";
+            message += "\n\nKind regards \nTAG HR team";
             BackgroundJob.Enqueue(() => SendMail(employee.email, message));
 
             // message to the line manager
-            message = "You have rejected Johns leave application";
+            message = "Dear " + employeeLM.firstName + " " + employeeLM.lastName;
+            message += "\n\n" + employee.firstName + " " + employee.lastName + "\'s " + leave.leaveTypeDisplayName + " leave application with ID " + leave.leaveAppID + " has been rejected successfully.";
+            message += "\n\nKind regards \nTAG HR team";
             BackgroundJob.Enqueue(() => SendMail(employeeLM.email, message));
         }
 
-        public void RejectedLeaveApplicationByHR(Employee employee, Employee employeeHR, Leave leave)
+        public void RejectedLeaveApplicationByHR(Employee employee, Employee employeeLM, Employee employeeHR, Leave leave)
         {
             string message;
 
             // message to the applicant
-            message = "Your leave application has been rejected by HR";
+            message = "Dear " + employee.firstName + " " + employee.lastName;
+            message += "\n\nYour " + leave.leaveTypeDisplayName + " leave application with ID " + leave.leaveAppID + " has been rejected by human resources.";
+            message += "\n\nKind regards \nTAG HR team";            
             BackgroundJob.Enqueue(() => SendMail(employee.email, message));
 
+            // message to the line manager
+            message = "Dear " + employeeLM.firstName + " " + employeeLM.lastName;
+            message += "\n\n" + employee.firstName + " " + employee.lastName + "\'s " + leave.leaveTypeDisplayName + " leave application with ID " + leave.leaveAppID + " has been rejected by human resources.";
+            message += "\n\nKind regards \nTAG HR team";
+            BackgroundJob.Enqueue(() => SendMail(employeeLM.email, message));
+
             // message to the human resources
-            message = "You have rejected Johns leave application";
+            message = "Dear " + employeeHR.firstName + " " + employeeHR.lastName;
+            message += "\n\n" + employee.firstName + " " + employee.lastName + "\'s " + leave.leaveTypeDisplayName + " leave application with ID " + leave.leaveAppID + " has been rejected successfully.";
+            message += "\n\nKind regards \nTAG HR team";
             BackgroundJob.Enqueue(() => SendMail(employeeHR.email, message));
         }
 
@@ -90,7 +119,9 @@ namespace LeaveSystemMVC.Models
             string message;
 
             // message to the applicant
-            message = "You have successfully cancelled your leave application";
+            message = "Dear " + employee.firstName + " " + employee.lastName;
+            message += "\n\nYour " + leave.leaveTypeDisplayName + " leave application with ID " + leave.leaveAppID + " has been cancelled successfully.";
+            message += "\n\nKind regards \nTAG HR team";
             BackgroundJob.Enqueue(() => SendMail(employee.email, message));
         }
 
@@ -99,11 +130,15 @@ namespace LeaveSystemMVC.Models
             string message;
 
             // message to the applicant
-            message = "Your leave application has been cancelled by LM";
+            message = "Dear " + employee.firstName + " " + employee.lastName;
+            message += "\n\nYour " + leave.leaveTypeDisplayName + " leave application with ID " + leave.leaveAppID + " has been cancelled by your line manager.";
+            message += "\n\nKind regards \nTAG HR team";
             BackgroundJob.Enqueue(() => SendMail(employee.email, message));
 
             // message to the line manager
-            message = "You have cancelled Johns leave application";
+            message = "Dear " + employeeLM.firstName + " " + employeeLM.lastName;
+            message += "\n\n" + employee.firstName + " " + employee.lastName + "\'s " + leave.leaveTypeDisplayName + " leave application with ID " + leave.leaveAppID + " has been cancelled successfully.";
+            message += "\n\nKind regards \nTAG HR team";
             BackgroundJob.Enqueue(() => SendMail(employeeLM.email, message));
         }
 
@@ -112,11 +147,15 @@ namespace LeaveSystemMVC.Models
             string message;
 
             // message to the applicant
-            message = "Your leave application has been cancelled by HR";
+            message = "Dear " + employee.firstName + " " + employee.lastName;
+            message += "\n\nYour " + leave.leaveTypeDisplayName + " leave application with ID " + leave.leaveAppID + " has been cancelled by human resources.";
+            message += "\n\nKind regards \nTAG HR team";
             BackgroundJob.Enqueue(() => SendMail(employee.email, message));
 
             // message to the human resources
-            message = "You have cancelled Johns leave application";
+            message = "Dear " + employeeHR.firstName + " " + employeeHR.lastName;
+            message += "\n\n" + employee.firstName + " " + employee.lastName + "\'s " + leave.leaveTypeDisplayName + " leave application with ID " + leave.leaveAppID + " has been cancelled successfully.";
+            message += "\n\nKind regards \nTAG HR team";
             BackgroundJob.Enqueue(() => SendMail(employeeHR.email, message));
         }
 
